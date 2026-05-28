@@ -1,0 +1,61 @@
+{
+  "name": "boltnotes",
+  "productName": "BoltNotes",
+  "version": "1.2.6",
+  "description": "Backlog de jogos, Notas e Fortnite",
+  "main": "src/main.js",
+  "private": true,
+  "build": {
+    "appId": "com.boltnoak.boltnotes",
+    "productName": "BoltNotes",
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Utility",
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "boltnoak",
+        "repo": "boltnotes-releases",
+        "releaseType": "release"
+      }
+    ]
+  },
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "BoltUO",
+  "license": "MIT",
+  "dependencies": {
+    "adm-zip": "^0.5.17",
+    "electron-log": "^5.4.4",
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-updater": "^6.8.3",
+    "music-metadata": "^11.12.3",
+    "open-graph-scraper": "^6.11.0"
+  },
+  "devDependencies": {
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-rpm": "^7.11.1",
+    "@electron-forge/maker-squirrel": "^7.11.1",
+    "@electron-forge/maker-wix": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.11.1",
+    "@electron-forge/plugin-fuses": "^7.11.1",
+    "@electron-forge/publisher-github": "^7.11.2",
+    "@electron/fuses": "^1.8.0",
+    "electron": "41.2.1",
+    "electron-builder": "^26.8.1",
+    "electron-reloader": "^1.2.3"
+  }
+}

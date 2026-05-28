@@ -1,0 +1,102 @@
+@import url(basics.css);
+
+.pageBody {
+    display: flex;
+    flex-direction: row;
+    transform: translateY(6.5vh);
+    height: 86.5vh;
+}
+
+.config-item {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    font-family: 'Montserrat';
+    background-color: rgba(30,30,30,0.5);
+    color: white;
+    border-radius: 1.6vh;
+    padding: 0 1vw;
+    margin-top: 1vh;
+    justify-content: space-between;
+    font-weight: 500;
+}
+
+.tabs {
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    margin: 4vh;
+    gap: 1vh;
+}
+
+.tab {
+    font-family: 'Montserrat';
+    background-color: rgba(30,30,30,0.5);
+    color: white;
+    display: inline-block;
+    width: 90%;
+    font-weight: 500;
+    padding: 2vh 1vw;
+    border-radius: 1.5vh;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s, border .2s;
+    overflow: hidden;
+}
+.tab.active {
+    background-color: rgba(70,70,70,.4);
+}
+.tab:hover {
+    background-color: rgba(50,50,50,.4);
+}
+
+.tab-configs {
+    display: flex;
+    flex-direction: column;
+    margin: 4vh;
+    width: 100%;
+    display: none;
+}
+.tab-configs.active {
+    display: flex;
+}
+
+.toggle.active {
+    background-color: rgb(80,80,80);
+    border: solid .6vh rgb(80,80,80);
+}
+.sep {
+    font-family: 'Montserrat';
+    color: white;
+    font-weight: 600;
+    font-size: 2.6vh;
+    margin: 0 .35svw;
+    margin-top: 1vh;
+}
+.toggle {
+    display: inline-block;
+    width: 3.3vw;
+    height: 2.6vh;
+    background-color: rgb(35,35,35);
+    border-radius: 1.5vh;
+    position: relative;
+    border: solid .6vh rgb(35,35,35);
+    cursor: pointer;
+    transition: background-color 0.2s, border .2s;
+    overflow: hidden;
+}
+
+.toggle::after {
+    content: '';
+    position: absolute;
+    width: 1.5vw;
+    height: 2.6vh;
+    border-radius: 1vh;
+    background-color: white;
+    transition: transform 0.2s;
+    object-fit: cover;
+}
+
+.toggle.active::after {
+    transform: translateX(1.7vw);
+}

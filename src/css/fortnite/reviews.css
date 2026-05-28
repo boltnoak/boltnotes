@@ -1,0 +1,135 @@
+.review-title {
+    font-family: 'Montserrat';
+    font-weight: 700;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    background-color: #1a1a1a;
+    display: flex;
+    width: 98vh;
+    justify-content: space-between;
+    align-content: center;
+    padding: 1vh;
+    margin: 0;
+}
+.review-popup{
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    display: none;
+    color: white;
+    z-index: 1;
+}
+#review{
+    position: relative;
+    justify-content: center;
+    align-content: center;
+    backdrop-filter: blur(3vh);
+    max-width:100%;
+    max-height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+.review-topic {
+    font-family: 'Montserrat';
+    margin: 0;
+    font-size: 4vh;
+    width: 100%;
+    margin-bottom: 1vh;
+    font-weight: 1000;
+}
+.review-topictext {
+    font-family: 'Montserrat';
+    margin: 0;
+    width: 100%;
+    max-height: 13vh;
+    border: solid .4vh transparent;
+    font-size: 2.6vh;
+    margin-bottom: 1vh;
+    overflow-y: auto;
+    caret-color: var(--text);
+}
+.review-topictext::-webkit-scrollbar {
+    width: 1vw;
+    cursor: default;
+}
+.review-topictext::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.review-topictext::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 10px;
+    border: .5vh solid #111;
+}
+.sep-bar-review {
+    margin: 1vh 0;
+    margin-right: 2vh;
+    border: solid 2px #1a1a1a73;
+    border-radius: 1vh;
+}
+.review-topictext::-webkit-scrollbar-thumb:hover {
+    background: #666;
+    cursor: default;
+}
+.review-content {
+    margin: 10vh 20vh;
+    margin-bottom: 15vh;
+    z-index: 999;
+}
+.reviews {
+    background-color: #050505;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2vh;
+    height: 100%;
+    width: 100%;
+}
+.review-nocontent {
+    font-family: 'Montserrat';
+    font-size: 3rem;
+    margin: 0;
+    margin-bottom: 8px;
+    font-size: 23px;
+    width: 100%;
+}
+.review-section {
+    display: flex;
+    flex-direction: column;
+}
+.review-section div {
+    display: flex;
+    flex-direction: column;
+}
+
+.review-header {
+    display: flex;
+    flex-direction: row;
+    background-color: #1a1a1a;
+    border-radius: 1.3vh 1.3vh 0 0;
+    display: flex;
+    width: auto;
+    justify-content: space-between;
+    align-content: center;
+    padding: 1vh;
+    margin: 0;
+}
+.review-close {
+    z-index: 2;
+    right: 0;
+    height: 3vh;
+    width: auto;
+    margin: .1vh;
+    cursor: pointer;
+    padding: 1vh;
+    border-radius: 1vh;
+    transition: .15s;
+}
+.review-close:hover {
+    background: #0e0e0e;
+}
+#map {
+    height: 60vh;
+    border-radius: 1vh;
+}

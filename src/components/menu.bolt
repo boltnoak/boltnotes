@@ -1,0 +1,8 @@
+<div id="menu" class="drag">
+    <p id="menuTitle"></p>
+    <div class="menuButtons">
+        <i id="menuMin" class="fa-solid fa-window-minimize" onclick="minimizeApp()"></i>
+        <i id="menuMax" class="fa-regular fa-window-maximize" onclick="maximizeApp()"></i>
+        <i id="menuClose" class="fa-solid fa-xmark" onclick="closeApp()"></i>
+    </div>
+</div>

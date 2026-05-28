@@ -1,0 +1,554 @@
+@import url(../basics.css);
+@import url(../videoplayer.css);
+@import url(reviews.css);
+
+body {
+    overflow-x: hidden;
+}
+.pageBody {
+    overflow-y: auto;
+    transform: translateY(6.5vh);
+    height: 86.5vh;
+}
+#fnSeason, .fn-season {
+    margin: 0 7.5vw;
+    padding: 0;
+    margin-bottom: 5.5vh;
+}
+.chapter-section {
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1vh;
+}
+#chapter-name {
+    font-size: 3vh;
+    color: white;
+    font-family: 'Montserrat';
+    font-weight: 700;
+    user-select: none;
+}
+.before-chapter.none, .next-chapter.none {
+    opacity: 0;
+    pointer-events: none;
+}
+#before-chapter, #next-chapter{
+    margin: 0;
+    padding: 0;
+    transition: border 0.1s linear;
+    visibility: hidden;
+    border-radius: 4vh;
+    border: solid .7vh transparent;
+    font-size: 4vh;
+    cursor: pointer;
+}
+#before-chapter:hover, #next-chapter:hover {
+    border: solid .7vh white;
+}
+.nochapter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transform: translateY(40%);
+    text-decoration: none;
+    padding: 6px;
+    color: rgb(90, 90, 90);
+    font-family: 'Montserrat';
+    font-size: 26px;
+    font-weight: 700;
+    border-radius: 16px;
+    border: solid 4px transparent;
+    transition: all 0.1s linear;
+    user-select: none;
+}
+
+.banner {
+    background-position: center;
+    background-size: cover;
+    height: 45vh;
+    margin: 0;
+    opacity: 100%;
+    border-top-left-radius: 1.5vh;
+    border-top-right-radius: 1.5vh;
+    transition: opacity 0.3s linear;
+    z-index: 1;
+    overflow: hidden;
+}
+.banner-video {
+    object-fit: cover;
+    height: 45vh;
+    width: 100%;
+    opacity: 0%;
+    transition: opacity 0.3s linear;
+}
+.passe-status {
+    position: relative;
+    width: 60vw;
+    height: auto;
+    overflow: hidden;
+}
+.season-character {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:max-content;
+    object-fit: contain;
+    object-position: center 15%;
+    z-index: 1;
+    object-position: 50% 10%;
+    transform-origin: top center;
+    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 10%, rgba(0,0,0,0) 90%);
+    mask-image: linear-gradient(top, rgba(0,0,0,1) 10%, rgba(0,0,0,0) 90%);
+    transform: translateZ(0);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+}
+.passeStatus-texto {
+    filter: drop-shadow(0px 0px 2vh rgba(0, 0, 0, 0.8));
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    text-align: center;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    font-family: 'HeadingNow';
+    align-items: center;
+}
+.passe {
+    margin: 0;
+    padding: 0;
+    font-size: 16vh;
+    font-weight: 900;
+    line-height: 0.9;
+    text-transform: uppercase;
+}
+.obtido {
+    margin: 0;
+    padding: 0;
+    font-size: 14vh;
+    font-weight: 900;
+    line-height: 0.9;
+    text-transform: uppercase;
+}
+.free {
+    margin: 0;
+    padding: 0;
+    font-size: 22vh;
+    font-weight: 900;
+    line-height: 0.9;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+}
+.passe.gradient {
+    background: linear-gradient(to bottom, #f0f0f0 0%, #8e8e8e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+.obtido.gradient, .free.gradient {
+    background: linear-gradient(to bottom, #8e8e8e 0%, #f0f0f0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+.season {
+    margin-top: 1.5vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Montserrat';
+    cursor: default;
+    color: white;
+}
+.end-tag {
+    font-family: 'Montserrat';
+    font-weight: 500;
+    background-color: rgba(20, 20, 20, 0.75);
+    padding: .4rem .7rem;
+    border-radius: .35rem;
+    font-size: 2.3vh;
+    margin: 0;
+    color: white;
+    display: inline-block;
+    align-self: center;
+    text-align: center;
+}
+.tag {
+    font-family: 'Montserrat';
+    font-weight: 500;
+    background-color: rgba(20, 20, 20, 0.75);
+    padding: .4rem .7rem;
+    border-radius: .35rem;
+    font-size: .95vw;
+    margin: 0;
+    color: white;
+    display: inline-block;
+    align-self: center;
+    text-align: center;
+}
+.releaseDate-tag {
+    font-size: 1vh;
+    font-family: 'Montserrat';
+    font-weight: 500;
+    font-size: 1.7vw;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.4);
+}
+.status {
+    font-size: 1vh;
+    font-family: 'Montserrat';
+    font-weight: 500;
+    font-size: 1.7vw;
+    margin: 0;
+    color: white;
+}
+.status i {
+    font-size: 3vh;
+    margin-right: .2vw;
+}
+#review-sction {
+    width: 100%;
+    margin-bottom: 1vh;
+}
+.review-nota {
+    font-size: 1.65rem;
+    font-family: 'Montserrat';
+    font-weight: 500;
+    font-size: 1.7vw;
+    margin: 0;
+    color: white;
+}
+.season-content {
+    width: 70%;
+}
+.season-contents {
+    display: flex;
+    flex-direction: row;
+    gap: 2vh;
+    height: 24vh;
+}
+.sep-bar-season {
+    margin: 1.3vh 0;
+    border: solid 2px #1a1a1a73;
+    border-radius: 1vh;
+    justify-content: center;
+}
+.season-status {
+    margin: 0;
+    margin-top: 1vh;
+    display: flex;
+    flex-direction: row;
+}
+.season-tags {
+    display: flex;
+    flex-direction: row;
+    gap: .7rem;
+    justify-content: space-around;
+    background-color: rgb(10,10,10);
+    padding: 2vh;
+    border-radius: 1vh;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.season-title {
+    color: white;
+    font-weight: 700;
+    margin: 1vh 0;
+    margin-right: 0;
+    font-size: 3vw;
+    font-family: 'Montserrat';
+}
+.season-trailers {
+    color: rgb(195, 195, 195);
+    transition: color 0.25s ease-in-out;
+    cursor: pointer;
+    top: .5vh;
+    font-size: 4.5vh;
+}
+.season-trailers:hover {
+    border-radius: 4vh;
+    color: white;
+}
+.seasonTitle-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    gap: .5vw;
+    margin: 0;
+}
+.body-top {
+    margin-top: 1vh;
+}
+@keyframes popupIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+@keyframes popupOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+@keyframes popupBGIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+.seasonMap-div {
+    width: auto;
+    border-radius: 1vh;
+    object-fit: cover;
+    cursor: pointer;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+#season-map, .season-map {
+    height: 100%;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+    object-fit: cover;
+    width: 100%;
+}
+.seasonMap-div:hover #season-map, .seasonMap-div:hover .season-map {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.map-popup {
+    position: absolute;
+    z-index: 99;
+    width: 100vw;
+    overflow: hidden;
+    overflow-x: hidden;
+    background: rgba(0, 0, 0, .85);
+}
+#mapPopup-image {
+    background-position: center;
+    background-size: cover;
+    border-radius: 1vh;
+    height: 80vh;
+    width: auto;
+    position: relative;
+}
+.mapPopup-content {
+    margin: 0 13vw;
+    position: relative;
+    height: 100vh;
+    top: 10vh;
+    width: 100vw;
+    animation: popupIn .15s ease forwards;
+    display: inline-block;
+}
+#map-close {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    margin: 1vh;
+    cursor: pointer;
+    padding: 1vh;
+    border-radius: 1vh;
+    backdrop-filter: blur(0);
+    transition: opacity .3s ease;
+    box-shadow: 0 0 0 transparent;
+}
+#map-close:hover {
+    backdrop-filter: blur(200vh);
+    box-shadow: 0 0 4vh #05050536;
+}
+#mapPopup-image.open {
+    animation: popupIn .3s ease forwards;
+}
+#mapPopup-image.close {
+    animation: popupOut .3s ease forwards;
+}
+.season-events {
+    transition: transform .1s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    flex: content;
+    border-radius: 1vh;
+    overflow: hidden;
+}
+.season-events img {
+    height: 100%;
+    object-fit: cover;
+    overflow: hidden;
+}
+.season-events:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.event-title {
+    font-weight: 700;
+    margin: 0;
+    font-size: 2.4vh;
+    text-align: center;
+}
+.event-tags {
+    display: flex;
+    flex-direction: row;
+    margin: 1vh 0 0 0;
+    gap: .3vw;
+    justify-content: center;
+}
+.event-data {
+    padding: 1vh;
+    display: flex;
+    background-color: rgba(20, 20, 20, 0.25);
+    flex-direction: column;
+    z-index: 2;
+    transition: all .15s linear;
+}
+.season-events:hover .event-data {
+    background-color: rgba(30, 30, 30, 0.25);
+}
+
+/* End Events */
+#end-event {
+    display: flex;
+    flex-direction: column;
+    margin: 2vh 16vw;
+}
+#endEvent-cover {
+    height: 65vh;
+    border-radius: 1vh;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    cursor: pointer;
+    position: relative; 
+}
+
+.endEvent-data {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background: linear-gradient(to top, rgba(0, 0, 0, .7), rgba(0, 0, 0, 0));
+    user-select: none;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+}
+.endEvent-title {
+    margin: 0;
+    font-size: 9vh;
+    font-family: 'Montserrat';
+    font-weight: 900;
+    letter-spacing: .5vh;
+    background: linear-gradient(to bottom, white, #9d9d9d);
+    -webkit-background-clip: text;
+    filter: drop-shadow(0 0 1vh rgba(0, 0, 0, 0.6));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.endEvent-date {
+    color: white;
+    margin: 0;
+    font-size: 3vh;
+    font-weight: 500;
+    font-family: 'Montserrat';
+    margin-bottom: 3vh;
+}
+.endEvent-watch{
+    height: 100vh;
+    object-fit: cover;
+    inset: 0;
+    display: flex;
+    transform: translateY(-118.5%);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 1;
+    margin: 0;
+    animation: popupBGIn .15s ease forwards;
+}
+#video-player.end-event {
+    visibility: hidden;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+}
+#video-player.end-event #video-wrapper #video{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    object-fit: cover;
+}
+#endEventVideo-player {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
+    border-radius: 0;
+}
+#endEventVideo-player.active {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+#endEventVideo-player #video-event {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+}
+#end-event #player-controls-event {
+    bottom: 9vh;
+}
+
+
+.end-event-novideo {
+    justify-self: center;
+    margin: 0 4vw;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+}
+.end-event-novideo img {
+    border-radius: 1vh;
+}
+.a {
+    height: 60vh;
+    width: 60vw;
+}
+.b {
+    margin-top: 1vh;
+    height: 60vh;
+    width: 60vw;
+}
+.c {
+    margin-top: 2vh;
+    height: 80vh;
+}

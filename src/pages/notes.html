@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BoltNotes - Notas</title>
+    <link rel="stylesheet" href="css/notes.css">
+</head>
+<body>
+<div class="pageBody">
+    <div id="note-list">
+        <div id="tabs"></div>
+        <div class="newNote-input">
+            <input id="newNote-name" placeholder="Nova nota">
+            <i id="newNote-add" class="fa-solid fa-plus"></i>
+        </div>
+    </div>
+    <div class="note-view">
+        <div class="title-bar">
+            <p id="title-note" contenteditable="true"></p>
+            <i id="edit-note" class="fa-solid fa-pen-to-square"></i>
+        </div>
+        <div id="content"><img class="boltnotes-logo" src="assets/boltnotes-logo.png"></div>
+    </div>
+</div>
+
+<header>
+    <a class="back" href="pages/index.html">Voltar</a>
+</header>
+
+<div id="loading-screen">
+    <div class="spinner"></div>
+</div>
+
+<script src="scripts/global.js"></script>
+<script src="scripts/basics.js"></script>
+<script src="scripts/notes.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BoltNotes - Preferencias</title>
+    <link rel="stylesheet" href="css/config.css">
+</head>
+<body>
+<div class="pageBody">
+    <div class="tabs">
+        <p class="sep">Preferencias</p>
+        <div data-code="basics" class="tab active" onclick="tabSwitch(this)">Básico</div>
+        <div data-code="about" class="tab" onclick="tabSwitch(this)">Sobre</div>
+        <!-- <div data-code="aparencia" class="tab" onclick="tabSwitch(this)">Aparência</div> -->
+    </div>
+    <div id="basics" class="tab-configs active">
+        <p class="sep">Inicialização</p>
+        <div class="config-item">
+            <p>Maximizar app na inicialização</p>
+            <a class="toggle" data-code="maximize_on_start" onclick="toggleConfig(this)"></a>
+        </div>
+        <div class="config-item">
+            <p>Iniciar junto com o sistema operacional</p>
+            <a class="toggle" data-code="open_on_startup" onclick="toggleConfig(this)"></a>
+        </div>
+        <p class="sep">Ao fechar</p>
+        <div class="config-item">
+            <p>Minimizar para a bandeja do sistema ao fechar</p>
+            <a class="toggle" data-code="minimize_to_tray" onclick="toggleConfig(this)"></a>
+        </div>
+    </div>
+    <div id="aparencia" class="tab-configs">
+        <p class="sep">Aparência</p>
+    <div class="config-item">
+        <p>Tema</p>
+        <select id="select-theme" data-code="theme" onchange="changeTheme(this)">
+            <option value="dark">Escuro</option>
+            <option value="light">Claro</option>
+        </select>
+    </div>
+    </div>
+	<div id="about" class="tab-configs">
+        <p class="sep">Local do app</p>
+		<div class="config-item">
+			<p id="user-data"></p>
+		</div>
+        <p class="sep">Local dos dados</p>
+		<div class="config-item">
+			<p id="documents"></p>
+		</div>
+    </div>
+</div>
+
+<header>
+    <a class="back" href="pages/index.html">Voltar</a>
+</header>
+
+<div id="loading-screen">
+    <div class="spinner"></div>
+</div>
+
+<script src="scripts/global.js"></script>
+<script src="scripts/basics.js"></script>
+<script src="scripts/config.js"></script>
+</body>
+</html>

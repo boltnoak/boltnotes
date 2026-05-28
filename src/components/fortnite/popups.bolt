@@ -1,0 +1,29 @@
+<div class="video-popup" id="video-popup" style="display:none;">
+    <div id="video-player">
+        <div class="video-wrapper">
+        <div id="controls-hover"></div>
+            <p id="video-title"></p>
+            <i id="video-close" class="fa-solid fa-xmark" onclick="closeVideo();"></i>
+        <p id="volume"></p>
+            <video id="video" onclick="togglePlay()" preload="metadata"></video>
+            <div id="player-controls">
+                <i id="play-pause" class="fa-solid fa-pause" onclick="togglePlay()"></i>
+                <div id="player-bar" onclick="window.seek(event)">
+                    <div id="player-bar-fill"></div>
+                </div>
+                <i id="mute" class="fa-solid fa-volume" onclick="muteVideo()"></i>
+                <i id="toggle-fullscreen" class="fa-solid fa-up-right-and-down-left-from-center" onclick="toggleFullscreen()"></i>
+            </div>
+        </div>
+        <div class="moreVideos-section">
+            <div class="more-videos" id="more-videos"></div>
+        </div>
+    </div>
+</div>
+<div class="map-popup" id="map-popup" style="display:none;">
+    <div class="mapPopup-content">
+        <div id="mapPopup-image">
+            <i id="map-close" class="fa-solid fa-xmark" onclick="closeMap();"></i>
+        </div>
+    </div>
+</div>

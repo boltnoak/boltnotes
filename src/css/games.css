@@ -1,0 +1,366 @@
+@import url(basics.css);
+
+body {
+    overflow: hidden;
+}
+
+.pageBody {
+    display: flex;
+    flex-direction: row;
+    transform: translateY(6.5vh);
+    height: 86.5vh;
+}
+header {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.page-content {
+    width: 100%;
+}
+.page-infos {
+    width: 23%;
+}
+
+/* Painel de jogando no momento */
+#playingNowSection-title {
+    display: flex;
+    color: white;
+    font-family: 'Montserrat';
+    font-size: 2.3vh;
+    font-weight: 600;
+    margin: 2vh 2.5vw;
+    padding: 0;
+    width: max-content;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    justify-content: center;
+    gap: .6vw;
+}
+#playingNowSection-title p {
+    margin: 0;
+}
+.fa-solid.fa-gamepad {
+    justify-self: center;
+}
+.playingNow-panel {
+    gap: 2vh;
+    display: flex;
+    flex-direction: row;
+    margin-left: 2vw;
+}
+.playingNow-games {
+    padding: 1.5vh;
+    padding-top: .8vh;
+    border-radius: 1.6vh;
+    width: 60vh;
+    border: solid .25vh #0f0f0f;
+    margin-top: 4vh;
+    margin-bottom: 2vh;
+    grid-template-columns: repeat(auto-fill, minmax(15vw, 1fr));
+    display: flex;
+    flex-direction: column;
+}
+.playingNow-no-games {
+    color: rgb(30,30,30);
+    font-family: 'Montserrat';
+    font-weight: 500;
+    font-size: 2vh;
+    text-align: center;
+    justify-content: center;
+    margin: 2vh 1vw;
+    width: 80%;
+    text-align: center;
+    justify-content: center;
+}
+
+/* Barra de visualização */
+.view-bar {
+    background-color: #030303;
+    margin-right: 2vw;
+    display: flex;
+    border-radius: 2vh;
+    flex-direction: row;
+    padding: 1vh;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    justify-content: space-between;
+    user-select: none;
+    border: solid .5vh rgba(20,20,20,.4);
+    border-bottom: none;
+    margin-top: 2vh;
+}
+
+#view-grid, #view-list, #addNew-game {
+    font-size: 2vh;
+    background-color: rgba(20, 20, 20, 0.4);
+    transition: background .15s linear;
+    padding: 1vh;
+    border-radius: 1vh;
+    cursor: pointer;
+}
+#view-grid {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    transform: translateX(.301vw);
+    background-color: rgba(50, 50, 50, 0.4);
+}
+#view-list {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+#view-grid:hover, #view-list:hover, #addNew-game:hover, .sortingOptions-trigger:hover {
+    background-color: rgba(50, 50, 50, 0.4);
+}
+.sorting-addGame {
+    display: flex;
+    flex-direction: row;
+    gap: .8vh;
+}
+.sorting-options {
+    position: relative;
+    font-family: 'Montserrat';
+    user-select: none;
+    font-weight: 600;
+}
+.sorting-options select {
+    display: none;
+}
+.sortingOptions-trigger {
+    background-color: rgba(20, 20, 20, 0.4);
+    padding: .5vh .5vw;
+    border-radius: 1vh;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    transition: background 0.2s ease;
+    width: 9.5vw;
+}
+.sortingOptions-select {
+    position: absolute;
+    top: 4.5vh;
+    left: 0;
+    right: 0;
+    background-color: rgb(10,10,10);
+    border-top: none;
+    border-radius: 1vh;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+.sorting-options.open .sortingOptions-select {
+    opacity: 1;
+    visibility: visible;
+    object-fit: cover;
+}
+.sortingOptions-select li {
+    padding: 1vh 1vw;
+    color: white;
+    cursor: pointer;
+    transition: background 0.1s ease;
+}
+.sortingOptions-select li:hover {
+    background-color: rgb(20,20,20);
+    color: white;
+}
+.sortingOptions-select li.selected {
+    background-color: rgb(25,25,25);
+    color: white;
+}
+
+/* Visualização de Jogos */
+#view-games {
+    background-color: #030303;
+    margin-right: 2vw;
+    padding: 1vh 1.2vw;
+    padding-bottom: 3vh;
+    display: grid;
+    gap: 1.2vw;
+    flex: 1;
+    overflow: hidden;
+    overflow-y: auto;
+    height: 78vh;
+    border: solid .5vh rgba(20,20,20,.4);
+    border-top: none;
+    border-radius: 2vh;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+/* Visualisação em grade */
+#view-games.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13vw, 1fr));
+}
+#view-games.grid::-webkit-scrollbar {
+    display: none;
+}
+#view-games.grid .game {
+    height: max-content;
+    width: 13.5vw;
+}
+#view-games.grid .game-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+}
+#view-games.grid .sort-number {
+    display: none;
+}
+
+/* Visualisação em lista */
+#view-games.list {
+    flex-direction: column;
+    gap: 0;
+    color: white;
+}
+#view-games.list .sort-number {
+  color: #ffffff52;
+  font-weight: bold;
+  margin-right: .1vh;
+}
+#view-games.list .game {
+    background-color: rgba(60, 60, 60, 0.1);
+    padding: 1vh;
+    margin: .7vh;
+    border-radius: 1vh;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    padding: 3.5vh;
+    width: 95%;
+    text-align: start;
+}
+.view-games.list .status.ajogar .game {
+    display: none;
+}
+#view-games.list .game-cover {
+    display: none;
+}
+#view-games.list .game-info {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+#view-games.list .game-title {
+    margin: 0;
+    font-size: 2.3vh;
+    font-family: 'Montserrat';
+    font-weight: 600;
+    color: white;
+}
+#view-games.list .status-fill {
+    display: none;
+}
+
+/* Jogos */
+.game {
+    width: 30vw;
+    background-color: rgba(20, 20, 20, 0.2);
+    border-radius: 1.4vh;
+    overflow: hidden;
+}
+.game-cover {
+    height: 15vh;
+    object-fit: cover;
+    margin-bottom: .2vh;
+    width: 100%;
+}
+.game-info {
+    display: flex;
+    flex-direction: row;
+    padding: 2vh;
+    padding-top: .5vh;
+}
+.game-title {
+    font-size: 2.5vh;
+    flex: 1;
+    font-family: 'Montserrat';
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+/* Status dos jogos */
+.status {
+    height: 4vh;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    user-select: none;
+}
+.status-fill {
+    height: 100%;
+    display: inline-block;
+    background: rgba(70, 70, 70, 0.5);
+    object-fit: cover;
+    border-radius: 0;
+    padding: .2vh;
+}
+.status-percentage {
+    color: rgb(170, 170, 170);
+    position: absolute;
+    font-family: 'Montserrat';
+    font-size: 1.1vw;
+    font-weight: 700;
+    z-index: 1;
+    left: 1vh;
+}
+.status.zerado {
+    color: rgb(0,120,65);
+    font-family: 'Montserrat';
+    font-weight: 600;
+    font-size: 2.5vh;
+    padding: 0;
+    flex-direction: column;
+    align-items: start;
+}
+.status.zerado .status-fill {
+    position:static;
+    background: rgb(0,120,65);
+    border-radius: .8vh;
+    padding: 0;
+    height: 1vh;
+    width: 100%;
+    margin-top: 1vh;
+    flex: none;
+}
+.status.jogando {
+    position: relative;
+    background: rgba(40, 40, 40, 0.2);
+    border-radius: .8vh;
+    padding: 0;
+    overflow: hidden;
+}
+.playingNow-panel .game {
+    width: 17vw;
+    margin-right: 2vw;
+}
+.playingNow-panel .game-info {
+    padding: 1.2vh;
+}
+.status.ajogar {
+    position: relative;
+    background: rgba(40, 40, 40, 0.2);
+    border-radius: .8vh;
+    overflow: hidden;
+    padding: 0;
+    height: 1vh;
+    flex: none;
+}
+.ajogar-text {
+    color: rgba(170, 170, 170,.7);
+    font-family: 'Montserrat';
+    font-weight: 600;
+    font-size: 2.5vh;
+    padding: 0;
+}

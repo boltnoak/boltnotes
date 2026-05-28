@@ -1,0 +1,125 @@
+@import url(../basics.css);
+
+.pageBody {
+    padding-top: 0;
+}
+.banner-bg {
+    background-position: center;
+    background-size: cover;
+}
+#menu {
+    background: transparent;
+}
+.tag {
+    font-family: 'Montserrat';
+    font-weight: 500;
+    background-color: rgba(20, 20, 20, 0.75);
+    padding: .4rem .7rem;
+    border-radius: .35rem;
+    transform: skewX(-7deg);
+    color: white;
+    text-align: center;
+    margin-top: 1.4vh;
+    margin-bottom: .5vh;
+}
+.tags {
+    display: flex;
+    flex-direction: row;
+    gap: .6rem;
+    justify-content: center;
+}
+.app-logo {
+    height: 15vh;
+    user-select: none;
+    margin: 3vh;
+}
+.banner {
+    background-color: rgba(20, 20, 20, 0.2);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 2vh rgb(5, 5, 5);
+    z-index: 1;
+}
+.section-title {
+    margin: 1vh 1.5vw;
+    font-family: 'Montserrat';
+    font-weight: 700;
+    font-size: 3.5vh;
+}
+.chapter-section {
+    margin: 1.5vh 3vh;
+    gap: 2vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 800;
+    display: flex;
+    will-change: transform;
+}
+.chapters {
+    width: 100%;
+    overflow: hidden;
+}
+.chapters::before,
+.chapters::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 25vh;
+    width: 10vw;
+    z-index: 1;
+    transform: translateY(27vh);
+    pointer-events: none;
+}
+.chapters::before {
+    left: 0;
+    background: linear-gradient(to right, #050505 5%, transparent 100%);
+}
+.chapters::after {
+    right: 0;
+    background: linear-gradient(to left, #050505 5%, transparent 100%);
+}
+#chapter {
+    text-align: center;
+    transition: transform 0.1s ease-in-out;
+    min-width: 18vw;
+    background-color: transparent;    
+    border-radius: 1vh;
+    overflow: hidden;
+    margin: 0 .3vw;
+    width: 30vw;
+    cursor: pointer;
+}
+#chapter:hover {
+    transform: scale(1.05);
+}
+.chapter-image {
+    width: 100%;
+    object-fit: cover;
+    image-rendering: optimizeQuality;
+}
+.title {
+    font-size: 3vh;
+    color: white;
+    text-decoration: none;
+    margin: .1vh 0;
+    object-fit: cover;
+    justify-self: center;
+    background-color: #050505;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    position: relative;
+}
+
+
+.extra-section {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
