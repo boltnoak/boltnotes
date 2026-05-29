@@ -8,6 +8,7 @@
   "build": {
     "appId": "com.boltnoak.boltnotes",
     "productName": "BoltNotes",
+    "compression": "store",
     "directories": {
       "output": "dist"
     },
@@ -17,7 +18,7 @@
       "icon": "build/icon.png"
     },
     "win": {
-      "target": "nsis",
+      "target": "portable",
       "icon": "build/icon.ico"
     },
     "publish": [
