@@ -27,6 +27,12 @@
         "repo": "boltnotes-releases",
         "releaseType": "release"
       }
+    ],
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets"
+      }
     ]
   },
   "scripts": {

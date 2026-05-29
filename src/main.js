@@ -27,6 +27,10 @@ const BUNDLE = path.join(
     __dirname
 );
 
+const ASSETS = app.isPackaged
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../assets');
+
 function startFolders() {
     const foldersToCreate = [
         DOCUMENTS,
@@ -136,7 +140,7 @@ if (!gotTheLock) {
         req.url.replace('assets://', '')
       );
 
-      const fullPath = path.join(__dirname, 'assets', file);
+      const fullPath = path.join(ASSETS, file);
 
       return net.fetch(
         pathToFileURL(fullPath).toString()
@@ -269,7 +273,7 @@ ipcMain.handle('fortnite:fetch-seasons', async () => {
 });
 ipcMain.handle('fortnite:list-trailers', () => {
     return fs.readdirSync(
-        path.join(__dirname, 'assets/fortnite/trailers')
+        path.join(ASSETS, 'fortnite/trailers')
     );
 });
 ipcMain.handle('games:fetch-gamesdb', async () => {
@@ -397,7 +401,7 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = path.join(__dirname,'icon.png'); 
+  const iconPath = path.join(ASSETS, 'icon.png');
   
   if (!fs.existsSync(iconPath)) return;
 
