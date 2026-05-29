@@ -396,6 +396,7 @@
     border-radius: 0;
     padding: 0;
     margin: 0;
+    background-color: black;
 }
 .video-popup.full #video,
 .video-popup.full #video-event {

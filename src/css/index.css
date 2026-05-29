@@ -32,7 +32,7 @@
 
 /* Banner */
 .banner {
-    background-image: url(../../assets/index/default-banner.jpg);
+    background-image: url(../assets/index/default-banner.jpg);
     display: flex;
     flex-direction: row;
     align-items: center;

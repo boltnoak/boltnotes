@@ -131,13 +131,13 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         // Imagens de Background, Personagem e Mapa
         const bg = clone.querySelector('.banner');
-        if (bg) bg.style.backgroundImage = `url('../../assets/fortnite/seasons/${code}.jpg')`;
+        if (bg) bg.style.backgroundImage = `url('assets/fortnite/seasons/${code}.jpg')`;
 
         const character = clone.querySelector('.season-character');
-        if (character) character.src = `../../assets/fortnite/seasons/${code}.png`;
+        if (character) character.src = `assets/fortnite/seasons/${code}.png`;
 
         const seasonMap = clone.querySelector('.season-map');
-        if (seasonMap) seasonMap.src = `../../assets/fortnite/maps/${code}.jpg`;
+        if (seasonMap) seasonMap.src = `assets/fortnite/maps/${code}.jpg`;
 
         // Bloqueio de Edição
         const seasonDiv = clone.querySelector('.season');
@@ -239,7 +239,7 @@ function openMap(el) {
 
     if (mapPopup && mapImage && code) {
         mapPopup.style.display = "flex";
-        mapImage.style.backgroundImage = `url('../../assets/fortnite/maps/${code}.jpg')`;
+        mapImage.style.backgroundImage = `url('assets/fortnite/maps/${code}.jpg')`;
     }
 }
 function closeMap(el) {
@@ -336,8 +336,8 @@ function initEndEvent() {
     }
     if (code) {
         const fileName = `${code}.mp4`
-        const videoPath = `../../assets/fortnite/live-events/${fileName}`;
-        const coverPath = `../../assets/fortnite/live-events/${code}-cover.png`;
+        const videoPath = `assets/fortnite/live-events/${fileName}`;
+        const coverPath = `assets/fortnite/live-events/${code}-cover.png`;
 
         cover.style.backgroundImage = `url(${coverPath})`;
         video.src = videoPath;

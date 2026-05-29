@@ -78,11 +78,11 @@ async function openTrailer(el) {
         if (video) video.volume = .5;
 
         for (const tipo of tipos) {
-            const fileName = `${code}_${tipo}.mp4`;
-            const exists = await window.electronAPI.exists(`../../assets/fortnite/trailers/${fileName}`);
+            const fileName = `${code}_${tipo}.mkv`;
+            const exists = await window.electronAPI.exists(`assets/fortnite/trailers/${fileName}`);
 
             if (exists) {
-                const path = `../../assets/fortnite/trailers/${fileName}`;
+                const path = `assets/fortnite/trailers/${fileName}`;
                 if (!firstVideo) {
                     firstVideo = path;
                     firstTipo = tipo;
@@ -195,11 +195,11 @@ async function openLiveEvent(el) {
     document.getElementById("video-popup").style.display = "flex";
     document.querySelector('html').style.overflow = "hidden";
 
-        const fileName = `${code}.mp4`;
-        const exists = await window.electronAPI.exists(`../../assets/fortnite/live-events/${fileName}`);
+        const fileName = `${code}.mkv`;
+        const exists = await window.electronAPI.exists(`assets/fortnite/live-events/${fileName}`);
 
         if (exists) {
-            const path = `../../assets/fortnite/live-events/${fileName}`;
+            const path = `assets/fortnite/live-events/${fileName}`;
             const video = document.getElementById('video');
             const wrapper = document.querySelector('.video-wrapper');
             

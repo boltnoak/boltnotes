@@ -85,7 +85,7 @@ async function loadLatestFN() {
 
         if (!latest) return;
 
-        const latestPath = `assets://fortnite/seasons/${latest.key}.jpg`;
+        const latestPath = `assets/fortnite/seasons/${latest.key}.jpg`;
 
         console.log(latest.key);
         console.log(latest.data.name);

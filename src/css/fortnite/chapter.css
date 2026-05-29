@@ -433,10 +433,11 @@ body {
 #end-event {
     display: flex;
     flex-direction: column;
-    margin: 2vh 16vw;
+    margin: 0 12vw;
+    margin-top: 9vh;
 }
 #endEvent-cover {
-    height: 65vh;
+    height: 72.874vh;
     border-radius: 1vh;
     overflow: hidden;
     background-size: cover;

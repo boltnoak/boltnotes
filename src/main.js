@@ -1,13 +1,35 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray, protocol, net} = require('electron');
-const { autoUpdater } = require('electron-updater');
 const { pathToFileURL } = require('url');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const log = require('electron-log');
+const https = require('https');
 
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
+function downloadFile(url, dest) {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(dest);
+
+    https.get(url, response => {
+      response.pipe(file);
+
+      file.on('finish', () => {
+        file.close(resolve);
+      });
+    }).on('error', reject);
+  });
+}
+
+const assetsDir = path.join(
+  app.getPath('userData'),
+  'assets'
+);
+
+
+// const { autoUpdater } = require('electron-updater');
+
+// autoUpdater.logger = log;
+// autoUpdater.logger.transports.file.level = 'info';
 
 const DOCUMENTS = path.join(
     app.getPath('documents'),
@@ -26,10 +48,6 @@ const COVERS = path.join(
 const BUNDLE = path.join(
     __dirname
 );
-
-const ASSETS = app.isPackaged
-  ? path.join(process.resourcesPath, 'assets')
-  : path.join(__dirname, '../assets');
 
 function startFolders() {
     const foldersToCreate = [
@@ -140,7 +158,7 @@ if (!gotTheLock) {
         req.url.replace('assets://', '')
       );
 
-      const fullPath = path.join(ASSETS, file);
+      const fullPath = path.join(BUNDLE,'assets',file);
 
       return net.fetch(
         pathToFileURL(fullPath).toString()
@@ -173,9 +191,9 @@ if (!gotTheLock) {
 
     createWindow();
 
-    if (app.isPackaged) {
-        autoUpdater.checkForUpdatesAndNotify();
-    }
+    // if (app.isPackaged) {
+    //     autoUpdater.checkForUpdatesAndNotify();
+    // }
 
     const configs = getConfig();
 
@@ -202,31 +220,31 @@ if (!gotTheLock) {
   });
 }
 
-autoUpdater.on('checking-for-update', () => {
-    console.log('Checking...');
-});
+// autoUpdater.on('checking-for-update', () => {
+//     console.log('Checking...');
+// });
 
-autoUpdater.on('update-available', (info) => {
-    console.log('Update available', info);
-});
+// autoUpdater.on('update-available', (info) => {
+//     console.log('Update available', info);
+// });
 
-autoUpdater.on('update-not-available', () => {
-    console.log('No updates');
-});
+// autoUpdater.on('update-not-available', () => {
+//     console.log('No updates');
+// });
 
-autoUpdater.on('download-progress', (progress) => {
-    console.log(progress.percent);
-});
+// autoUpdater.on('download-progress', (progress) => {
+//     console.log(progress.percent);
+// });
 
-autoUpdater.on('update-downloaded', () => {
-    console.log('Downloaded');
+// autoUpdater.on('update-downloaded', () => {
+//     console.log('Downloaded');
 
-    autoUpdater.quitAndInstall();
-});
+//     autoUpdater.quitAndInstall();
+// });
 
-autoUpdater.on('error', (err) => {
-    console.log(err);
-});
+// autoUpdater.on('error', (err) => {
+//     console.log(err);
+// });
 
 // Menu
 ipcMain.on('menu:maximize-app', () => {
@@ -273,7 +291,7 @@ ipcMain.handle('fortnite:fetch-seasons', async () => {
 });
 ipcMain.handle('fortnite:list-trailers', () => {
     return fs.readdirSync(
-        path.join(ASSETS, 'fortnite/trailers')
+        path.join(BUNDLE,'assets','fortnite/trailers')
     );
 });
 ipcMain.handle('games:fetch-gamesdb', async () => {
@@ -401,7 +419,7 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = path.join(ASSETS, 'icon.png');
+  const iconPath = path.join(BUNDLE, 'icon.png');
   
   if (!fs.existsSync(iconPath)) return;
 

@@ -30,7 +30,7 @@ function openReview(code) {
                     oninput="autoSave('${code}')">${data.story || ""}</p>
             </div>
             <div>
-                <img id="map" src="../../assets/fortnite/maps/${code}.jpg">
+                <img id="map" src="assets/fortnite/maps/${code}.jpg">
             </div>
         </div>
     </div>`;

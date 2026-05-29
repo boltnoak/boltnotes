@@ -243,6 +243,10 @@ header {
     background: #111;
     border-radius: 1vh;
 }
+::-webkit-scrollbar-thumb:hover {
+    background: #515151;
+    cursor: default;
+}
 .sep-bar {
     margin: 8px 4px;
     border: solid 2px #1a1a1a;
