@@ -1,35 +1,21 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray, protocol, net} = require('electron');
+const { autoUpdater } = require('electron-updater');
 const { pathToFileURL } = require('url');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const log = require('electron-log');
-const https = require('https');
 
-function downloadFile(url, dest) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(dest);
+const assetsDir = path.join(app.getPath('userData'), 'assets');
 
-    https.get(url, response => {
-      response.pipe(file);
-
-      file.on('finish', () => {
-        file.close(resolve);
-      });
-    }).on('error', reject);
-  });
+function hasAssets(name) {
+  return fs.existsSync(path.join(assetsDir, name));
 }
 
-const assetsDir = path.join(
-  app.getPath('userData'),
-  'assets'
-);
 
 
-// const { autoUpdater } = require('electron-updater');
-
-// autoUpdater.logger = log;
-// autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
 
 const DOCUMENTS = path.join(
     app.getPath('documents'),
@@ -191,9 +177,9 @@ if (!gotTheLock) {
 
     createWindow();
 
-    // if (app.isPackaged) {
-    //     autoUpdater.checkForUpdatesAndNotify();
-    // }
+    if (app.isPackaged) {
+        autoUpdater.checkForUpdatesAndNotify();
+    }
 
     const configs = getConfig();
 
@@ -220,31 +206,31 @@ if (!gotTheLock) {
   });
 }
 
-// autoUpdater.on('checking-for-update', () => {
-//     console.log('Checking...');
-// });
+autoUpdater.on('checking-for-update', () => {
+    console.log('Checking...');
+});
 
-// autoUpdater.on('update-available', (info) => {
-//     console.log('Update available', info);
-// });
+autoUpdater.on('update-available', (info) => {
+    console.log('Update available', info);
+});
 
-// autoUpdater.on('update-not-available', () => {
-//     console.log('No updates');
-// });
+autoUpdater.on('update-not-available', () => {
+    console.log('No updates');
+});
 
-// autoUpdater.on('download-progress', (progress) => {
-//     console.log(progress.percent);
-// });
+autoUpdater.on('download-progress', (progress) => {
+    console.log(progress.percent);
+});
 
-// autoUpdater.on('update-downloaded', () => {
-//     console.log('Downloaded');
+autoUpdater.on('update-downloaded', () => {
+    console.log('Downloaded');
 
-//     autoUpdater.quitAndInstall();
-// });
+    autoUpdater.quitAndInstall();
+});
 
-// autoUpdater.on('error', (err) => {
-//     console.log(err);
-// });
+autoUpdater.on('error', (err) => {
+    console.log(err);
+});
 
 // Menu
 ipcMain.on('menu:maximize-app', () => {
