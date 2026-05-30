@@ -1,10 +1,106 @@
 const {app, BrowserWindow, ipcMain, Menu, Tray, protocol, net} = require('electron');
 const { autoUpdater } = require('electron-updater');
 const { pathToFileURL } = require('url');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const log = require('electron-log');
+const AdmZip = require('adm-zip');
+
+const ASSETS_DIR = path.join(
+  app.getPath('userData'),
+  'assets'
+);
+
+const LOCAL_MANIFEST = path.join(
+  app.getPath('userData'),
+  'assets-manifest.json'
+);
+
+const MANIFEST_URL =
+  'https://github.com/boltnoak/boltnotes-releases/releases/latest/download/manifest.json';
+
+function downloadFile(url, destination) {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(destination);
+
+    https.get(url, response => {
+      response.pipe(file);
+
+      file.on('finish', () => {
+        file.close();
+        resolve();
+      });
+    }).on('error', reject);
+  });
+}
+
+async function getRemoteManifest() {
+  const response = await fetch(MANIFEST_URL);
+
+  return response.json();
+}
+
+function getLocalManifest() {
+  if (!fs.existsSync(LOCAL_MANIFEST)) {
+    return null;
+  }
+
+  return JSON.parse(
+    fs.readFileSync(LOCAL_MANIFEST, 'utf8')
+  );
+}
+
+async function downloadPackage(name) {
+  const url =
+    `https://github.com/boltnoak/boltnotes-releases/releases/latest/download/${name}`;
+
+  const zipPath = path.join(
+    app.getPath('userData'),
+    name
+  );
+
+  await downloadFile(url, zipPath);
+
+  const zip = new AdmZip(zipPath);
+
+  zip.extractAllTo(ASSETS_DIR, true);
+
+  fs.unlinkSync(zipPath);
+}
+
+async function syncAssets() {
+  fs.mkdirSync(ASSETS_DIR, {
+    recursive: true
+  });
+
+  const remote = await getRemoteManifest();
+  const local = getLocalManifest();
+
+  for (const pkg of remote.packages) {
+    const localPkg =
+      local?.packages?.find(
+        p => p.name === pkg.name
+      );
+
+    if (
+      !localPkg ||
+      localPkg.hash !== pkg.hash
+    ) {
+      console.log(
+        `Baixando ${pkg.name}`
+      );
+
+      await downloadPackage(pkg.name);
+    }
+  }
+
+  fs.writeFileSync(
+    LOCAL_MANIFEST,
+    JSON.stringify(remote, null, 2)
+  );
+}
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -166,6 +262,8 @@ if (!gotTheLock) {
     });
 
     startFolders();
+
+    await syncAssets();
 
     createWindow();
 
