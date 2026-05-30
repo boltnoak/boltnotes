@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const archiver = require('archiver');
+const archiver = require('archiver').default || require('archiver');
 
 const ASSETS_DIR = path.resolve('assets');
 const OUTPUT_DIR = path.resolve('dist-assets');
