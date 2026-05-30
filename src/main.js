@@ -684,56 +684,60 @@ function makeTray() {
   if (!fs.existsSync(iconPath)) return;
 
   tray = new Tray(iconPath);
+
+  const navigateTo = (htmlFile) => {
+    if (!win) return;
+    
+    win.loadFile(path.join(BUNDLE, 'pages', htmlFile));
+    
+    win.webContents.once('did-finish-load', () => {
+      win.show();
+      win.focus();
+    });
+  };
+
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Abrir BoltNotes', click: () => {
-      win.loadFile(path.join(BUNDLE,'pages','index.html'));
-
-      win.webContents.once('did-finish-load', () => {
-        win.show();
-      });
-    }},
+    { 
+      label: 'Abrir BoltNotes', 
+      click: () => navigateTo('index.html') 
+    },
     { type: 'separator' },
-    { label: 'Fortnite', click: () => {
-      win.loadFile(path.join(BUNDLE,'pages','fortnite.html'));
-
-      win.webContents.once('did-finish-load', () => {
-        win.show();
-      });
-    }},
-    { label: 'Notas', click: () => {
-      win.loadFile(path.join(BUNDLE,'pages','notes.html'));
-
-      win.webContents.once('did-finish-load', () => {
-        win.show();
-      });
-    }},
-    { label: 'Backlog de Jogos', click: () => {
-      win.loadFile(path.join(BUNDLE,'pages','games.html'));
-
-      win.webContents.once('did-finish-load', () => {
-        win.show();
-      });
-    }},
+    { 
+      label: 'Fortnite', 
+      click: () => navigateTo('fortnite.html') 
+    },
+    { 
+      label: 'Notas', 
+      click: () => navigateTo('notes.html') 
+    },
+    { 
+      label: 'Backlog de Jogos', 
+      click: () => navigateTo('games.html') 
+    },
     { type: 'separator' },
-    { label: 'Preferencias', click: () => {
-      win.loadFile(path.join(BUNDLE,'pages','config.html'));
-      
-      win.webContents.once('did-finish-load', () => {
-        win.show();
-      });
-    }},
-    { label: 'Fechar app', click: () => {
-      if (!win) return;
-      win = null;
-      app.quit();
-    }}
+    { 
+      label: 'Preferências', 
+      click: () => navigateTo('config.html') 
+    },
+    { 
+      label: 'Fechar app', 
+      click: () => {
+        if (win) {
+          win = null; 
+        }
+        app.quit();
+      }
+    }
   ]);
 
   tray.setToolTip('BoltNotes');
   tray.setContextMenu(contextMenu);
 
   tray.on('click', () => {
+    if (win) {
       win.show();
+      win.focus();
+    }
   });
 }
 
