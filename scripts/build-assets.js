@@ -16,6 +16,8 @@ function sha256(file) {
 function zipFolder(source, zipPath) {
   const zip = new AdmZip();
 
+  const FIXED_DATE = new Date('2000-01-01T00:00:00Z');
+
   const addDir = (dirPath, zipRelative) => {
     for (const entry of fs.readdirSync(dirPath)) {
       const fullPath = path.join(dirPath, entry);
@@ -26,7 +28,13 @@ function zipFolder(source, zipPath) {
         addDir(fullPath, relPath);
       } else {
         const data = fs.readFileSync(fullPath);
-        zip.addFile(relPath, data, '', 0); // 0 = timestamp zerado
+        zip.addFile(relPath, data);
+
+        // fixa o timestamp do entry
+        const zipEntry = zip.getEntry(relPath);
+        if (zipEntry) {
+          zipEntry.header.time = FIXED_DATE;
+        }
       }
     }
   };

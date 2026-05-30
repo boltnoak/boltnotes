@@ -315,18 +315,20 @@ if (!gotTheLock) {
   app.whenReady().then(async () => {
 
     protocol.handle('assets', (req) => {
-      const file = decodeURIComponent(
-        req.url.replace('assets://', '')
-      );
+      const url = new URL(req.url);
+      
+      const filePart = url.pathname === '/' 
+        ? url.hostname 
+        : url.hostname + url.pathname;
 
-      const fullPath = path.join(
-        ASSETS_DIR,
-        file
-      );
+      const fullPath = path.join(ASSETS_DIR, decodeURIComponent(filePart));
 
-      return net.fetch(
-        pathToFileURL(fullPath).toString()
-      );
+      if (!fs.existsSync(fullPath)) {
+        return new Response('Not Found', { status: 404 });
+      }
+
+      // Utiliza o net.fetch para resolver Content-Type e streaming automaticamente
+      return net.fetch(pathToFileURL(fullPath).toString());
     });
 
     protocol.handle('documents', (req) => {
