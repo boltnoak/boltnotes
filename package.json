@@ -8,7 +8,18 @@
   "build": {
     "appId": "com.boltnoak.boltnotes",
     "productName": "BoltNotes",
-    "compression": "store",
+    "compression": "normal",
+    "files": [
+      "src/**/*",
+      "build/**/*",
+      "package.json",
+      "node_modules/**/*",
+      "!assets/**",
+      "!dist-assets/**",
+      "!scripts/**",
+      "!*.zip",
+      "!manifest.json"
+    ],
     "directories": {
       "output": "dist"
     },
