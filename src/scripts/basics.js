@@ -102,3 +102,10 @@ async function loadLatestFN() {
 }
 
 loadLatestFN();
+
+window.assets.onProgress(data => {
+  document.getElementById(
+    'download-status'
+  ).textContent =
+    `${data.package} - ${data.percent}%`;
+});

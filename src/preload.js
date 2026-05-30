@@ -50,3 +50,12 @@ contextBridge.exposeInMainWorld('info', {
   getUserData: () => ipcRenderer.invoke('info:user-data'),
   getDocuments: () => ipcRenderer.invoke('info:documents')
 });
+
+contextBridge.exposeInMainWorld('assets', {
+  onProgress: callback => {
+    ipcRenderer.on(
+      'assets-progress',
+      (_, data) => callback(data)
+    );
+  }
+});

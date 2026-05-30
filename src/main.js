@@ -21,20 +21,111 @@ const LOCAL_MANIFEST = path.join(
 const MANIFEST_URL =
   'https://github.com/boltnoak/boltnotes-assets/releases/latest/download/manifest.json';
 
-function downloadFile(url, destination) {
+function downloadFile(url, destination, onProgress, retries = 3) {
   return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(destination);
 
-    https.get(url, response => {
-      response.pipe(file);
+    const attempt = (currentUrl, triesLeft) => {
+      const req = https.get(currentUrl, response => {
 
-      file.on('finish', () => {
-        file.close();
-        resolve();
+        if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+          response.resume();
+          return attempt(response.headers.location, triesLeft);
+        }
+
+        if (response.statusCode !== 200) {
+          response.resume();
+          return reject(new Error(`Download falhou: ${response.statusCode}`));
+        }
+
+        const total = Number(response.headers['content-length']) || null;
+        let downloaded = 0;
+
+        const file = fs.createWriteStream(destination);
+
+        file.on('error', (err) => {
+          fs.unlink(destination, () => {});
+          reject(err);
+        });
+
+        response.on('data', chunk => {
+          downloaded += chunk.length;
+          if (onProgress) onProgress(downloaded, total);
+        });
+
+        response.on('error', (err) => {
+          file.close();
+          fs.unlink(destination, () => {});
+          if (triesLeft > 0) {
+            setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
+          } else {
+            reject(err);
+          }
+        });
+
+        response.on('end', () => {
+          file.end(() => resolve());
+        });
+
+        response.pipe(file);
       });
-    }).on('error', reject);
+
+      req.setTimeout(60000, () => {
+        req.destroy();
+        fs.unlink(destination, () => {});
+        if (triesLeft > 0) {
+          setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
+        } else {
+          reject(new Error('Timeout após todas as tentativas'));
+        }
+      });
+
+      req.on('error', (err) => {
+        fs.unlink(destination, () => {});
+        if (triesLeft > 0) {
+          setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
+        } else {
+          reject(err);
+        }
+      });
+    };
+
+    attempt(url, retries);
   });
 }
+
+
+  
+async function downloadPackage(name) {
+  const url = `https://github.com/boltnoak/boltnotes-assets/releases/latest/download/${name}`;
+  const zipPath = path.join(app.getPath('userData'), name);
+
+  let lastLog = '';
+
+  await downloadFile(url, zipPath, (downloaded, total) => {
+    const mb = (downloaded / 1024 / 1024).toFixed(1);
+    const line = total
+      ? `${name}: ${Math.round(downloaded * 100 / total)}% (${mb} MB)`
+      : `${name}: ${mb} MB`;
+
+    if (line !== lastLog) {
+      lastLog = line;
+      process.stdout.write(`\r${line}   `);
+      win?.webContents.send('assets-progress', {
+        package: name,
+        downloaded,
+        total,
+        percent: total ? Math.round(downloaded * 100 / total) : null
+      });
+    }
+  });
+
+  process.stdout.write('\n');
+
+  const zip = new AdmZip(zipPath);
+  zip.extractAllTo(ASSETS_DIR, true);
+  fs.unlinkSync(zipPath);
+}
+
 
 async function getRemoteManifest() {
   const response = await fetch(MANIFEST_URL);
@@ -52,55 +143,52 @@ function getLocalManifest() {
   );
 }
 
-async function downloadPackage(name) {
-  const url =
-    `https://github.com/boltnoak/boltnotes-assets/releases/latest/download/${name}`;
-
-  const zipPath = path.join(
-    app.getPath('userData'),
-    name
-  );
-
-  await downloadFile(url, zipPath);
-
-  const zip = new AdmZip(zipPath);
-
-  zip.extractAllTo(ASSETS_DIR, true);
-
-  fs.unlinkSync(zipPath);
-}
 
 async function syncAssets() {
-  fs.mkdirSync(ASSETS_DIR, {
-    recursive: true
-  });
+  fs.mkdirSync(ASSETS_DIR, { recursive: true });
 
-  const remote = await getRemoteManifest();
-  const local = getLocalManifest();
+  let remote, local;
 
-  for (const pkg of remote.packages) {
-    const localPkg =
-      local?.packages?.find(
-        p => p.name === pkg.name
-      );
-
-    if (
-      !localPkg ||
-      localPkg.hash !== pkg.hash
-    ) {
-      console.log(
-        `Baixando ${pkg.name}`
-      );
-
-      await downloadPackage(pkg.name);
-    }
+  try {
+    remote = await getRemoteManifest();
+  } catch (err) {
+    throw new Error(`Falha ao buscar manifest remoto: ${err.message}`);
   }
 
-  fs.writeFileSync(
-    LOCAL_MANIFEST,
-    JSON.stringify(remote, null, 2)
-  );
+  local = getLocalManifest() || { version: 0, packages: [] };
+
+  // downloads em SÉRIE, um por vez
+  for (const pkg of remote.packages) {
+    const localPkg = local.packages.find(p => p.name === pkg.name);
+
+    if (localPkg && localPkg.hash === pkg.hash) {
+      console.log(`[assets] pulando ${pkg.name} (já atualizado)`);
+      continue;
+    }
+
+    console.log(`[assets] baixando ${pkg.name}...`);
+
+    try {
+      await downloadPackage(pkg.name);
+
+      // atualiza e salva o manifest logo após cada download
+      const idx = local.packages.findIndex(p => p.name === pkg.name);
+      if (idx >= 0) {
+        local.packages[idx] = pkg;
+      } else {
+        local.packages.push(pkg);
+      }
+
+      fs.writeFileSync(LOCAL_MANIFEST, JSON.stringify(local, null, 2));
+      console.log(`[assets] ${pkg.name} salvo no manifest local`);
+
+    } catch (err) {
+      console.error(`[assets] erro ao baixar ${pkg.name}:`, err.message);
+      // continua pro próximo, não quebra tudo
+    }
+  }
 }
+
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -227,12 +315,14 @@ if (!gotTheLock) {
   app.whenReady().then(async () => {
 
     protocol.handle('assets', (req) => {
-
       const file = decodeURIComponent(
         req.url.replace('assets://', '')
       );
 
-      const fullPath = path.join(BUNDLE,'assets',file);
+      const fullPath = path.join(
+        ASSETS_DIR,
+        file
+      );
 
       return net.fetch(
         pathToFileURL(fullPath).toString()
@@ -263,9 +353,20 @@ if (!gotTheLock) {
 
     startFolders();
 
-    await syncAssets();
-
     createWindow();
+
+    syncAssets()
+      .then(() => {
+        win.webContents.send('assets-ready');
+      })
+      .catch(err => {
+        console.error(err);
+        win.webContents.send(
+          'assets-error',
+          err.message
+        );
+      });
+
 
     if (app.isPackaged) {
         autoUpdater.checkForUpdatesAndNotify();
