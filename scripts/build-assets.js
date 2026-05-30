@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const createArchive = require('archiver');
+const AdmZip = require('adm-zip');
 
 const ASSETS_DIR = path.resolve('assets');
 const OUTPUT_DIR = path.resolve('dist-assets');
@@ -14,39 +14,38 @@ function sha256(file) {
 }
 
 function zipFolder(source, zipPath) {
-  return new Promise((resolve, reject) => {
-    const output = fs.createWriteStream(zipPath);
-    const archive = createArchive('zip', { zlib: { level: 9 } });
+  const zip = new AdmZip();
 
-    output.on('close', resolve);
-    archive.on('error', reject);
+  const addDir = (dirPath, zipRelative) => {
+    for (const entry of fs.readdirSync(dirPath)) {
+      const fullPath = path.join(dirPath, entry);
+      const relPath = zipRelative ? `${zipRelative}/${entry}` : entry;
+      const stat = fs.statSync(fullPath);
 
-    archive.pipe(output);
+      if (stat.isDirectory()) {
+        addDir(fullPath, relPath);
+      } else {
+        const data = fs.readFileSync(fullPath);
+        zip.addFile(relPath, data, '', 0); // 0 = timestamp zerado
+      }
+    }
+  };
 
-    archive.directory(source, false, (entry) => {
-      entry.date = new Date('2000-01-01T00:00:00Z');
-      return entry;
-    });
-
-    archive.finalize();
-  });
+  addDir(source, '');
+  zip.writeZip(zipPath);
 }
 
 async function main() {
-  const manifest = {
-    version: Date.now(),
-    packages: []
-  };
+  const manifest = { version: Date.now(), packages: [] };
 
   for (const folder of fs.readdirSync(ASSETS_DIR)) {
     const source = path.join(ASSETS_DIR, folder);
-
     if (!fs.statSync(source).isDirectory()) continue;
 
     const zipName = `${folder}.zip`;
     const zipPath = path.join(OUTPUT_DIR, zipName);
 
-    await zipFolder(source, zipPath);
+    zipFolder(source, zipPath);
 
     manifest.packages.push({
       name: zipName,
