@@ -310,6 +310,8 @@ process.on('SIGINT', () => {
 
 Menu.setApplicationMenu(null);
 app.commandLine.appendSwitch('enable-smooth-scrolling');
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
 function createWindow() {
     win = new BrowserWindow({
@@ -322,7 +324,8 @@ function createWindow() {
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,
-          nodeIntegration: false
+          nodeIntegration: false,
+          autoplayPolicy: 'no-user-gesture-required'
         }
     });
     win.loadFile(path.join(BUNDLE,'pages','index.html'));
@@ -345,10 +348,11 @@ if (!gotTheLock) {
 
     protocol.handle('assets', (req) => {
       const url = new URL(req.url);
-      
-      const filePart = url.pathname === '/' 
-        ? url.hostname 
-        : url.hostname + url.pathname;
+
+      const filePart =
+        url.pathname === '/'
+          ? url.hostname
+          : url.hostname + url.pathname;
 
       const fullPath = path.join(ASSETS_DIR, decodeURIComponent(filePart));
 
@@ -356,8 +360,49 @@ if (!gotTheLock) {
         return new Response('Not Found', { status: 404 });
       }
 
-      // Utiliza o net.fetch para resolver Content-Type e streaming automaticamente
-      return net.fetch(pathToFileURL(fullPath).toString());
+      const stat = fs.statSync(fullPath);
+      const range = req.headers.get('range');
+
+      const mime = {
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.mkv': 'video/x-matroska',
+        '.mp4': 'video/mp4'
+      };
+
+      const ext = path.extname(fullPath).toLowerCase();
+
+      if (!range) {
+        const stream = fs.createReadStream(fullPath);
+
+        return new Response(stream, {
+          status: 200,
+          headers: {
+            'Content-Type': mime[ext] || 'application/octet-stream',
+            'Content-Length': stat.size,
+            'Accept-Ranges': 'bytes'
+          }
+        });
+      }
+
+      // RANGE REQUEST
+      const match = /bytes=(\d+)-(\d*)/.exec(range);
+      const start = Number(match[1]);
+      const end = match[2] ? Number(match[2]) : stat.size - 1;
+
+      const chunkSize = end - start + 1;
+      const stream = fs.createReadStream(fullPath, { start, end });
+
+      return new Response(stream, {
+        status: 206,
+        headers: {
+          'Content-Range': `bytes ${start}-${end}/${stat.size}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunkSize,
+          'Content-Type': mime[ext] || 'application/octet-stream'
+        }
+      });
     });
 
     protocol.handle('documents', (req) => {
@@ -522,8 +567,15 @@ ipcMain.on('devTools', () => {
   }
 });
 ipcMain.handle("exists", async (_, filePath) => {
-    const fullPath = path.join(__dirname, filePath);
+  if (filePath.startsWith('assets://')) {
+    const url = new URL(filePath);
+    const filePart = url.pathname === '/' ? url.hostname : url.hostname + url.pathname;
+    const fullPath = path.join(ASSETS_DIR, decodeURIComponent(filePart));
     return fs.existsSync(fullPath);
+  }
+
+  const fullPath = path.join(__dirname, filePath);
+  return fs.existsSync(fullPath);
 });
 ipcMain.handle('load', (_, dirPath) => {
   const fullPath = path.join(DOCUMENTS, dirPath);

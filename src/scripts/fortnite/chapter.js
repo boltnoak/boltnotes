@@ -114,7 +114,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
     const keys = Object.keys(cloudData).filter(code => code.startsWith(prefixoCapitulo)).reverse();
 
-    keys.forEach(code => {
+    for (const code of keys) {
         const info = cloudData[code];
         const local = reviews[code] || null;
 
@@ -131,13 +131,13 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         // Imagens de Background, Personagem e Mapa
         const bg = clone.querySelector('.banner');
-        if (bg) bg.style.backgroundImage = `url('assets/fortnite/seasons/${code}.jpg')`;
+        if (bg) bg.style.backgroundImage = `url('assets://${code}.jpg')`;
 
         const character = clone.querySelector('.season-character');
-        if (character) character.src = `assets/fortnite/seasons/${code}.png`;
+        if (character) character.src = `assets://${code}-character.png`;
 
         const seasonMap = clone.querySelector('.season-map');
-        if (seasonMap) seasonMap.src = `assets/fortnite/maps/${code}.jpg`;
+        if (seasonMap) seasonMap.src = `assets://${code}-map.jpg`;
 
         // Bloqueio de Edição
         const seasonDiv = clone.querySelector('.season');
@@ -191,7 +191,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         // Insere na tela
         container.appendChild(clone);
-    });
+    };
 
     // Salva o JSON no PC se novos blocos vazios foram criados
     if (localDataUpdated) await window.electronAPI.json.save(FILE, reviews);
@@ -239,7 +239,7 @@ function openMap(el) {
 
     if (mapPopup && mapImage && code) {
         mapPopup.style.display = "flex";
-        mapImage.style.backgroundImage = `url('assets/fortnite/maps/${code}.jpg')`;
+        mapImage.style.backgroundImage = `url('assets://${code}-map.jpg')`;
     }
 }
 function closeMap(el) {
@@ -336,8 +336,8 @@ function initEndEvent() {
     }
     if (code) {
         const fileName = `${code}.mp4`
-        const videoPath = `assets/fortnite/live-events/${fileName}`;
-        const coverPath = `assets/fortnite/live-events/${code}-cover.png`;
+        const videoPath = `assets://${fileName}`;
+        const coverPath = `assets://${code}-cover.png`;
 
         cover.style.backgroundImage = `url(${coverPath})`;
         video.src = videoPath;

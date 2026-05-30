@@ -113,34 +113,28 @@ document.addEventListener('ended', (e) => {
 }, true);
 window.seek = function(e, barElement) {
     if (e) e.stopPropagation();
-    
-    const bar = barElement || e.currentTarget || e.target.closest('[id^="player-bar"]');
+
+    const bar = barElement || e.currentTarget;
     if (!bar) return;
 
-    const wrapper = bar.closest('.video-wrapper') || bar.closest('#endEventVideo-player');
-    if (!wrapper) return;
+    const wrapper = bar.closest('.video-wrapper') || document;
 
     const video = wrapper.querySelector('video');
-    
-    const juice = bar.querySelector('div') || 
-                  wrapper.querySelector('#player-bar-fill-event') || 
-                  wrapper.querySelector('#player-bar-fill');
+    if (!video || !video.duration) return;
 
-    if (!video || isNaN(video.duration) || video.duration === 0) return;
-
+    const juice = wrapper.querySelector('#player-bar-fill, #player-bar-fill-event');
     const rect = bar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    let pos = clickX / rect.width;
-    pos = Math.max(0, Math.min(1, pos));
+
+    const clickX = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
+    const pos = Math.max(0, Math.min(1, clickX / rect.width));
 
     video.currentTime = pos * video.duration;
-    
+
     if (juice) {
         juice.style.width = (pos * 100) + "%";
-    } else {
-        console.warn("[VideoPlayer] Não foi possível encontrar a barra de preenchimento (fill) deste player.");
     }
 };
+
 const playerContainer = document.getElementById('endEventVideo-player');
 if (typeof window.initVideoEvents === 'function') {
     window.initVideoEvents(playerContainer);
@@ -177,51 +171,51 @@ function muteVideo(e) {
 function allowVolumeControl() {
     const videoElement = document.getElementById('video');
     const mute = document.getElementById('mute');
+    const vol = document.getElementById('volume');
 
     if (!videoElement) return;
+
+    const mudanca = 0.05;
 
     videoElement.addEventListener('wheel', (e) => {
         e.preventDefault();
 
-        const vol = document.getElementById('volume');
+        let novoVolume =
+            videoElement.volume + (e.deltaY < 0 ? mudanca : -mudanca);
 
-        const mudanca = 0.05;
+        // clamp único
+        novoVolume = Math.min(1, Math.max(0, novoVolume));
 
-        let novoVolume = videoElement.volume;
+        videoElement.volume = novoVolume;
 
-        if (e.deltaY < 0) {
-            novoVolume += mudanca;
-            console.log(videoElement.volume)
-        } else {
-            novoVolume -= mudanca;
-            console.log(videoElement.volume)
+        // log único
+        console.log(`${Math.round(novoVolume * 100)}%`);
+
+        // UI texto
+        if (vol) {
+            vol.textContent = `${Math.round(novoVolume * 100)}%`;
+            vol.style.opacity = 1;
+
+            clearTimeout(vol.__t);
+            vol.__t = setTimeout(() => {
+                vol.style.opacity = 0;
+            }, 800);
         }
 
-        novoVolume = Math.max(0, Math.min(1, novoVolume));
+        // mute state
+        videoElement.muted = novoVolume === 0 ? true : false;
 
-        videoElement.volume = Number(novoVolume.toFixed(2));
-
-        vol.textContent = Math.round(videoElement.volume * 100) + '%';
-
-        if (videoElement.volume > 0 && videoElement.muted) {
-            videoElement.muted = false;
+        // icon
+        if (mute) {
+            if (videoElement.muted || novoVolume === 0) {
+                mute.className = "fa-solid fa-volume-xmark";
+            } else if (novoVolume >= 0.7) {
+                mute.className = "fa-solid fa-volume-high";
+            } else if (novoVolume >= 0.5) {
+                mute.className = "fa-solid fa-volume";
+            } else {
+                mute.className = "fa-solid fa-volume-low";
+            }
         }
-
-        if (videoElement.muted || videoElement.volume === 0) {
-            mute.className = "fa-solid fa-volume-xmark";
-        } else if (videoElement.volume >= 0.7) {
-            mute.className = "fa-solid fa-volume-high";
-        } else if (videoElement.volume >= 0.5) {
-            mute.className = "fa-solid fa-volume"; 
-        } else {
-            mute.className = "fa-solid fa-volume-low";
-        }
-
-        vol.style.opacity = 1;
-
-        setTimeout(() => {
-            vol.style.opacity = 0;
-        }, 1200);
-
     }, { passive: false });
 }

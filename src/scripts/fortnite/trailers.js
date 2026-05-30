@@ -79,10 +79,10 @@ async function openTrailer(el) {
 
         for (const tipo of tipos) {
             const fileName = `${code}_${tipo}.mkv`;
-            const exists = await window.electronAPI.exists(`assets/fortnite/trailers/${fileName}`);
+            const exists = await window.electronAPI.exists(`assets://${fileName}`);
 
             if (exists) {
-                const path = `assets/fortnite/trailers/${fileName}`;
+                const path = `assets://${fileName}`;
                 if (!firstVideo) {
                     firstVideo = path;
                     firstTipo = tipo;
@@ -195,20 +195,24 @@ async function openLiveEvent(el) {
     document.getElementById("video-popup").style.display = "flex";
     document.querySelector('html').style.overflow = "hidden";
 
-        const fileName = `${code}.mkv`;
-        const exists = await window.electronAPI.exists(`assets/fortnite/live-events/${fileName}`);
+        const fileName = `${code}.mp4`;
+        const exists = await window.electronAPI.exists(`assets://live-event-${fileName}`);
 
         if (exists) {
-            const path = `assets/fortnite/live-events/${fileName}`;
+            const path = `assets://live-event-${fileName}`;
             const video = document.getElementById('video');
             const wrapper = document.querySelector('.video-wrapper');
             
             if (wrapper) {
+                const triggerControls = () => window.showControls(wrapper);
+
                 wrapper.onmousemove = () => window.showControls(wrapper);
                 wrapper.onmousedown = () => window.showControls(wrapper);
                 wrapper.ontouchstart = () => window.showControls(wrapper);
-                wrapper.addEventListener('wheel', window.showControls(wrapper), { passive: true });
+                wrapper.addEventListener('wheel', triggerControls, { passive: true });
             }
+
+            allowVolumeControl();
 
             changeVideo(path);
 
@@ -220,6 +224,21 @@ async function openLiveEvent(el) {
                 playPromise.catch(error => {
                 console.warn("Reprodução automática impedida pelo navegador. Clique no Play.");
                 });
+            }
+            
+            const popupVideo = document.getElementById('video');
+            const popupJuice = document.getElementById('player-bar-fill');
+            const popupPlayBtn = document.getElementById('play-pause');
+
+            if (popupVideo) {
+                popupVideo.ontimeupdate = () => {
+                    if (!isNaN(popupVideo.duration) && popupVideo.duration > 0) {
+                        const perc = (popupVideo.currentTime / popupVideo.duration) * 100;
+                        if (popupJuice) popupJuice.style.width = perc + "%";
+                    }
+                };
+                
+                if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
             }
         }
         const moreVideos = document.querySelector('.moreVideos-section')

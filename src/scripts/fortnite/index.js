@@ -56,7 +56,7 @@ chapters.forEach((capituloAtual) => {
         
         const imagemCapitulo = capituloAtual.querySelector('.chapter-image');
         if (imagemCapitulo) {
-            imagemCapitulo.src = `assets://fortnite/chapters/${nomeArquivo}.jpg`;
+            imagemCapitulo.src = `assets://${nomeArquivo}-cover.jpg`;
         }
 
         capituloAtual.addEventListener('click', () => {
