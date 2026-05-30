@@ -52,12 +52,25 @@ function downloadFile(url, destination, onProgress, retries = 3) {
           if (onProgress) onProgress(downloaded, total);
         });
 
-        // O response.pipe(file) já cuida de passar os dados para o arquivo
         response.pipe(file);
 
-        // CORREÇÃO CRÍTICA 1: Esperar o disco terminar de gravar
+        // VERIFICAÇÃO CRÍTICA AQUI
         file.on('finish', () => {
-          file.close(() => resolve());
+          file.close(() => {
+            // Se o servidor informou o tamanho total e o que baixamos não bate certo,
+            // o arquivo foi cortado e está corrompido.
+            if (total && downloaded !== total) {
+              fs.unlink(destination, () => {}); // Apaga o lixo
+              if (triesLeft > 0) {
+                console.warn(`[Download] Incompleto (${downloaded}/${total} bytes). A tentar novamente...`);
+                setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
+              } else {
+                reject(new Error(`Download incompleto e corrompido: obtidos ${downloaded} de ${total} bytes.`));
+              }
+            } else {
+              resolve(); // Sucesso real!
+            }
+          });
         });
 
         response.on('error', (err) => {

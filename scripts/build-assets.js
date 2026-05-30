@@ -1,11 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const AdmZip = require('adm-zip');
+const archiver = require('archiver'); // Substituímos o adm-zip pelo archiver
 
 const ASSETS_DIR = path.resolve('assets');
 const OUTPUT_DIR = path.resolve('dist-assets');
 
+// Limpa a pasta de output
 fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
@@ -20,27 +21,38 @@ function sha256(filePath) {
 }
 
 function zipFolder(source, zipPath) {
-  const zip = new AdmZip();
-  const FIXED_DATE = new Date('2000-01-01T00:00:00Z');
+  return new Promise((resolve, reject) => {
+    const output = fs.createWriteStream(zipPath);
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // Nível máximo de compressão
+    });
 
-  const addDir = (dirPath, zipRelative) => {
-    for (const entry of fs.readdirSync(dirPath)) {
-      const fullPath = path.join(dirPath, entry);
-      const relPath = zipRelative ? `${zipRelative}/${entry}` : entry;
+    // Ouve o evento de fecho do ficheiro no disco
+    output.on('close', () => {
+      resolve();
+    });
 
-      if (fs.statSync(fullPath).isDirectory()) {
-        addDir(fullPath, relPath);
-      } else {
-        const data = fs.readFileSync(fullPath);
-        zip.addFile(relPath, data);
-        const zipEntry = zip.getEntry(relPath);
-        if (zipEntry) zipEntry.header.time = FIXED_DATE;
-      }
-    }
-  };
+    // Ouve erros de compressão
+    archive.on('error', (err) => {
+      reject(err);
+    });
 
-  addDir(source, '');
-  zip.writeZip(zipPath);
+    // Liga a stream de compressão ao ficheiro de destino
+    archive.pipe(output);
+
+    const FIXED_DATE = new Date('2000-01-01T00:00:00Z');
+
+    // Adiciona a pasta, mantendo a data fixa para todos os ficheiros.
+    // O 'false' significa que ele não vai criar uma pasta raiz com o nome da source
+    // dentro do zip, vai colocar o conteúdo diretamente.
+    archive.directory(source, false, (data) => {
+      data.date = FIXED_DATE;
+      return data;
+    });
+
+    // Finaliza a criação do zip
+    archive.finalize();
+  });
 }
 
 async function main() {
@@ -54,7 +66,9 @@ async function main() {
     const zipPath = path.join(OUTPUT_DIR, zipName);
 
     console.log(`[Empacotando] ${zipName}...`);
-    zipFolder(source, zipPath);
+    
+    // Como o archiver usa streams, precisamos de um await aqui
+    await zipFolder(source, zipPath);
 
     manifest.packages.push({
       name: zipName,
@@ -70,7 +84,7 @@ async function main() {
     JSON.stringify(manifest, null, 2)
   );
 
-  console.log('Manifest criado.');
+  console.log('Manifest criado com sucesso.');
 }
 
 main().catch(console.error);
