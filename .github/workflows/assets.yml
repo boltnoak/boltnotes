@@ -3,9 +3,6 @@ name: Assets
 on:
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   assets:
     runs-on: ubuntu-latest
@@ -21,14 +18,12 @@ jobs:
 
       - run: npm run build-assets
 
-      - uses: softprops/action-gh-release@v2
-        with:
-          repository: boltnoak/boltnotes-assets
-          tag_name: assets
-          append_body: false
-          overwrite_files: true
-          files: |
-            dist-assets/*.zip
-            dist-assets/manifest.json
+      - name: Upload assets
         env:
-          GITHUB_TOKEN: ${{ secrets.ASSETS_TOKEN }}
+          GH_TOKEN: ${{ secrets.ASSETS_TOKEN }}
+        run: |
+          gh release upload assets \
+            dist-assets/*.zip \
+            dist-assets/manifest.json \
+            --repo boltnoak/boltnotes-assets \
+            --clobber
