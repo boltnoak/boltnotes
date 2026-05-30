@@ -77,7 +77,7 @@ function getLatestSeason(data) {
 
 async function loadLatestFN() {
     try {
-        const assetDir = await window.api.load('assets://fortnite/seasons');
+        const assetDir = await window.api.load('assets://');
         const seasons = await window.api.fortnite.getSeasons();
 
         const latest =
@@ -85,7 +85,7 @@ async function loadLatestFN() {
 
         if (!latest) return;
 
-        const latestPath = `assets/fortnite/seasons/${latest.key}.jpg`;
+        const latestPath = `assets://${latest.key}.jpg`;
 
         console.log(latest.key);
         console.log(latest.data.name);
