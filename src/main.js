@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const log = require('electron-log');
-const AdmZip = require('adm-zip');
+const extract = require('extract-zip');
 
 const ASSETS_DIR = path.join(
   app.getPath('userData'),
@@ -52,6 +52,14 @@ function downloadFile(url, destination, onProgress, retries = 3) {
           if (onProgress) onProgress(downloaded, total);
         });
 
+        // O response.pipe(file) já cuida de passar os dados para o arquivo
+        response.pipe(file);
+
+        // CORREÇÃO CRÍTICA 1: Esperar o disco terminar de gravar
+        file.on('finish', () => {
+          file.close(() => resolve());
+        });
+
         response.on('error', (err) => {
           file.close();
           fs.unlink(destination, () => {});
@@ -61,12 +69,6 @@ function downloadFile(url, destination, onProgress, retries = 3) {
             reject(err);
           }
         });
-
-        response.on('end', () => {
-          file.end(() => resolve());
-        });
-
-        response.pipe(file);
       });
 
       req.setTimeout(60000, () => {
@@ -121,9 +123,18 @@ async function downloadPackage(name) {
 
   process.stdout.write('\n');
 
-  const zip = new AdmZip(zipPath);
-  zip.extractAllTo(ASSETS_DIR, true);
-  fs.unlinkSync(zipPath);
+  // CORREÇÃO CRÍTICA 2: Usar extract-zip (seguro para binários e memória)
+  try {
+    await extract(zipPath, { dir: ASSETS_DIR });
+  } catch (err) {
+    console.error(`Erro ao extrair ${name}:`, err);
+    throw err;
+  } finally {
+    // Garante que o zip será apagado mesmo se der erro na extração
+    if (fs.existsSync(zipPath)) {
+      fs.unlinkSync(zipPath);
+    }
+  }
 }
 
 
