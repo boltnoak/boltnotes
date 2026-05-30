@@ -25,7 +25,12 @@ function downloadFile(url, destination, onProgress, retries = 3) {
   return new Promise((resolve, reject) => {
 
     const attempt = (currentUrl, triesLeft) => {
-      const req = https.get(currentUrl, response => {
+      const req = https.get(currentUrl, {
+        headers: {
+          'accept-encoding': 'identity',
+          'user-agent': 'BoltNotes'
+        }
+      }, response => {
 
         if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
           response.resume();

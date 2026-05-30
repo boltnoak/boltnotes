@@ -18,14 +18,12 @@ jobs:
 
       - run: npm run build-assets
 
-      # PASSO DE DEBUG: Vai imprimir no log exatamente o que está na pasta
       - name: Verificar ficheiros gerados (Debug)
         run: ls -la dist-assets/
 
       - name: Upload assets
         env:
           GH_TOKEN: ${{ secrets.ASSETS_TOKEN }}
-        # Mudei para dist-assets/* para apanhar os zips e o manifest de uma só vez
         run: |
           gh release upload assets \
             dist-assets/* \
