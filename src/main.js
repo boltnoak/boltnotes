@@ -6,14 +6,6 @@ const path = require('path');
 const os = require('os');
 const log = require('electron-log');
 
-const assetsDir = path.join(app.getPath('userData'), 'assets');
-
-function hasAssets(name) {
-  return fs.existsSync(path.join(assetsDir, name));
-}
-
-
-
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 

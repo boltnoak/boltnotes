@@ -5,12 +5,12 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   linux:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -19,18 +19,25 @@ jobs:
         with:
           node-version: 22
 
-      - run: npm install
+      - run: npm ci
+
+      - name: Build assets
+        run: npm run build-assets
 
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npx electron-builder --linux AppImage --publish always
 
+      - name: Upload asset zips
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist-assets/*.zip
+            dist-assets/manifest.json
+
   windows:
     runs-on: windows-latest
-
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +46,7 @@ jobs:
         with:
           node-version: 22
 
-      - run: npm install
+      - run: npm ci
 
       - name: Build Windows
         env:

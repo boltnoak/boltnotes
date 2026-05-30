@@ -32,12 +32,14 @@
   },
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "build-assets": "node scripts/build-assets.js"
   },
   "keywords": [],
   "author": "BoltUO",
   "license": "MIT",
   "dependencies": {
+    "adm-zip": "^0.5.17",
     "electron-log": "^5.4.4",
     "electron-squirrel-startup": "^1.0.1",
     "electron-updater": "^6.8.3",
