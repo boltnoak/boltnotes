@@ -23,37 +23,27 @@ function sha256(filePath) {
 function zipFolder(source, zipPath) {
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(zipPath);
-    const archive = archiver('zip', {
-      zlib: { level: 9 } // Nível máximo de compressão
-    });
+    const archive = archiver('zip', { zlib: { level: 9 } });
 
-    // Ouve o evento de fecho do ficheiro no disco
-    output.on('close', () => {
-      resolve();
-    });
+    archive.on('error', reject);
 
-    // Ouve erros de compressão
-    archive.on('error', (err) => {
-      reject(err);
-    });
-
-    // Liga a stream de compressão ao ficheiro de destino
     archive.pipe(output);
 
     const FIXED_DATE = new Date('2000-01-01T00:00:00Z');
 
-    // Adiciona a pasta, mantendo a data fixa para todos os ficheiros.
-    // O 'false' significa que ele não vai criar uma pasta raiz com o nome da source
-    // dentro do zip, vai colocar o conteúdo diretamente.
     archive.directory(source, false, (data) => {
       data.date = FIXED_DATE;
       return data;
     });
 
-    // Finaliza a criação do zip
     archive.finalize();
+
+    // espera o arquivo ser completamente fechado no disco
+    output.on('close', resolve);
+    output.on('error', reject);
   });
 }
+
 
 async function main() {
   const manifest = { version: Date.now(), packages: [] };
