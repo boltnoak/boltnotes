@@ -18,12 +18,8 @@ jobs:
 
       - run: npm run build-assets
 
-      - name: Upload assets
-        env:
-          GH_TOKEN: ${{ secrets.ASSETS_TOKEN }}
-        run: |
-          gh release upload assets \
-            dist-assets/*.zip \
-            dist-assets/manifest.json \
-            --repo boltnoak/boltnotes-assets \
-            --clobber
+      - name: Test access
+  env:
+    GH_TOKEN: ${{ secrets.ASSETS_TOKEN }}
+  run: |
+    gh auth status
