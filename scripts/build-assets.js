@@ -23,7 +23,7 @@ function sha256(filePath) {
 function zipFolder(source, zipPath) {
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(zipPath);
-    const archive = archiver.create('zip', {
+    const archive = archiver('zip', {
       zlib: { level: 9 } // Nível máximo de compressão
     });
 
