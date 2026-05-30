@@ -1,0 +1,32 @@
+name: Assets
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: npm run build-assets
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          repository: boltnoak/boltnotes-assets
+          tag_name: assets
+          files: |
+            dist-assets/*.zip
+            dist-assets/manifest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

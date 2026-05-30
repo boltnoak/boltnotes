@@ -19,7 +19,7 @@ const LOCAL_MANIFEST = path.join(
 );
 
 const MANIFEST_URL =
-  'https://github.com/boltnoak/boltnotes-releases/releases/latest/download/manifest.json';
+  'https://github.com/boltnoak/boltnotes-assets/releases/latest/download/manifest.json';
 
 function downloadFile(url, destination) {
   return new Promise((resolve, reject) => {
@@ -54,7 +54,7 @@ function getLocalManifest() {
 
 async function downloadPackage(name) {
   const url =
-    `https://github.com/boltnoak/boltnotes-releases/releases/latest/download/${name}`;
+    `https://github.com/boltnoak/boltnotes-assets/releases/latest/download/${name}`;
 
   const zipPath = path.join(
     app.getPath('userData'),
