@@ -18,8 +18,9 @@ jobs:
 
       - run: npm run build-assets
 
-      - name: Test access
-  env:
-    GH_TOKEN: ${{ secrets.ASSETS_TOKEN }}
-  run: |
-    gh auth status
+      - name: Test release access
+        env:
+          GH_TOKEN: ${{ secrets.ASSETS_TOKEN }}
+        run: |
+          gh release view assets \
+            --repo boltnoak/boltnotes-assets
