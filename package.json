@@ -4,6 +4,12 @@
   "version": "1.4.3",
   "description": "Backlog de jogos, Notas e Fortnite",
   "main": "src/main.js",
+  "extraResources": [
+    {
+      "from": "build/icon.png",
+      "to": "tray-icon.png"
+    }
+  ],
   "private": true,
   "build": {
     "appId": "com.boltnoak.boltnotes",

@@ -680,7 +680,9 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = path.join(BUNDLE, 'icon.png');
+  const iconPath = app.isPackaged 
+    ? path.join(process.resourcesPath, 'tray-icon.png')
+    : path.join(__dirname, '..', 'build', 'icon.png');
   
   if (!fs.existsSync(iconPath)) return;
 
