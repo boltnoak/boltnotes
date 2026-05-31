@@ -78,11 +78,26 @@ async function openTrailer(el) {
         if (video) video.volume = .5;
 
         for (const tipo of tipos) {
-            const fileName = `${code}_${tipo}.mkv`;
-            const exists = await window.electronAPI.exists(`assets://${fileName}`);
+            // 1. Defina os formatos que seu app suporta
+            const formatosSuportados = ['webm', 'mp4', 'mkv'];
+            
+            let fileNameValido = null;
+            let path = null;
 
-            if (exists) {
-                const path = `assets://${fileName}`;
+            // 2. Testa qual desses formatos realmente existe no disco
+            for (const formato of formatosSuportados) {
+                const fileNameTemp = `${code}_${tipo}.${formato}`;
+                const fileExists = await window.electronAPI.exists(`assets://${fileNameTemp}`);
+
+                if (fileExists) {
+                    fileNameValido = fileNameTemp;
+                    path = `assets://${fileNameValido}`;
+                    break; // Achou o vídeo! Interrompe o loop de formatos
+                }
+            }
+
+            // 3. Se fileNameValido não for null, significa que um vídeo foi encontrado
+            if (fileNameValido) {
                 if (!firstVideo) {
                     firstVideo = path;
                     firstTipo = tipo;

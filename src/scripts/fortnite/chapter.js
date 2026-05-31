@@ -5,7 +5,7 @@ const fileName = window.location.pathname
     .pop()
     .replace('.html', '');
 
-const match = fileName.match(/(og)?chapter(\d+)(og)?/i);
+const match = fileName.match(/chapter(\d+)/i);
 
 
     const matcha = window.location.pathname.match(/chapter(\d+)\.html/);
@@ -22,9 +22,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const next = document.getElementById('next-chapter');
         const chapterNameEl = document.getElementById('chapter-name');
 
-        const isOG = window.location.pathname.includes('og'); 
-
-        const titleText = `${isOG ? 'OG ' : ''}Capítulo ${currentChapter}`;
+        const titleText = `Capítulo ${currentChapter}`;
         document.title = `BoltNotes - Fortnite ${titleText}`;
         if (chapterNameEl) chapterNameEl.textContent = titleText;
         
