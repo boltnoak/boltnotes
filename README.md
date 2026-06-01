@@ -4,7 +4,7 @@ Um aplicativo desktop desenvolvido em Electron para gerenciar notas, backlog de 
 
 <div align="center">
 
-**[<kbd> <br> Instalar <br> </kbd>](https://github.com/boltnoak/boltnotes-releases)**   **[<kbd> <br> Assets <br> </kbd>](https://github.com/boltnoak/boltnotes-assets/releases/tag/assets)**
+**[<kbd> <br> Baixar e Instalar <br> </kbd>](https://github.com/boltnoak/boltnotes-releases/releases/latest)** **[<kbd> <br> Assets <br> </kbd>](https://github.com/boltnoak/boltnotes-assets/releases/tag/assets)**
 
 </div>
 
