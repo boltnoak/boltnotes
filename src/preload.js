@@ -1,7 +1,7 @@
 const {contextBridge,ipcRenderer} = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  onWindowStateChange: (callback) => ipcRenderer.on('window-state', (event, state) => callback(state)),
+  onWindowStateChange: (callback) => ipcRenderer.on('window-state', (_, state) => callback(state)),
   exists: (filePath) => ipcRenderer.invoke('exists',filePath),
   devTools: () => ipcRenderer.send('devTools'),
 
@@ -13,10 +13,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   json: { load: (filePath) => ipcRenderer.invoke('json:load',filePath),
     save: (filePath,data) => ipcRenderer.invoke('json:save',{filePath,data}) },
 
-  onWindowStateChange: (callback) => {
-    ipcRenderer.on('window-state-change', (_, state) => {
-      callback(state);
-    }) },
   config: { getConfig: () => ipcRenderer.invoke('config:get'),
     updateConfig: (key,value) => ipcRenderer.send('config:update',{key,value}) },
 
@@ -55,7 +51,7 @@ contextBridge.exposeInMainWorld('api', {
   fortnite: { getTrailers: () => ipcRenderer.invoke('fortnite:fetch-trailers'),
     getSeasons: () => ipcRenderer.invoke('fortnite:fetch-seasons'),
     getGamesDB: () => ipcRenderer.invoke('games:fetch-gamesdb'),
-    listTrailers: () => ipcRenderer.on('fortnite:list-trailers') },
+    listTrailers: () => ipcRenderer.invoke('fortnite:list-trailers') },
 
   addGameToGist: (gameData) => ipcRenderer.invoke('add-game-to-gist', gameData)
 });

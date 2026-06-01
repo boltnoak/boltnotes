@@ -505,7 +505,16 @@ ipcMain.on('menu:maximize-app', () => {
   }
 });
   ipcMain.on('menu:minimize-app', () => { win.minimize(); });
-  ipcMain.on('menu:close-app', () => { app.quit(); });
+  ipcMain.on('menu:close-app', () => {
+    const config = getConfig();
+
+    if (config.minimize_to_tray) {
+      win.hide();
+    } else {
+      isQuitting = true;
+      app.quit();
+    }
+  });
   ipcMain.handle('menu:is-maximized', () => {
   return win.isMaximized();
 });
@@ -677,13 +686,8 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = app.isPackaged 
-    ? path.join(process.resourcesPath, 'tray-icon.png')
-    : path.join(__dirname, '..', 'build', 'icon.png');
-  
-  if (!fs.existsSync(iconPath)) return;
-
-  const trayIcon = nativeImage.createFromPath(iconPath);
+  const iconPath = path.join(__dirname, 'icon.png');
+  const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
 
   tray = new Tray(trayIcon);
 
@@ -707,7 +711,7 @@ function makeTray() {
     { 
       label: 'Fechar app', 
       click: () => {
-        if (win) win = null;
+        isQuitting = true;
         app.quit();
       }
     }
