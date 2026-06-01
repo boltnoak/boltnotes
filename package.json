@@ -1,7 +1,7 @@
 {
   "name": "boltnotes",
   "productName": "BoltNotes",
-  "version": "1.5.3",
+  "version": "1.0.0",
   "description": "Backlog de jogos, Notas e Fortnite",
   "main": "src/main.js",
   "private": true,
@@ -32,11 +32,11 @@
     "linux": {
       "target": "AppImage",
       "category": "Utility",
-      "icon": "build/icon.png"
+      "icon": "src/icon.png"
     },
     "win": {
       "target": "nsis",
-      "icon": "build/icon.ico"
+      "icon": "src/icon.ico"
     },
     "publish": [
       {
