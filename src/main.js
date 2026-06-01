@@ -686,9 +686,7 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'icon.png')
-    : path.join(__dirname, 'icon.png');
+  const iconPath = path.join(app.getAppPath(), 'src', 'icon.png');
 
   const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
 
