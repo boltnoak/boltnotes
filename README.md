@@ -1,4 +1,10 @@
-# BoltNotes
+<div align="center">
+
+<img height="200" alt="boltnotes-logo" src="https://github.com/user-attachments/assets/b88f6bf8-8521-4651-8ff6-3c7e52b8fd3c" />
+
+</div>
+
+##
 
 Um aplicativo desktop desenvolvido em Electron para gerenciar notas, backlog de jogos e reviews de temporadas do Fortnite.
 
