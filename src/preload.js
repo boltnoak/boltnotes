@@ -26,13 +26,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   checkAssetsStatus: () => ipcRenderer.invoke('assets-check-status'),
   onAssetsProgress: (callback) => {
-    ipcRenderer.on('assets-progress', (event, data) => callback(data));
+    ipcRenderer.on('assets-progress', (_, data) => callback(data));
   },
   onAssetsReady: (callback) => {
     ipcRenderer.on('assets-ready', () => callback());
   },
   onAssetsError: (callback) => {
-    ipcRenderer.on('assets-error', (event, errorMsg) => callback(errorMsg));
+    ipcRenderer.on('assets-error', (_, msg) => callback(msg));
   },
 
   onUpdateStatus: (callback) => ipcRenderer.on('update-status', (event, msg) => callback(msg)),
@@ -65,11 +65,3 @@ contextBridge.exposeInMainWorld('info', {
   getDocuments: () => ipcRenderer.invoke('info:documents')
 });
 
-contextBridge.exposeInMainWorld('assets', {
-  onProgress: callback => {
-    ipcRenderer.on(
-      'assets-progress',
-      (_, data) => callback(data)
-    );
-  }
-});

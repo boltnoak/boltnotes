@@ -255,6 +255,7 @@ body {
 }
 .season-status {
     margin: 0;
+    gap: .8vw;
     margin-top: 1vh;
     display: flex;
     flex-direction: row;

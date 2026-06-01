@@ -51,7 +51,7 @@ i {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    z-index: 98;
     transition: opacity 0.5s ease;
 }
 .loading-content {
@@ -81,7 +81,7 @@ i {
 
 #progress-bar-fill {
     position: relative;
-    width: 100%;
+    width: 0%;
     height: 100%;
     background-color: var(--blue);
     transition: width 0.2s ease;
@@ -93,7 +93,7 @@ i {
 }
 #update-bar {
     position: relative;
-    width: 50%;
+    width: 0%;
     height: 100%;
     background-color: var(--blue);
     transition: width 0.2s ease;

@@ -124,8 +124,8 @@ async function downloadPackage(name) {
   await downloadFile(url, zipPath, (downloaded, total) => {
     const mb = (downloaded / 1024 / 1024).toFixed(1);
     const line = total
-      ? `${name}: ${Math.round(downloaded * 100 / total)}% (${mb} MB)`
-      : `${name}: ${mb} MB`;
+      ? `Assets - ${name}: ${Math.round(downloaded * 100 / total)}% (${mb} MB)`
+      : `Assets - ${name}: ${mb} MB`;
 
     if (line !== lastLog) {
       lastLog = line;
@@ -191,11 +191,11 @@ async function syncAssets() {
     const localPkg = local.packages.find(p => p.name === pkg.name);
 
     if (localPkg && localPkg.hash === pkg.hash) {
-      console.log(`[assets] pulando ${pkg.name} (já atualizado)`);
+      console.log(`Assets - ${pkg.name} (atualizado)`);
       continue;
     }
 
-    console.log(`[assets] baixando ${pkg.name}...`);
+    console.log(`Assets - Baixando ${pkg.name}...`);
 
     try {
       await downloadPackage(pkg.name);
@@ -209,10 +209,10 @@ async function syncAssets() {
       }
 
       fs.writeFileSync(LOCAL_MANIFEST, JSON.stringify(local, null, 2));
-      console.log(`[assets] ${pkg.name} salvo no manifest local`);
+      console.log(`Assets - ${pkg.name} salvo no manifest local`);
 
     } catch (err) {
-      console.error(`[assets] erro ao baixar ${pkg.name}:`, err.message);
+      console.error(`Assets - Erro ao baixar ${pkg.name}:`, err.message);
       // continua pro próximo, não quebra tudo
     }
   }
@@ -346,7 +346,6 @@ if (!gotTheLock) {
   });
 
   app.whenReady().then(async () => {
-
     protocol.handle('assets', (req) => {
       const url = new URL(req.url);
 
@@ -432,20 +431,6 @@ if (!gotTheLock) {
 
     createWindow();
 
-    syncAssets()
-      .then(() => {
-        assetsReady = true;
-        win.webContents.send('assets-ready');
-      })
-      .catch(err => {
-        console.error(err);
-        win.webContents.send(
-          'assets-error',
-          err.message
-        );
-      });
-
-
     if (app.isPackaged) {
         autoUpdater.checkForUpdatesAndNotify();
     }
@@ -461,6 +446,19 @@ if (!gotTheLock) {
     win.once('ready-to-show', () => {
       makeTray();
       win.show();
+
+      syncAssets()
+      .then(() => {
+        assetsReady = true;
+        win.webContents.send('assets-ready');
+      })
+      .catch(err => {
+        console.error(err);
+        win.webContents.send(
+          'assets-error',
+          err.message
+        );
+      });
     });
 
     win.on('maximize', () => { win.webContents.send('window-state-change', 'maximized'); });
@@ -480,22 +478,22 @@ ipcMain.handle('assets-check-status', () => {
 });
 
 autoUpdater.on('checking-for-update', () => {
-    win.webContents.send('update-status', 'Verificando atualizações...');
+    win?.webContents.send('update-status', 'Verificando atualizações...');
 });
 autoUpdater.on('update-available', (info) => {
-    win.webContents.send('update-status', 'Atualização disponível!');
+    win?.webContents.send('update-status', 'Atualização disponível!');
 });
 autoUpdater.on('download-progress', (progressObj) => {
-    win.webContents.send('update-progress', progressObj.percent);
+    win?.webContents.send('update-progress', progressObj.percent);
 });
 autoUpdater.on('update-downloaded', () => {
-    win.webContents.send('update-downloaded');
+    win?.webContents.send('update-downloaded');
 });
 ipcMain.on('update:restart', () => {
     autoUpdater.quitAndInstall();
 });
 autoUpdater.on('error', (err) => {
-    win.webContents.send('update-status', 'Erro na atualização: ' + err.message);
+    win?.webContents.send('update-status', 'Erro na atualização: ' + err.message);
 });
 
 // Menu
