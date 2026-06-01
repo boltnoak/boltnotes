@@ -1,4 +1,6 @@
 :root {
     --bg: #050505;
     --text: white;
+    --text-gray: rgb(150, 150, 150);
+    --blue: rgb(20, 150, 255);
 }

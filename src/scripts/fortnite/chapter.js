@@ -144,11 +144,14 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         // Adiciona IDs Dinâmicos aos Spans de Status
         const statusSpans = clone.querySelectorAll('.status span');
+        const passe = clone.querySelector('.levels-number span');
+
         statusSpans.forEach(span => {
             const parentText = span.parentElement.textContent;
             if (parentText.includes('Nota')) span.id = `${code}-rating`;
-            if (parentText.includes('Níveis')) span.id = `${code}-levels`;
+            if (passe) passe.id = `${code}-levels`;
             if (parentText.includes('Vitórias')) span.id = `${code}-wins`;
+            if (parentText.includes('Níveis')) span.id = `${code}-levels`;
             if (parentText.includes('Lançado em')) {
                 span.id = `${code}-releaseDate`;
                 span.contentEditable = "false"; // Data não se edita
@@ -167,16 +170,25 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (trailerBtn) trailerBtn.onclick = () => openTrailer(trailerBtn);
 
         // Renderiza Eventos (se houver)
-        if (info.event) {
-            const eBlock = clone.querySelector('.season-events');
-            if (eBlock) {
-                eBlock.style.display = 'flex';
-                const evtImg = clone.querySelector('.event-img');
-                if (evtImg && info.event.img) evtImg.src = info.event.img;
-                clone.querySelector('.event-title').textContent = info.event.title || '';
-                clone.querySelector('.event-type').textContent = info.event.type || '';
-                clone.querySelector('.event-date').textContent = info.event.date || '';
-            }
+        const listaDeEventos = info.events || info.event; 
+
+        if (listaDeEventos && Array.isArray(listaDeEventos)) {
+            const container = clone.querySelector('.season-contents');
+            const templateEvent = clone.querySelector('.season-events');
+
+            if (templateEvent) templateEvent.remove();
+
+            listaDeEventos.forEach(evt => {
+                const newEvent = templateEvent.cloneNode(true);
+                newEvent.style.display = 'flex';
+                
+                newEvent.querySelector('.event-img').src = evt.img || '';
+                newEvent.querySelector('.event-title').textContent = evt.title || '';
+                newEvent.querySelector('.event-type').textContent = evt.type || '';
+                newEvent.querySelector('.event-date').textContent = evt.date || '';
+                
+                container.insertBefore(newEvent, container.firstChild);
+            });
         }
 
         // Título e Data Básica

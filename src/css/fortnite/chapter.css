@@ -87,53 +87,60 @@ body {
 }
 .passe-status {
     position: relative;
-    width: 60vw;
-    height: auto;
+    width: 50vw;
+    height: 75vh;
     overflow: hidden;
+    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 1%, rgba(0,0,0,0) 99%);
+    mask-image: linear-gradient(top, rgba(0,0,0,1) 1%, rgba(0,0,0,0) 99%);
 }
 .season-character {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height:max-content;
+    height: max-content;
     object-fit: contain;
     object-position: center 15%;
     z-index: 1;
     object-position: 50% 10%;
     transform-origin: top center;
-    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 10%, rgba(0,0,0,0) 90%);
-    mask-image: linear-gradient(top, rgba(0,0,0,1) 10%, rgba(0,0,0,0) 90%);
     transform: translateZ(0);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
 }
-.passeStatus-texto {
-    filter: drop-shadow(0px 0px 2vh rgba(0, 0, 0, 0.8));
+.levels-div {
+    display: flex;
+    flex-direction: column;
     position: absolute;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
+    z-index: 999;
+}
+.levels-number, .levels-label {
     text-align: center;
     z-index: 2;
     display: flex;
     flex-direction: column;
-    font-family: 'HeadingNow';
+    font-family: 'Montserrat';
     align-items: center;
 }
-.passe {
-    margin: 0;
-    padding: 0;
-    font-size: 16vh;
-    font-weight: 900;
-    line-height: 0.9;
-    text-transform: uppercase;
-}
-.obtido {
+.levels-label {
+    text-align: center;
     margin: 0;
     padding: 0;
     font-size: 14vh;
+    font-weight: 900;
+    line-height: 0.9;
+    text-transform: uppercase;
+    font-family: 'HeadingNow';
+}
+.levels-number {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    font-size: 26.5vh;
     font-weight: 900;
     line-height: 0.9;
     text-transform: uppercase;
@@ -147,14 +154,14 @@ body {
     text-transform: uppercase;
     letter-spacing: -2px;
 }
-.passe.gradient {
+.levels-number.gradient {
     background: linear-gradient(to bottom, #f0f0f0 0%, #8e8e8e 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     position: relative;
 }
-.obtido.gradient, .free.gradient {
+.levels-label.gradient {
     background: linear-gradient(to bottom, #8e8e8e 0%, #f0f0f0 100%);
     -webkit-background-clip: text;
     background-clip: text;
@@ -186,6 +193,7 @@ body {
 .tag {
     font-family: 'Montserrat';
     font-weight: 500;
+    white-space: nowrap;
     background-color: rgba(20, 20, 20, 0.75);
     padding: .4rem .7rem;
     border-radius: .35rem;
@@ -232,10 +240,12 @@ body {
     width: 70%;
 }
 .season-contents {
+    font-family: 'Montserrat';
+    margin-top: .5vh;
     display: flex;
     flex-direction: row;
     gap: 2vh;
-    height: 24vh;
+    height: 35vh;
 }
 .sep-bar-season {
     margin: 1.3vh 0;
@@ -325,7 +335,7 @@ body {
     cursor: pointer;
     overflow: hidden;
     height: 100%;
-    width: 87%;
+    flex: 1;
 }
 #season-map, .season-map {
     height: 100%;
@@ -386,22 +396,26 @@ body {
     animation: popupOut .3s ease forwards;
 }
 .season-events {
-    transition: transform .1s ease-in-out;
+    transition: transform .1s linear;
     cursor: pointer;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     margin: 0;
     flex: content;
     border-radius: 1vh;
     overflow: hidden;
+    flex: 1;
 }
 .season-events img {
     height: 100%;
     object-fit: cover;
     overflow: hidden;
+    z-index: 1;
+    transform: scale(1.01);
+    transition: transform 0.15s ease;
 }
-.season-events:hover {
-    transform: scale(1.05);
+.season-events:hover img {
+    transform: scale(1.06);
     cursor: pointer;
 }
 .event-title {
@@ -418,15 +432,19 @@ body {
     justify-content: center;
 }
 .event-data {
-    padding: 1vh;
+    padding: 2vh;
     display: flex;
-    background-color: rgba(20, 20, 20, 0.25);
+    background-color: rgb(8,8,8);
+    transition: background 1s linear;
     flex-direction: column;
     z-index: 2;
     transition: all .15s linear;
+    justify-content: center;
+    justify-content: center; /* Centraliza tudo verticalmente */
+    align-items: center;
 }
 .season-events:hover .event-data {
-    background-color: rgba(30, 30, 30, 0.25);
+    background-color: rgb(10,10,10);
 }
 
 /* End Events */

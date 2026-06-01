@@ -22,7 +22,21 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   notes: {
     rename: (oldName, newName) => ipcRenderer.invoke('notes:rename', oldName, newName)
-  }
+  },
+
+  checkAssetsStatus: () => ipcRenderer.invoke('assets-check-status'),
+  onAssetsProgress: (callback) => {
+    ipcRenderer.on('assets-progress', (event, data) => callback(data));
+  },
+  onAssetsReady: (callback) => {
+    ipcRenderer.on('assets-ready', () => callback());
+  },
+  onAssetsError: (callback) => {
+    ipcRenderer.on('assets-error', (event, errorMsg) => callback(errorMsg));
+  },
+
+  onUpdateStatus: (callback) => ipcRenderer.on('update-status', (event, msg) => callback(msg)),
+  onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, percent) => callback(percent))
 });
 contextBridge.exposeInMainWorld('api', {
   load: (path) => ipcRenderer.invoke('load',path),

@@ -39,6 +39,123 @@ i {
     animation: spin 1s linear infinite;
 }
 
+#starting-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg); /* Fundo do app */
+    color: var(--text);
+    font-family: 'Montserrat';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+.loading-content {
+    text-align: center;
+    width: 80%;
+    max-width: 28vw;
+}
+#loading-details {
+    color: var(--text-gray);
+    margin-bottom: 2.5vh;
+    font-size: 2vh;
+    font-weight: 600;
+}
+#loading-title {
+    font-weight: 1000;
+    font-size: 4vh;
+    margin: 0;
+}
+
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background-color: rgba(25,25,25,.4);
+    border-radius: 1vh;
+    overflow: hidden;
+}
+
+#progress-bar-fill {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: var(--blue);
+    transition: width 0.2s ease;
+    overflow: hidden;
+}
+#update-text {
+    filter: drop-shadow(0 0 1vh rgb(0, 0, 0));
+    display: none;
+}
+#update-bar {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    background-color: var(--blue);
+    transition: width 0.2s ease;
+    overflow: hidden;
+}
+#update-modal {
+    display: flex;
+    flex-direction: row;
+    font-family: 'Montserrat';
+    margin-right: 1vw;
+    color: var(--blue);
+    align-items: center;
+    gap: .5vw;
+    font-size: 2.4vh;
+    font-weight: 600;
+}
+#progress-wrapper {
+    width: 6vw;
+    height: 1.3vh;
+    display: none;
+    background: rgba(25,25,25,.4);
+    border-radius: 5px;
+    overflow: hidden;
+}
+#btn-restart {
+    background-color: var(--blue);
+    color: white;
+    padding: .5vh .5vw;
+    border-radius: 1vh;
+    gap: .5vw;
+    transition: background .1s linear;
+    display: none;
+}
+#btn-restart:hover {
+    background-color: rgb(50, 160, 255);
+    cursor: pointer;
+}
+#btn-restart i {
+    font-size: 2.2vh;
+}
+.shine-effect {
+    position: absolute;
+    top: 0;
+    left: -10vw;
+    width: 10vw;
+    height: 100%;
+    
+    background: linear-gradient(
+        90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.3), 
+        transparent
+    );
+
+    animation: shine 2s infinite linear;
+}
+
+@keyframes shine {
+    0% { left: -10vw; }
+    100% { left: 100%; }
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg) }
     100% { transform: rotate(360deg) }}
@@ -85,6 +202,8 @@ body {
 .menuButtons {
     -webkit-app-region: no-drag;
     margin: 0 2vh;
+    display: flex;
+    flex-direction: row;
 }
 #menuClose {
     height: 80%;

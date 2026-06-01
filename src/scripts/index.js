@@ -7,6 +7,52 @@ async function updateNoteCount() {
   }
 }
 
+const startingScreen = document.getElementById('starting-screen');
+
+const loadingDetails = document.getElementById('loading-details');
+const progressBarFill = document.getElementById('progress-bar-fill');
+
+window.addEventListener('load', async () => {
+    const isReady = await window.electronAPI.checkAssetsStatus();
+    
+    if (isReady) {
+        document.getElementById('starting-screen').style.display = 'none';
+    } else {
+        document.getElementById('starting-screen').style.display = 'flex';
+    }
+});
+
+window.electronAPI.onAssetsProgress((data) => {
+    loadingDetails.textContent = `Baixando ${data.package} (${data.percent}%)`;
+    
+    if (data.percent !== null) {
+        progressBarFill.style.width = `${data.percent}%`;
+    }
+});
+
+window.electronAPI.onAssetsReady(() => {
+    loadingDetails.textContent = "Tudo pronto!";
+    progressBarFill.style.width = "100%";
+    
+    setTimeout(() => {
+        startingScreen.style.opacity = "0";
+        setTimeout(() => {
+            startingScreen.style.display = "none";
+        }, 500);
+    }, 500);
+});
+
+window.electronAPI.onAssetsError((errorMsg) => {
+    loadingDetails.textContent = `Erro ao baixar arquivos: ${errorMsg}`;
+    loadingDetails.style.color = "#ff4444";
+    progressBarFill.style.backgroundColor = "#ff4444";
+    
+    setTimeout(() => {
+        startingScreen.style.opacity = "0";
+        setTimeout(() => { startingScreen.style.display = "none"; }, 500);
+    }, 3000);
+});
+
 async function loadFortniteStats() {
   try {
     const data = await window.electronAPI.json.load('Fortnite/reviews.json');

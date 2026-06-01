@@ -280,6 +280,7 @@ protocol.registerSchemesAsPrivileged([
 let win;
 let tray = null;
 let isQuitting = false;
+let assetsReady = false;
 
 function getConfig() {
   const configPath = path.join(app.getPath('userData'),'config.json');
@@ -433,6 +434,7 @@ if (!gotTheLock) {
 
     syncAssets()
       .then(() => {
+        assetsReady = true;
         win.webContents.send('assets-ready');
       })
       .catch(err => {
@@ -473,30 +475,27 @@ if (!gotTheLock) {
   });
 }
 
+ipcMain.handle('assets-check-status', () => {
+    return assetsReady;
+});
+
 autoUpdater.on('checking-for-update', () => {
-    console.log('Checking...');
+    win.webContents.send('update-status', 'Verificando atualizações...');
 });
-
 autoUpdater.on('update-available', (info) => {
-    console.log('Update available', info);
+    win.webContents.send('update-status', 'Atualização disponível!');
 });
-
-autoUpdater.on('update-not-available', () => {
-    console.log('No updates');
+autoUpdater.on('download-progress', (progressObj) => {
+    win.webContents.send('update-progress', progressObj.percent);
 });
-
-autoUpdater.on('download-progress', (progress) => {
-    console.log(progress.percent);
-});
-
 autoUpdater.on('update-downloaded', () => {
-    console.log('Downloaded');
-
+    win.webContents.send('update-downloaded');
+});
+ipcMain.on('update:restart', () => {
     autoUpdater.quitAndInstall();
 });
-
 autoUpdater.on('error', (err) => {
-    console.log(err);
+    win.webContents.send('update-status', 'Erro na atualização: ' + err.message);
 });
 
 // Menu

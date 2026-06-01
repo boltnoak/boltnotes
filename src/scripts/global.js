@@ -82,3 +82,30 @@ async function initMenu() {
 }
 
 initMenu();
+
+function setupUpdateListeners() {
+    const modal = document.getElementById('update-modal');
+    const text = document.getElementById('update-text');
+    const bar = document.getElementById('update-bar');
+    const btnRestart = document.getElementById('btn-restart');
+    const progressWrapper = document.getElementById('progress-wrapper');
+
+    window.electronAPI.onUpdateStatus((msg) => {
+        modal.style.display = 'block';
+        text.innerText = msg;
+    });
+
+    window.electronAPI.onUpdateProgress((percent) => {
+        bar.style.width = percent + '%';
+    });
+
+    window.electronAPI.onUpdateDownloaded(() => {
+        text.innerText = "Atualização baixada!";
+        progressWrapper.style.display = 'none';
+        btnRestart.style.display = 'block';
+    });
+}
+
+function restartApp() {
+    window.electronAPI.send('update:restart');
+}
