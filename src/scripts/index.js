@@ -23,7 +23,7 @@ window.addEventListener('load', async () => {
 });
 
 window.electronAPI.onAssetsProgress((data) => {
-    loadingDetails.textContent = `Baixando ${data.package} (${data.percent}%)`;
+    loadingDetails.textContent = `Baixando ${data.package} (${data.percent}%) (${mb} MB / ${(total / 1024 / 1024).toFixed(1)} MB)`;
     
     if (data.percent !== null) {
         progressBarFill.style.width = `${data.percent}%`;

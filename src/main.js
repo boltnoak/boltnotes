@@ -124,7 +124,7 @@ async function downloadPackage(name) {
   await downloadFile(url, zipPath, (downloaded, total) => {
     const mb = (downloaded / 1024 / 1024).toFixed(1);
     const line = total
-      ? `Assets - ${name}: ${Math.round(downloaded * 100 / total)}% (${mb} MB)`
+      ? `Assets - ${name}: ${Math.round(downloaded * 100 / total)}% (${mb} MB / ${(total / 1024 / 1024).toFixed(1)} MB)`
       : `Assets - ${name}: ${mb} MB`;
 
     if (line !== lastLog) {
