@@ -129,7 +129,7 @@ function loadNote(tab) {
       renderContent();
 
       document.getElementById('title-note').textContent = name;
-      document.title = `BoltNotes - Notas: ${name}`;
+      document.title = `BoltNotes — Notas: ${name}`;
       document.getElementById('menuTitle').textContent = document.title;
     })
     .catch(err => console.error("Erro ao carregar a nota:", err));

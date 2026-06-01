@@ -23,7 +23,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const chapterNameEl = document.getElementById('chapter-name');
 
         const titleText = `Capítulo ${currentChapter}`;
-        document.title = `BoltNotes - Fortnite ${titleText}`;
+        document.title = `BoltNotes — Fortnite ${titleText}`;
         if (chapterNameEl) chapterNameEl.textContent = titleText;
         
         if (before) {

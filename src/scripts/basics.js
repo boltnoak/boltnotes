@@ -6,19 +6,6 @@ const basePagePathLog = document.querySelector('base').href
 
 console.log(`Base da página: ${basePagePathLog.replace(/\//g, ' > ')}`)
 
-
-
-window.electronAPI.onUpdateStatus((msg) => {
-    const modal = document.getElementById('update-modal');
-    modal.style.display = 'block';
-    document.getElementById('update-text').innerText = msg;
-});
-
-window.electronAPI.onUpdateProgress((percent) => {
-    const bar = document.getElementById('update-bar');
-    bar.style.width = percent + '%';
-});
-
 window.onload = function () {
       const loadingScreen = document.getElementById('loading-screen');
       

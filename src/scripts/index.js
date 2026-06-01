@@ -22,13 +22,24 @@ window.addEventListener('load', async () => {
     }
 });
 
-window.electronAPI.onAssetsProgress((data) => {
-    loadingDetails.textContent = `Baixando ${data.package} (${data.percent}%) (${mb} MB / ${(total / 1024 / 1024).toFixed(1)} MB)`;
-    
-    if (data.percent !== null) {
-        progressBarFill.style.width = `${data.percent}%`;
-    }
-});
+window.electronAPI.onAssetsProgress((() => {
+    let lastUpdate = 0;
+
+    return (data) => {
+        const now = Date.now();
+        if (now - lastUpdate < 200) return;
+        lastUpdate = now;
+
+        const mb = (data.downloaded / 1024 / 1024).toFixed(1);
+        const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
+
+        loadingDetails.textContent = `Baixando ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`;
+
+        if (data.percent !== null) {
+            progressBarFill.style.width = `${data.percent}%`;
+        }
+    };
+})());
 
 window.electronAPI.onAssetsReady(() => {
     loadingDetails.textContent = "Tudo pronto!";
