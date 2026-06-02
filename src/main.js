@@ -141,14 +141,12 @@ async function downloadPackage(name) {
 
   process.stdout.write('\n');
 
-  // CORREÇÃO CRÍTICA 2: Usar extract-zip (seguro para binários e memória)
   try {
     await extract(zipPath, { dir: ASSETS_DIR });
   } catch (err) {
     console.error(`Erro ao extrair ${name}:`, err);
     throw err;
   } finally {
-    // Garante que o zip será apagado mesmo se der erro na extração
     if (fs.existsSync(zipPath)) {
       fs.unlinkSync(zipPath);
     }
@@ -186,7 +184,6 @@ async function syncAssets() {
 
   local = getLocalManifest() || { version: 0, packages: [] };
 
-  // downloads em SÉRIE, um por vez
   for (const pkg of remote.packages) {
     const localPkg = local.packages.find(p => p.name === pkg.name);
 
@@ -200,7 +197,6 @@ async function syncAssets() {
     try {
       await downloadPackage(pkg.name);
 
-      // atualiza e salva o manifest logo após cada download
       const idx = local.packages.findIndex(p => p.name === pkg.name);
       if (idx >= 0) {
         local.packages[idx] = pkg;
@@ -213,7 +209,6 @@ async function syncAssets() {
 
     } catch (err) {
       console.error(`Assets - Erro ao baixar ${pkg.name}:`, err.message);
-      // continua pro próximo, não quebra tudo
     }
   }
 }
@@ -686,7 +681,7 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = path.join(app.getAppPath(), 'src', 'icon.png');
+  const iconPath = path.join(__dirname, 'icon.png');
 
   const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
 

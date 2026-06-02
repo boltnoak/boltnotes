@@ -8,12 +8,6 @@
   "build": {
     "appId": "com.boltnoak.boltnotes",
     "productName": "BoltNotes",
-    "extraResources": [
-      {
-        "from": "build/icon.png",
-        "to": "icon.png"
-      }
-    ],
     "compression": "normal",
     "files": [
       "src/**/*",
