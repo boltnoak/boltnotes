@@ -1,12 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const archiver = require('archiver'); // Substituímos o adm-zip pelo archiver
+const archiver = require('archiver');
 
 const ASSETS_DIR = path.resolve('assets');
 const OUTPUT_DIR = path.resolve('dist-assets');
 
-// Limpa a pasta de output
 fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
@@ -38,7 +37,6 @@ function zipFolder(source, zipPath) {
 
     archive.finalize();
 
-    // espera o arquivo ser completamente fechado no disco
     output.on('close', resolve);
     output.on('error', reject);
   });
@@ -57,7 +55,6 @@ async function main() {
 
     console.log(`[Empacotando] ${zipName}...`);
     
-    // Como o archiver usa streams, precisamos de um await aqui
     await zipFolder(source, zipPath);
 
     manifest.packages.push({
