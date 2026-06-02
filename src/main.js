@@ -682,10 +682,8 @@ function makeTray() {
   if (tray !== null) return;
 
   const iconPath = path.join(__dirname, 'icon.png');
-
-  const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
-
-  tray = new Tray(trayIcon);
+  
+  tray = new Tray(iconPath);
 
   const navigateTo = (htmlFile) => {
     if (!win) return;
