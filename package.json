@@ -9,6 +9,12 @@
     "appId": "com.boltnoak.boltnotes",
     "productName": "BoltNotes",
     "compression": "normal",
+    "extraResources": [
+      {
+        "from": "build/icons/512x512.png",
+        "to": "tray-icon.png"
+      }
+    ],
     "files": [
       "src/**/*",
       "build/**/*",

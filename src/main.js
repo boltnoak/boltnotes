@@ -682,7 +682,11 @@ function makeTray() {
   if (tray !== null) return;
 
   const iconPath = path.join(__dirname, 'icon.png');
-  
+
+  const iconPath = app.isPackaged
+  ? path.join(process.resourcesPath, 'tray-icon.png')
+  : path.join(__dirname, 'icon.png');
+
   tray = new Tray(iconPath);
 
   const navigateTo = (htmlFile) => {
