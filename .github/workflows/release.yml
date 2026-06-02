@@ -21,6 +21,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Install Linux dependencies
+        run: sudo apt-get install -y libopenjp2-tools
+
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
