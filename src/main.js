@@ -328,10 +328,8 @@ function createWindow() {
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
-console.log("Pegou o lock?", gotTheLock); // Adiciona isso aqui
 
 if (!gotTheLock) {
-  console.log("Fechando porque já tem outro aberto."); // E isso aqui
   app.quit();
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
@@ -683,9 +681,7 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = app.isPackaged 
-  ? path.join(process.resourcesPath, 'tray-icon.png')
-  : path.join(__dirname, 'icon.png');
+  const iconPath = path.join(__dirname, 'icon.png');
 
   const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
 
