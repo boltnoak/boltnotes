@@ -328,8 +328,10 @@ function createWindow() {
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
+console.log("Pegou o lock?", gotTheLock); // Adiciona isso aqui
 
 if (!gotTheLock) {
+  console.log("Fechando porque já tem outro aberto."); // E isso aqui
   app.quit();
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
@@ -545,7 +547,7 @@ ipcMain.handle('fortnite:fetch-seasons', async () => {
 });
 ipcMain.handle('fortnite:list-trailers', () => {
     return fs.readdirSync(
-        path.join(BUNDLE,'assets','fortnite/trailers')
+        path.join(ASSETS_DIR, 'fortnite/trailers')
     );
 });
 ipcMain.handle('games:fetch-gamesdb', async () => {
@@ -681,11 +683,13 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'tray-icon.png')
-    : path.join(__dirname, 'icon.png');
+  const iconPath = app.isPackaged 
+  ? path.join(process.resourcesPath, 'tray-icon.png')
+  : path.join(__dirname, 'icon.png');
 
-  tray = new Tray(iconPath);
+  const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
+
+  tray = new Tray(trayIcon);
 
   const navigateTo = (htmlFile) => {
     if (!win) return;
