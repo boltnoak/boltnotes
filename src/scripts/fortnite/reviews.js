@@ -56,16 +56,16 @@ function initReviews() {
         content.innerHTML = `
             <div class="reviews">
                 <p class="review-topic">LOOT POOL</p>
-                <p id="${code}-loot" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.loot || ""}</p>
-                
+                <p id="${code}-loot" placeholder="Vazio" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.loot || ""}</p>
+                <!--<p class="sep-bar-season"></p>-->
                 <p class="review-topic">MAPA</p>
-                <p id="${code}-mapa" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.mapa || ""}</p>
-                
+                <p id="${code}-mapa" placeholder="Vazio" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.mapa || ""}</p>
+                <!--<p class="sep-bar-season"></p>-->
                 <p class="review-topic">PASSE DE BATALHA</p>
-                <p id="${code}-passe" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.passe || ""}</p>
-                
+                <p id="${code}-passe" placeholder="Vazio" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.passe || ""}</p>
+                <!--<p class="sep-bar-season"></p>-->
                 <p class="review-topic">HISTÓRIA</p>
-                <p id="${code}-story" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.story || ""}</p>
+                <p id="${code}-story" placeholder="Vazio" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.story || ""}</p>
             </div>`;
     });
 }

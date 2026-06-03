@@ -341,6 +341,26 @@ if (!gotTheLock) {
   });
 
   app.whenReady().then(async () => {
+
+    const { Notification } = require('electron');
+    app.setAppUserModelId('com.boltnoak.boltnotes');
+
+    const notif = new Notification({
+        title: 'BoltNotes atualizado!',
+        body: `Versão 0.1.17 pronta.
+        Clique para reiniciar.`,
+        icon: path.join(__dirname, 'icon.png')
+    });
+
+    notif.on('click', () => {
+        win?.quit();
+        // autoUpdater.quitAndInstall(); // não chama de verdade no teste
+    });
+
+    notif.show();
+
+
+
     protocol.handle('assets', (req) => {
       const url = new URL(req.url);
 
@@ -481,7 +501,14 @@ autoUpdater.on('update-available', (info) => {
 autoUpdater.on('download-progress', (progressObj) => {
     win?.webContents.send('update-progress', progressObj.percent);
 });
-autoUpdater.on('update-downloaded', () => {
+autoUpdater.on('update-downloaded', (info) => {
+    const { Notification } = require('electron');
+    new Notification({
+        title: 'BoltNotes atualizado!',
+        body: `Versão ${info.version} pronta. Reinicie para aplicar.`,
+        icon: path.join(__dirname, 'icon.png')
+    }).show();
+
     win?.webContents.send('update-downloaded');
 });
 ipcMain.on('update:restart', () => {
@@ -490,6 +517,9 @@ ipcMain.on('update:restart', () => {
 autoUpdater.on('error', (err) => {
     win?.webContents.send('update-status', 'Erro na atualização: ' + err.message);
 });
+function restartApp() {
+    ipcRenderer.send('update:restart');
+}
 
 // Menu
 ipcMain.on('menu:maximize-app', () => {
@@ -499,20 +529,18 @@ ipcMain.on('menu:maximize-app', () => {
     win.maximize();
   }
 });
-  ipcMain.on('menu:minimize-app', () => { win.minimize(); });
-  ipcMain.on('menu:close-app', () => {
-    const config = getConfig();
+ipcMain.on('menu:minimize-app', () => { win.minimize(); });
+ipcMain.on('menu:close-app', () => {
+  const config = getConfig();
 
-    if (config.minimize_to_tray) {
-      win.hide();
-    } else {
-      isQuitting = true;
-      app.quit();
-    }
-  });
-  ipcMain.handle('menu:is-maximized', () => {
-  return win.isMaximized();
+  if (config.minimize_to_tray) {
+    win.hide();
+  } else {
+    isQuitting = true;
+    app.quit();
+  }
 });
+ipcMain.handle('menu:is-maximized', () => { return win.isMaximized() });
 
 // Básico
 ipcMain.handle('fortnite:fetch-trailers', async () => {

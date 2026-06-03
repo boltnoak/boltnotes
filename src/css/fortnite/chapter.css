@@ -13,7 +13,7 @@ body {
 #fnSeason, .fn-season {
     margin: 0 7.5vw;
     padding: 0;
-    margin-bottom: 5.5vh;
+    margin-bottom: 5vh;
 }
 .chapter-section {
     margin: 0;
@@ -98,7 +98,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: max-content;
+    height: 100vh;
     object-fit: contain;
     object-position: center 15%;
     z-index: 1;
@@ -241,15 +241,32 @@ body {
 }
 .season-contents {
     font-family: 'Montserrat';
-    margin-top: .5vh;
     display: flex;
     flex-direction: row;
-    gap: 2vh;
-    height: 35vh;
+    gap: .8vw;
+    height: 32vh;
+}
+.seasonContents-title-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    margin: 0 0 .85vh 0;
+}
+.seasonContents-title {
+    font-family: 'Montserrat';
+    font-weight: 700;
+    font-size: 4vh;
+    user-select: none;
+    margin: 0;
+}
+.seasonContents-title-div i {
+    font-size: 3.5vh;
+    margin-right: .2vw;
 }
 .sep-bar-season {
-    margin: 1.3vh 0;
-    border: solid 2px #1a1a1a73;
+    margin: 1.5vh 0;
+    border: solid 2px rgba(20, 20, 20, 0.4);
     border-radius: 1vh;
     justify-content: center;
 }
@@ -273,10 +290,10 @@ body {
 }
 .season-title {
     color: white;
-    font-weight: 700;
-    margin: 1vh 0;
+    font-weight: 900;
     margin-right: 0;
     font-size: 3vw;
+    margin: 0;
     font-family: 'Montserrat';
 }
 .season-trailers {
@@ -296,7 +313,7 @@ body {
     align-items: center;
     text-align: center;
     gap: .5vw;
-    margin: 0;
+    margin-bottom: 1vh;
 }
 .body-top {
     margin-top: 1vh;
@@ -350,52 +367,88 @@ body {
     cursor: pointer;
 }
 .map-popup {
-    position: absolute;
+    position: fixed; /* Mudado para fixed para garantir que cubra a tela inteira de forma estável */
+    top: 0;
+    left: 0;
     z-index: 99;
     width: 100vw;
+    height: 100vh; /* Adicionado para garantir altura total do fundo escuro */
     overflow: hidden;
-    overflow-x: hidden;
     background: rgba(0, 0, 0, .85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mapPopup-content {
+    position: relative;
+    /* Ajustado: se você tinha margin de 13vw nas laterais, a largura útil deve ser 74vw (100 - 26) para não vazar da tela */
+
+    
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* CRÍTICO: Impede que o mapa "saia" da caixa preta ao expandir */
+    animation: popupIn .15s ease forwards;
+    isolation: isolate;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    border-radius: 1.5vh;
+}
+.mapPopup-div {
+    background: #050505;
+    padding: 1.5vh;width: 74vw;
+    height: 80%;
+    width: 45%;
+    border-radius: 2.3vh;
+    overflow: hidden;
+    position: relative;
 }
 #mapPopup-image {
     background-position: center;
     background-size: cover;
-    border-radius: 1vh;
-    height: 80vh;
-    width: auto;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
     position: relative;
+    transform-origin: 0 0; 
+    transition: transform 0.05s ease-out;
+    cursor: grab;
 }
-.mapPopup-content {
-    margin: 0 13vw;
-    position: relative;
-    height: 100vh;
-    top: 10vh;
-    width: 100vw;
-    animation: popupIn .15s ease forwards;
-    display: inline-block;
+
+#mapPopup-image:active {
+    cursor: grabbing;
 }
+
 #map-close {
     position: absolute;
-    z-index: 2;
-    right: 0;
-    margin: 1vh;
+    z-index: 10;
+    right: 1vh;
+    top: 1vh;
     cursor: pointer;
     padding: 1vh;
     border-radius: 1vh;
+    color: #fff;
     backdrop-filter: blur(0);
-    transition: opacity .3s ease;
+    transition: all .3s ease;
     box-shadow: 0 0 0 transparent;
 }
+
 #map-close:hover {
     backdrop-filter: blur(200vh);
     box-shadow: 0 0 4vh #05050536;
 }
-#mapPopup-image.open {
+
+#mapPopup-image.dragging {
+    transition: none !important;
+    cursor: grabbing;
+}
+.mapPopup-div.open {
     animation: popupIn .3s ease forwards;
 }
-#mapPopup-image.close {
+.mapPopup-div.close {
     animation: popupOut .3s ease forwards;
 }
+
 .season-events {
     transition: transform .1s linear;
     cursor: pointer;

@@ -1,7 +1,7 @@
 const {contextBridge,ipcRenderer} = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  onWindowStateChange: (callback) => ipcRenderer.on('window-state', (_, state) => callback(state)),
+  onWindowStateChange: (callback) => ipcRenderer.on('window-state-change', (event, state) => callback(state)),
   exists: (filePath) => ipcRenderer.invoke('exists',filePath),
   devTools: () => ipcRenderer.send('devTools'),
 
@@ -53,11 +53,11 @@ contextBridge.exposeInMainWorld('api', {
     getGamesDB: () => ipcRenderer.invoke('games:fetch-gamesdb'),
     listTrailers: () => ipcRenderer.invoke('fortnite:list-trailers') },
 
-  addGameToGist: (gameData) => ipcRenderer.invoke('add-game-to-gist', gameData)
+  addGameToGist: (gameData) => ipcRenderer.invoke('add-game-to-gist', gameData),
+  restartApp: () => ipcRenderer.send('update:restart')
 });
 
 contextBridge.exposeInMainWorld('info', {
   getUserData: () => ipcRenderer.invoke('info:user-data'),
   getDocuments: () => ipcRenderer.invoke('info:documents')
 });
-

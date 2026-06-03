@@ -21,9 +21,10 @@
     </div>
 </div>
 <div class="map-popup" id="map-popup" style="display:none;">
-    <div class="mapPopup-content">
-        <div id="mapPopup-image">
+    <div class="mapPopup-div">
+        <div class="mapPopup-content">
             <i id="map-close" class="fa-solid fa-xmark" onclick="closeMap();"></i>
+            <div id="mapPopup-image"></div>
         </div>
     </div>
 </div>

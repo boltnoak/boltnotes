@@ -102,13 +102,37 @@ async function inicializarDados() {
 // ==========================================
 // 3. RENDERIZAÇÃO DINÂMICA (O CLONADOR)
 // ==========================================
+let seasonTemplateHTML = null;
+
+async function getSeasonTemplate() {
+    // Se o template já foi injetado no DOM, não faz nada
+    if (document.getElementById('season-template')) return;
+
+    try {
+        const res = await fetch('../components/fortnite/seasons-template.bolt');
+        const data = await res.text();
+        document.body.insertAdjacentHTML('afterbegin', data);
+    } catch (err) {
+        console.error("Erro ao carregar/injetar o template:", err);
+    }
+}
+
 async function renderizarCapitulo(prefixoCapitulo, cloudData) {
     const container = document.getElementById('seasons-list-container');
-    const template = document.getElementById('season-template');
     let localDataUpdated = false;
 
-    if (!container || !template) return;
-    container.innerHTML = ''; // Limpa antes de injetar
+    if (!container) return;  
+    container.innerHTML = '';
+
+    // 1. Garante que o template foi injetado no HTML
+    await getSeasonTemplate();
+
+    // 2. Pega o template diretamente do DOM da página
+    const template = document.getElementById('season-template');
+    if (!template) {
+        console.error("Erro: O template #season-template não foi encontrado no DOM.");
+        return;
+    }
 
     const keys = Object.keys(cloudData).filter(code => code.startsWith(prefixoCapitulo)).reverse();
 
@@ -122,10 +146,12 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
             localDataUpdated = true;
         }
 
-        // Clona o Template
+        // 3. Clona o conteúdo interno do template (gera um DocumentFragment)
         const clone = template.content.cloneNode(true);
+        
+        // Aplica o data-code na div principal (.fn-season) de dentro do clone
         const card = clone.querySelector('.fn-season');
-        card.dataset.code = code;
+        if (card) card.dataset.code = code;
 
         // Imagens de Background, Personagem e Mapa
         const bg = clone.querySelector('.banner');
@@ -154,12 +180,11 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
             if (parentText.includes('Níveis')) span.id = `${code}-levels`;
             if (parentText.includes('Lançado em')) {
                 span.id = `${code}-releaseDate`;
-                span.contentEditable = "false"; // Data não se edita
+                span.contentEditable = "false"; 
             } else {
                 span.contentEditable = !isLocked;
-                // Salvamento automático protegido (Debounce)
                 if (!isLocked) {
-                    span.oninput = () => debouncedSave(code);
+                    span.oninput = () => typeof debouncedSave === "function" && debouncedSave(code);
                     span.addEventListener('keydown', (e) => { if (e.key === 'Enter') e.preventDefault(); });
                 }
             }
@@ -167,28 +192,44 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         // Configuração do Trailer
         const trailerBtn = clone.querySelector('.season-trailers');
-        if (trailerBtn) trailerBtn.onclick = () => openTrailer(trailerBtn);
+        if (trailerBtn) trailerBtn.onclick = () => typeof openTrailer === "function" && openTrailer(trailerBtn);
 
         // Renderiza Eventos (se houver)
-        const listaDeEventos = info.events || info.event; 
+        const listaDeEventos = info.events || info.event;
+
+        const listEventsMap = clone.querySelector('.seasonContents-title');
+
+        if (listEventsMap) {
+            if (listaDeEventos && listaDeEventos.length == 1) {
+                listEventsMap.textContent = 'Mapa e Evento';
+            } else if (listaDeEventos && listaDeEventos.length > 1) {
+                listEventsMap.textContent = 'Mapa e Eventos';
+            } else {
+                listEventsMap.textContent = 'Mapa';
+            }
+        }
 
         if (listaDeEventos && Array.isArray(listaDeEventos)) {
-            const container = clone.querySelector('.season-contents');
+            const eventsContainer = clone.querySelector('.season-contents');
             const templateEvent = clone.querySelector('.season-events');
 
-            if (templateEvent) templateEvent.remove();
+            if (templateEvent) {
+                // Remove o esqueleto original do fragmento para não duplicar, 
+                // mas mantém a referência na memória para clonar
+                templateEvent.remove(); 
 
-            listaDeEventos.forEach(evt => {
-                const newEvent = templateEvent.cloneNode(true);
-                newEvent.style.display = 'flex';
-                
-                newEvent.querySelector('.event-img').src = evt.img || '';
-                newEvent.querySelector('.event-title').textContent = evt.title || '';
-                newEvent.querySelector('.event-type').textContent = evt.type || '';
-                newEvent.querySelector('.event-date').textContent = evt.date || '';
-                
-                container.insertBefore(newEvent, container.firstChild);
-            });
+                listaDeEventos.forEach(evt => {
+                    const newEvent = templateEvent.cloneNode(true);
+                    newEvent.style.display = 'flex';
+                    
+                    newEvent.querySelector('.event-img').src = evt.img || '';
+                    newEvent.querySelector('.event-title').textContent = evt.title || '';
+                    newEvent.querySelector('.event-type').textContent = evt.type || '';
+                    newEvent.querySelector('.event-date').textContent = evt.date || '';
+                    
+                    eventsContainer.insertBefore(newEvent, eventsContainer.firstChild);
+                });
+            }
         }
 
         // Título e Data Básica
@@ -199,14 +240,14 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
             titleEl.textContent = m ? `Temporada ${m[1]} - ${info.name || ""}` : `Temporada ${info.name || ""}`;
         }
 
-        // Insere na tela
+        // Insere o fragmento clonado e modificado na tela
         container.appendChild(clone);
-    };
+    }
 
     // Salva o JSON no PC se novos blocos vazios foram criados
     if (localDataUpdated) await window.electronAPI.json.save(FILE, reviews);
 
-    // Agora que está na tela, preenche com as notas salvas!
+    // Preenche com as notas salvas
     preencherValores();
 }
 
@@ -236,7 +277,6 @@ function preencherValores() {
 // 5. EVENTOS GLOBAIS (MAPA) E PROTEÇÃO DE SAVE
 // ==========================================
 addEventListener('click', (e) => {
-    // Note a mudança aqui para buscar a classe!
     if (e.target.matches('.season-map')) openMap(e.target);
 });
 
@@ -249,12 +289,18 @@ function openMap(el) {
 
     if (mapPopup && mapImage && code) {
         mapPopup.style.display = "flex";
-        mapImage.style.backgroundImage = `url('assets://${code}-map.jpg')`;
+        
+        // CORREÇÃO: Adicionado o :// de volta em ambas as URLs
+        mapImage.style.backgroundImage = `url('assets://${code}-viewmap.jpg'), url('assets://${code}-map.jpg')`;
+        
+        configurarZoomMapa(); 
+        resetarZoomMapa();    
     }
 }
+
 function closeMap(el) {
     const mapPopup = document.getElementById("map-popup");
-    const mapImage = document.getElementById("mapPopup-image");
+    const mapImage = document.querySelector(".mapPopup-div");
 
     if (mapPopup && mapImage) {
         mapImage.classList.remove("open");
@@ -263,11 +309,132 @@ function closeMap(el) {
         mapPopup.addEventListener("animationend", function handler() {
             mapPopup.style.display = "none";
             mapPopup.classList.remove("close");
+            resetarZoomMapa();
             mapPopup.removeEventListener("animationend", handler);
             mapImage.classList.remove("close");
-            mapImage.removeEventListener("animationend", handler);
         });
     }
+}
+// ==========================================
+// CONTROLE DE ZOOM E ARRASTO DO MAPA
+// ==========================================
+let scale = 1;
+let isDragging = false;
+let startX, startY;
+let translateX = 0, translateY = 0;
+let isZoomInitialized = false;
+
+function configurarZoomMapa() {
+    if (isZoomInitialized) return;
+
+    const mapImageEl = document.getElementById("mapPopup-image");
+    const container = document.querySelector(".mapPopup-content"); // O container que limita a borda
+    
+    if (!mapImageEl || !container) return;
+
+    // 1. ZOOM FOCO NO MOUSE
+    mapImageEl.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        
+        const zoomSpeed = 0.15;
+        const oldScale = scale;
+
+        // Calcula a nova escala
+        if (e.deltaY < 0) {
+            scale += zoomSpeed;
+        } else {
+            scale -= zoomSpeed;
+        }
+        scale = Math.min(Math.max(1, scale), 5); // Limite de 1x a 5x
+
+        // Pega a posição do mouse relativa ao container
+        const rect = container.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // FÓRMULA MÁGICA: Ajusta a posição (X, Y) para o zoom ir na direção do mouse
+        translateX = mouseX - (mouseX - translateX) * (scale / oldScale);
+        translateY = mouseY - (mouseY - translateY) * (scale / oldScale);
+
+        // Aplica as bordas logo após o zoom
+        aplicarRestricoesBorda(container);
+        atualizarTransform();
+    }, { passive: false });
+
+    // 2. INICIAR ARRASTO
+    mapImageEl.addEventListener("mousedown", (e) => {
+        if (scale === 1) return; // Só arrasta se tiver zoom
+        isDragging = true;
+        
+        // ADICIONE ESTA LINHA: Liga o modo arrasto puro
+        mapImageEl.classList.add("dragging"); 
+        
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+    });
+
+    // 3. MOVIMENTAR E BATER NAS BORDAS
+    window.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+
+        aplicarRestricoesBorda(container);
+        atualizarTransform();
+    });
+
+    // 4. SOLTAR O CLIQUE
+    window.addEventListener("mouseup", () => {
+        if (isDragging) {
+            isDragging = false;
+            
+            // ADICIONE ESTA LINHA: Devolve a animação para o scroll do zoom ficar suave de novo
+            mapImageEl.classList.remove("dragging"); 
+        }
+    });
+
+    window.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+
+    isZoomInitialized = true;
+}
+
+// FUNÇÃO COMPLEMENTAR: Não deixa o mapa sair das bordas do container
+function aplicarRestricoesBorda(container) {
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+
+    // Largura e altura reais do elemento com o zoom aplicado
+    const larguraZoom = cw * scale;
+    const alturaZoom = ch * scale;
+
+    // Limites horizontais (X)
+    const minX = cw - larguraZoom; // O máximo que pode ir para a esquerda
+    const maxX = 0;               // O máximo que pode ir para a direita
+
+    // Limites verticais (Y)
+    const minY = ch - alturaZoom; // O máximo que pode ir para cima
+    const maxY = 0;               // O máximo que pode ir para baixo
+
+    // Força as variáveis a ficarem dentro dos limites calculados
+    translateX = Math.min(Math.max(translateX, minX), maxX);
+    translateY = Math.min(Math.max(translateY, minY), maxY);
+}
+
+function atualizarTransform() {
+    const mapImageEl = document.getElementById("mapPopup-image");
+    if (mapImageEl) {
+        mapImageEl.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+}
+
+function resetarZoomMapa() {
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+    atualizarTransform();
 }
 
 // Proteção para não destruir o disco rígido do usuário ao digitar

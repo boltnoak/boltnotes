@@ -20,6 +20,12 @@
     color: white;
     z-index: 1;
 }
+.review-topictext[contenteditable="true"]:empty::before {
+    content: attr(placeholder);
+    color: rgba(80,80,80,.5);
+    pointer-events: none;
+    display: block;
+}
 #review{
     position: relative;
     justify-content: center;
