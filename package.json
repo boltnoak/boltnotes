@@ -1,7 +1,7 @@
 {
   "name": "boltnotes",
   "productName": "BoltNotes",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Backlog de jogos, Notas e Fortnite",
   "main": "src/main.js",
   "private": true,
