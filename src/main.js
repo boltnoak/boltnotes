@@ -341,26 +341,6 @@ if (!gotTheLock) {
   });
 
   app.whenReady().then(async () => {
-
-    const { Notification } = require('electron');
-    app.setAppUserModelId('com.boltnoak.boltnotes');
-
-    const notif = new Notification({
-        title: 'BoltNotes atualizado!',
-        body: `Versão 0.1.17 pronta.
-        Clique para reiniciar.`,
-        icon: path.join(__dirname, 'icon.png')
-    });
-
-    notif.on('click', () => {
-        win?.quit();
-        // autoUpdater.quitAndInstall(); // não chama de verdade no teste
-    });
-
-    notif.show();
-
-
-
     protocol.handle('assets', (req) => {
       const url = new URL(req.url);
 
