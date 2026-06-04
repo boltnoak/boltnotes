@@ -493,8 +493,6 @@ autoUpdater.on('update-downloaded', (info) => {
         body: `Versão ${info.version} pronta. Reinicie para aplicar.`,
         icon: path.join(__dirname, 'icon.png')
     }).show();
-
-    win?.webContents.send('update-downloaded');
 });
 ipcMain.on('update:restart', () => {
     autoUpdater.quitAndInstall();
