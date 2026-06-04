@@ -8,7 +8,7 @@ body {
     display: flex;
     flex-direction: row;
     transform: translateY(6.5vh);
-    height: 86.5vh;
+    height: 93vh;
 }
 header {
     background-color: transparent;
@@ -18,8 +18,18 @@ header {
 .page-content {
     width: 100%;
 }
-.page-infos {
-    width: 23%;
+.sidebar {
+    width: 25%;
+    margin-bottom: 6.5vh;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+}
+.sep-bar-v {
+    margin: 0 .2vw;
+    border: solid .4vh rgba(25,25,25,.4);
+    border-radius: 1vh;
+    justify-content: center;
 }
 
 /* Painel de jogando no momento */
@@ -48,7 +58,7 @@ header {
     gap: 2vh;
     display: flex;
     flex-direction: row;
-    margin-left: 2vw;
+    justify-content: center;
 }
 .playingNow-games {
     padding: 1.5vh;
@@ -77,19 +87,13 @@ header {
 
 /* Barra de visualização */
 .view-bar {
-    background-color: #030303;
-    margin-right: 2vw;
+    margin-right: 1vw;
     display: flex;
-    border-radius: 2vh;
     flex-direction: row;
-    padding: 1vh;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    padding: 1vh .2vw .6vh .2vw;
     justify-content: space-between;
     user-select: none;
-    border: solid .5vh rgba(20,20,20,.4);
     border-bottom: none;
-    margin-top: 2vh;
 }
 
 #view-grid, #view-list, #addNew-game {
@@ -178,21 +182,17 @@ header {
 
 /* Visualização de Jogos */
 #view-games {
-    background-color: #030303;
     margin-right: 2vw;
-    padding: 1vh 1.2vw;
+    padding: 1vh 0;
+    margin: 0 .6vw;
     padding-bottom: 3vh;
     display: grid;
     gap: 1.2vw;
     flex: 1;
     overflow: hidden;
     overflow-y: auto;
-    height: 78vh;
-    border: solid .5vh rgba(20,20,20,.4);
+    height: 91%;
     border-top: none;
-    border-radius: 2vh;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
 }
 
 /* Visualisação em grade */
@@ -205,7 +205,7 @@ header {
 }
 #view-games.grid .game {
     height: max-content;
-    width: 13.5vw;
+    width: 14.5vw;
 }
 #view-games.grid .game-info {
     display: flex;
@@ -276,8 +276,8 @@ header {
 }
 .game-info {
     display: flex;
-    flex-direction: row;
-    padding: 2vh;
+    flex-direction: column;
+    padding: 1.6vh 1vw;
     padding-top: .5vh;
 }
 .game-title {
@@ -291,7 +291,6 @@ header {
 /* Status dos jogos */
 .status {
     height: 4vh;
-    margin: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -336,17 +335,26 @@ header {
 }
 .status.jogando {
     position: relative;
-    background: rgba(40, 40, 40, 0.2);
+    background-color: rgba(20, 20, 20, 0.4);
     border-radius: .8vh;
-    padding: 0;
     overflow: hidden;
+    padding: 0;
+    margin: 1vh 0 0 0;
+    height: 1vh;
+    width: 100%;
+    flex: none;
+}
+.status.jogando .status-fill {
+    position: absolute;
+    background: var(--blue);
+    overflow: hidden;
+    padding: 0;
+    height: 1vh;
+    width: 100%;
+    flex: none;
 }
 .playingNow-panel .game {
-    width: 17vw;
-    margin-right: 2vw;
-}
-.playingNow-panel .game-info {
-    padding: 1.2vh;
+    width: 20vw;
 }
 .status.ajogar {
     position: relative;
@@ -363,4 +371,66 @@ header {
     font-weight: 600;
     font-size: 2.5vh;
     padding: 0;
+}
+.jogando-text {
+    color: var(--blue);
+    font-family: 'Montserrat';
+    font-weight: 600;
+    font-size: 2.5vh;
+    padding: 0;
+    margin: .5vh 0 0 0;
+}
+
+.add-game-form {
+    display: flex;
+    flex-direction: column;
+    gap: .8vh;
+    font-family: 'Montserrat';
+    padding: 1.5vh .35vw 0 .5vw;
+}
+.add-game-form input {
+    background-color: rgb(10, 10, 10);
+    padding: 1.5vh .4vw 1.5vh .5vw;
+    border-radius: 1vh;
+    color: var(--text);
+    border: none;
+}
+.steamdb-btn i {
+    font-size: 4vh;
+    align-self: center;
+    text-align: center;
+    justify-self: center;
+}
+.steamdb-btn {
+    background-color: rgb(15, 15, 15);
+    padding: 1.6vh .5vw;
+    border-radius: 1vh;
+    user-select: none;
+    cursor: pointer;
+    transition: background .1s linear;
+    text-decoration: none;
+}
+.steamdb-btn:hover {
+    background-color: rgb(20, 20, 20);
+}
+.add-game-form-options {
+    display: flex;
+    flex-direction: row;
+}
+#addGameBtn {
+    background-color: rgb(15, 15, 15);
+    padding: 2vh .5vw;
+    border-radius: 1vh;
+    user-select: none;
+    cursor: pointer;
+    align-items: center;
+    text-align: center;
+    transition: background .1s linear;
+    text-decoration: none;
+    margin-left: .35vw;
+    font-weight: 700;
+    width: 100%;
+}
+#addGameBtn:hover {
+    background-color: rgb(20, 20, 20);
 }

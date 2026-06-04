@@ -9,37 +9,31 @@
 </head>
 <body>
 <div class="pageBody">
-    <div class="page-infos">
-        <div id="playingNowSection-title"><p>Jogando no momento</p><i id="playingNowSection-toggle" class="fa-solid fa-angle-up"></i></div>
-        <div class="playingNow-panel">
-            <div id="playingNow-games"></div>
+    <div class="sidebar">
+        <div>
+            <div id="playingNowSection-title"><p>Jogando no momento</p><i id="playingNowSection-toggle" class="fa-solid fa-angle-up"></i></div>
+            <div class="playingNow-panel">
+                <div id="playingNow-games"></div>
+            </div>
         </div>
+        
         <div class="add-game-form">
-    <h3>Adicionar Novo Jogo</h3>
-    <input type="text" id="gameAppId" placeholder="App ID (Ex: Steam ID ou Código Único)">
-    <input type="text" id="gameName" placeholder="Nome do Jogo">
-    <button id="addGameBtn">Adicionar ao Gist</button>
-</div>
+            <input type="text" id="gameName" placeholder="Nome do Jogo">
+            <input type="text" id="gameAppId" placeholder="App ID do Jogo">
+            <div class="add-game-form-options">
+                <a class="steamdb-btn" href="https://steamdb.info/search/">
+                    <i class="fa-brands fa-steam"></i>
+                </a>
+                <a id="addGameBtn">Adicionar</a>
+            </div>
+        </div>
     </div>
+    <p class="sep-bar-v"></p>
     <div class="page-content">
         <div class="view-bar">
             <div class="view-options">
                 <i id="view-grid" class="fa-solid fa-grip"></i>
                 <i id="view-list" class="fa-solid fa-bars"></i>
-                <div class="add-game-container">
-    <input type="text" id="new-game-input" placeholder="Digite o nome do jogo comprado...">
-    <button onclick="adicionarPeloBotao()">Adicionar à Minha Lista</button>
-</div>
-
-<script>
-    function adicionarPeloBotao() {
-        const input = document.getElementById("new-game-input");
-        if (input.value.trim() !== "") {
-            addNewGameToLibrary(input.value.trim());
-            input.value = ""; // Limpa o campo depois de adicionar
-        }
-    }
-</script>
             </div>
             <div class="sorting-addGame">
                 <div class="sorting-options">
@@ -68,7 +62,7 @@
 </div>
 
 <header>
-    <a class="back" href="pages/index.html">Voltar</a>
+    <a class="back" href="pages/index.html">Voltar<i class="fa-solid fa-caret-left"></i></a>
 </header>
 
 <div id="loading-screen">

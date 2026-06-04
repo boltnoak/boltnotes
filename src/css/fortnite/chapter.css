@@ -17,13 +17,17 @@ body {
 }
 .chapter-section {
     margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 1vh;
+    text-align: center;
+    gap: .5vw;
 }
 #chapter-name {
+    margin: 0;
+    padding: 0;
     font-size: 3vh;
     color: white;
     font-family: 'Montserrat';
@@ -36,40 +40,46 @@ body {
 }
 #before-chapter, #next-chapter{
     margin: 0;
-    padding: 0;
+    padding: .5vh .7vw;
     transition: border 0.1s linear;
     visibility: hidden;
     border-radius: 4vh;
-    border: solid .7vh transparent;
-    font-size: 4vh;
+    border: solid .6vh transparent;
+    font-size: 3vh;
     cursor: pointer;
+    width: fit-content;
 }
 #before-chapter:hover, #next-chapter:hover {
-    border: solid .7vh white;
+    border: solid .6vh white;
 }
-.nochapter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    transform: translateY(40%);
-    text-decoration: none;
-    padding: 6px;
-    color: rgb(90, 90, 90);
+.chapters {
+    border-radius: 4vh;
+    border: solid .6vh transparent;
+    transition: border 0.25s ease-in-out;
+    padding: .5vh .4vw;
+    font-size: 2.7vh;
+    color: white;
     font-family: 'Montserrat';
-    font-size: 26px;
     font-weight: 700;
-    border-radius: 16px;
-    border: solid 4px transparent;
-    transition: all 0.1s linear;
+    position: absolute;
+    margin: 0 .5vw 0 0;
+    right: 0;
+    justify-content: center;
+    text-decoration: none;
     user-select: none;
+    align-items: center;
+    display: flex;
+    flex-direction: row-reverse;
+    cursor: pointer;
 }
-
+.chapters:hover {
+    border: solid .6vh white;
+}
 .banner {
     background-position: center;
     background-size: cover;
     height: 45vh;
+    position: relative;
     margin: 0;
     opacity: 100%;
     border-top-left-radius: 1.5vh;
@@ -218,11 +228,34 @@ body {
     font-weight: 500;
     font-size: 1.7vw;
     margin: 0;
-    color: white;
+    color: var(--text-light-gray);
+    display: flex;
+    flex-direction: row;
+    gap: .5vw;
+    align-items: center;
+    user-select: none;
 }
-.status i {
+.fa-square-caret-up, .fa-trophy, .fa-calendar-day, .fa-star {
     font-size: 3vh;
-    margin-right: .2vw;
+}
+.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus  {
+    font-size: 2vh;
+    background: rgb(20, 20, 20,.6);
+    padding: .8vh .5vw;
+    border-radius: .8vh;
+    transition: background .1s linear;
+    display: none;
+}
+.statusLevel-add:hover, .statusLevel-minus:hover, .statusWin-add:hover, .statusWin-minus:hover {
+    background: rgb(60,60,60,.4);
+    cursor: pointer;
+}
+.status-level, .status-win {
+    text-align: center;
+    width: 3.1vw;
+}
+.status-win {
+    width: 2.2vw;
 }
 #review-sction {
     width: 100%;
@@ -277,14 +310,64 @@ body {
     display: flex;
     flex-direction: row;
 }
+#lock-unlock {
+    margin: 1.2vh .5vw;
+    font-size: 3vh;
+    opacity: .2;
+    background: transparent;
+    padding: 1vh .5vw;
+    border-radius: 1.1vh;
+    color: var(--text);
+    cursor: pointer;
+    transition: all .1s;
+}
+#lock-unlock:hover {
+    opacity: 1;
+}
+.rating-container {
+    cursor: pointer;
+}
+.rating-options {
+    position: relative;
+    justify-content: center;
+    flex-wrap: wrap;
+    top: 31vh;
+    width: 100%;
+    background-color: rgb(7,7,7);
+    font-family: 'Montserrat';z-index: 10;
+    overflow: hidden;
+    display: none;
+    user-select: none;
+    cursor: pointer;
+}
+.rating-options::before {
+    display: none;
+}
+.rating-options.active {
+    display: flex;
+}
+.rating-option {
+    padding: 2vh 1vw;
+    text-align: center;
+    color: var(--text-light-gray);
+    font-size: 2.3vh;
+    font-weight: 600;
+    transition: background 0.1s linear;
+}
+.rating-option:hover {
+    background: rgba(14,14,14);
+}
+.status-rating {
+    width: 3.1vw;
+}
 .season-tags {
     display: flex;
     flex-direction: row;
     gap: .7rem;
     justify-content: space-around;
     background-color: rgb(10,10,10);
-    padding: 2vh;
-    border-radius: 1vh;
+    padding: 2.3vh 2vh;
+    border-radius: 1.5vh;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
@@ -348,7 +431,7 @@ body {
 }
 .seasonMap-div {
     width: auto;
-    border-radius: 1vh;
+    border-radius: 1.5vh;
     object-fit: cover;
     cursor: pointer;
     overflow: hidden;
@@ -357,13 +440,13 @@ body {
 }
 #season-map, .season-map {
     height: 100%;
-    transform: scale(1);
+    transform: scale(1.1);
     transition: transform 0.2s ease;
     object-fit: cover;
     width: 100%;
 }
 .seasonMap-div:hover #season-map, .seasonMap-div:hover .season-map {
-    transform: scale(1.05);
+    transform: scale(1.15);
     cursor: pointer;
 }
 .map-popup {
@@ -456,7 +539,7 @@ body {
     flex-direction: row;
     margin: 0;
     flex: content;
-    border-radius: 1vh;
+    border-radius: 1.5vh;
     overflow: hidden;
     flex: 1;
 }

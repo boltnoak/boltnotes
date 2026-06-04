@@ -1,46 +1,6 @@
 let reviews = window.reviews || {};
 window.reviews = reviews;
 
-function openReview(code) {
-    const popup = document.getElementById("review-popup");
-    const content = document.getElementById("review");
-    
-    const data = reviews[code] || {};
-
-    content.innerHTML = `
-    <div class="review-content">
-        <div class="reviews">
-            <div class="review-section">
-                    <p class="review-topic">LOOT POOL</p>
-                    <p id="edit-loot" class="review-topictext" contenteditable="true" 
-                       oninput="autoSave('${code}')">${data.loot || ""}</p>
-                    <hr class="sep-bar-review">
-                    
-                    <p class="review-topic">MAPA</p>
-                    <p id="edit-mapa" class="review-topictext" contenteditable="true" 
-                       oninput="autoSave('${code}')">${data.mapa || ""}</p>
-                    <hr class="sep-bar-review">
-                    
-                    <p class="review-topic">PASSE DE BATALHA</p>
-                    <p id="edit-passe" class="review-topictext" contenteditable="true" 
-                       oninput="autoSave('${code}')">${data.passe || ""}</p>
-                    <hr class="sep-bar-review">
-                    <p class="review-topic">HISTÓRIA</p>
-                    <p id="edit-story" class="review-topictext" contenteditable="true" 
-                    oninput="autoSave('${code}')">${data.story || ""}</p>
-            </div>
-            <div>
-                <img id="map" src="assets://${code}-map.jpg">
-            </div>
-        </div>
-    </div>`;
-}
-
-function closeReview() {
-    document.getElementById("review-popup").style.display = "none";
-    document.documentElement.style.overflow = "auto";
-}
-
 let saveTimeout = null;
 
 function initReviews() {
@@ -53,19 +13,23 @@ function initReviews() {
 
         if (!content || content.innerHTML.trim() !== "") return;
 
+        const isSeasonLocked = data.locked ?? (season.querySelector('.season')?.dataset.locked === "true");
+
+        const editableAttr = isSeasonLocked ? 'contenteditable="false"' : 'contenteditable="true"';
+
         content.innerHTML = `
             <div class="reviews">
                 <p class="review-topic">LOOT POOL</p>
-                <p id="${code}-loot" placeholder="Vazio" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.loot || ""}</p>
+                <p id="${code}-loot" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.loot || ""}</p>
                 <!--<p class="sep-bar-season"></p>-->
                 <p class="review-topic">MAPA</p>
-                <p id="${code}-mapa" placeholder="Vazio" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.mapa || ""}</p>
+                <p id="${code}-mapa" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.mapa || ""}</p>
                 <!--<p class="sep-bar-season"></p>-->
                 <p class="review-topic">PASSE DE BATALHA</p>
-                <p id="${code}-passe" placeholder="Vazio" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.passe || ""}</p>
+                <p id="${code}-passe" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.passe || ""}</p>
                 <!--<p class="sep-bar-season"></p>-->
                 <p class="review-topic">HISTÓRIA</p>
-                <p id="${code}-story" placeholder="Vazio" class="review-topictext" contenteditable="true" oninput="debouncedSave('${code}')">${data.story || ""}</p>
+                <p id="${code}-story" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.story || ""}</p>
             </div>`;
     });
 }
@@ -96,7 +60,7 @@ function debouncedSave(code) {
 
         window.electronAPI.json.save(FILE, reviews);
         console.log(`Dados da temporada ${code} salvos com sucesso!`);
-    }, 1000);
+    }, 100);
 }
 
 async function autoSave(code) {

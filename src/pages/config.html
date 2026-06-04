@@ -10,11 +10,13 @@
 <body>
 <div class="pageBody">
     <div class="tabs">
-        <p class="sep">Preferencias</p>
-        <div data-code="basics" class="tab active" onclick="tabSwitch(this)">Básico</div>
-        <div data-code="about" class="tab" onclick="tabSwitch(this)">Sobre</div>
+        <div data-code="basics" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i>Básico</div>
+        <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-filter"></i>Funções</div>
+        <p class="sep-bar"></p>
+        <div data-code="about" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-info"></i>Locais</div>
         <!-- <div data-code="aparencia" class="tab" onclick="tabSwitch(this)">Aparência</div> -->
     </div>
+    <p class="sep-bar-v"></p>
     <div id="basics" class="tab-configs active">
         <p class="sep">Inicialização</p>
         <div class="config-item">
@@ -31,30 +33,41 @@
             <a class="toggle" data-code="minimize_to_tray" onclick="toggleConfig(this)"></a>
         </div>
     </div>
-    <div id="aparencia" class="tab-configs">
-        <p class="sep">Aparência</p>
-    <div class="config-item">
-        <p>Tema</p>
-        <select id="select-theme" data-code="theme" onchange="changeTheme(this)">
-            <option value="dark">Escuro</option>
-            <option value="light">Claro</option>
-        </select>
-    </div>
+    <div id="features" class="tab-configs">
+        <p class="sep">Backlog de Jogos</p>
+        <div class="config-item">
+            <p>Mostrar "Jogando no momento" em Home</p>
+            <a class="toggle" data-code="playing-now-on-home" onclick="toggleConfig(this)"></a>
+        </div>
+        <div class="config-item">
+            <p>Mostrar "Backlog de Jogos" em Home</p>
+            <a class="toggle" data-code="backlog-on-home" onclick="toggleConfig(this)"></a>
+        </div>
+        <p class="sep">Notas</p>
+        <div class="config-item">
+            <p>Mostrar "Notas" em Home</p>
+            <a class="toggle" data-code="notes-on-home" onclick="toggleConfig(this)"></a>
+        </div>
+        <p class="sep">Fortnite</p>
+        <div class="config-item">
+            <p>Mostrar "Fortnite" em Home</p>
+            <a class="toggle" data-code="fortnite-on-home" onclick="toggleConfig(this)"></a>
+        </div>
     </div>
 	<div id="about" class="tab-configs">
-        <p class="sep">Local do app</p>
+        <p class="sep">Dados do app</p>
 		<div class="config-item">
-			<p id="user-data"></p>
+			<p class="path" id="user-data"></p>
 		</div>
-        <p class="sep">Local dos dados</p>
+        <p class="sep">Dados locais</p>
 		<div class="config-item">
-			<p id="documents"></p>
+			<p class="path" id="documents"></p>
 		</div>
     </div>
 </div>
 
 <header>
-    <a class="back" href="pages/index.html">Voltar</a>
+    <a class="back" href="pages/index.html">Voltar<i class="fa-solid fa-caret-left"></i></a>
 </header>
 
 <div id="loading-screen">

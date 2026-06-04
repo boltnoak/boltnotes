@@ -1,20 +1,15 @@
 let BasePath;
 
+let notes;
+let games;
+let fortnite;
+
 const basePagePathLog = document.querySelector('base').href
     .replace(/.*(?=BoltNotes\/)/, 'Documentos/')
-    .replace(/\/$/, '');
+    .replace(/\/$/, '')
+    .replace('file://', '');
 
-console.log(`Base da página: ${basePagePathLog.replace(/\//g, ' > ')}`)
-
-window.onload = function () {
-      const loadingScreen = document.getElementById('loading-screen');
-      
-      loadingScreen.classList.add('hidden');
-
-      setTimeout(() => {
-        loadingScreen.remove();
-      }, 400);
-    };
+console.log(`Base da página: ${basePagePathLog}`);
 
 const appStorage = {
     load: async (filePath) => {
@@ -102,10 +97,3 @@ async function loadLatestFN() {
 }
 
 loadLatestFN();
-
-window.assets.onProgress(data => {
-  document.getElementById(
-    'download-status'
-  ).textContent =
-    `${data.package} - ${data.percent}%`;
-});

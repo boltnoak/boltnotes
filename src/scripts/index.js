@@ -95,31 +95,27 @@ async function loadFortniteStats() {
   }
 }
 
-async function loadGamesStats() {
-  try {
-    const res = await fetch(`documents://Games/status.json`);
-    
-    if (!res.ok) {
-      throw new Error(`Erro ao carregar: ${res.status}`);
-    }
+updateNoteCount();
+loadFortniteStats();
 
-    const data = await res.json();
-
-    const lista = Array.isArray(data) ? data : (data.games || []);
-
-    const totalZerados = lista.filter(g =>
-      (g.status || "").toLowerCase().trim() === "zerado"
-    ).length;
-
-    const elemento = document.getElementById("games-zerados");
-    if (elemento) {
-      elemento.textContent = `${totalZerados} Zerados`;
-    }
-  } catch (err) {
-    console.error("Não foi possível carregar os status dos jogos:", err);
-    document.getElementById("games-zerados").textContent = "0 Zerados";
+document.addEventListener('DOMContentLoaded', async () => {
+  const versao = await window.api.getAppVersion();
+  
+  const elementoVersao = document.getElementById('app-version');
+  if (elementoVersao) {
+    elementoVersao.innerText = `v${versao}`;
   }
+});
+
+function parseBRDate(dateStr) {
+  if (!dateStr || !dateStr.includes("/")) return 0;
+
+  const [d, m, y] = dateStr.split("/").map(Number);
+  return new Date(y, m - 1, d).getTime();
 }
+
+let cachedGamesDB = null;
+let cachedStatus = null;
 
 async function loadGamesDB() {
     if (cachedGamesDB) {
@@ -141,64 +137,28 @@ async function loadGames() {
     const stats = await loadStatus();
 
     const playingNow = document.querySelector(".playingNow-panel");
-    const list = document.getElementById("view-games");
 
-    if (!playingNow || !list) return;
+    if (!playingNow) return;
 
     playingNow.innerHTML = "";
-    list.innerHTML = "";
 
-    // 1. Pega as suas duas listas
     let listaStats = Array.isArray(stats) ? stats : (stats.games || []);
     const dbGames = data.games ? [...data.games] : [];
 
-    // ==========================================
-    // 2. A NOVA LÓGICA DE MESCLAGEM
-    // ==========================================
-    // Agora nós percorremos a SUA lista pessoal, ignorando os jogos do DB que você não tem.
     let games = listaStats.map(localGame => {
-        // Procura no DB global se existe a "ficha" desse jogo para pegar a capa e o appid oficial
         const gameNoDB = dbGames.find(g => 
             (localGame.appid && g.appid === localGame.appid) || 
             (localGame.name && g.name.toLowerCase() === localGame.name.toLowerCase())
         ) || {};
 
-        // Retorna o seu jogo com as informações extras da nuvem (como a capa)
         return {
-            ...gameNoDB,    // Traz: appid, cover (da nuvem, se existir)
-            ...localGame    // Traz: name, status, rating, completeDate, storyProgress (do seu PC)
+            ...gameNoDB,
+            ...localGame
         };
     });
 
-    // ==========================================
-    // 3. DAQUI PARA BAIXO O CÓDIGO CONTINUA IGUAL
-    // ==========================================
-    const sort = document.getElementById("realSorting-options")?.value || "date-recent";
-
     const playing = games.filter(g => (g.status || "").toLowerCase().trim() === "jogando");
     let others = games.filter(g => (g.status || "").toLowerCase().trim() !== "jogando");
-
-    // Lógica de Ordenação
-    if (sort === "date-recent") {
-        others.sort((a, b) => parseBRDate(b.completeDate) - parseBRDate(a.completeDate));
-    } else if (sort === "date-old") {
-        others.sort((a, b) => parseBRDate(a.completeDate) - parseBRDate(b.completeDate));
-    } else if (sort === "rating-high") {
-        others.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    } else if (sort === "rating-low") {
-        others.sort((a, b) => (a.rating || 0) - (b.rating || 0));
-    }
-
-    const isGrid = list.classList.contains("grid");
-
-    if (isGrid) {
-        const order = { "ajogar": 0, "zerado": 1 };
-        others.sort((a, b) => {
-            const sa = (a.status || "").toLowerCase().trim();
-            const sb = (b.status || "").toLowerCase().trim();
-            return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
-        });
-    }
 
     const completedMap = new Map(
         games
@@ -219,13 +179,6 @@ async function loadGames() {
         noGames.className = "playingNow-no-games";
         noGames.textContent = "Nenhum jogo sendo jogado.";
         playingNow.appendChild(noGames);
-    }
-
-    // Renderiza o resto
-    for (const game of others) {
-        const index = completedMap.get(game.appid || game.name) || null;
-        const card = await createGameCard(game, false, index);
-        list.appendChild(card);
     }
 }
 
@@ -250,6 +203,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     const title = document.createElement("p");
     title.className = "game-title";
+    title.textContent = game.name;
 
     const status = (game.status || "").toLowerCase().trim();
 
@@ -260,34 +214,16 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     tagFill.className = "status-fill";
     tagFill.style.width = (game.storyProgress || 0) + "%";
 
-    // Adiciona a classe de cor apropriada
-    if (status === "jogando") tag.classList.add("jogando");
-    else if (status === "zerado") tag.classList.add("zerado");
-    else if (status === "ajogar") tag.classList.add("ajogar");
-    else if (status === "wishlist") tag.classList.add("wishlist");
-
-    // Se estiver jogando, mostra a porcentagem na tag
-    if (status === "jogando") {
-        const statusPercentage = document.createElement("span");
-        statusPercentage.className = "status-percentage";
-        statusPercentage.textContent = (game.storyProgress || 0) + "%";
-        tag.appendChild(statusPercentage);
-    }
-
-    title.textContent = game.name;
-
-    // Lógica para mostrar o número (Index) no modo Lista
-    const listElement = document.getElementById("view-games");
-    const isListView = listElement ? listElement.classList.contains("list") : false;
-
-    if (completedIndex !== null && isListView && !isPlaying) {
-        const index = document.createElement("span");
-        index.className = "sort-number";
-        index.textContent = `#${completedIndex} `;
-        title.prepend(index);
-    }
-
     gameInfo.appendChild(title);
+    
+    if (status === "jogando") {
+        tag.classList.add("jogando");
+        const statusPercentage = document.createElement("span");
+        statusPercentage.className = "jogando-text";
+        statusPercentage.textContent = `Jogando (${(game.storyProgress || 0)}%)`;
+        gameInfo.appendChild(statusPercentage);
+        gameInfo.appendChild(tag);
+    }
 
     // Lógica de texto complementar do status
     if (status === "zerado") {
@@ -300,12 +236,10 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         gameInfo.appendChild(statusText);
         gameInfo.appendChild(tag);
     } else {
-        // Se for "jogando" ou "wishlist", mantém o texto base
         if (status !== "jogando") tag.textContent = game.status;
         gameInfo.appendChild(tag);
     }
     
-    // Adiciona a barra de progresso dentro da tag
     tag.appendChild(tagFill);
 
     div.appendChild(img);
@@ -314,16 +248,13 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     return div;
 }
 
-let cachedGamesDB = null;
-let cachedStatus = null;
-
 async function loadStatus() {
     if (cachedStatus) {
         console.log("Reviews carregados do cache!");
         return cachedStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(`documents://Games/status.json`);
+        const content = await window.electronAPI.json.load(`Games/status.json`);
         cachedStatus = content || {};
         return cachedStatus;
     } catch (e) {
@@ -332,16 +263,6 @@ async function loadStatus() {
     }
 }
 
-updateNoteCount();
-// loadGames();
-// loadGamesStats();
-loadFortniteStats();
+loadGames();
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const versao = await window.api.getAppVersion();
-  
-  const elementoVersao = document.getElementById('app-version');
-  if (elementoVersao) {
-    elementoVersao.innerText = `v${versao}`;
-  }
-});
+const playingNowTitle = document.getElementById('playingNowSection-title');

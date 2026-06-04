@@ -121,18 +121,23 @@
 }
 
 /* Painel de Jogos */
-.playingNowSection-title {
-    display: block;
+#playingNowSection-title {
+    display: flex;
     color: white;
     font-family: 'Montserrat';
     font-size: 4.4vh;
     font-weight: 600;
-    margin: 0;
-    margin: 1.5vh 14.8vw;
+    margin: .5vh 14.8vw;
     padding: 0;
     text-align: center;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
 }
-.playingNowSection-title i {
+#playingNowSection-title p {
+    margin: 0;
+}
+#playingNowSection-title i {
     margin-right: 1vh;
 }
 .playingNow-panel {
@@ -142,7 +147,7 @@
     margin: 0 14.8vw;
     justify-content: center;
 }
-.playingNow-games {
+#playingNow-games {
     padding: 1.5vh;
     padding-top: .8vh;
     border-radius: 1.6vh;
@@ -174,49 +179,64 @@
     height: 20vh;
     object-fit: cover;
     margin-bottom: .2vh;
+    width: 100%;
 }
 .game-info {
     display: flex;
-    flex-direction: row;
-    padding: 2vh;
+    flex-direction: column;
+    padding: 1.6vh 1vw;
+    padding-top: .5vh;
 }
 .game-title {
-    font-size: 2.9vh;
+    font-size: 2.5vh;
     flex: 1;
     font-family: 'Montserrat';
     font-weight: 700;
     color: white;
     margin: 0;
 }
+/* Status dos jogos */
 .status {
-    height: 4vh;
-    margin: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
-    flex: 1;
-
+    user-select: none;
     position: relative;
-    background: rgba(40, 40, 40, 0.2);
+    background-color: rgba(20, 20, 20, 0.4);
     border-radius: .8vh;
-    padding: 0;
     overflow: hidden;
+    padding: 0;
+    margin: 1vh 0 0 0;
+    height: 1vh;
+    width: 100%;
+    flex: none;
 }
 .status-fill {
-    height: 100%;
     display: inline-block;
-    background: rgba(70, 70, 70, 0.5);
     object-fit: cover;
     border-radius: 0;
-    padding: .2vh;
+    position: absolute;
+    background: var(--blue);
+    overflow: hidden;
+    padding: 0;
+    height: 1vh;
+    width: 100%;
+    flex: none;
 }
 .status-percentage {
     color: rgb(170, 170, 170);
     position: absolute;
     font-family: 'Montserrat';
-    font-weight: 500;
-    font-size: 1.3vw;
+    font-size: 1.1vw;
     font-weight: 700;
     z-index: 1;
     left: 1vh;
+}
+.jogando-text {
+    color: var(--blue);
+    font-family: 'Montserrat';
+    font-weight: 600;
+    font-size: 2.5vh;
+    padding: 0;
+    margin: .5vh 0 0 0;
 }

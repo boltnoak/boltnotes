@@ -144,6 +144,8 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     tagFill.className = "status-fill";
     tagFill.style.width = (game.storyProgress || 0) + "%";
 
+    gameInfo.appendChild(title);
+
     // Adiciona a classe de cor apropriada
     if (status === "jogando") tag.classList.add("jogando");
     else if (status === "zerado") tag.classList.add("zerado");
@@ -153,9 +155,10 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     // Se estiver jogando, mostra a porcentagem na tag
     if (status === "jogando") {
         const statusPercentage = document.createElement("span");
-        statusPercentage.className = "status-percentage";
-        statusPercentage.textContent = (game.storyProgress || 0) + "%";
-        tag.appendChild(statusPercentage);
+        statusPercentage.className = "jogando-text";
+        statusPercentage.textContent = `Jogando (${(game.storyProgress || 0)}%)`;
+        gameInfo.appendChild(statusPercentage);
+        gameInfo.appendChild(tag);
     }
 
     title.textContent = game.name;
@@ -171,7 +174,6 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         title.prepend(index);
     }
 
-    gameInfo.appendChild(title);
 
     // Lógica de texto complementar do status
     if (status === "zerado") {
@@ -235,40 +237,17 @@ async function loadStatus() {
 
 //   loadGames();
 // });
-async function addNewGameToLibrary(gameName) {
-    const globalDB = await loadGamesDB();
-    let localStats = await loadStatus();
 
-    let listaStats = Array.isArray(localStats) ? localStats : (localStats.games || []);
 
-    const alreadyExists = listaStats.find(g => g.name.toLowerCase() === gameName.toLowerCase());
-    if (alreadyExists) {
-        alert("Você já tem esse jogo na sua biblioteca!");
-        return;
+const steamDbBtn = document.querySelector('.steamdb-btn');
+
+steamDbBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const url = steamDbBtn.getAttribute('href');
+    if (url) {
+      window.api.openLink(url); 
     }
-
-    const gameInDB = globalDB.games.find(g => g.name.toLowerCase() === gameName.toLowerCase());
-    if (!gameInDB) {
-        alert("Jogo não encontrado no Banco Global. Adicione no Gist primeiro!");
-        return;
-    }
-
-    const newGameProfile = {
-        name: gameInDB.name,
-        appid: gameInDB.appid,
-        status: "ajogar",
-        rating: 0,
-        completeDate: "",
-        storyProgress: 0
-    };
-
-    listaStats.push(newGameProfile);
-
-    await window.api.saveStatus(listaStats);
-
-    await loadGames();
-    alert(`${gameInDB.name} foi adicionado à sua biblioteca!`);
-}
+});
 
 const gameList = document.getElementById("view-games");
 const viewGridBtn = document.getElementById("view-grid");

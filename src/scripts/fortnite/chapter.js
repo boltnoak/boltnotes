@@ -7,53 +7,76 @@ const fileName = window.location.pathname
 
 const match = fileName.match(/chapter(\d+)/i);
 
+async function loadHeader() {
+    document.body.insertAdjacentHTML('afterbegin', `
+        <header>
+            <a class="back">Voltar</a>
+            <div class="chapter-section">
+                <i id="before-chapter"></i>
+                <p id="chapter-name"></p>
+                <i id="next-chapter"></i>
+            </div>
+            <a class="chapters"></a>
+        </header>`);
+};
+loadHeader();
 
-    const matcha = window.location.pathname.match(/chapter(\d+)\.html/);
-        const CURRENT_CHAPTER = `c${matcha[1]}`;
+const backIcon = document.createElement('i');
+backIcon.className = 'fa-solid fa-caret-left';
+
+if (document.querySelector('.back')) document.querySelector('.back').appendChild(backIcon);
+
+const chaptersIcon = document.createElement('i');
+chaptersIcon.className = 'fa-solid fa-book';
+
+if (document.querySelector('.chapters')) document.querySelector('.chapters').appendChild(chaptersIcon);
+
+const matcha = window.location.pathname.match(/chapter(\d+)\.html/);
+const CURRENT_CHAPTER = `c${matcha[1]}`;
 window.addEventListener('DOMContentLoaded', async () => {
-    const match = window.location.pathname.match(/chapter(\d+)\.html/);
+const match = window.location.pathname.match(/chapter(\d+)\.html/);
 
-    if (match) {
-        const currentChapter = parseInt(match[1], 10);
-        const chapterBefore = currentChapter - 1;
-        const chapterNext = currentChapter + 1;
+if (match) {
+    const currentChapter = parseInt(match[1], 10);
+    const chapterBefore = currentChapter - 1;
+    const chapterNext = currentChapter + 1;
 
-        const before = document.getElementById('before-chapter');
-        const next = document.getElementById('next-chapter');
-        const chapterNameEl = document.getElementById('chapter-name');
+    const before = document.getElementById('before-chapter');
+    const next = document.getElementById('next-chapter');
+    const chapterNameEl = document.getElementById('chapter-name');
 
-        const titleText = `Capítulo ${currentChapter}`;
-        document.title = `BoltNotes — Fortnite ${titleText}`;
-        if (chapterNameEl) chapterNameEl.textContent = titleText;
+    const titleText = `Capítulo ${currentChapter}`;
+    document.title = `BoltNotes — Fortnite ${titleText}`;
+    if (chapterNameEl) chapterNameEl.textContent = titleText;
         
-        if (before) {
-            before.onclick = () => window.location.href = `pages/fortnite/chapter${chapterBefore}.html`;
-        }
-        if (next) {
-            next.onclick = () => window.location.href = `pages/fortnite/chapter${chapterNext}.html`;
-        }
-
-        if (before) {
-            if (chapterBefore <= 0) {
-                before.style.visibility = "hidden";
-            } else {
-                const hasBefore = await window.electronAPI.exists(`pages/fortnite/chapter${chapterBefore}.html`);
-                before.style.visibility = hasBefore ? "visible" : "hidden";
-            }
-        }
-
-        if (next) {
-            const hasNext = await window.electronAPI.exists(`pages/fortnite/chapter${chapterNext}.html`);
-            next.style.visibility = hasNext ? "visible" : "hidden";
+    if (before) {
+        before.onclick = () => window.location.href = `pages/fortnite/chapter${chapterBefore}.html`;
+    }
+    if (next) {
+        next.onclick = () => window.location.href = `pages/fortnite/chapter${chapterNext}.html`;
+    }
+    
+    if (before) {
+        if (chapterBefore <= 0) {
+            before.style.visibility = "hidden";
+        } else {
+            const hasBefore = await window.electronAPI.exists(`pages/fortnite/chapter${chapterBefore}.html`);
+            before.style.visibility = hasBefore ? "visible" : "hidden";
         }
     }
+
+    if (next) {
+        const hasNext = await window.electronAPI.exists(`pages/fortnite/chapter${chapterNext}.html`);
+        next.style.visibility = hasNext ? "visible" : "hidden";
+    }
+}
 });
 
 const before = document.getElementById('before-chapter');
 const next = document.getElementById('next-chapter');
 
-before.className = "fa-solid fa-angle-left";
-next.className = "fa-solid fa-angle-right";
+if (before) before.className = "fa-solid fa-angle-left";
+if (next) next.className = "fa-solid fa-angle-right";
 
 let cachedSeasonInfo = null;
 
@@ -165,30 +188,118 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         // Bloqueio de Edição
         const seasonDiv = clone.querySelector('.season');
-        const isLocked = info.locked ?? true;
+        const isLocked = local.locked ?? true;
         if (seasonDiv) seasonDiv.dataset.locked = isLocked;
 
-        // Adiciona IDs Dinâmicos aos Spans de Status
-        const statusSpans = clone.querySelectorAll('.status span');
-        const passe = clone.querySelector('.levels-number span');
+        // Ícone/botão de bloqueio de edição
+        const lockIcon = clone.getElementById('lock-unlock');
 
-        statusSpans.forEach(span => {
-            const parentText = span.parentElement.textContent;
-            if (parentText.includes('Nota')) span.id = `${code}-rating`;
-            if (passe) passe.id = `${code}-levels`;
-            if (parentText.includes('Vitórias')) span.id = `${code}-wins`;
-            if (parentText.includes('Níveis')) span.id = `${code}-levels`;
-            if (parentText.includes('Lançado em')) {
-                span.id = `${code}-releaseDate`;
-                span.contentEditable = "false"; 
-            } else {
-                span.contentEditable = !isLocked;
-                if (!isLocked) {
-                    span.oninput = () => typeof debouncedSave === "function" && debouncedSave(code);
-                    span.addEventListener('keydown', (e) => { if (e.key === 'Enter') e.preventDefault(); });
+        if (lockIcon) {
+            lockIcon.className = local.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+            
+            lockIcon.onclick = (e) => {
+                e.stopPropagation();
+
+                local.locked = !local.locked;
+                
+                lockIcon.className = local.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+                
+                const parentSeason = lockIcon.closest('.season') || lockIcon.closest('.fn-season').querySelector('.season');
+                if (parentSeason) parentSeason.dataset.locked = local.locked;
+
+                const currentCard = lockIcon.closest('.fn-season');
+                if (currentCard) {
+                    const displayStyle = local.locked ? 'none' : 'inline-block';
+                    currentCard.querySelectorAll('.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus')
+                        .forEach(btn => btn.style.display = displayStyle);
+
+                    currentCard.querySelectorAll('.review-topictext')
+                        .forEach(p => p.contentEditable = !local.locked);
                 }
+
+                if (typeof debouncedSave === "function") debouncedSave(code);
+            };
+        }
+
+        // ==========================================
+        // CONTROLE DE NOTAS (INVERTIDO: 10 -> 0)
+        // ==========================================
+        const ratingSpan = clone.querySelector('.status-rating');
+        const ratingContainer = clone.querySelector('.rating-container');
+        const ratingOptionsContainer = clone.querySelector('.rating-options');
+
+        if (!isLocked && ratingOptionsContainer) {
+            // Pega as opções do HTML e ordena do maior (10) para o menor (0)
+            const ratingOptions = Array.from(ratingOptionsContainer.querySelectorAll('.rating-option'));
+            ratingOptions.sort((a, b) => parseFloat(b.getAttribute('data-value')) - parseFloat(a.getAttribute('data-value')));
+
+            // Limpa e reinjeta na ordem decrescente
+            ratingOptionsContainer.innerHTML = '';
+            ratingOptions.forEach(option => {
+                ratingOptionsContainer.appendChild(option);
+
+                // Evento de clique em cada nota
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Evita fechar e reabrir ao mesmo tempo
+                    const selectedRating = e.target.getAttribute('data-value');
+                    
+                    local.rating = selectedRating;
+                    if (ratingSpan) ratingSpan.textContent = selectedRating;
+                    if (typeof debouncedSave === "function") debouncedSave(code);
+                    
+                    // Esconde o menu após selecionar
+                    ratingOptionsContainer.classList.remove('active');
+                });
+            });
+        }
+
+        if (!isLocked && ratingContainer && ratingOptionsContainer) {
+            ratingContainer.addEventListener('click', (e) => {
+                ratingOptionsContainer.classList.toggle('active');
+            });
+        }
+
+        // ==========================================
+        // CONTROLE DE NÍVEIS E VITÓRIAS (BOTÕES)
+        // ==========================================
+        const levelAdd = clone.querySelector('.statusLevel-add');
+        const levelMinus = clone.querySelector('.statusLevel-minus');
+        const winAdd = clone.querySelector('.statusWin-add');
+        const winMinus = clone.querySelector('.statusWin-minus');
+
+        const levelsSpan = clone.querySelector('.status-level');
+        const winsSpan = clone.querySelector('.status-win');
+
+        function updateStat(statKey, increment, displaySpan) {
+            let currentValue = parseInt(local[statKey]) || 0;
+            if (currentValue + increment >= 0) {
+                currentValue += increment;
+                local[statKey] = currentValue.toString(); 
+                if (displaySpan) displaySpan.textContent = local[statKey];
+                if (typeof debouncedSave === "function") debouncedSave(code);
             }
-        });
+        }
+
+        if (levelAdd) levelAdd.onclick = () => updateStat('levels', 1, levelsSpan);
+        if (levelMinus) levelMinus.onclick = () => updateStat('levels', -1, levelsSpan);
+        if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);
+        if (winMinus) winMinus.onclick = () => updateStat('wins', -1, winsSpan);
+
+        // Atualiza os IDs dinâmicos para a função preencherValores() continuar funcionando
+        if (ratingSpan) ratingSpan.id = `${code}-rating`;
+        if (levelsSpan) levelsSpan.id = `${code}-levels`;
+        if (winsSpan) winsSpan.id = `${code}-wins`;
+
+        const releaseDateSpan = clone.querySelector('.status i.fa-calendar-day')?.nextElementSibling;
+        if (releaseDateSpan) releaseDateSpan.id = `${code}-releaseDate`;
+
+        // Exibe os botões se a temporada não estiver bloqueada
+        if (!isLocked) {
+            if (levelAdd) levelAdd.style.display = 'inline-block';
+            if (levelMinus) levelMinus.style.display = 'inline-block';
+            if (winAdd) winAdd.style.display = 'inline-block';
+            if (winMinus) winMinus.style.display = 'inline-block';
+        }
 
         // Configuração do Trailer
         const trailerBtn = clone.querySelector('.season-trailers');
@@ -441,7 +552,7 @@ function resetarZoomMapa() {
 
 
 // Inicia o app
-document.querySelector('.back').href = `pages/fortnite.html`;
+if (document.querySelector('.back')) document.querySelector('.back').href = `pages/fortnite.html`;
 
 if (document.readyState === "complete" || document.readyState === "interactive") {
     inicializarDados();

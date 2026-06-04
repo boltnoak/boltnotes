@@ -22,9 +22,14 @@
 }
 .review-topictext[contenteditable="true"]:empty::before {
     content: attr(placeholder);
-    color: rgba(80,80,80,.5);
+    color: var(--text-dark-gray);
     pointer-events: none;
     display: block;
+}
+.review-topictext:empty::before {
+    content: attr(placeholder);
+    color: var(--text-dark-gray);
+    pointer-events: none;
 }
 #review{
     position: relative;

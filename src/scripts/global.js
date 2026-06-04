@@ -82,3 +82,13 @@ async function initMenu() {
 }
 
 initMenu();
+
+window.onload = function () {
+    const loadingScreen = document.getElementById('loading-screen');
+      
+    loadingScreen.classList.add('hidden');
+
+    setTimeout(() => {
+        loadingScreen.remove();
+    }, 100);
+};
