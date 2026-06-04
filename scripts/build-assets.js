@@ -10,7 +10,9 @@ const STATE_FILE = path.resolve('scripts/assets-state.json');
 
 function loadState() {
     if (!fs.existsSync(STATE_FILE)) return {};
-    return JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8'));
+    const content = fs.readFileSync(STATE_FILE, 'utf-8').trim();
+    if (!content) return {};
+    return JSON.parse(content);
 }
 
 function saveState(state) {
