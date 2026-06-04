@@ -31,7 +31,7 @@
 
 .tab {
     font-family: 'Montserrat';
-    background-color: rgba(8,8,8);
+    background-color: var(--tab);
     color: white;
     display: inline-block;
     width: 90%;
@@ -48,10 +48,10 @@
     margin: 0 .3vw 0 0;
 }
 .tab.active {
-    background-color: rgba(14,14,14);
+    background-color: var(--tab-active);
 }
 .tab:hover {
-    background-color: rgba(12,12,12);
+    background-color: var(--tab-hover);
 }
 
 .tab-configs {
@@ -104,12 +104,6 @@
 }
 .sep-bar {
     margin: 0 .5vw 0 .1vw;
-    border: solid .4vh rgba(25,25,25,.4);
-    border-radius: 1vh;
-    justify-content: center;
-}
-.sep-bar-v {
-    margin: 0 .4vw;
     border: solid .4vh rgba(25,25,25,.4);
     border-radius: 1vh;
     justify-content: center;

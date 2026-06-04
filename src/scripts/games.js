@@ -7,7 +7,7 @@ function parseBRDate(dateStr) {
 
 async function loadGamesDB() {
     if (cachedGamesDB) {
-        console.log("Trailers carregados do cache!");
+        console.log("Database carregados do cache!");
         return cachedGamesDB;
     }
     try {
@@ -15,7 +15,7 @@ async function loadGamesDB() {
         cachedGamesDB = content || {};
         return cachedGamesDB;
     } catch (e) {
-        console.error("Erro ao buscar trailers da internet:", e);
+        console.error("Erro ao buscar Database:", e);
         return {};
     }
 }
@@ -156,7 +156,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     if (status === "jogando") {
         const statusPercentage = document.createElement("span");
         statusPercentage.className = "jogando-text";
-        statusPercentage.textContent = `Jogando (${(game.storyProgress || 0)}%)`;
+        statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
         gameInfo.appendChild(statusPercentage);
         gameInfo.appendChild(tag);
     }
@@ -167,13 +167,16 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const listElement = document.getElementById("view-games");
     const isListView = listElement ? listElement.classList.contains("list") : false;
 
-    if (completedIndex !== null && isListView && !isPlaying) {
+    if (completedIndex !== null && isListView) {
         const index = document.createElement("span");
         index.className = "sort-number";
-        index.textContent = `#${completedIndex} `;
+        index.textContent = `#${completedIndex}`;
         title.prepend(index);
     }
 
+    if (isListView) {
+        div.style.display = 'none'
+    }
 
     // Lógica de texto complementar do status
     if (status === "zerado") {
@@ -185,6 +188,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         statusText.textContent = `A Jogar (${game.storyProgress || 0}%)`;
         gameInfo.appendChild(statusText);
         gameInfo.appendChild(tag);
+        div.classList.add('ajogarGame')
     } else {
         // Se for "jogando" ou "wishlist", mantém o texto base
         if (status !== "jogando") tag.textContent = game.status;

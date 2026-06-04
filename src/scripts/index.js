@@ -42,7 +42,8 @@ window.electronAPI.onAssetsProgress((() => {
 })());
 
 window.electronAPI.onAssetsReady(() => {
-    loadingDetails.textContent = "Tudo pronto!";
+    document.getElementById('loading-title').textContent = "Tudo pronto!";
+    loadingDetails.textContent = "";
     progressBarFill.style.width = "100%";
     
     setTimeout(() => {
@@ -54,9 +55,11 @@ window.electronAPI.onAssetsReady(() => {
 });
 
 window.electronAPI.onAssetsError((errorMsg) => {
-    loadingDetails.textContent = `Erro ao baixar arquivos: ${errorMsg}`;
-    loadingDetails.style.color = "#ff4444";
-    progressBarFill.style.backgroundColor = "#ff4444";
+    loadingDetails.textContent = `${errorMsg}`;
+    loadingDetails.style.color = "var(--red)";
+    document.querySelector('.shine-effect').style.display = 'none';
+    progressBarFill.style.width = '100%';
+    progressBarFill.style.backgroundColor = "var(--red)";
     
     setTimeout(() => {
         startingScreen.style.opacity = "0";
@@ -220,7 +223,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         tag.classList.add("jogando");
         const statusPercentage = document.createElement("span");
         statusPercentage.className = "jogando-text";
-        statusPercentage.textContent = `Jogando (${(game.storyProgress || 0)}%)`;
+        statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
         gameInfo.appendChild(statusPercentage);
         gameInfo.appendChild(tag);
     }
@@ -266,3 +269,31 @@ async function loadStatus() {
 loadGames();
 
 const playingNowTitle = document.getElementById('playingNowSection-title');
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const config = await window.electronAPI.config.getConfig();
+
+    const toggles = {
+        'notes_on_home': document.getElementById('notes'),
+        'backlog_on_home': document.getElementById('games'),
+        'fortnite_on_home': document.getElementById('fortnite'),
+        'playing_now_on_home': [
+            document.querySelector('.page-infos'),
+            document.querySelector('.sep-bar')
+        ],
+        'show_version': document.querySelector('.app-version')
+    };
+
+    for (const [key, value] of Object.entries(toggles)) {
+        if (!value) continue;
+
+        const elements = Array.isArray(value) ? value : [value];
+
+        elements.forEach(el => {
+            if (el) {
+                el.style.display = config[key] === false ? 'none' : '';
+            }
+        });
+    }
+});

@@ -4,5 +4,11 @@
     --text-dark-gray: rgb(80,80,80);
     --text-gray: rgb(150, 150, 150);
     --text-light-gray: rgb(210, 210, 210);
+
     --blue: rgb(20, 150, 255);
+    --red: rgb(255, 70, 70);
+
+    --tab: rgb(8,8,8);
+    --tab-hover: rgb(12,12,12);
+    --tab-active: rgb(14,14,14);
 }

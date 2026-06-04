@@ -3,9 +3,13 @@
 .pageBody {
     font-family: 'Montserrat';
     color: white;
-    padding-top: 6vh;
     display: flex;
     flex-direction: row;
+    transform: translateY(6.5vh);
+    height: 93.3vh;
+}
+header {
+    box-shadow: none;
 }
 
 /* Básico */
@@ -15,16 +19,23 @@
     justify-content: center;
     height: 32vh;
 }
+.sep-bar-v {
+    margin: 0 1vw 0 0;
+}
+.note-sep-bar {
+    margin: 0 0 1.8vh 0;
+    border: solid .4vh rgba(25,25,25,.4);
+    display: none;
+}
 
 /* Lista de notas */
 #note-list {
     display: flex;
     flex-direction: column;
-    background-color: rgb(7, 7, 7);
-    height: 90vh;
-    padding: 0 3vh;
-    padding-top: 2vh;
+    height: 87vh;
+    padding: 0 1vw;
     position: relative;
+    justify-content: space-between;
 }
 #tabs {
     display: flex;
@@ -41,11 +52,11 @@
     font-size: 2vh;
     font-weight: 400;
     flex-direction: row;
-    background-color: rgb(26, 26, 26);
+    background-color: var(--tab);
     padding: 2vh 1.5vh;
-    border-radius: 1.3vh;
+    border-radius: 1vh;
     cursor: pointer;
-    margin: 1vh 0;
+    margin: .5vh 0;
     width: 15.4vw;
     justify-content: space-between;
     align-items: center;
@@ -53,24 +64,25 @@
     user-select: none;
 }
 .tab.active {
-    background-color: rgb(35, 35, 35);
+    background-color: var(--tab-active);
+}
+.tab:hover {
+    background-color: var(--tab-hover);
 }
 #delete-note {
     transition: color .1s linear;
     margin-right: .45vh;
 }
 #delete-note:hover {
-    color: rgb(255, 100, 100);
+    color: var(--red);
 }
 .newNote-input {
     display: flex;
     flex-direction: row;
-    position: absolute;
     left: 0;
-    bottom: 2.3vh;
+    bottom: 0;
+    margin: 0 0 1vh 0;
     overflow-y: auto;
-    background-color: #050505;
-    padding: 3vh;
     align-items: center;
 }
 #newNote-name {
@@ -78,34 +90,26 @@
     font-weight: 400;
     font-family: 'Montserrat';
     background-color: rgba(22, 22, 22, 0.329);
-    border: solid .4vh rgba(20, 20, 20, 0.2);
-    border-right: 0;
+    border: none;
     padding: 2vh 1.4vh;
     color: white;
     border-radius: 1.3vh;
     width: 11.8vw;
     transition: border .1s linear;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    margin-right: .4vw;
     z-index: 98;
 }
-#newNote-name:hover {
-    border: solid .4vh rgba(50, 50, 50, 0.2);
-    border-right: 0;
-}
 #newNote-add {
-    background-color: rgb(26, 26, 26);
+    background-color: rgb(20, 20, 20);
     padding: 2.4vh 2vh;
     border-radius: 1.3vh;
     text-align: center;
     transition: background .15s linear;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     cursor: pointer;
     z-index: 98;
 }
 #newNote-add:hover {
-    background-color: rgb(35, 35, 35);
+    background-color: rgb(25,25,25);
 }
 
 /* Visualização de notas */
@@ -116,21 +120,19 @@
 }
 .title-bar {
     display: flex;
-    background-color: rgb(7, 7, 7);
-    padding: 0 3vh;
-    height: 7vh;
-    font-weight: 600;
-    margin-bottom: 2vh;
+    padding: 0;
+    height: 6vh;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
+    text-align: center;
 }
 #title-note {
-    font-weight: 500;
+    font-weight: 600;
     padding: 0;
     padding: .5vh;
     border: solid .4vh transparent;
     border-radius: 1vh;
+    font-size: 3vh;
     margin: 0;
     caret-color: var(--text);
 }
@@ -141,12 +143,10 @@
     outline: none;
 }
 #edit-note {
-    height: 3vh;
     cursor: pointer;
 }
 #content {
-    margin: 0 6vh;
-    margin-top: 2vh;
+    margin: 0 1.5vw;
     font-size: 2.5vh;
     white-space: pre-wrap;
     caret-color: var(--text);

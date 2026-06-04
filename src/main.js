@@ -179,7 +179,7 @@ async function syncAssets() {
   try {
     remote = await getRemoteManifest();
   } catch (err) {
-    throw new Error(`Falha ao buscar manifest remoto: ${err.message}`);
+    throw new Error(`Falha ao buscar manifest de assets remoto.`);
   }
 
   local = getLocalManifest() || { version: 0, packages: [] };
@@ -282,7 +282,12 @@ function getConfig() {
   const configDefault = {
     maximize_on_start: false,
     open_on_startup: false,
-    minimize_to_tray: false
+    minimize_to_tray: false,
+    backlog_on_home: false,
+    playing_now_on_home: false,
+    notes_on_home: true,
+    fortnite_on_home: true,
+    show_version: true
   };
   try {
     if (fs.existsSync(configPath)) {

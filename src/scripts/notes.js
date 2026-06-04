@@ -130,6 +130,7 @@ function loadNote(tab) {
 
       document.getElementById('title-note').textContent = name;
       document.getElementById('menuTitle').textContent = document.title;
+      document.querySelector('.note-sep-bar').style.display = 'flex';
     })
     .catch(err => console.error("Erro ao carregar a nota:", err));
 }
