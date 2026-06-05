@@ -28,3 +28,33 @@
         </div>
     </div>
 </div>
+<div class="chapters-popup" id="chapters-popup" style="display:none;">
+    <div class="chapters-popup-div">
+        <div class="chapters-popup-content"><div class="fortnite-br-chapters">
+        <p class="chapters-title">Capítulos</p>
+        <div class="popup-chapter-section">
+            <a class="chapter-btn" href="pages/fortnite/chapter7.html">
+                <img class="chapter-image" >
+                <p class="chapter-title">Capítulo 7</p>
+            </a>
+            <a class="chapter-btn" href="pages/fortnite/chapter6.html">
+                <img class="chapter-image" src="assets://chapter6-cover.jpg">
+                <p class="chapter-title">Capítulo 6</p>
+            </a>
+            <a class="chapter-btn" href="pages/fortnite/chapter5.html">
+                <img class="chapter-image" src="assets://chapter5-cover.jpg">
+                <p class="chapter-title">Capítulo 5</p>
+            </a>
+            <a class="chapter-btn" href="pages/fortnite/chapter4.html">
+                <img class="chapter-image" src="assets://chapter4-cover.jpg">
+                <p class="chapter-title">Capítulo 4</p>
+            </a>
+            <a class="chapter-btn" href="pages/fortnite/chapter3.html">
+                <img class="chapter-image" src="assets://chapter3-cover.jpg">
+                <p class="chapter-title">Capítulo 3</p>
+            </a>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>

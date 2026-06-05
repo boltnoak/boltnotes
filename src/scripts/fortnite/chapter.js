@@ -16,9 +16,22 @@ async function loadHeader() {
                 <p id="chapter-name"></p>
                 <i id="next-chapter"></i>
             </div>
-            <a class="chapters"></a>
+            <!--<a class="chapters"></a>-->
         </header>`);
-};
+    
+    // const chapterBtn = document.querySelector('.chapters');
+    // const chaptersa = document.getElementById('chapters-popup');
+
+    // if (chapterBtn && chaptersa) {
+    //     chapterBtn.addEventListener('click', () => {
+    //         if (chaptersa.style.display === 'none' || chaptersa.style.display === '') {
+    //             chaptersa.style.display = 'flex';
+    //         } else {
+    //             chaptersa.style.display = 'none';
+    //         }
+    //     });
+    // }
+}
 loadHeader();
 
 const backIcon = document.createElement('i');

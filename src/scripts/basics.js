@@ -90,7 +90,8 @@ async function loadLatestFN() {
         if (img && latestPath) {
             img.src = latestPath;
             document.querySelector('.shine-effect-v').style.display = "none";
-        } else if (banner && latestPath) { banner.style.backgroundImage = `url('${latestPath}')`}
+        } 
+        // else if (banner && latestPath) { banner.style.backgroundImage = `url('${latestPath}')`}
 
     } catch (err) {
         console.error("Erro ao inicializar:", err);

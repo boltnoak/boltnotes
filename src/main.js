@@ -659,7 +659,6 @@ function manageStartup(abrirComOOS) {
 
       const desktopContent = `[Desktop Entry]
 Type=Application
-Version=1.0
 Name=BoltNotes
 Comment=Aplicativo de Notas e Hub de Jogos
 Exec="${app.getPath('exe')}"

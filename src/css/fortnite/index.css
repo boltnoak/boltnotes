@@ -2,10 +2,15 @@
 
 .pageBody {
     padding-top: 0;
+    transform: translateY(6.5vh);
+    height: 86.5vh;
 }
 .banner-bg {
     background-position: center;
     background-size: cover;
+}
+.sep-bar-v {
+    margin-top: 2vh;
 }
 #menu {
     background: transparent;
@@ -29,27 +34,27 @@
     justify-content: center;
 }
 .app-logo {
-    height: 15vh;
+    height: 10vh;
     user-select: none;
-    margin: 3vh;
+    margin: 2vh;
 }
 .banner {
+    height: 18vh;
     background-color: rgba(20, 20, 20, 0.2);
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 2vh rgb(5, 5, 5);
-    z-index: 1;
 }
 .section-title {
-    margin: 1vh 1.5vw;
+    margin: 1.5vh .5vw 1.2vh .5vw;
     font-family: 'Montserrat';
-    font-weight: 700;
-    font-size: 3.5vh;
+    font-weight: 900;
+    font-size: 5.5vh;
+    justify-self: center;
 }
 .chapter-section {
-    margin: 1.5vh 3vh;
+    margin: 1vh .2vw 1vh .5vw;
     gap: 2vh;
     display: flex;
     flex-direction: row;
@@ -58,12 +63,26 @@
     color: white;
     font-family: "Montserrat", sans-serif;
     font-weight: 800;
-    display: flex;
+    display: grid;
+    width: 41.5vw;
+    grid-template-columns: repeat(auto-fill, minmax(15.9vw, 1fr));
     will-change: transform;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 59vh;
+}
+.chapter-section::-webkit-scrollbar-thumb {
+    display: none;
+}
+.fortnite-contents {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0 1vw;
 }
 .chapters {
     width: 100%;
-    overflow: hidden;
+    overflow: auto;
 }
 .chapters::before,
 .chapters::after {
@@ -86,35 +105,41 @@
     background: linear-gradient(to left, #050505 5%, transparent 100%);
 }
 #chapter {
-    text-align: center;
-    transition: transform 0.1s ease-in-out;
-    min-width: 18vw;
-    background-color: transparent;    
-    border-radius: 1vh;
+    width: 20vw;
+    border-radius: 1.5vh;
     overflow: hidden;
-    margin: 0 .3vw;
-    width: 30vw;
+    height: 25vh;
+    text-align: center;
     cursor: pointer;
+    display: flex;
+    flex-direction: column-reverse;
 }
-#chapter:hover {
+#chapter:hover .chapter-image {
     transform: scale(1.05);
 }
 .chapter-image {
     width: 100%;
+    height: 25vh;
     object-fit: cover;
-    image-rendering: optimizeQuality;
+    image-rendering:crisp-edges;
+    transition: transform 0.1s ease-in-out;
+    z-index: 1;
 }
 .title {
     font-size: 3vh;
-    color: white;
+    color: var(--text);
+    margin: 0;
     text-decoration: none;
-    margin: .1vh 0;
     object-fit: cover;
     justify-self: center;
-    background-color: #050505;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    position: relative;
+    border-radius: 1.3vh;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    background-color: var(--tab);
+    z-index: 2;
+    padding: 1vh 0;
+    width: 20vw;
+    position: absolute;
 }
 
 
