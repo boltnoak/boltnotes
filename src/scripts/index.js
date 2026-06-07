@@ -15,10 +15,13 @@ const progressBarFill = document.getElementById('progress-bar-fill');
 window.addEventListener('load', async () => {
     const isReady = await window.electronAPI.checkAssetsStatus();
     
+    if (!startingScreen) return;
+
     if (isReady) {
-        document.getElementById('starting-screen').style.display = 'none';
+        startingScreen.style.display = 'none';
     } else {
-        document.getElementById('starting-screen').style.display = 'flex';
+        startingScreen.style.display = 'flex';
+        startingScreen.classList.remove('hidden');
     }
 });
 
@@ -284,13 +287,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 window.onload = function () {
     const loadingScreen = document.getElementById('loading-screen');
-    const startingScreen = document.getElementById('starting-screen');
-      
-    loadingScreen.classList.add('hidden');
-    startingScreen.classList.add('hidden');
-
-    setTimeout(() => {
-        loadingScreen.remove();
-        startingScreen.remove();
-    }, 200);
+    
+    if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+        
+        setTimeout(() => {
+            loadingScreen.remove();
+        }, 200);
+    }
 };
