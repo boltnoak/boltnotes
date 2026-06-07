@@ -6,8 +6,9 @@ let fortnite;
 
 const basePagePathLog = document.querySelector('base').href
     .replace(/.*(?=BoltNotes\/)/, 'Documentos/')
-    .replace(/\/$/, '')
-    .replace('file://', '');
+    .replace(/\/+$/, '')
+    .replace('file:///', '')
+    .replace(/\//g,' > ');
 
 console.log(`Base da página: ${basePagePathLog}`);
 
@@ -82,8 +83,7 @@ async function loadLatestFN() {
 
         const latestPath = `assets://${latest.key}.jpg`;
 
-        console.log(latest.key);
-        console.log(latest.data.name);
+        console.log(`Temporada mais recente do Fortnite: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
 
         const img = document.getElementById("latest-season");
         const banner = document.getElementById("latestSeasonBG");

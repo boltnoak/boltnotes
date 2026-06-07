@@ -10,11 +10,14 @@ body {
     transform: translateY(6.5vh);
     height: 86.5vh;
 }
+
 #fnSeason, .fn-season {
     margin: 0 7.5vw;
     padding: 0;
     margin-bottom: 5vh;
 }
+
+/* Capítulos (proximo e anterior) */
 .chapter-section {
     margin: 0;
     padding: 0;
@@ -52,6 +55,8 @@ body {
 #before-chapter:hover, #next-chapter:hover {
     border: solid .6vh white;
 }
+
+/* Capítulos */
 .chapters {
     border-radius: 4vh;
     border: solid .6vh transparent;
@@ -75,6 +80,36 @@ body {
 .chapters:hover {
     border: solid .6vh white;
 }
+
+/* Titúlo de temporada */
+.season-title {
+    color: white;
+    font-weight: 900;
+    margin-right: 0;
+    font-size: 3vw;
+    margin: 0;
+    font-family: 'Montserrat';
+}
+.season-trailers {
+    color: rgb(195, 195, 195);
+    transition: color 0.25s ease-in-out;
+    cursor: pointer;
+    top: .5vh;
+    font-size: 4.5vh;
+}
+.season-trailers:hover {
+    border-radius: 4vh;
+    color: white;
+}
+.seasonTitle-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    gap: .5vw;
+    margin-bottom: 1vh;
+}
+/* Banner */
 .banner {
     background-position: center;
     background-size: cover;
@@ -88,96 +123,7 @@ body {
     z-index: 1;
     overflow: hidden;
 }
-.banner-video {
-    object-fit: cover;
-    height: 45vh;
-    width: 100%;
-    opacity: 0%;
-    transition: opacity 0.3s linear;
-}
-.passe-status {
-    position: relative;
-    width: 50vw;
-    height: 75vh;
-    overflow: hidden;
-    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 1%, rgba(0,0,0,0) 99%);
-    mask-image: linear-gradient(top, rgba(0,0,0,1) 1%, rgba(0,0,0,0) 99%);
-}
-.season-character {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    object-fit: contain;
-    object-position: center 15%;
-    z-index: 1;
-    object-position: 50% 10%;
-    transform-origin: top center;
-    transform: translateZ(0);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-}
-.levels-div {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    z-index: 999;
-}
-.levels-number, .levels-label {
-    text-align: center;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    font-family: 'Montserrat';
-    align-items: center;
-}
-.levels-label {
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    font-size: 14vh;
-    font-weight: 900;
-    line-height: 0.9;
-    text-transform: uppercase;
-    font-family: 'HeadingNow';
-}
-.levels-number {
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    font-size: 26.5vh;
-    font-weight: 900;
-    line-height: 0.9;
-    text-transform: uppercase;
-}
-.free {
-    margin: 0;
-    padding: 0;
-    font-size: 22vh;
-    font-weight: 900;
-    line-height: 0.9;
-    text-transform: uppercase;
-    letter-spacing: -2px;
-}
-.levels-number.gradient {
-    background: linear-gradient(to bottom, #f0f0f0 0%, #8e8e8e 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    position: relative;
-}
-.levels-label.gradient {
-    background: linear-gradient(to bottom, #8e8e8e 0%, #f0f0f0 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    position: relative;
-}
+/* Status */
 .season {
     margin-top: 1.5vh;
     margin: 0;
@@ -186,41 +132,6 @@ body {
     font-family: 'Montserrat';
     cursor: default;
     color: white;
-}
-.end-tag {
-    font-family: 'Montserrat';
-    font-weight: 500;
-    background-color: rgba(20, 20, 20, 0.75);
-    padding: .4rem .7rem;
-    border-radius: .35rem;
-    font-size: 2.3vh;
-    margin: 0;
-    color: white;
-    display: inline-block;
-    align-self: center;
-    text-align: center;
-}
-.tag {
-    font-family: 'Montserrat';
-    font-weight: 500;
-    white-space: nowrap;
-    background-color: rgba(20, 20, 20, 0.75);
-    padding: .4rem .7rem;
-    border-radius: .35rem;
-    font-size: .95vw;
-    margin: 0;
-    color: white;
-    display: inline-block;
-    align-self: center;
-    text-align: center;
-}
-.releaseDate-tag {
-    font-size: 1vh;
-    font-family: 'Montserrat';
-    font-weight: 500;
-    font-size: 1.7vw;
-    margin: 0;
-    color: rgba(255, 255, 255, 0.4);
 }
 .status {
     font-size: 1vh;
@@ -257,18 +168,34 @@ body {
 .status-win {
     width: 2.2vw;
 }
-#review-sction {
+
+/* Personagem */
+.seasonCharacter-div {
+    position: relative;
+    width: 50vw;
+    height: 75vh;
+    overflow: hidden;
+    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 1%, rgba(0,0,0,0) 99%);
+    mask-image: linear-gradient(top, rgba(0,0,0,1) 1%, rgba(0,0,0,0) 99%);
+}
+.season-character {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    margin-bottom: 1vh;
+    height: 100vh;
+    object-fit: contain;
+    object-position: center 15%;
+    z-index: 1;
+    object-position: 50% 10%;
+    transform-origin: top center;
+    transform: translateZ(0);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
 }
-.review-nota {
-    font-size: 1.65rem;
-    font-family: 'Montserrat';
-    font-weight: 500;
-    font-size: 1.7vw;
-    margin: 0;
-    color: white;
-}
+
+/*  */
+
 .season-content {
     width: 70%;
 }
@@ -277,7 +204,7 @@ body {
     display: flex;
     flex-direction: row;
     gap: .8vw;
-    height: 32vh;
+    height: 30vh;
 }
 .seasonContents-title-div {
     display: flex;
@@ -324,6 +251,19 @@ body {
 #lock-unlock:hover {
     opacity: 1;
 }
+
+/* Stats */
+.season-tags {
+    display: flex;
+    flex-direction: row;
+    gap: .7rem;
+    justify-content: space-around;
+    background-color: rgb(10,10,10);
+    padding: 2.3vh 2vh;
+    border-radius: 1.5vh;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
 .rating-container {
     cursor: pointer;
 }
@@ -359,44 +299,6 @@ body {
 }
 .status-rating {
     width: 3.1vw;
-}
-.season-tags {
-    display: flex;
-    flex-direction: row;
-    gap: .7rem;
-    justify-content: space-around;
-    background-color: rgb(10,10,10);
-    padding: 2.3vh 2vh;
-    border-radius: 1.5vh;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-}
-.season-title {
-    color: white;
-    font-weight: 900;
-    margin-right: 0;
-    font-size: 3vw;
-    margin: 0;
-    font-family: 'Montserrat';
-}
-.season-trailers {
-    color: rgb(195, 195, 195);
-    transition: color 0.25s ease-in-out;
-    cursor: pointer;
-    top: .5vh;
-    font-size: 4.5vh;
-}
-.season-trailers:hover {
-    border-radius: 4vh;
-    color: white;
-}
-.seasonTitle-div {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    text-align: center;
-    gap: .5vw;
-    margin-bottom: 1vh;
 }
 .body-top {
     margin-top: 1vh;
@@ -532,6 +434,7 @@ body {
     animation: popupOut .3s ease forwards;
 }
 
+/* Eventos e mini eventos */
 .season-events {
     transition: transform .1s linear;
     cursor: pointer;
@@ -572,19 +475,18 @@ body {
     padding: 2vh;
     display: flex;
     background-color: rgb(8,8,8);
-    transition: background 1s linear;
     flex-direction: column;
     z-index: 2;
-    transition: all .15s linear;
+    transition: background .15s linear;
     justify-content: center;
-    justify-content: center; /* Centraliza tudo verticalmente */
     align-items: center;
+    width: 15vw;
 }
 .season-events:hover .event-data {
     background-color: rgb(10,10,10);
 }
 
-/* End Events */
+/* Evento final */
 #end-event {
     display: flex;
     flex-direction: column;
@@ -707,6 +609,33 @@ body {
 .c {
     margin-top: 2vh;
     height: 80vh;
+}
+.end-tag {
+    font-family: 'Montserrat';
+    font-weight: 500;
+    background-color: rgba(20, 20, 20, 0.75);
+    padding: .4rem .7rem;
+    border-radius: .35rem;
+    font-size: 2.3vh;
+    margin: 0;
+    color: white;
+    display: inline-block;
+    align-self: center;
+    text-align: center;
+}
+.event-tag {
+    font-family: 'Montserrat';
+    font-weight: 500;
+    white-space: nowrap;
+    background-color: rgba(20, 20, 20, 0.75);
+    padding: .4rem .7rem;
+    border-radius: .35rem;
+    font-size: .95vw;
+    margin: 0;
+    color: white;
+    display: inline-block;
+    align-self: center;
+    text-align: center;
 }
 
 

@@ -1,4 +1,5 @@
 const FILE = "Fortnite/reviews.json";
+const FILE_STATS = "Fortnite/stats.json";
 
 const fileName = window.location.pathname
     .split('/')
@@ -121,8 +122,10 @@ async function inicializarDados() {
 
         // B. Carrega os Dados (Nuvem e Local)
         const cloudData = await loadCloudSeasonInfo();
-        const localData = await window.electronAPI.json.load(FILE); 
+        const localData = await window.electronAPI.json.load(FILE);
+        const statsData = await window.electronAPI.json.load(FILE_STATS);
         reviews = (localData && typeof localData === 'object') ? localData : {};
+        stats = (statsData && typeof statsData === 'object') ? statsData : {};
 
         // C. Renderiza os cards na tela e preenche
         await renderizarCapitulo(CURRENT_CHAPTER, cloudData);
@@ -141,7 +144,6 @@ async function inicializarDados() {
 let seasonTemplateHTML = null;
 
 async function getSeasonTemplate() {
-    // Se o template já foi injetado no DOM, não faz nada
     if (document.getElementById('season-template')) return;
 
     try {
@@ -156,14 +158,13 @@ async function getSeasonTemplate() {
 async function renderizarCapitulo(prefixoCapitulo, cloudData) {
     const container = document.getElementById('seasons-list-container');
     let localDataUpdated = false;
+    let localStatsUpdated = false;
 
     if (!container) return;  
     container.innerHTML = '';
 
-    // 1. Garante que o template foi injetado no HTML
     await getSeasonTemplate();
 
-    // 2. Pega o template diretamente do DOM da página
     const template = document.getElementById('season-template');
     if (!template) {
         console.error("Erro: O template #season-template não foi encontrado no DOM.");
@@ -174,19 +175,30 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
     for (const code of keys) {
         const info = cloudData[code];
-        const local = reviews[code] || null;
+        const reviewData = (window.reviews && window.reviews[code]) || null;
+        const statsData = (window.stats && window.stats[code]) || null;
 
-        if (!local) {
-            reviews[code] = { loot: "", mapa: "", passe: "", story: "", levels: "", wins: "", rating: "", locked: false};
+        if (!reviewData) {
+            window.reviews = {
+                [code]: { loot: "", mapa: "", passe: "", story: "", locked: false },
+                ...window.reviews
+            };
             localDataUpdated = true;
         }
+        
+        if (!statsData) {
+            window.stats = {
+                [code]: { levels: "0", wins: "0", rating: "0" },
+                ...window.stats
+            };
+            localStatsUpdated = true;
+        }
 
-        const data = reviews[code];
+        const data = window.reviews[code];
+        const currentStats = window.stats[code];
 
-        // 3. Clona o conteúdo interno do template (gera um DocumentFragment)
         const clone = template.content.cloneNode(true);
         
-        // Aplica o data-code na div principal (.fn-season) de dentro do clone
         const card = clone.querySelector('.fn-season');
         if (card) card.dataset.code = code;
 
@@ -202,33 +214,44 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         // Bloqueio de Edição
         const seasonDiv = clone.querySelector('.season');
-        const isLocked = data.locked ?? false;
+        const isLocked = currentStats.locked ?? false;
         if (seasonDiv) seasonDiv.dataset.locked = isLocked;
 
         // Ícone/botão de bloqueio de edição
         const lockIcon = clone.getElementById('lock-unlock');
 
         if (lockIcon) {
-            lockIcon.className = data.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+            lockIcon.className = currentStats.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
             
             lockIcon.onclick = (e) => {
                 e.stopPropagation();
 
-                data.locked = !data.locked;
+                currentStats.locked = !currentStats.locked;
                 
-                lockIcon.className = data.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+                lockIcon.className = currentStats.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
                 
                 const parentSeason = lockIcon.closest('.season') || lockIcon.closest('.fn-season').querySelector('.season');
-                if (parentSeason) parentSeason.dataset.locked = data.locked;
+                if (parentSeason) parentSeason.dataset.locked = currentStats.locked;
 
                 const currentCard = lockIcon.closest('.fn-season');
                 if (currentCard) {
-                    const displayStyle = data.locked ? 'none' : 'inline-block';
+                    const displayStyle = currentStats.locked ? 'none' : 'inline-block';
                     currentCard.querySelectorAll('.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus')
                         .forEach(btn => btn.style.display = displayStyle);
 
                     currentCard.querySelectorAll('.review-topictext')
-                        .forEach(p => p.contentEditable = !data.locked);
+                        .forEach(p => p.contentEditable = !currentStats.locked);
+                }
+
+                const rContainer = currentCard.querySelector('.rating-container');
+                const rOptions = currentCard.querySelector('.rating-options');
+                if (rContainer) {
+                    if (currentStats.locked) {
+                        rContainer.classList.add('disabled');
+                        if (rOptions) rOptions.classList.remove('active'); // Fecha se estiver aberto
+                    } else {
+                        rContainer.classList.remove('disabled');
+                    }
                 }
 
                 if (typeof debouncedSave === "function") debouncedSave(code);
@@ -242,34 +265,37 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         const ratingContainer = clone.querySelector('.rating-container');
         const ratingOptionsContainer = clone.querySelector('.rating-options');
 
-        if (!isLocked && ratingOptionsContainer) {
-            // Pega as opções do HTML e ordena do maior (10) para o menor (0)
+        if (isLocked && ratingContainer) {
+            ratingContainer.classList.add('disabled');
+        }
+
+        if (ratingOptionsContainer) {
             const ratingOptions = Array.from(ratingOptionsContainer.querySelectorAll('.rating-option'));
             ratingOptions.sort((a, b) => parseFloat(b.getAttribute('data-value')) - parseFloat(a.getAttribute('data-value')));
 
-            // Limpa e reinjeta na ordem decrescente
             ratingOptionsContainer.innerHTML = '';
             ratingOptions.forEach(option => {
                 ratingOptionsContainer.appendChild(option);
 
-                // Evento de clique em cada nota
                 option.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Evita fechar e reabrir ao mesmo tempo
+                    e.stopPropagation(); 
                     const selectedRating = e.target.getAttribute('data-value');
                     
-                    local.rating = selectedRating;
+                    currentStats.rating = selectedRating;
                     if (ratingSpan) ratingSpan.textContent = selectedRating;
                     if (typeof debouncedSave === "function") debouncedSave(code);
                     
-                    // Esconde o menu após selecionar
                     ratingOptionsContainer.classList.remove('active');
                 });
             });
         }
 
-        if (!isLocked && ratingContainer && ratingOptionsContainer) {
+        if (ratingContainer && ratingOptionsContainer) {
             ratingContainer.addEventListener('click', (e) => {
-                ratingOptionsContainer.classList.toggle('active');
+                // Só abre o menu de notas se NÃO estiver com a classe disabled
+                if (!ratingContainer.classList.contains('disabled')) {
+                    ratingOptionsContainer.classList.toggle('active');
+                }
             });
         }
 
@@ -285,11 +311,11 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         const winsSpan = clone.querySelector('.status-win');
 
         function updateStat(statKey, increment, displaySpan) {
-            let currentValue = parseInt(local[statKey]) || 0;
+            let currentValue = parseInt(currentStats[statKey]) || 0;
             if (currentValue + increment >= 0) {
                 currentValue += increment;
-                local[statKey] = currentValue.toString(); 
-                if (displaySpan) displaySpan.textContent = local[statKey];
+                currentStats[statKey] = currentValue.toString(); 
+                if (displaySpan) displaySpan.textContent = currentStats[statKey];
                 if (typeof debouncedSave === "function") debouncedSave(code);
             }
         }
@@ -371,6 +397,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
     // Salva o JSON no PC se novos blocos vazios foram criados
     if (localDataUpdated) await window.electronAPI.json.save(FILE, reviews);
+    if (localStatsUpdated) await window.electronAPI.json.save(FILE_STATS, stats);
 
     // Preenche com as notas salvas
     preencherValores();
@@ -380,22 +407,27 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 // 4. PREENCHIMENTO DOS DADOS LOCAIS
 // ==========================================
 function preencherValores() {
-    Object.keys(reviews).forEach(code => {
+    const allCodes = new Set([...Object.keys(reviews), ...Object.keys(stats)]);
+
+    allCodes.forEach(code => {
         const info = cachedSeasonInfo[code] || {};
-        const data = reviews[code];
+        const reviewData = reviews[code] || {};
+        const statsData = stats[code] || {};
 
         const rating = document.getElementById(`${code}-rating`);
         const levels = document.getElementById(`${code}-levels`);
         const wins = document.getElementById(`${code}-wins`);
         const releaseDate = document.getElementById(`${code}-releaseDate`);
 
-        if (rating) rating.textContent = data.rating || "0";
-        if (levels) levels.textContent = data.levels || "0";
-        if (wins) wins.textContent = data.wins || "0";
+        if (rating) rating.textContent = statsData.rating || "0";
+        if (levels) levels.textContent = statsData.levels || "0";
+        if (wins) wins.textContent = statsData.wins || "0";
         if (releaseDate) releaseDate.textContent = info.releaseDate || "Sem data";
-        
-        initReviews()
     });
+
+    if (typeof initReviews === "function") {
+        initReviews();
+    }
 }
 
 // ==========================================
@@ -640,9 +672,11 @@ function initEndEvent() {
         cover.style.backgroundImage = `url(${coverPath})`;
         video.src = videoPath;
 
-        console.log(`Fortnite - Evento de final (Vídeo): ${videoPath.replace(/.*(?=\/)/,'').replace(/\//,'')}\nFortnite - Evento de final (Capa): ${
-            coverPath.replace(/.*(?=\/)/,'').replace(/\//,'')
-        }`);
+        const videoPathLog = videoPath.replace(/.*(?=\/)/,'').replace(/\//,'');
+        const coverPathLog = coverPath.replace(/.*(?=\/)/,'').replace(/\//,'');
+
+        console.log('Vídeo do evento de final: ' + videoPathLog +
+        '\nCapa do evento de final: ' + coverPathLog);
     }
     if (video) { video.volume = .5 }
 }

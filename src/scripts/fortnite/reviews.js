@@ -1,5 +1,5 @@
-let reviews = window.reviews || {};
-window.reviews = reviews;
+window.reviews = window.reviews || {};
+window.stats = window.stats || {};
 
 let saveTimeout = null;
 
@@ -9,7 +9,7 @@ function initReviews() {
     seasons.forEach(season => {
         const code = season.getAttribute('data-code');
         const content = season.querySelector(".review-section");
-        const data = reviews[code] || {};
+        const data = window.reviews[code] || {};
 
         if (!content || content.innerHTML.trim() !== "") return;
 
@@ -37,7 +37,7 @@ function initReviews() {
 function debouncedSave(code) {
     clearTimeout(saveTimeout);
     
-    saveTimeout = setTimeout(() => {
+    saveTimeout = setTimeout(async () => {
         const rating = document.getElementById(`${code}-rating`)?.textContent || "0";
         const levels = document.getElementById(`${code}-levels`)?.textContent || "0";
         const wins = document.getElementById(`${code}-wins`)?.textContent || "0";
@@ -47,20 +47,30 @@ function debouncedSave(code) {
         const passe = document.getElementById(`${code}-passe`)?.innerText || "";
         const story = document.getElementById(`${code}-story`)?.innerText || "";
 
-        reviews[code] = { 
-            ...reviews[code], 
-            rating, 
-            levels, 
-            wins,
+        window.reviews[code] = { 
+            ...window.reviews[code], 
             loot,
             mapa,
             passe,
             story
         };
 
-        window.electronAPI.json.save(FILE, reviews);
-        console.log(`Dados da temporada ${code} salvos com sucesso!`);
-    }, 100);
+        window.stats[code] = {
+            ...window.stats[code],
+            rating, 
+            levels, 
+            wins
+        };
+
+        try {
+            await window.electronAPI.json.save(FILE, window.reviews);
+            await window.electronAPI.json.save(FILE_STATS, window.stats);
+            
+            console.log(`Fortnite - Dados da temporada ${code.toUpperCase().replace('S', 'T')} salvos com sucesso!`);
+        } catch (err) {
+            console.error(`[BoltNotes] Erro ao salvar dados da temporada ${code}:`, err);
+        }
+    }, 200);
 }
 
 async function autoSave(code) {

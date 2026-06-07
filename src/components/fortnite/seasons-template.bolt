@@ -51,7 +51,7 @@
             <p class="status"><i class="fa-solid fa-calendar-day"></i>Lançado em: <span></span></p>
         </div>
         <div class="season-status">
-            <div class="passe-status">
+            <div class="seasonCharacter-div">
                 <img class="season-character">
            </div>
             <div class="season-content">
@@ -69,8 +69,8 @@
             <div class="event-data">
                 <p class="event-title"></p>
                 <div class="event-tags">
-                    <p class="tag event-type"></p>
-                    <p class="tag event-date"></p>
+                    <p class="event-tag event-type"></p>
+                    <p class="event-tag event-date"></p>
                 </div>
             </div>
         </div>

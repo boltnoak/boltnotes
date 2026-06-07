@@ -70,9 +70,23 @@ window.electronAPI.onAssetsError((errorMsg) => {
     }, 3000);
 });
 
+let cachedSeasonInfo = null;
+
+async function loadCloudSeasonInfo() {
+    if (cachedSeasonInfo) return cachedSeasonInfo;
+    try {
+        const content = await window.api.fortnite.getSeasons(); 
+        cachedSeasonInfo = content || {};
+        return cachedSeasonInfo;
+    } catch (e) {
+        console.error("Erro ao buscar dados da internet:", e);
+        return {};
+    }
+}
+
 async function loadFortniteStats() {
   try {
-    const data = await window.electronAPI.json.load('Fortnite/reviews.json');
+    const data = await loadCloudSeasonInfo();
 
     if (!data || Object.keys(data).length === 0) {
       console.log("Nenhum dado de Fortnite encontrado ainda.");
