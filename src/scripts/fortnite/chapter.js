@@ -176,11 +176,12 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         const info = cloudData[code];
         const local = reviews[code] || null;
 
-        // Se a temporada não existe no PC, cria o slot vazio
         if (!local) {
-            reviews[code] = { loot: "", mapa: "", passe: "", story: "", levels: "", wins: "", rating: "" };
+            reviews[code] = { loot: "", mapa: "", passe: "", story: "", levels: "", wins: "", rating: "", locked: false};
             localDataUpdated = true;
         }
+
+        const data = reviews[code];
 
         // 3. Clona o conteúdo interno do template (gera um DocumentFragment)
         const clone = template.content.cloneNode(true);
@@ -201,33 +202,33 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         // Bloqueio de Edição
         const seasonDiv = clone.querySelector('.season');
-        const isLocked = local.locked ?? true;
+        const isLocked = data.locked ?? false;
         if (seasonDiv) seasonDiv.dataset.locked = isLocked;
 
         // Ícone/botão de bloqueio de edição
         const lockIcon = clone.getElementById('lock-unlock');
 
         if (lockIcon) {
-            lockIcon.className = local.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+            lockIcon.className = data.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
             
             lockIcon.onclick = (e) => {
                 e.stopPropagation();
 
-                local.locked = !local.locked;
+                data.locked = !data.locked;
                 
-                lockIcon.className = local.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+                lockIcon.className = data.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
                 
                 const parentSeason = lockIcon.closest('.season') || lockIcon.closest('.fn-season').querySelector('.season');
-                if (parentSeason) parentSeason.dataset.locked = local.locked;
+                if (parentSeason) parentSeason.dataset.locked = data.locked;
 
                 const currentCard = lockIcon.closest('.fn-season');
                 if (currentCard) {
-                    const displayStyle = local.locked ? 'none' : 'inline-block';
+                    const displayStyle = data.locked ? 'none' : 'inline-block';
                     currentCard.querySelectorAll('.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus')
                         .forEach(btn => btn.style.display = displayStyle);
 
                     currentCard.querySelectorAll('.review-topictext')
-                        .forEach(p => p.contentEditable = !local.locked);
+                        .forEach(p => p.contentEditable = !data.locked);
                 }
 
                 if (typeof debouncedSave === "function") debouncedSave(code);
@@ -380,8 +381,8 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 // ==========================================
 function preencherValores() {
     Object.keys(reviews).forEach(code => {
-        const data = reviews[code];
         const info = cachedSeasonInfo[code] || {};
+        const data = reviews[code];
 
         const rating = document.getElementById(`${code}-rating`);
         const levels = document.getElementById(`${code}-levels`);
@@ -460,7 +461,7 @@ function configurarZoomMapa() {
     mapImageEl.addEventListener("wheel", (e) => {
         e.preventDefault();
         
-        const zoomSpeed = 0.15;
+        const zoomSpeed = 0.2;
         const oldScale = scale;
 
         // Calcula a nova escala
@@ -469,7 +470,7 @@ function configurarZoomMapa() {
         } else {
             scale -= zoomSpeed;
         }
-        scale = Math.min(Math.max(1, scale), 5); // Limite de 1x a 5x
+        scale = Math.min(Math.max(1, scale), 10); // Limite de 1x a 5x
 
         // Pega a posição do mouse relativa ao container
         const rect = container.getBoundingClientRect();
@@ -561,10 +562,6 @@ function resetarZoomMapa() {
     atualizarTransform();
 }
 
-// Proteção para não destruir o disco rígido do usuário ao digitar
-
-
-// Inicia o app
 if (document.querySelector('.back')) document.querySelector('.back').href = `pages/fortnite.html`;
 
 if (document.readyState === "complete" || document.readyState === "interactive") {

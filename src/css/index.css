@@ -126,24 +126,6 @@
     display: none;
 }
 
-/* Páginas (pra não prontas) */
-.underCronstruction-page {
-    background-color: transparent;
-    border-radius: 2vh;
-    border: dashed .8vh #323232;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    width: 45vh;
-    height: 32vh;
-    overflow: hidden;
-    cursor: default;
-}
-.underCronstruction-page i {
-    color: #494949;
-}
-
 /* Painel de Jogos */
 #playingNowSection-title {
     display: flex;

@@ -192,7 +192,6 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const img = document.createElement("img");
     img.className = "game-cover";
 
-    // O await aqui garante que a capa seja carregada do disco antes de renderizar
     const localPath = await window.api.games.ensureCover({
         appid: game.appid,
         name: game.name,
@@ -225,21 +224,6 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         statusPercentage.className = "jogando-text";
         statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
         gameInfo.appendChild(statusPercentage);
-        gameInfo.appendChild(tag);
-    }
-
-    // Lógica de texto complementar do status
-    if (status === "zerado") {
-        tag.textContent = game.completeDate || "";
-        gameInfo.appendChild(tag);
-    } else if (status === "ajogar") {
-        const statusText = document.createElement("span");
-        statusText.className = "ajogar-text";
-        statusText.textContent = `A Jogar (${game.storyProgress || 0}%)`;
-        gameInfo.appendChild(statusText);
-        gameInfo.appendChild(tag);
-    } else {
-        if (status !== "jogando") tag.textContent = game.status;
         gameInfo.appendChild(tag);
     }
     
@@ -297,3 +281,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
+
+window.onload = function () {
+    const loadingScreen = document.getElementById('loading-screen');
+    const startingScreen = document.getElementById('starting-screen');
+      
+    loadingScreen.classList.add('hidden');
+    startingScreen.classList.add('hidden');
+
+    setTimeout(() => {
+        loadingScreen.remove();
+        startingScreen.remove();
+    }, 200);
+};

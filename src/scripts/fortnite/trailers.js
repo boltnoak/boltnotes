@@ -126,7 +126,7 @@ async function openTrailer(el) {
                     .toUpperCase()
                     .replace(/S/g, 'T')
                     .replace(/^(?!.*C.*T\d+).*$/,'')} 
-                    ${seasonName.replace(/.*(- =?)/,'')} - ${trailerName}`;
+                    ${seasonName.replace(/.*(- =?)/,'')} — ${trailerName}`;
 
                     changeVideo(path);
                 };
@@ -162,7 +162,7 @@ async function openTrailer(el) {
             .toUpperCase()
             .replace(/S/g, 'T')
             .replace(/^(?!.*C.*T\d+).*$/,'')} 
-            ${seasonName.replace(/.*(- =?)/,'')} - ${trailerName}`;
+            ${seasonName.replace(/.*(- =?)/,'')} — ${trailerName}`;
 
             listContainer.querySelector('.video-item-btn')?.classList.add('active');
 
@@ -191,6 +191,14 @@ async function openTrailer(el) {
     }
 }
 
+const EVENT_NAMES = {
+    'c7s2': 'Evento Fragmentado — Intro',
+    'c7s2-ice-king': 'Evento Fragmentado — Time Rei do Gelo',
+    'c7s2-foundation': 'Evento Fragmentado — Time Fundação'
+};
+
+let isTeamSelectVisible = false;
+
 async function openLiveEvent(el) {
     const container = el.closest('.fn-season');
     const code = container?.dataset.code;
@@ -210,54 +218,88 @@ async function openLiveEvent(el) {
     document.getElementById("video-popup").style.display = "flex";
     document.querySelector('html').style.overflow = "hidden";
 
-        const fileName = `${code}.mp4`;
-        const exists = await window.electronAPI.exists(`assets://live-event-${fileName}`);
-
-        if (exists) {
-            const path = `assets://live-event-${fileName}`;
-            const video = document.getElementById('video');
-            const wrapper = document.querySelector('.video-wrapper');
+    const ext = await window.electronAPI.exists(`assets://live-event-${code}.webm`) ? 'webm' : 'mp4';
+    const path = `assets://live-event-${code}.${ext}`;
+    const video = document.getElementById('video');
+    const wrapper = document.querySelector('.video-wrapper');
             
-            if (wrapper) {
-                const triggerControls = () => window.showControls(wrapper);
+    if (wrapper) {
+        const triggerControls = () => window.showControls(wrapper);
+        wrapper.onmousemove = () => window.showControls(wrapper);
+        wrapper.onmousedown = () => window.showControls(wrapper);
+        wrapper.ontouchstart = () => window.showControls(wrapper);
+        wrapper.addEventListener('wheel', triggerControls, { passive: true });
+    }
 
-                wrapper.onmousemove = () => window.showControls(wrapper);
-                wrapper.onmousedown = () => window.showControls(wrapper);
-                wrapper.ontouchstart = () => window.showControls(wrapper);
-                wrapper.addEventListener('wheel', triggerControls, { passive: true });
-            }
+    allowVolumeControl();
+    changeVideo(path);
 
-            allowVolumeControl();
+    video.volume = .5;
+    console.log('Volume inicial do video: ' + Math.round(video.volume * 100) + "%")
 
-            changeVideo(path);
-
-            video.volume = .5;
-            console.log('Volume inicial do video: ' + Math.round(video.volume * 100) + "%")
-
-            const playPromise = video.play();
-                if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                console.warn("Reprodução automática impedida pelo navegador. Clique no Play.");
-                });
-            }
+    const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+            console.warn("Reprodução automática impedida pelo navegador. Clique no Play.");
+        });
+    }
             
-            const popupVideo = document.getElementById('video');
-            const popupJuice = document.getElementById('player-bar-fill');
-            const popupPlayBtn = document.getElementById('play-pause');
+    const popupVideo = document.getElementById('video');
+    const popupJuice = document.getElementById('player-bar-fill');
+    const popupPlayBtn = document.getElementById('play-pause');
 
-            if (popupVideo) {
-                popupVideo.ontimeupdate = () => {
-                    if (!isNaN(popupVideo.duration) && popupVideo.duration > 0) {
-                        const perc = (popupVideo.currentTime / popupVideo.duration) * 100;
-                        if (popupJuice) popupJuice.style.width = perc + "%";
-                    }
-                };
-                
-                if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
+    if (popupVideo) {
+        popupVideo.ontimeupdate = () => {
+            if (!isNaN(popupVideo.duration) && popupVideo.duration > 0) {
+                const perc = (popupVideo.currentTime / popupVideo.duration) * 100;
+                if (popupJuice) popupJuice.style.width = perc + "%";
             }
         }
-        const moreVideos = document.querySelector('.moreVideos-section')
-        moreVideos.style.display = 'none'
+            if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
+    }
+
+    const moreVideos = document.querySelector('.moreVideos-section');
+    moreVideos.style.display = 'none';
+
+    video.addEventListener('timeupdate', () => {
+    const isIntro = video.src.includes('live-event-c7s2.webm') || video.src.includes('live-event-c7s2.mp4');
+    const teamSelect = document.getElementById('team-select-overlay');
+    
+    if (isIntro) {
+        const key = `${code}`;
+        title.textContent = EVENT_NAMES[key] || key;
+    }
+
+    if (!teamSelect) return;
+
+    const mustShow = isIntro && video.currentTime >= 274.5;
+
+    if (mustShow && !isTeamSelectVisible) {
+        teamSelect.classList.add('active');
+        isTeamSelectVisible = true;
+    } else if (!mustShow && isTeamSelectVisible) {
+        teamSelect.classList.remove('active');
+        isTeamSelectVisible = false;
+    }
+});
+}
+
+async function chooseTeam(team) {
+    const overlay = document.getElementById('team-select-overlay');
+    if (overlay) {
+        overlay.classList.remove('active'); 
+    }
+    isTeamSelectVisible = false;
+
+    const code = 'c7s2';
+    const key = `${code}-${team}`;
+    const ext = await window.electronAPI.exists(`assets://live-event-${key}.webm`) ? 'webm' : 'mp4';
+    const path = `assets://live-event-${key}.${ext}`;
+
+    const title = document.getElementById('video-title');
+    title.textContent = EVENT_NAMES[key] || key;
+
+    changeVideo(path);
 }
 
 async function changeVideo(src) {
@@ -319,4 +361,10 @@ function closeVideo() {
         player.classList.remove("close");
         player.removeEventListener("animationend", handler);
     });
+
+    const teamSelect = document.getElementById('team-select-overlay');
+    if (teamSelect) {
+        teamSelect.classList.remove('active');
+    }
+    isTeamSelectVisible = false;
 }

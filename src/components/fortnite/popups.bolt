@@ -4,7 +4,17 @@
         <div id="controls-hover"></div>
             <p id="video-title"></p>
             <i id="video-close" class="fa-solid fa-xmark" onclick="closeVideo();"></i>
-        <p id="volume"></p>
+            <p id="volume"></p>
+            <div id="team-select-overlay">
+                <div class="team-options">
+                    <div class="team-option" onclick="chooseTeam('ice-king')">
+                        <img src="assets://team-ice-king.png">
+                    </div>
+                    <div class="team-option" onclick="chooseTeam('foundation')">
+                        <img src="assets://team-foundation.png">
+                    </div>
+                </div>
+            </div>
             <video id="video" onclick="togglePlay()" preload="metadata"></video>
             <div id="player-controls">
                 <i id="play-pause" class="fa-solid fa-pause" onclick="togglePlay()"></i>

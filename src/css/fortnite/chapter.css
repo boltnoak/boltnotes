@@ -824,3 +824,47 @@ body {
     width: 18.8vw;
     position: absolute;
 }
+
+
+
+
+#team-select-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    gap: 2rem;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    will-change: opacity, visibility;
+}
+
+#team-select-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 1s linear, visibility 1s linear;
+}
+.team-options {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 8vw;
+    pointer-events: inherit;
+}
+.team-option {
+    cursor: pointer;
+    transform: scale(.35);
+    pointer-events: auto;
+}
+.team-option img {
+    width: 15vw;
+}
+.video-popup.full .team-options {
+    gap: 19.6vw;
+}
+.video-popup.full .team-option {
+    transform: scale(.54);
+}
