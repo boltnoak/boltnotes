@@ -73,7 +73,7 @@ function downloadFile(url, destination, onProgress, retries = 3) {
                 reject(new Error(`Download incompleto e corrompido: obtidos ${downloaded} de ${total} bytes.`));
               }
             } else {
-              resolve(); // Sucesso real!
+              resolve();
             }
           });
         });
@@ -322,6 +322,7 @@ function createWindow() {
         frame: false,
         transparent: true,
         show: false,
+        hasShadow: false,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,

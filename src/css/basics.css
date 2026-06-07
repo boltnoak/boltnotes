@@ -440,3 +440,12 @@ footer {
     text-decoration: none;
     background-color: transparent;
 }
+
+body.is-maximized {
+    border-radius: 0 !important;
+    border: none !important;
+}
+
+body.is-maximized * {
+    box-shadow: none;
+}
