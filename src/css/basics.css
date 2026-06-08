@@ -41,17 +41,6 @@ i {
     border-left-color: var(--text);
     animation: spin 1s linear infinite;
 }
-#update-btn {
-    display: none;
-    font-family: 'Montserrat';
-    font-weight: 600;
-    background-color: var(--blue);
-    color: var(--text);
-    border: none;
-    padding: 1vh .5vw;
-    border-radius: 1vh;
-    cursor: pointer;
-}
 .sep-bar-v {
     margin: 0 .4vw;
     border: solid .4vh rgba(25,25,25,.4);
@@ -252,6 +241,19 @@ html.maximized .app-container {
     font-family: 'Montserrat';
     font-size: 2.4vh;
     font-weight: 600;
+}
+#update-btn {
+    display: none;
+    font-family: 'Montserrat';
+    font-weight: 600;
+    background-color: var(--blue);
+    color: var(--text);
+    border: none;
+    font-size: 2vh;
+    margin: 0 0 0 66vw;
+    padding: .5vh .5vw;
+    border-radius: 1vh;
+    cursor: pointer;
 }
 .menuButtons {
     -webkit-app-region: no-drag;
