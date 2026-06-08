@@ -95,12 +95,12 @@ async function initMenu() {
 
     const updateBtn = document.getElementById('update-btn');
     if (updateBtn) {
-      const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
-      if (jaTemUpdate) updateBtn.style.display = 'block';
-
       window.electronAPI.onUpdateReady(() => {
         updateBtn.style.display = 'block';
       });
+
+      const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
+      if (jaTemUpdate) updateBtn.style.display = 'block';
 
       updateBtn.addEventListener('click', () => {
         window.electronAPI.restartAndInstall();

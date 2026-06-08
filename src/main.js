@@ -500,7 +500,9 @@ autoUpdater.on('download-progress', (progressObj) => {
 });
 autoUpdater.on('update-downloaded', (info) => {
     updateReady = true;
-    win?.webContents.send('update-ready-to-install');
+    if (win && !win.isDestroyed()) {
+      win?.webContents.send('update-ready-to-install');
+    }
 
     const { Notification } = require('electron');
     new Notification({
@@ -519,9 +521,6 @@ autoUpdater.on('error', (err) => {
     console.error('AutoUpdater - Erro:', err.message);
     win?.webContents.send('update-status', 'Erro na atualização: ' + err.message);
 });
-function restartApp() {
-    ipcRenderer.send('update:restart');
-}
 
 // Menu
 ipcMain.on('menu:maximize-app', () => {
