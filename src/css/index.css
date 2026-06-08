@@ -32,6 +32,7 @@
 
 /* Banner */
 .banner {
+    height: 18vh;
     background-image: url(assets://default-banner.jpg);
     display: flex;
     flex-direction: row;
@@ -40,7 +41,7 @@
     z-index: 1;
 }
 .logo-banner {
-    height: 12vh;
+    height: 18vh;
     margin: 2vh;
     user-select: none;
 }

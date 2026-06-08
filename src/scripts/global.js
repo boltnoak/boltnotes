@@ -60,6 +60,17 @@ function closeApp() {
   window.electronAPI.menu.closeApp();
 }
 
+window.electronAPI.onWindowStateChange((state) => {
+    const container = document.querySelector('.app-container');
+    if (!container) return;
+
+    if (state === 'maximized') {
+        container.style.borderRadius = '0';
+    } else {
+        container.style.borderRadius = '1vh';
+    }
+});
+
 async function updateMaximizeIcon() {
     const menuMax = document.getElementById('menuMax');
 
@@ -92,3 +103,22 @@ window.onload = function () {
         loadingScreen.remove();
     }, 100);
 };
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const updateBtn = document.getElementById('update-btn');
+    
+    if (updateBtn) {
+        const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
+        if (jaTemUpdate) {
+            updateBtn.style.display = 'block';
+        }
+
+        window.electronAPI.onUpdateReady(() => {
+            updateBtn.style.display = 'block';
+        });
+
+        updateBtn.addEventListener('click', () => {
+            window.electronAPI.restartAndInstall();
+        });
+    }
+});

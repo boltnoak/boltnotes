@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, Menu, Tray, protocol, net, nativeImage} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, Tray, protocol, net, nativeImage, screen} = require('electron');
 const { autoUpdater } = require('electron-updater');
 const { pathToFileURL } = require('url');
 const https = require('https');
@@ -276,6 +276,7 @@ let win;
 let tray = null;
 let isQuitting = false;
 let assetsReady = false;
+let updateBaixado = false;
 
 function getConfig() {
   const configPath = path.join(app.getPath('userData'),'config.json');
@@ -315,14 +316,22 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
 function createWindow() {
+    const primaryDisplay = screen.getPrimaryDisplay();
+    const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+
+    const larguraProporcional = Math.round(screenWidth * 0.9);
+    const alturaProporcional = Math.round(screenHeight * 0.85);
+
     win = new BrowserWindow({
-        width: 1200,
-        height: 600,
+        width: larguraProporcional,
+        height: alturaProporcional,
         autoHideMenuBar: true,
         frame: false,
         transparent: true,
         show: false,
         hasShadow: false,
+        // resizable: false,
+        thickFrame: true,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,
@@ -433,18 +442,20 @@ if (!gotTheLock) {
     createWindow();
 
     if (app.isPackaged) {
-        autoUpdater.checkForUpdatesAndNotify();
+        autoUpdater.checkForUpdates();
     }
 
     const configs = getConfig();
 
-    if (configs.maximize_on_start) {
-      win.maximize();
-    }
+    
 
     manageStartup(configs.open_on_startup);
 
     win.once('ready-to-show', () => {
+      if (configs.maximize_on_start) {
+        win.maximize();
+      }
+
       makeTray();
       win.show();
 
@@ -491,9 +502,16 @@ autoUpdater.on('update-downloaded', (info) => {
     const { Notification } = require('electron');
     new Notification({
         title: 'BoltNotes atualizado!',
-        body: `Versão ${info.version} pronta. Reinicie para aplicar.`,
+        body: `Versão ${info.version} baixada.`,
         icon: path.join(__dirname, 'icon.png')
     }).show();
+
+    updateBaixado = true;
+
+    win?.webContents.send('update-ready-to-install');
+});
+ipcMain.handle('update:check-status', () => {
+    return updateBaixado;
 });
 ipcMain.on('update:restart', () => {
     autoUpdater.quitAndInstall();
@@ -507,9 +525,12 @@ function restartApp() {
 
 // Menu
 ipcMain.on('menu:maximize-app', () => {
+  if (!win) return;
+  
   if (win.isMaximized()) {
     win.unmaximize();
   } else {
+    win.setMaximizable(true); 
     win.maximize();
   }
 });
@@ -692,7 +713,11 @@ X-GNOME-Autostart-enabled=true
 function makeTray() {
   if (tray !== null) return;
 
-  const iconPath = path.join(__dirname, 'icon.png');
+  const isPackaged = app.isPackaged;
+
+  const iconPath = isPackaged
+    ? path.join(process.resourcesPath, 'tray-icon.png')
+    : path.join('build', 'icon.png');
 
   const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
 

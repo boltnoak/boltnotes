@@ -8,77 +8,79 @@
     <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-<div class="pageBody">
-<div class="banner">
-    <img class="logo-banner" src="assets://boltnotes-logo.png">
-</div>
-<div class="banner-bar"></div>
-<div class="pages-section">
-    <!-- <a class="underCronstruction-page" href="#">
-        <i class="fa-3x fa-solid fa-brush"></i>
-    </a> -->
-    <!-- href="pages/games.html" -->
-    <a class="page" id="games" href="pages/games.html">
-        <div class="page-image">
-            <img src="assets://games-image.png">
-        </div>
-        <p class="page-title">Backlog de Jogos</p>
-        <div class="info">
-            <p id="games-platinados">Work in progress</p>
-            <p id="games-zerados"></p>
-        </div>
-    </a>
-    <a class="page" id="notes" href="pages/notes.html">
-        <div class="page-image">
-            <img src="assets://notes-image.png">
-        </div>
-        <p class="page-title">Notas</p>
-        <div class="info">
-            <p id="note-count"></p>
-        </div>
-    </a>
-    <a class="page" id="fortnite" href="pages/fortnite.html">
-        <div class="page-image">
-            <img id="latest-season">
-            <div class="shine-effect-v"></div>
-        </div>
-        <p class="page-title">Fortnite</p>
-        <div class="info">
-            <p id="chapter-count"></p>
-            <p id="season-count"></p>
-        </div>
-    </a>
-</div>
-<p class="sep-bar"></p>
-<div class="page-infos">
-        <div id="playingNowSection-title"><p>Jogando no momento</p><i id="playingNowSection-toggle" class="fa-solid fa-gamepad"></i></div>
-        <div class="playingNow-panel">
-            <div id="playingNow-games"></div>
+<div class="app-container">
+    <div class="pageBody">
+    <div class="banner">
+        <img class="logo-banner" src="assets://boltnotes-logo.png">
+    </div>
+    <div class="banner-bar"></div>
+    <div class="pages-section">
+        <!-- <a class="underCronstruction-page" href="#">
+            <i class="fa-3x fa-solid fa-brush"></i>
+        </a> -->
+        <!-- href="pages/games.html" -->
+        <a class="page" id="games" href="pages/games.html">
+            <div class="page-image">
+                <img src="assets://games-image.png">
+            </div>
+            <p class="page-title">Backlog de Jogos</p>
+            <div class="info">
+                <p id="games-platinados">Work in progress</p>
+                <p id="games-zerados"></p>
+            </div>
+        </a>
+        <a class="page" id="notes" href="pages/notes.html">
+            <div class="page-image">
+                <img src="assets://notes-image.png">
+            </div>
+            <p class="page-title">Notas</p>
+            <div class="info">
+                <p id="note-count"></p>
+            </div>
+        </a>
+        <a class="page" id="fortnite" href="pages/fortnite.html">
+            <div class="page-image">
+                <img id="latest-season">
+                <div class="shine-effect-v"></div>
+            </div>
+            <p class="page-title">Fortnite</p>
+            <div class="info">
+                <p id="chapter-count"></p>
+                <p id="season-count"></p>
+            </div>
+        </a>
+    </div>
+    <p class="sep-bar"></p>
+    <div class="page-infos">
+            <div id="playingNowSection-title"><p>Jogando no momento:</p><i id="playingNowSection-toggle" class="fa-solid fa-gamepad"></i></div>
+            <div class="playingNow-panel">
+                <div id="playingNow-games"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<header>
-    <div class="app-version">
-        <span id="app-version"></span>
+    <header>
+        <div class="app-version">
+            <span id="app-version"></span>
+        </div>
+        <a class="config" href="pages/config.html">
+            <i id="config" class="fa-solid fa-gear"></i>
+        </a>
+    </header>
+
+    <div id="loading-screen">
+        <div class="spinner"></div>
     </div>
-    <a class="config" href="pages/config.html">
-        <i id="config" class="fa-solid fa-gear"></i>
-    </a>
-</header>
 
-<div id="loading-screen">
-    <div class="spinner"></div>
-</div>
-
-<div id="starting-screen">
-    <div class="loading-content">
-        <h2 id="loading-title">Atualizando Arquivos</h2>
-        <p id="loading-details">Verificando pacotes...</p>
-        
-        <div class="progress-container">
-            <div id="progress-bar-fill">
-                <div class="shine-effect"></div>
+    <div id="starting-screen">
+        <div class="loading-content">
+            <h2 id="loading-title">Atualizando Arquivos</h2>
+            <p id="loading-details">Verificando pacotes...</p>
+            
+            <div class="progress-container">
+                <div id="progress-bar-fill">
+                    <div class="shine-effect"></div>
+                </div>
             </div>
         </div>
     </div>

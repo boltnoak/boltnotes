@@ -1,6 +1,9 @@
 <div id="menu" class="drag">
     <p id="menuTitle"></p>
-    <a id="btn-restart" onclick="restartApp()"><i class="fa-solid fa-rotate-right"></i>Reiniciar</a>
+    <a id="update-btn">
+        <i class="fa-solid fa-arrow-rotate-right"></i>
+        Instalar Atualização
+    </a>
     <div class="menuButtons">
         <i id="menuMin" class="fa-solid fa-window-minimize" onclick="minimizeApp()"></i>
         <i id="menuMax" class="fa-regular fa-window-maximize" onclick="maximizeApp()"></i>
