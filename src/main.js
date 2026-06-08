@@ -276,7 +276,7 @@ let win;
 let tray = null;
 let isQuitting = false;
 let assetsReady = false;
-let updateBaixado = false;
+let updateReady = false;
 
 function getConfig() {
   const configPath = path.join(app.getPath('userData'),'config.json');
@@ -499,19 +499,18 @@ autoUpdater.on('download-progress', (progressObj) => {
     win?.webContents.send('update-progress', progressObj.percent);
 });
 autoUpdater.on('update-downloaded', (info) => {
+    updateReady = true;
+    win?.webContents.send('update-ready-to-install');
+
     const { Notification } = require('electron');
     new Notification({
         title: 'BoltNotes atualizado!',
         body: `Versão ${info.version} baixada.`,
         icon: path.join(__dirname, 'icon.png')
     }).show();
-
-    updateBaixado = true;
-
-    win?.webContents.send('update-ready-to-install');
 });
 ipcMain.handle('update:check-status', () => {
-    return updateBaixado;
+    return updateReady;
 });
 ipcMain.on('update:restart', () => {
     autoUpdater.quitAndInstall();
