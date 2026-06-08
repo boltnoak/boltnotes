@@ -18,8 +18,8 @@
     z-index: 99;
     background: rgba(0,0,0,.7);
     margin: 0;
-    transform: translateY(6.5vh);
-    height: 86.4vh;
+    transform: translateY(6.4vh);
+    height: 86.7vh;
     transition: background 1s linear;
     animation: popupBGIn .5s ease forwards;
     overflow: hidden;

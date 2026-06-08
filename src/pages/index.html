@@ -5,12 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BoltNotes</title>
+    <script src="window-check.js"></script>
     <link rel="stylesheet" href="css/index.css">
-    <script>
-        if (sessionStorage.getItem('windowState') === 'maximized') {
-            document.documentElement.classList.add('maximized');
-        }
-    </script>
 </head>
 <body>
 <div class="app-container">
@@ -53,7 +49,26 @@
     </div>
     <p class="sep-bar"></p>
     <div class="page-infos">
-            <div id="playingNowSection-title"><p>Jogando no momento:</p><i id="playingNowSection-toggle" class="fa-solid fa-gamepad"></i></div>
+            <div id="playingNowSection-title">Jogando no momento:<i id="playingNowSection-toggle" class="fa-solid fa-gamepad"></i></div>
+            
+            <!-- <div class="recentSeason-panel">
+                <div class="recent-season">
+                    <img src="assets://c7s3.jpg" alt="">
+                    <div class="season-status">
+                        <div class="level-status">
+                            <i class="fa-solid fa-square-caret-up"></i><p>Nível: 100</p>
+                        </div>
+                        <div class="a">
+                            <p class="b"></p>
+                        </div>
+                        <div class="win-status">
+                            <i class="fa-solid fa-trophy"></i>
+                            <p>Vitórias: 10</p>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            
             <div class="playingNow-panel">
                 <div id="playingNow-games"></div>
             </div>

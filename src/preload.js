@@ -1,5 +1,23 @@
 const {contextBridge,ipcRenderer} = require('electron');
 
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const config = ipcRenderer.sendSync('config:get-sync');
+    
+    if (config && config.maximize_on_start) {
+      document.documentElement.classList.remove('window-normal');
+      window.sessionStorage.setItem('windowState', 'maximized');
+    } else {
+      document.documentElement.classList.add('window-normal');
+      window.sessionStorage.setItem('windowState', 'normal');
+    }
+  } catch (err) {
+    console.error("Erro ao aplicar classe inicial no preload:", err);
+    document.documentElement.classList.add('window-normal');
+    window.sessionStorage.setItem('windowState', 'normal');
+  }
+});
+
 contextBridge.exposeInMainWorld('electronAPI', {
   onWindowStateChange: (callback) => ipcRenderer.on('window-state-change', (event, state) => callback(state)),
   exists: (filePath) => ipcRenderer.invoke('exists',filePath),

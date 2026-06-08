@@ -362,6 +362,8 @@ body {
     background: rgba(0, 0, 0, .85);
     display: flex;
     align-items: center;
+    transform: translateY(6.4vh);
+    height: 86.7vh;
     justify-content: center;
 }
 
@@ -406,21 +408,20 @@ body {
 
 #map-close {
     position: absolute;
-    z-index: 10;
-    right: 1vh;
-    top: 1vh;
+    z-index: 2;
+    right: 0;
+    margin: 1vh;
     cursor: pointer;
     padding: 1vh;
     border-radius: 1vh;
-    color: #fff;
+    opacity: 0;
     backdrop-filter: blur(0);
-    transition: all .3s ease;
     box-shadow: 0 0 0 transparent;
 }
-
 #map-close:hover {
     backdrop-filter: blur(200vh);
     box-shadow: 0 0 4vh #05050536;
+    opacity: 1;
 }
 
 #mapPopup-image.dragging {

@@ -155,9 +155,8 @@ async function downloadPackage(name) {
 
 
 async function getRemoteManifest() {
-  const response = await fetch(MANIFEST_URL);
-
-  return response.json();
+    const response = await fetchWithRetry(MANIFEST_URL, {}, 5, 10000);
+    return response.json();
 }
 
 function getLocalManifest() {
@@ -170,6 +169,22 @@ function getLocalManifest() {
   );
 }
 
+async function fetchWithRetry(url, options = {}, retries = 3, delay = 5000) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response;
+        } catch (err) {
+            if (i < retries - 1) {
+                console.log(`[Fetch] Tentativa ${i + 1} falhou (${err.message}), tentando em ${delay/1000}s...`);
+                await new Promise(r => setTimeout(r, delay));
+            } else {
+                throw err;
+            }
+        }
+    }
+}
 
 async function syncAssets() {
   fs.mkdirSync(ASSETS_DIR, { recursive: true });
@@ -549,51 +564,47 @@ ipcMain.handle('menu:is-maximized', () => { return win.isMaximized() });
 
 // Básico
 ipcMain.handle('fortnite:fetch-trailers', async () => {
-  try {
-    const gistUrl = 'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers.json';
-    const response = await fetch(gistUrl);
-    if (!response.ok) {
-      throw new Error('Falha ao baixar o arquivo do Gist');
+    try {
+        const response = await fetchWithRetry(
+            'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers.json',
+            {}, 3, 5000
+        );
+        return await response.json();
+    } catch (error) {
+        console.error('Erro ao buscar trailers:', error);
+        return null;
     }
-    const data = await response.json(); 
-    return data;
-  } catch (error) {
-    console.error('Erro ao buscar trailers:', error);
-    return null;
-  }
 });
+
 ipcMain.handle('fortnite:fetch-seasons', async () => {
-  try {
-    const gistUrl = 'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons.json';
-    const response = await fetch(gistUrl);
-    if (!response.ok) {
-      throw new Error('Falha ao baixar o arquivo do Gist');
+    try {
+        const response = await fetchWithRetry(
+            'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons.json',
+            {}, 3, 5000
+        );
+        return await response.json();
+    } catch (error) {
+        console.error('Erro ao buscar seasons:', error);
+        return null;
     }
-    const data = await response.json(); 
-    return data;
-  } catch (error) {
-    console.error('Erro ao buscar trailers:', error);
-    return null;
-  }
+});
+
+ipcMain.handle('games:fetch-gamesdb', async () => {
+    try {
+        const response = await fetchWithRetry(
+            'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/gamesdb.json',
+            {}, 3, 5000
+        );
+        return await response.json();
+    } catch (error) {
+        console.error('Erro ao buscar gamesdb:', error);
+        return null;
+    }
 });
 ipcMain.handle('fortnite:list-trailers', () => {
     return fs.readdirSync(
         path.join(ASSETS_DIR, 'fortnite/trailers')
     );
-});
-ipcMain.handle('games:fetch-gamesdb', async () => {
-  try {
-    const gistUrl = 'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/gamesdb.json';
-    const response = await fetch(gistUrl);
-    if (!response.ok) {
-      throw new Error('Falha ao baixar o arquivo do Gist');
-    }
-    const data = await response.json(); 
-    return data;
-  } catch (error) {
-    console.error('Erro ao buscar trailers:', error);
-    return null;
-  }
 });
 ipcMain.on('devTools', () => {
   if (!app.isPackaged && win && !win.isDestroyed()) {
@@ -638,6 +649,9 @@ ipcMain.handle('info:documents', () => {
 // Configurações
 ipcMain.handle('config:get', () => {
     return getConfig();
+});
+ipcMain.on('config:get-sync', (event) => {
+  event.returnValue = getConfig();
 });
 ipcMain.on('config:update', (event, { key, value }) => {
     const configPath = path.join(app.getPath('userData'),'config.json');

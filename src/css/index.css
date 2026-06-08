@@ -248,3 +248,57 @@
     padding: 0;
     margin: .5vh 0 0 0;
 }
+
+/* Fortnite */
+.recentSeason-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.recent-season {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    background-color: rgba(20, 20, 20, 0.2);
+    gap: .7vw;
+    border-radius: 1.8vh;
+    padding: 1vh .65vw;
+    overflow: hidden;
+}
+.recentSeason-panel img {
+    width: 28vw;
+    border-radius: 1vh;
+}
+.season-status {
+    width: 20vw;
+}
+.a {
+    background-color: #494949;
+    height: 1.2vh;
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    border-radius: 1vh;
+}
+.b {
+    background-color: var(--blue);
+    width: 50%;
+    padding: 0;
+    height: 100%;
+    margin: 0;
+}
+.level-status, .win-status {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-family: 'Montserrat';
+    font-weight: 700;
+    margin: 1vh 0 .4vh 0;
+    object-fit: cover;
+}
+.level-status p, .win-status p {
+    padding: 0;
+    margin: 0;
+}

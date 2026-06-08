@@ -66,10 +66,19 @@ window.electronAPI.onWindowStateChange((state) => {
 });
 
 function applyWindowState(state) {
-    document.documentElement.classList.toggle('maximized', state === 'maximized');
-}
+  const menuMax = document.getElementById('menuMax');
+  const isNormal = state === 'normal';
 
-applyWindowState(sessionStorage.getItem('windowState') || 'normal');
+  // 1. Controla as bordas arredondadas (Adiciona se for normal, remove se for maximizado)
+  document.documentElement.classList.toggle('window-normal', isNormal);
+
+  // 2. Controla o ícone do menu (Apenas se o botão já tiver sido injetado na tela)
+  if (menuMax) {
+    menuMax.className = isNormal
+      ? 'fa-regular fa-window-maximize'
+      : 'fa-regular fa-window-restore';
+  }
+}
 
 async function updateMaximizeIcon() {
     const menuMax = document.getElementById('menuMax');
@@ -94,28 +103,126 @@ async function initMenu() {
     applyWindowState(sessionStorage.getItem('windowState') || 'normal');
 
     const updateBtn = document.getElementById('update-btn');
-    if (updateBtn) {
-      window.electronAPI.onUpdateReady(() => {
-        updateBtn.style.display = 'block';
-      });
-
+      if (updateBtn) {
+      console.log('[Update] Verificando status...');
+      
       const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
-      if (jaTemUpdate) updateBtn.style.display = 'block';
+      console.log('[Update] Tem update?', jaTemUpdate);
+      
+      if (jaTemUpdate) updateBtn.style.display = 'flex';
+
+      window.electronAPI.onUpdateReady(() => {
+          console.log('[Update] Evento recebido!');
+          updateBtn.style.display = 'flex';
+      });
 
       updateBtn.addEventListener('click', () => {
-        window.electronAPI.restartAndInstall();
+          window.electronAPI.restartAndInstall();
       });
-    }
+  }
 }
 
 initMenu();
 
-window.onload = function () {
-    const loadingScreen = document.getElementById('loading-screen');
-      
-    loadingScreen.classList.add('hidden');
+// Detecta se a página atual é a página de entrada (index.html)
+const isIndexPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
 
-    setTimeout(() => {
-        loadingScreen.remove();
-    }, 100);
-};
+window.addEventListener('load', async () => {
+    const loadingScreen = document.getElementById('loading-screen');
+    const startingScreen = document.getElementById('starting-screen');
+    const loadingDetails = document.getElementById('loading-details');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+
+    if (isIndexPage) {
+        const isReady = await window.electronAPI.checkAssetsStatus();
+        
+        if (isReady) {
+            if (loadingScreen) loadingScreen.classList.add('hidden');
+            if (startingScreen) startingScreen.style.display = 'none';
+
+            setTimeout(() => {
+                if (loadingScreen) loadingScreen.remove();
+                if (startingScreen) startingScreen.remove();
+            }, 400);
+        } else {
+            if (startingScreen) {
+                startingScreen.style.display = 'flex';
+                startingScreen.classList.remove('hidden');
+            }
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => loadingScreen.remove(), 400);
+            }
+        }
+
+        window.electronAPI.onAssetsProgress((() => {
+            let lastUpdate = 0;
+            return (data) => {
+                if (!loadingDetails || !progressBarFill) return;
+                
+                const now = Date.now();
+                if (now - lastUpdate < 200) return;
+                lastUpdate = now;
+
+                const mb = (data.downloaded / 1024 / 1024).toFixed(1);
+                const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
+
+                loadingDetails.textContent = `Baixando ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`;
+
+                if (data.percent !== null) {
+                    progressBarFill.style.width = `${data.percent}%`;
+                }
+            };
+        })());
+
+        window.electronAPI.onAssetsReady(() => {
+            const loadingTitle = document.getElementById('loading-title');
+            if (loadingTitle) loadingTitle.textContent = "Tudo pronto!";
+            if (loadingDetails) loadingDetails.textContent = "";
+            if (progressBarFill) progressBarFill.style.width = "100%";
+            
+            if (startingScreen) {
+                setTimeout(() => {
+                    startingScreen.style.opacity = "0";
+                    setTimeout(() => {
+                        startingScreen.style.display = "none";
+                        startingScreen.remove();
+                    }, 500);
+                }, 500);
+            }
+        });
+
+        window.electronAPI.onAssetsError((errorMsg) => {
+            if (loadingDetails) {
+                loadingDetails.textContent = `${errorMsg}`;
+                loadingDetails.style.color = "var(--red)";
+            }
+            
+            const shineEffect = document.querySelector('.shine-effect');
+            if (shineEffect) shineEffect.style.display = 'none';
+            
+            if (progressBarFill) {
+                progressBarFill.style.width = '100%';
+                progressBarFill.style.backgroundColor = "var(--red)";
+            }
+            
+            if (startingScreen) {
+                setTimeout(() => {
+                    startingScreen.style.opacity = "0";
+                    setTimeout(() => { 
+                        startingScreen.style.display = "none"; 
+                        startingScreen.remove();
+                    }, 500);
+                }, 3000);
+            }
+        });
+    } 
+    else {
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => {
+                loadingScreen.remove();
+            }, 400);
+        }
+    }
+});

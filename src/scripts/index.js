@@ -7,69 +7,6 @@ async function updateNoteCount() {
   }
 }
 
-const startingScreen = document.getElementById('starting-screen');
-
-const loadingDetails = document.getElementById('loading-details');
-const progressBarFill = document.getElementById('progress-bar-fill');
-
-window.addEventListener('load', async () => {
-    const isReady = await window.electronAPI.checkAssetsStatus();
-    
-    if (!startingScreen) return;
-
-    if (isReady) {
-        startingScreen.style.display = 'none';
-    } else {
-        startingScreen.style.display = 'flex';
-        startingScreen.classList.remove('hidden');
-    }
-});
-
-window.electronAPI.onAssetsProgress((() => {
-    let lastUpdate = 0;
-
-    return (data) => {
-        const now = Date.now();
-        if (now - lastUpdate < 200) return;
-        lastUpdate = now;
-
-        const mb = (data.downloaded / 1024 / 1024).toFixed(1);
-        const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
-
-        loadingDetails.textContent = `Baixando ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`;
-
-        if (data.percent !== null) {
-            progressBarFill.style.width = `${data.percent}%`;
-        }
-    };
-})());
-
-window.electronAPI.onAssetsReady(() => {
-    document.getElementById('loading-title').textContent = "Tudo pronto!";
-    loadingDetails.textContent = "";
-    progressBarFill.style.width = "100%";
-    
-    setTimeout(() => {
-        startingScreen.style.opacity = "0";
-        setTimeout(() => {
-            startingScreen.style.display = "none";
-        }, 500);
-    }, 500);
-});
-
-window.electronAPI.onAssetsError((errorMsg) => {
-    loadingDetails.textContent = `${errorMsg}`;
-    loadingDetails.style.color = "var(--red)";
-    document.querySelector('.shine-effect').style.display = 'none';
-    progressBarFill.style.width = '100%';
-    progressBarFill.style.backgroundColor = "var(--red)";
-    
-    setTimeout(() => {
-        startingScreen.style.opacity = "0";
-        setTimeout(() => { startingScreen.style.display = "none"; }, 500);
-    }, 3000);
-});
-
 let cachedSeasonInfo = null;
 
 async function loadCloudSeasonInfo() {
@@ -299,14 +236,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-window.onload = function () {
-    const loadingScreen = document.getElementById('loading-screen');
-    
-    if (loadingScreen) {
-        loadingScreen.classList.add('hidden');
-        
-        setTimeout(() => {
-            loadingScreen.remove();
-        }, 200);
-    }
-};
+// document.getElementById('playingNowSection-title').innerHTML = 'Temporada 3 - No Corre<i class="fa-solid fa-bars-progress"></i>'

@@ -15,11 +15,11 @@ i {
     color: white;
 }
 #loading-screen {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background-color: var(--bg);
     display: flex;
     flex-direction: column;
@@ -28,7 +28,8 @@ i {
     z-index: 98;
     opacity: 1;
     transition: opacity 0.4s ease-in-out, visibility 0.4s;
-    border-radius: 1vh;
+    border-radius: inherit;
+    overflow: hidden;
 }
 #loading-screen.hidden {
     visibility: hidden;
@@ -48,11 +49,11 @@ i {
     justify-content: center;
 }
 #starting-screen {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background-color: var(--bg);
     color: var(--text);
     font-family: 'Montserrat';
@@ -61,7 +62,8 @@ i {
     align-items: center;
     z-index: 98;
     transition: opacity 0.5s ease;
-    border-radius: 1vh;
+    border-radius: inherit;
+    overflow: hidden;
 }
 .loading-content {
     text-align: center;
@@ -188,7 +190,8 @@ i {
 
 @keyframes spin {
     0% { transform: rotate(0deg) }
-    100% { transform: rotate(360deg) }}
+    100% { transform: rotate(360deg) }
+}
 html {
     scroll-behavior: smooth;
     scroll-padding: 1vh;
@@ -208,21 +211,33 @@ body {
     height: 100vh;
     overflow: hidden;
 }
+
+/* Estado Base do Container: Quadrado por padrão (Maximizado) */
 .app-container {
     background-color: var(--bg);
-    border-radius: 1vh;
+    border-radius: 0;
     height: 100vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden;          
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0.01);
+    overflow: hidden;
+    box-shadow: none;
     backface-visibility: hidden;
 }
-html.maximized .app-container {
-    border-radius: 0 !important;
+
+/* Estado Modo Janela: Aplica as bordas arredondadas suavizadas nativas */
+html.window-normal .app-container {
+    border-radius: 1vh !important;
+    overflow: hidden !important;
+    isolation: isolate;
 }
+
+html.window-normal #loading-screen,
+html.window-normal #starting-screen {
+    border-radius: 1vh !important;
+}
+
 #menu {
     padding: .9vh 0 1vh 1vw;
     height: 4.5vh;
@@ -452,13 +467,4 @@ footer {
 [contenteditable="true"]::spelling-error {
     text-decoration: none;
     background-color: transparent;
-}
-
-body.is-maximized {
-    border-radius: 0 !important;
-    border: none !important;
-}
-
-body.is-maximized * {
-    box-shadow: none;
 }
