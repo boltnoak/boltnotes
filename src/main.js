@@ -516,6 +516,7 @@ ipcMain.on('update:restart', () => {
     autoUpdater.quitAndInstall();
 });
 autoUpdater.on('error', (err) => {
+    console.error('AutoUpdater - Erro:', err.message);
     win?.webContents.send('update-status', 'Erro na atualização: ' + err.message);
 });
 function restartApp() {
