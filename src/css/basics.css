@@ -231,8 +231,11 @@ body {
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.01);
     backface-visibility: hidden;
 }
+html.maximized .app-container {
+    border-radius: 0 !important;
+}
 #menu {
-    padding: 1vh 0 1vh 1vw;
+    padding: .9vh 0 1vh 1vw;
     height: 4.5vh;
     width: 100%;
     display: flex;
@@ -242,7 +245,6 @@ body {
     position: absolute;
     user-select: none;
     overflow: hidden;
-    border-radius: 1vh;
 }
 #menuTitle {
     margin-left: 1vh;

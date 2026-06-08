@@ -61,15 +61,15 @@ function closeApp() {
 }
 
 window.electronAPI.onWindowStateChange((state) => {
-    const container = document.querySelector('.app-container');
-    if (!container) return;
-
-    if (state === 'maximized') {
-        container.style.borderRadius = '0';
-    } else {
-        container.style.borderRadius = '1vh';
-    }
+    sessionStorage.setItem('windowState', state);
+    applyWindowState(state);
 });
+
+function applyWindowState(state) {
+    document.documentElement.classList.toggle('maximized', state === 'maximized');
+}
+
+applyWindowState(sessionStorage.getItem('windowState') || 'normal');
 
 async function updateMaximizeIcon() {
     const menuMax = document.getElementById('menuMax');
@@ -85,9 +85,12 @@ async function initMenu() {
     const res = await fetch('components/menu.bolt');
     const data = await res.text();
 
-    document.body.insertAdjacentHTML('afterbegin', data);
+    const container = document.querySelector('.app-container');
+    (container || document.body).insertAdjacentHTML('afterbegin', data);
 
     document.getElementById('menuTitle').textContent = document.title;
+
+    applyWindowState(sessionStorage.getItem('windowState') || 'normal');
 
     await updateMaximizeIcon();
 }

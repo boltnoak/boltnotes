@@ -6,66 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BoltNotes — Backlog de Jogos</title>
     <link rel="stylesheet" href="css/games.css">
+    <script>
+        if (sessionStorage.getItem('windowState') === 'maximized') {
+            document.documentElement.classList.add('maximized');
+        }
+    </script>
 </head>
 <body>
-<div class="pageBody">
-    <div class="sidebar">
-        <div>
-            <div id="playingNowSection-title"><p>Jogando no momento</p><i id="playingNowSection-toggle" class="fa-solid fa-angle-up"></i></div>
-            <div class="playingNow-panel">
-                <div id="playingNow-games"></div>
+<div class="app-container">
+    <div class="pageBody">
+        <div class="sidebar">
+            <div>
+                <div id="playingNowSection-title"><p>Jogando no momento</p><i id="playingNowSection-toggle" class="fa-solid fa-angle-up"></i></div>
+                <div class="playingNow-panel">
+                    <div id="playingNow-games"></div>
+                </div>
             </div>
-        </div>
-        
-        <div class="add-game-form">
-            <input type="text" id="gameName" placeholder="Nome do Jogo">
-            <input type="text" id="gameAppId" placeholder="App ID do Jogo">
-            <div class="add-game-form-options">
-                <a class="steamdb-btn" href="https://steamdb.info/search/">
-                    <i class="fa-brands fa-steam"></i>
-                </a>
-                <a id="addGameBtn">Adicionar</a>
-            </div>
-        </div>
-    </div>
-    <p class="sep-bar-v"></p>
-    <div class="page-content">
-        <div class="view-bar">
-            <div class="view-options">
-                <i id="view-grid" class="fa-solid fa-grip"></i>
-                <i id="view-list" class="fa-solid fa-bars"></i>
-            </div>
-            <div class="sorting-addGame">
-                <div class="sorting-options">
-                    <select id="realSorting-options">
-                        <option value="date-recent">Mais recente</option>
-                        <option value="date-old">Mais antigo</option>
-                        <option value="rating-high">Maior nota</option>
-                        <option value="rating-low">Menor nota</option>
-                    </select>
-                    <div class="sortingOptions-trigger">
-                        <span>Mais recente</span>
-                        <i class="fa-solid fa-angle-down"></i>
-                    </div>
-                    <ul class="sortingOptions-select">
-                        <li data-value="date-recent" class="selected">Mais recente</li>
-                        <li data-value="date-old">Mais antigo</li>
-                        <li data-value="rating-high">Maior nota</li>
-                        <li data-value="rating-low">Menor nota</li>
-                    </ul>
+            
+            <div class="add-game-form">
+                <input type="text" id="gameName" placeholder="Nome do Jogo">
+                <input type="text" id="gameAppId" placeholder="App ID do Jogo">
+                <div class="add-game-form-options">
+                    <a class="steamdb-btn" href="https://steamdb.info/search/">
+                        <i class="fa-brands fa-steam"></i>
+                    </a>
+                    <a id="addGameBtn">Adicionar</a>
                 </div>
             </div>
         </div>
-        <div id="view-games"></div>
+        <p class="sep-bar-v"></p>
+        <div class="page-content">
+            <div class="view-bar">
+                <div class="view-options">
+                    <i id="view-grid" class="fa-solid fa-grip"></i>
+                    <i id="view-list" class="fa-solid fa-bars"></i>
+                </div>
+                <div class="sorting-addGame">
+                    <div class="sorting-options">
+                        <select id="realSorting-options">
+                            <option value="date-recent">Mais recente</option>
+                            <option value="date-old">Mais antigo</option>
+                            <option value="rating-high">Maior nota</option>
+                            <option value="rating-low">Menor nota</option>
+                        </select>
+                        <div class="sortingOptions-trigger">
+                            <span>Mais recente</span>
+                            <i class="fa-solid fa-angle-down"></i>
+                        </div>
+                        <ul class="sortingOptions-select">
+                            <li data-value="date-recent" class="selected">Mais recente</li>
+                            <li data-value="date-old">Mais antigo</li>
+                            <li data-value="rating-high">Maior nota</li>
+                            <li data-value="rating-low">Menor nota</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="view-games"></div>
+        </div>
     </div>
-</div>
 
-<header>
-    <a class="back" href="pages/index.html">Voltar<i class="fa-solid fa-caret-left"></i></a>
-</header>
+    <header>
+        <a class="back" href="pages/index.html">Voltar<i class="fa-solid fa-caret-left"></i></a>
+    </header>
 
-<div id="loading-screen">
-    <div class="spinner"></div>
+    <div id="loading-screen">
+        <div class="spinner"></div>
+    </div>
 </div>
 
 <script src="scripts/global.js"></script>

@@ -33,9 +33,8 @@
     justify-content: center;
 }
 .app-logo {
-    height: 10vh;
+    height: 12vh;
     user-select: none;
-    margin: 2vh;
 }
 .banner {
     height: 18vh;
@@ -44,6 +43,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    padding: 1.5vh;
 }
 .section-title {
     margin: 1.5vh .5vw 1.2vh .5vw;
@@ -64,12 +64,12 @@
     font-weight: 800;
     display: grid;
     width: 41.5vw;
-    height: 70%;
+    height: 67%;
     grid-template-columns: repeat(auto-fill, minmax(15.9vw, 1fr));
     will-change: transform;
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: 70vh;
+    max-height: 68vh;
 }
 .chapter-section::-webkit-scrollbar-thumb {
     display: none;
@@ -113,34 +113,32 @@
     text-align: center;
     cursor: pointer;
     display: flex;
-    flex-direction: column-reverse;
-}
-#chapter:hover .chapter-image {
-    transform: scale(1.05);
+    flex-direction: column;
 }
 .chapter-image {
     width: 100%;
-    height: 25vh;
+    height: 20vh;
     object-fit: cover;
     image-rendering:crisp-edges;
     transition: transform 0.1s ease-in-out;
     z-index: 1;
+    transform: scale(1);
+}
+#chapter:hover .chapter-image {
+    transform: scale(1.05);
 }
 .title {
-    font-size: 3vh;
+    font-size: 2.8vh;
     color: var(--text);
     margin: 0;
+    font-weight: 700;
     text-decoration: none;
     object-fit: cover;
     justify-self: center;
-    border-radius: 1.3vh;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    background-color: var(--tab);
+    background: var(--tab);
+    padding: .7vh 0 1vh 0;
     z-index: 2;
-    padding: 1vh 0;
-    width: 20vw;
-    position: absolute;
+    position: relative;
 }
 
 

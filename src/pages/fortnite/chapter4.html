@@ -5,17 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/fortnite/chapter.css">
+    <script>
+        if (sessionStorage.getItem('windowState') === 'maximized') {
+            document.documentElement.classList.add('maximized');
+        }
+    </script>
 </head>
 <body>
-<div class="pageBody">
-    <div id="seasons-list-container"></div>
+<div class="app-container">
+    <div class="pageBody">
+        <div id="seasons-list-container"></div>
 
-    <div class="end-event-novideo">
-        <img class="a" src="assets://live-event-c4og-1.png">
-        <img class="b" src="assets://live-event-c4og-2.png">
-        <img class="c" src="assets://live-event-c4og-3.png">
+        <div class="end-event-novideo">
+            <img class="a" src="assets://live-event-c4og-1.png">
+            <img class="b" src="assets://live-event-c4og-2.png">
+            <img class="c" src="assets://live-event-c4og-3.png">
+        </div>
+        <footer></footer>
     </div>
-    <footer></footer>
 </div>
 
 <div id="loading-screen">

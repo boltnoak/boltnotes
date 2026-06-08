@@ -39,10 +39,10 @@
     align-items: center;
     justify-content: center;
     z-index: 1;
+    padding: 1.5vh;
 }
 .logo-banner {
-    height: 18vh;
-    margin: 2vh;
+    height: 16vh;
     user-select: none;
 }
 

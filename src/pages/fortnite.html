@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BoltNotes — Fortnite</title>
     <link rel="stylesheet" href="css/fortnite/index.css">
+    <script>
+        if (sessionStorage.getItem('windowState') === 'maximized') {
+            document.documentElement.classList.add('maximized');
+        }
+    </script>
 </head>
 <body>
 <div class="app-container">
@@ -16,7 +21,7 @@
     </div>
     <div class="fortnite-contents">
         <div class="fortnite-br-chapters">
-            <p class="section-title">Battle Royale</p>
+            <p class="section-title">Battle Royale:</p>
             <div class="chapter-section">
                 <a id="chapter">
                     <img class="chapter-image">

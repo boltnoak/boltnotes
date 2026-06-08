@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BoltNotes</title>
     <link rel="stylesheet" href="css/index.css">
+    <script>
+        if (sessionStorage.getItem('windowState') === 'maximized') {
+            document.documentElement.classList.add('maximized');
+        }
+    </script>
 </head>
 <body>
 <div class="app-container">
@@ -15,10 +20,6 @@
     </div>
     <div class="banner-bar"></div>
     <div class="pages-section">
-        <!-- <a class="underCronstruction-page" href="#">
-            <i class="fa-3x fa-solid fa-brush"></i>
-        </a> -->
-        <!-- href="pages/games.html" -->
         <a class="page" id="games" href="pages/games.html">
             <div class="page-image">
                 <img src="assets://games-image.png">

@@ -5,40 +5,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/fortnite/chapter.css">
+    <script>
+        if (sessionStorage.getItem('windowState') === 'maximized') {
+            document.documentElement.classList.add('maximized');
+        }
+    </script>
 </head>
 <body>
-<div class="pageBody">
-    <div id="seasons-list-container"></div>
+<div class="app-container">
+    <div class="pageBody">
+        <div id="seasons-list-container"></div>
 
-    <div id="end-event" data-code="remix-finale" onclick="watchEndEvent()">
-        <div id="endEvent-cover">
-            <div class="endEvent-data">
-                <p class="endEvent-title">Remix: Ato Final</p>
-                <p class="endEvent-date">30/11/2024</p>
-            </div>
-            
-            <div id="endEventVideo-player">
-                <p id="volume-event"></p>
-                <div class="video-wrapper">
-                    <div id="controls-hover-event"></div>
-                    <p id="video-title-event"></p>
-                    <i id="video-close-event" class="fa-solid fa-window-minimize" onclick="minimizeVideo(event)"></i>
-                    
-                    <video id="video-event" onclick="togglePlay(event, this)" preload="none"></video>
-                    
-                    <div id="player-controls-event">
-                        <i id="play-pause" class="fa-solid fa-play" onclick="togglePlay(event, this)"></i>
-                        <div id="player-bar" onclick="window.seek(event, this)">
-                            <div id="player-bar-fill-event"></div>
+        <div id="end-event" data-code="remix-finale" onclick="watchEndEvent()">
+            <div id="endEvent-cover">
+                <div class="endEvent-data">
+                    <p class="endEvent-title">Remix: Ato Final</p>
+                    <p class="endEvent-date">30/11/2024</p>
+                </div>
+                
+                <div id="endEventVideo-player">
+                    <p id="volume-event"></p>
+                    <div class="video-wrapper">
+                        <div id="controls-hover-event"></div>
+                        <p id="video-title-event"></p>
+                        <i id="video-close-event" class="fa-solid fa-window-minimize" onclick="minimizeVideo(event)"></i>
+                        
+                        <video id="video-event" onclick="togglePlay(event, this)" preload="none"></video>
+                        
+                        <div id="player-controls-event">
+                            <i id="play-pause" class="fa-solid fa-play" onclick="togglePlay(event, this)"></i>
+                            <div id="player-bar" onclick="window.seek(event, this)">
+                                <div id="player-bar-fill-event"></div>
+                            </div>
+                            <i id="mute" class="fa-solid fa-volume" onclick="muteVideo(event, this)"></i>
+                            <i id="toggle-fullscreen" class="fa-solid fa-up-right-and-down-left-from-center" onclick="toggleFullscreen(event, this)"></i>
                         </div>
-                        <i id="mute" class="fa-solid fa-volume" onclick="muteVideo(event, this)"></i>
-                        <i id="toggle-fullscreen" class="fa-solid fa-up-right-and-down-left-from-center" onclick="toggleFullscreen(event, this)"></i>
                     </div>
                 </div>
             </div>
         </div>
+        <footer></footer>
     </div>
-    <footer></footer>
 </div>
 
 <div id="loading-screen">
