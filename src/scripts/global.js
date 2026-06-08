@@ -90,9 +90,22 @@ async function initMenu() {
 
     document.getElementById('menuTitle').textContent = document.title;
 
+    await updateMaximizeIcon();
     applyWindowState(sessionStorage.getItem('windowState') || 'normal');
 
-    await updateMaximizeIcon();
+    const updateBtn = document.getElementById('update-btn');
+    if (updateBtn) {
+      const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
+      if (jaTemUpdate) updateBtn.style.display = 'block';
+
+      window.electronAPI.onUpdateReady(() => {
+        updateBtn.style.display = 'block';
+      });
+
+      updateBtn.addEventListener('click', () => {
+        window.electronAPI.restartAndInstall();
+      });
+    }
 }
 
 initMenu();
@@ -106,22 +119,3 @@ window.onload = function () {
         loadingScreen.remove();
     }, 100);
 };
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const updateBtn = document.getElementById('update-btn');
-    
-    if (updateBtn) {
-        const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
-        if (jaTemUpdate) {
-            updateBtn.style.display = 'block';
-        }
-
-        window.electronAPI.onUpdateReady(() => {
-            updateBtn.style.display = 'block';
-        });
-
-        updateBtn.addEventListener('click', () => {
-            window.electronAPI.restartAndInstall();
-        });
-    }
-});
