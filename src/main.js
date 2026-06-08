@@ -216,6 +216,7 @@ async function syncAssets() {
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.autoInstallOnAppQuit = false;
 
 const DOCUMENTS = path.join(
     app.getPath('documents'),
