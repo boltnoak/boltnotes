@@ -14,7 +14,6 @@ body {
 #fnSeason, .fn-season {
     margin: 0 7.5vw;
     padding: 0;
-    margin-bottom: 5vh;
 }
 
 /* Capítulos (proximo e anterior) */
@@ -97,6 +96,9 @@ body {
     top: .5vh;
     font-size: 4.5vh;
 }
+.season-trailers, .season-trailers::before, .season-trailers::after {
+    cursor: pointer;
+}
 .season-trailers:hover {
     border-radius: 4vh;
     color: white;
@@ -107,7 +109,7 @@ body {
     align-items: center;
     text-align: center;
     gap: .5vw;
-    margin-bottom: 1vh;
+    margin: 1vh 0;
 }
 /* Banner */
 .banner {
@@ -158,15 +160,14 @@ body {
     display: none;
 }
 .statusLevel-add:hover, .statusLevel-minus:hover, .statusWin-add:hover, .statusWin-minus:hover {
-    background: rgb(60,60,60,.4);
+    background: rgb(60,60,60,.25);
     cursor: pointer;
 }
-.status-level, .status-win {
-    text-align: center;
-    width: 3.1vw;
+.status-level {
+    padding: 0 .2vw;
 }
 .status-win {
-    width: 2.2vw;
+    padding: 0 .2vw;
 }
 
 /* Personagem */
@@ -225,10 +226,13 @@ body {
     margin-right: .2vw;
 }
 .sep-bar-season {
-    margin: 1.5vh 0;
+    margin: 1.5vh 0 4.5vh 0;
     border: solid 2px rgba(20, 20, 20, 0.4);
     border-radius: 1vh;
     justify-content: center;
+}
+#seasons-list-container .fn-season:first-of-type .sep-bar-season {
+    display: none;
 }
 .season-status {
     margin: 0;

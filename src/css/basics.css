@@ -196,6 +196,7 @@ html {
     scroll-behavior: smooth;
     scroll-padding: 1vh;
     overflow-x: hidden;
+    background: transparent !important;
 }
 body {
     color: var(--text);
@@ -205,6 +206,7 @@ body {
     z-index: 0;
     width: 100vw;
     overflow: hidden;
+    background: transparent !important;
 }
 .pageBody {
     width: 100%;
@@ -236,6 +238,7 @@ html.window-normal .app-container {
 html.window-normal #loading-screen,
 html.window-normal #starting-screen {
     border-radius: 1vh !important;
+    overflow: hidden !important;
 }
 
 #menu {
@@ -297,20 +300,21 @@ html.window-normal #starting-screen {
     content: attr(data-tooltip);
     position: absolute;
     left: 50%;
-    transform: translateX(0%) scale(.95);
-    padding: 1vh 2vh;
+    transform: translate(0%, -50%);
+    padding: 0 1.2vw;
     border-radius: .8vh;
     font-size: 2.2vh;
     font-family: 'Montserrat';
     font-weight: 600;
     white-space: nowrap;
     opacity: 0;
+    top: 50%;
     pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    transition: opacity .1s ease, transform .1s ease;
 }
 [data-tooltip]:hover::after {
     opacity: 1;
-    transform: translateX(10%) scale(1);
+    transform: translate(8%, -50%);
 }
 .drag {
     -webkit-app-region: drag;

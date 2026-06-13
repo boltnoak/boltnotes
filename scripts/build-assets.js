@@ -72,23 +72,25 @@ async function main() {
         const zipName = `${folder}.zip`;
         const zipPath = path.join(OUTPUT_DIR, zipName);
 
-        if (state[folder] === folderHash) {
-            console.log(`= ${zipName} (sem mudanças, pulando upload)`);
+        if (state[folder] && state[folder].folderHash === folderHash) {
+            console.log(`= ${zipName} — Sem mudanças, pulando upload`);
+            // Usa o hash do zip salvo anteriormente, sem rezipar
+            manifest.packages.push({
+                name: zipName,
+                size: state[folder].zipSize,
+                hash: state[folder].zipHash
+            });
         } else {
-            console.log(`↑ ${zipName} (mudou, vai fazer upload)`);
+            console.log(`↑ ${zipName} — Mudou, vai fazer upload`);
+            await zipFolder(source, zipPath);
+            const zipHash = await sha256(zipPath);
+            const zipSize = fs.statSync(zipPath).size;
+
+            manifest.packages.push({ name: zipName, size: zipSize, hash: zipHash });
             changed.push({ zipName, zipPath });
+
+            state[folder] = { folderHash, zipHash, zipSize };
         }
-
-        await zipFolder(source, zipPath);
-
-        manifest.packages.push({
-            name: zipName,
-            size: fs.statSync(zipPath).size,
-            hash: await sha256(zipPath)
-        });
-
-        // atualiza o estado
-        state[folder] = folderHash;
     }
 
     fs.writeFileSync(

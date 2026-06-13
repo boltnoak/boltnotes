@@ -2,9 +2,9 @@ const {contextBridge,ipcRenderer} = require('electron');
 
 window.addEventListener('DOMContentLoaded', () => {
   try {
-    const config = ipcRenderer.sendSync('config:get-sync');
+    const isMaximized = ipcRenderer.sendSync('menu:is-maximized-sync');
     
-    if (config && config.maximize_on_start) {
+    if (isMaximized) {
       document.documentElement.classList.remove('window-normal');
       window.sessionStorage.setItem('windowState', 'maximized');
     } else {
@@ -12,7 +12,6 @@ window.addEventListener('DOMContentLoaded', () => {
       window.sessionStorage.setItem('windowState', 'normal');
     }
   } catch (err) {
-    console.error("Erro ao aplicar classe inicial no preload:", err);
     document.documentElement.classList.add('window-normal');
     window.sessionStorage.setItem('windowState', 'normal');
   }

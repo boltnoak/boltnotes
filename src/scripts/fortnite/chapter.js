@@ -188,7 +188,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         
         if (!statsData) {
             window.stats = {
-                [code]: { levels: "0", wins: "0", rating: "0" },
+                [code]: { levels: "", wins: "", rating: "" },
                 ...window.stats
             };
             localStatsUpdated = true;
@@ -419,7 +419,7 @@ function preencherValores() {
         const wins = document.getElementById(`${code}-wins`);
         const releaseDate = document.getElementById(`${code}-releaseDate`);
 
-        if (rating) rating.textContent = statsData.rating || "0";
+        if (rating) rating.textContent = statsData.rating || "N/A";
         if (levels) levels.textContent = statsData.levels || "0";
         if (wins) wins.textContent = statsData.wins || "0";
         if (releaseDate) releaseDate.textContent = info.releaseDate || "Sem data";

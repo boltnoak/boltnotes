@@ -45,17 +45,6 @@ function minimizeApp() {
 function maximizeApp() {
   window.electronAPI.menu.maximizeApp();
 }
-window.electronAPI.onWindowStateChange((state) => {
-  const menuMax = document.getElementById('menuMax');
-
-  if (state === 'maximized') {
-    document.body.classList.add('is-maximized');
-    menuMax.className = 'fa-regular fa-window-restore';
-  } else {
-    document.body.classList.remove('is-maximized');
-    menuMax.className = 'fa-regular fa-window-maximize';
-  }
-});
 function closeApp() {
   window.electronAPI.menu.closeApp();
 }
@@ -96,6 +85,15 @@ async function initMenu() {
 
     const container = document.querySelector('.app-container');
     (container || document.body).insertAdjacentHTML('afterbegin', data);
+
+    const menuMax = document.getElementById('menuMax');
+    const savedState = sessionStorage.getItem('windowState') || 'normal';
+    if (menuMax) {
+        menuMax.className = savedState === 'maximized'
+            ? 'fa-regular fa-window-restore'
+            : 'fa-regular fa-window-maximize';
+    }
+
 
     document.getElementById('menuTitle').textContent = document.title;
 

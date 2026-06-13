@@ -347,7 +347,7 @@ function createWindow() {
         show: false,
         hasShadow: false,
         // resizable: false,
-        thickFrame: true,
+        thickFrame: false,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,
@@ -575,7 +575,9 @@ ipcMain.handle('fortnite:fetch-trailers', async () => {
         return null;
     }
 });
-
+ipcMain.on('menu:is-maximized-sync', (event) => {
+    event.returnValue = win ? win.isMaximized() : false;
+});
 ipcMain.handle('fortnite:fetch-seasons', async () => {
     try {
         const response = await fetchWithRetry(

@@ -36,6 +36,34 @@
     height: 12vh;
     user-select: none;
 }
+.section-titlea {
+    background-color: var(--tab);
+    border-radius: 1.5vh;
+    font-family: 'Montserrat';
+    font-size: 4vh;
+    margin: 0;
+    font-weight: 600;
+    padding: 3vh 2vw;
+    user-select: none;
+    cursor: pointer;
+    transition: background .2s;
+    margin-bottom: 1.7vh;
+    text-decoration: none;
+    color: var(--text);
+}
+.section-titlea:hover {
+    background-color: var(--tab-hover);
+}
+.section-titlea i {
+    margin-right: .2vw;
+}
+.extra-section {
+    display: flex;
+    flex-direction: column;
+    width: 55%;
+    height: 67%;
+    margin: 0 1.65vw 0 .6vw;
+}
 .banner {
     height: 18vh;
     background-color: rgba(20, 20, 20, 0.2);
@@ -46,11 +74,12 @@
     padding: 1.5vh;
 }
 .section-title {
-    margin: 1.5vh .5vw 1.2vh .5vw;
+    margin: 1.5vh 0 1.2vh 0;
     font-family: 'Montserrat';
-    font-weight: 900;
+    font-weight: 800;
     font-size: 5.5vh;
     justify-self: center;
+    user-select: none;
 }
 .chapter-section {
     margin: 1vh .2vw 1vh .5vw;
@@ -63,13 +92,20 @@
     font-family: "Montserrat", sans-serif;
     font-weight: 800;
     display: grid;
-    width: 41.5vw;
+    width: 97%;
     height: 67%;
-    grid-template-columns: repeat(auto-fill, minmax(15.9vw, 1fr));
+    padding-bottom: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
     will-change: transform;
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 68vh;
+    flex-wrap: wrap;
+}
+.fortnite-br-chapters {
+
+    flex: 1;
 }
 .chapter-section::-webkit-scrollbar-thumb {
     display: none;
@@ -106,7 +142,6 @@
     background: linear-gradient(to left, #050505 5%, transparent 100%);
 }
 #chapter {
-    width: 20vw;
     border-radius: 1.5vh;
     overflow: hidden;
     height: 25vh;
@@ -114,6 +149,8 @@
     cursor: pointer;
     display: flex;
     flex-direction: column;
+    flex: 0 1 15rem;
+    max-width: 40rem;
 }
 .chapter-image {
     width: 100%;
@@ -139,11 +176,4 @@
     padding: .7vh 0 1vh 0;
     z-index: 2;
     position: relative;
-}
-
-
-.extra-section {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
 }
