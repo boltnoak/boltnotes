@@ -107,11 +107,11 @@ async function initMenu() {
       const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
       console.log('[Update] Tem update?', jaTemUpdate);
       
-      if (jaTemUpdate) updateBtn.style.display = 'flex';
+      if (jaTemUpdate) updateBtn.style.display = 'block';
 
       window.electronAPI.onUpdateReady(() => {
           console.log('[Update] Evento recebido!');
-          updateBtn.style.display = 'flex';
+          updateBtn.style.display = 'block';
       });
 
       updateBtn.addEventListener('click', () => {

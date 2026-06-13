@@ -13,6 +13,7 @@
     bottom: 0;
     right: 0;
     margin: 3vh;
+    height: fit-content;
 }
 .app-version {
     color: #494949;
@@ -26,7 +27,7 @@
     margin: 3vh;
 }
 #config {
-    font-size: 4vh;
+    font-size: 3.8vh;
     cursor: pointer;
 }
 
