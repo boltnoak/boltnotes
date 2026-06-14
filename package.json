@@ -1,14 +1,14 @@
 {
   "name": "boltnotes",
   "productName": "BoltNotes",
-  "version": "0.1.41",
+  "version": "0.1.42",
   "description": "Backlog de jogos, Notas e Fortnite",
   "main": "src/main.js",
   "private": true,
   "build": {
     "appId": "com.boltnoak.boltnotes",
     "productName": "BoltNotes",
-    "compression": "normal", 
+    "compression": "normal",
     "extraResources": [
       {
         "from": "build/icons/512x512.png",
