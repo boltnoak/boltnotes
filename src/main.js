@@ -476,15 +476,7 @@ if (!gotTheLock) {
 
     createWindow();
 
-    setInterval(() => {
-      if (app.isPackaged) {
-        autoUpdater.checkForUpdates();
-      }
-    }, 30 * 60 * 1000);
-
     const configs = getConfig();
-
-    
 
     manageStartup(configs.open_on_startup);
 
@@ -496,6 +488,9 @@ if (!gotTheLock) {
       makeTray();
       win.show();
 
+      if (app.isPackaged) {
+        autoUpdater.checkForUpdates();
+      }
       syncAssets()
         .then(() => {
           assetsReady = true;
@@ -510,7 +505,6 @@ if (!gotTheLock) {
           if (app.isPackaged) {
             autoUpdater.checkForUpdates();
           }
-
           syncAssets()
             .then(() => {
               win?.webContents.send('assets-ready');
