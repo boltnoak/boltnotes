@@ -342,12 +342,14 @@ function createWindow() {
         width: larguraProporcional,
         height: alturaProporcional,
         autoHideMenuBar: true,
-        frame: false,
+        frame: true,
         transparent: true,
+        roundedCorners: false,
+        backgroundColor: '#00000000',
         show: false,
         hasShadow: false,
-        // resizable: false,
-        thickFrame: false,
+        resizable: true,
+        maximizable: true,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,
@@ -355,9 +357,12 @@ function createWindow() {
           autoplayPolicy: 'no-user-gesture-required'
         }
     });
-    win.loadFile(path.join(BUNDLE,'pages','index.html'));
+    win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
 }
-
+ipcMain.on('drag-window', (event, { mouseX, mouseY }) => {
+  const [winX, winY] = win.getPosition();
+  win.setPosition(winX + mouseX, winY + mouseY);
+});
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
@@ -471,7 +476,7 @@ if (!gotTheLock) {
       if (configs.maximize_on_start) {
         win.maximize();
       }
-
+      
       makeTray();
       win.show();
 
@@ -489,8 +494,15 @@ if (!gotTheLock) {
       });
     });
 
-    win.on('maximize', () => { win.webContents.send('window-state-change', 'maximized'); });
-    win.on('unmaximize', () => { win.webContents.send('window-state-change', 'normal'); });
+    win.on('maximize', () => {
+  win.setResizable(false); // ← trava resize quando maximizado
+  win.webContents.send('window-state-change', 'maximized');
+});
+
+win.on('unmaximize', () => {
+  win.setResizable(true); // ← libera ao restaurar
+  win.webContents.send('window-state-change', 'normal');
+});
     win.on('close', (event) => {
       const config = getConfig();
       if (!isQuitting && config.minimize_to_tray && win !== null) {
@@ -541,12 +553,14 @@ autoUpdater.on('error', (err) => {
 // Menu
 ipcMain.on('menu:maximize-app', () => {
   if (!win) return;
-  
+
   if (win.isMaximized()) {
+    win.setResizable(true);
     win.unmaximize();
   } else {
-    win.setMaximizable(true); 
+    win.setMaximizable(true);
     win.maximize();
+    win.setResizable(false);
   }
 });
 ipcMain.on('menu:minimize-app', () => { win.minimize(); });
@@ -563,45 +577,48 @@ ipcMain.on('menu:close-app', () => {
 ipcMain.handle('menu:is-maximized', () => { return win.isMaximized() });
 
 // Básico
-ipcMain.handle('fortnite:fetch-trailers', async () => {
-    try {
-        const response = await fetchWithRetry(
-            'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers.json',
-            {}, 3, 5000
-        );
-        return await response.json();
-    } catch (error) {
-        console.error('Erro ao buscar trailers:', error);
-        return null;
-    }
-});
 ipcMain.on('menu:is-maximized-sync', (event) => {
     event.returnValue = win ? win.isMaximized() : false;
 });
-ipcMain.handle('fortnite:fetch-seasons', async () => {
-    try {
-        const response = await fetchWithRetry(
-            'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons.json',
-            {}, 3, 5000
-        );
-        return await response.json();
-    } catch (error) {
-        console.error('Erro ao buscar seasons:', error);
-        return null;
-    }
-});
+async function fetchWithCache(url, cacheFileName) {
+  const cachePath = path.join(APPDATA, 'cache', cacheFileName);
+  
+  fs.mkdirSync(path.join(APPDATA, 'cache'), { recursive: true });
 
-ipcMain.handle('games:fetch-gamesdb', async () => {
-    try {
-        const response = await fetchWithRetry(
-            'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/gamesdb.json',
-            {}, 3, 5000
-        );
-        return await response.json();
-    } catch (error) {
-        console.error('Erro ao buscar gamesdb:', error);
-        return null;
+  try {
+    const response = await fetchWithRetry(url, {}, 2, 1000);
+    const data = await response.json();
+    
+    // Salva o cache
+    fs.writeFileSync(cachePath, JSON.stringify(data), 'utf-8');
+    return data;
+  } catch (error) {
+    console.warn(`Falha ao buscar online, usando cache: ${cacheFileName}`);
+    
+    if (fs.existsSync(cachePath)) {
+      return JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
     }
+    
+    return null;
+  }
+}
+ipcMain.handle('fortnite:fetch-trailers', async () => {
+    return await fetchWithCache(
+        'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers.json',
+        'fn-trailers.json'
+    );
+});
+ipcMain.handle('fortnite:fetch-seasons', async () => {
+    return await fetchWithCache(
+        'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons.json',
+        'fn-seasons.json'
+    );
+});
+ipcMain.handle('games:fetch-gamesdb', async () => {
+    return await fetchWithCache(
+        'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/gamesdb.json',
+        'gamesdb.json'
+    );
 });
 ipcMain.handle('fortnite:list-trailers', () => {
     return fs.readdirSync(

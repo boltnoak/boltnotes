@@ -10,25 +10,24 @@
 
 .config {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    margin: 3vh;
+    right: 1.5vw;
     height: fit-content;
 }
 .app-version {
     color: #494949;
     font-family: 'Montserrat';
     position: absolute;
-    bottom: 0;
     font-size: 2.5vh;
     font-weight: 600;
     user-select: none;
-    left: 0;
-    margin: 3vh;
+    left: 1.5vw;
 }
 #config {
     font-size: 3.8vh;
     cursor: pointer;
+}
+header {
+    margin: 1vh 0;
 }
 
 /* Banner */
@@ -77,9 +76,10 @@
     background-color: rgba(30,30,30,.1);
 }
 .sep-bar {
-    margin: 1.8vh 14.8vw 1vh 14.8vw;
+    margin: 1.8vh 0 1vh 0;
+    justify-content: center;
     border: solid .4vh rgba(25,25,25,.2);
-    transform: translateY(0);
+    transform: translateY(0);width: 0;
 }
 .page-image img {
     object-fit: cover;

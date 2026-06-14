@@ -5,12 +5,14 @@ window.addEventListener('DOMContentLoaded', () => {
     const isMaximized = ipcRenderer.sendSync('menu:is-maximized-sync');
     
     if (isMaximized) {
-      document.documentElement.classList.remove('window-normal');
-      window.sessionStorage.setItem('windowState', 'maximized');
-    } else {
-      document.documentElement.classList.add('window-normal');
-      window.sessionStorage.setItem('windowState', 'normal');
-    }
+  document.documentElement.classList.add('window-maximized');    // ← adiciona
+  document.documentElement.classList.remove('window-normal');
+  window.sessionStorage.setItem('windowState', 'maximized');
+} else {
+  document.documentElement.classList.add('window-normal');
+  document.documentElement.classList.remove('window-maximized'); // ← remove
+  window.sessionStorage.setItem('windowState', 'normal');
+}
   } catch (err) {
     document.documentElement.classList.add('window-normal');
     window.sessionStorage.setItem('windowState', 'normal');
@@ -25,7 +27,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   menu: { maximizeApp: () => ipcRenderer.send('menu:maximize-app'),
     minimizeApp: () => ipcRenderer.send('menu:minimize-app'),
     closeApp: () => ipcRenderer.send('menu:close-app'),
-    isMaximized: () => ipcRenderer.invoke('menu:is-maximized')},
+    isMaximized: () => ipcRenderer.invoke('menu:is-maximized'),
+    dragWindow: (delta) => ipcRenderer.send('drag-window', delta)},
 
   json: { load: (filePath) => ipcRenderer.invoke('json:load',filePath),
     save: (filePath,data) => ipcRenderer.invoke('json:save',{filePath,data}) },

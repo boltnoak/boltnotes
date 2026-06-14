@@ -58,10 +58,9 @@ function applyWindowState(state) {
   const menuMax = document.getElementById('menuMax');
   const isNormal = state === 'normal';
 
-  // 1. Controla as bordas arredondadas (Adiciona se for normal, remove se for maximizado)
   document.documentElement.classList.toggle('window-normal', isNormal);
+  document.documentElement.classList.toggle('window-maximized', !isNormal);
 
-  // 2. Controla o ícone do menu (Apenas se o botão já tiver sido injetado na tela)
   if (menuMax) {
     menuMax.className = isNormal
       ? 'fa-regular fa-window-maximize'
@@ -94,6 +93,31 @@ async function initMenu() {
             : 'fa-regular fa-window-maximize';
     }
 
+    const menu = document.getElementById('menu');
+    let dragging = false;
+    let lastX, lastY;
+
+    menu.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.menuButtons') || e.target.closest('#update-btn')) return;
+
+        const isMaximized = sessionStorage.getItem('windowState') === 'maximized';
+        if (isMaximized) return;
+        
+        dragging = true;
+        lastX = e.screenX;
+        lastY = e.screenY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!dragging) return;
+        const dx = e.screenX - lastX;
+        const dy = e.screenY - lastY;
+        lastX = e.screenX;
+        lastY = e.screenY;
+        window.electronAPI.menu.dragWindow({ mouseX: dx, mouseY: dy });
+    });
+
+    document.addEventListener('mouseup', () => { dragging = false; });
 
     document.getElementById('menuTitle').textContent = document.title;
 
@@ -102,15 +126,15 @@ async function initMenu() {
 
     const updateBtn = document.getElementById('update-btn');
       if (updateBtn) {
-      console.log('[Update] Verificando status...');
+      console.log('AutoUpdater - Verificando status...');
       
       const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
-      console.log('[Update] Tem update?', jaTemUpdate);
+      console.log('AutoUpdater - Tem update?', jaTemUpdate);
       
       if (jaTemUpdate) updateBtn.style.display = 'block';
 
       window.electronAPI.onUpdateReady(() => {
-          console.log('[Update] Evento recebido!');
+          console.log('AutoUpdater - Evento recebido!');
           updateBtn.style.display = 'block';
       });
 

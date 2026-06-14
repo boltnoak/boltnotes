@@ -55,6 +55,25 @@ async function loadFortniteStats() {
 updateNoteCount();
 loadFortniteStats();
 
+function updateSepBar() {
+    requestAnimationFrame(() => {
+        const section = document.querySelector('.pages-section');
+        const sepBar = document.querySelector('.sep-bar');
+        const visible = Array.from(document.querySelectorAll('.pages-section .page'))
+            .filter(el => el.offsetParent !== null).length;
+        const total = document.querySelectorAll('.pages-section .page').length;
+
+        if (!sepBar || !section) return;
+
+        const ratio = visible / total;
+        const rect = section.getBoundingClientRect();
+        const vw = window.innerWidth / 100;
+
+        sepBar.style.width = `${(rect.width / vw) * ratio}vw`;
+        sepBar.style.marginLeft = `${(rect.left / vw) + (rect.width / vw) * (1 - ratio) / 2}vw`;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const versao = await window.api.getAppVersion();
   
@@ -234,6 +253,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+    updateSepBar();
 });
 
 // document.getElementById('playingNowSection-title').innerHTML = 'Temporada 3 - No Corre<i class="fa-solid fa-bars-progress"></i>'
