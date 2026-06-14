@@ -74,15 +74,6 @@ function updateSepBar() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const versao = await window.api.getAppVersion();
-  
-  const elementoVersao = document.getElementById('app-version');
-  if (elementoVersao) {
-    elementoVersao.innerText = `v${versao}`;
-  }
-});
-
 function parseBRDate(dateStr) {
   if (!dateStr || !dateStr.includes("/")) return 0;
 

@@ -31,7 +31,7 @@ body {
     margin: 0;
     padding: 0;
     font-size: 3vh;
-    color: white;
+    color: var(--text);
     font-family: 'Montserrat';
     font-weight: 700;
     user-select: none;
@@ -50,9 +50,10 @@ body {
     font-size: 3vh;
     cursor: pointer;
     width: fit-content;
+    color: var(--text);
 }
 #before-chapter:hover, #next-chapter:hover {
-    border: solid .6vh white;
+    border: solid .6vh var(--text);
 }
 
 /* Capítulos */
@@ -62,7 +63,7 @@ body {
     transition: border 0.25s ease-in-out;
     padding: .5vh .4vw;
     font-size: 2.7vh;
-    color: white;
+    color: var(--text);
     font-family: 'Montserrat';
     font-weight: 700;
     position: absolute;
@@ -77,12 +78,12 @@ body {
     cursor: pointer;
 }
 .chapters:hover {
-    border: solid .6vh white;
+    border: solid .6vh var(--text);
 }
 
 /* Titúlo de temporada */
 .season-title {
-    color: white;
+    color: var(--text);
     font-weight: 900;
     margin-right: 0;
     font-size: 3vw;
@@ -90,7 +91,7 @@ body {
     font-family: 'Montserrat';
 }
 .season-trailers {
-    color: rgb(195, 195, 195);
+    color: var(--text-light-gray);
     transition: color 0.25s ease-in-out;
     cursor: pointer;
     top: .5vh;
@@ -101,7 +102,7 @@ body {
 }
 .season-trailers:hover {
     border-radius: 4vh;
-    color: white;
+    color: var(--text);
 }
 .seasonTitle-div {
     display: flex;
@@ -133,7 +134,7 @@ body {
     flex-direction: column;
     font-family: 'Montserrat';
     cursor: default;
-    color: white;
+    color: var(--text);
 }
 .status {
     font-size: 1vh;
@@ -141,7 +142,7 @@ body {
     font-weight: 500;
     font-size: 1.7vw;
     margin: 0;
-    color: var(--text-light-gray);
+    color: var(--text);
     display: flex;
     flex-direction: row;
     gap: .5vw;
@@ -150,17 +151,19 @@ body {
 }
 .fa-square-caret-up, .fa-trophy, .fa-calendar-day, .fa-star {
     font-size: 3vh;
+    color: var(--text);
 }
 .statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus  {
     font-size: 2vh;
-    background: rgb(20, 20, 20,.6);
+    background: var(--btn);
+    color: var(--text);
     padding: .8vh .5vw;
     border-radius: .8vh;
     transition: background .1s linear;
     display: none;
 }
 .statusLevel-add:hover, .statusLevel-minus:hover, .statusWin-add:hover, .statusWin-minus:hover {
-    background: rgb(60,60,60,.25);
+    background: var(--btn-hover);
     cursor: pointer;
 }
 .status-level {
@@ -176,8 +179,8 @@ body {
     width: 50vw;
     height: 75vh;
     overflow: hidden;
-    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 1%, rgba(0,0,0,0) 99%);
-    mask-image: linear-gradient(top, rgba(0,0,0,1) 1%, rgba(0,0,0,0) 99%);
+    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
 }
 .season-character {
     position: absolute;
@@ -213,6 +216,7 @@ body {
     align-items: center;
     text-align: center;
     margin: 0 0 .85vh 0;
+    color: var(--text);
 }
 .seasonContents-title {
     font-family: 'Montserrat';
@@ -224,10 +228,11 @@ body {
 .seasonContents-title-div i {
     font-size: 3.5vh;
     margin-right: .2vw;
+    color: var(--text);
 }
 .sep-bar-season {
     margin: 1.5vh 0 4.5vh 0;
-    border: solid 2px rgba(20, 20, 20, 0.4);
+    border: solid 2px var(--sep-bar);
     border-radius: 1vh;
     justify-content: center;
 }
@@ -262,7 +267,7 @@ body {
     flex-direction: row;
     gap: .7rem;
     justify-content: space-around;
-    background-color: rgb(10,10,10);
+    background-color: var(--fortnite-season-tags);
     padding: 2.3vh 2vh;
     border-radius: 1.5vh;
     border-top-left-radius: 0;
@@ -277,8 +282,9 @@ body {
     flex-wrap: wrap;
     top: 31vh;
     width: 100%;
-    background-color: rgb(7,7,7);
-    font-family: 'Montserrat';z-index: 10;
+    background-color: var(--tab);
+    font-family: 'Montserrat';
+    z-index: 10;
     overflow: hidden;
     display: none;
     user-select: none;
@@ -299,7 +305,7 @@ body {
     transition: background 0.1s linear;
 }
 .rating-option:hover {
-    background: rgba(14,14,14);
+    background: var(--tab-hover);
 }
 .status-rating {
     width: 3.1vw;
@@ -479,7 +485,7 @@ body {
 .event-data {
     padding: 2vh;
     display: flex;
-    background-color: rgb(8,8,8);
+    background-color: var(--tab-active);
     flex-direction: column;
     z-index: 2;
     transition: background .15s linear;
@@ -488,7 +494,7 @@ body {
     width: 15vw;
 }
 .season-events:hover .event-data {
-    background-color: rgb(10,10,10);
+    background-color: var(--tab-hover);
 }
 
 /* Evento final */
@@ -632,12 +638,12 @@ body {
     font-family: 'Montserrat';
     font-weight: 500;
     white-space: nowrap;
-    background-color: rgba(20, 20, 20, 0.75);
+    background-color: var(--tag);
     padding: .4rem .7rem;
     border-radius: .35rem;
     font-size: .95vw;
     margin: 0;
-    color: white;
+    color: var(--text);
     display: inline-block;
     align-self: center;
     text-align: center;
@@ -701,7 +707,7 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--text);
     font-family: "Montserrat", sans-serif;
     font-weight: 800;
     display: grid;

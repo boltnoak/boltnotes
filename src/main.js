@@ -780,6 +780,7 @@ function makeTray() {
     : path.join('build', 'icon.png');
 
   const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
+  const trayNameIcon = nativeImage.createFromPath(iconPath).resize({ width: 14, height: 14 });
 
   tray = new Tray(trayIcon);
 
@@ -793,20 +794,21 @@ function makeTray() {
   };
 
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Abrir BoltNotes', click: () => navigateTo('index.html') },
+    { label: 'BoltNotes',
+      icon: trayNameIcon,
+      enabled: false },
     { type: 'separator' },
     { label: 'Fortnite', click: () => navigateTo('fortnite.html') },
     { label: 'Notas', click: () => navigateTo('notes.html') },
     { label: 'Backlog de Jogos', click: () => navigateTo('games.html') },
     { type: 'separator' },
+    { label: 'Início', click: () => navigateTo('index.html') },
     { label: 'Preferências', click: () => navigateTo('config.html') },
-    { 
-      label: 'Fechar app', 
+    { label: 'Fechar app', 
       click: () => {
         isQuitting = true;
         app.quit();
-      }
-    }
+      } }
   ]);
 
   tray.setToolTip('BoltNotes');

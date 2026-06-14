@@ -12,7 +12,8 @@
     <div class="pageBody">
         <div class="tabs">
             <div data-code="basics" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-certificate"></i>Básico</div>
-            <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i>Home</div>
+            <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i>Página inicial</div>
+            <div data-code="updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i>Atualizações</div>
             <!-- <p class="sep-bar"></p>
             <div data-code="fortnite" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-gamepad"></i>Fortnite</div> -->
             <!-- <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-half-stroke"></i>Aparência</div> -->
@@ -40,6 +41,31 @@
             <div class="config-item">
                 <p>Mostrar número da versão do app</p>
                 <a class="toggle" data-code="show_version" onclick="toggleConfig(this)"></a>
+            </div>
+            <p class="sep">Backlog de Jogos (WIP)</p>
+            <div class="config-item">
+                <p>Mostrar "Backlog de Jogos" em Home</p>
+                <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
+            </div>
+            <div class="config-item">
+                <p>Mostrar "Jogando no momento" em Home</p>
+                <a class="toggle" data-code="playing_now_on_home" onclick="toggleConfig(this)"></a>
+            </div>
+            <p class="sep">Notas</p>
+            <div class="config-item">
+                <p>Mostrar "Notas" em Home</p>
+                <a class="toggle" data-code="notes_on_home" onclick="toggleConfig(this)"></a>
+            </div>
+            <p class="sep">Fortnite</p>
+            <div class="config-item">
+                <p>Mostrar "Fortnite" em Home</p>
+                <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
+            </div>
+        </div>
+        <div id="updates" class="tab-configs">
+            <p class="sep">Versão atual:</p>
+            <div class="config-item version">
+                    <span id="app-version"></span>
             </div>
             <p class="sep">Backlog de Jogos (WIP)</p>
             <div class="config-item">

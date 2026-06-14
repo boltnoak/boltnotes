@@ -7,6 +7,9 @@
 #menu {
     background: transparent;
 }
+#menuTitle, #menuMin, #menuMax, #menuClose {
+    color: white;
+}
 
 .config {
     position: absolute;
@@ -14,7 +17,7 @@
     height: fit-content;
 }
 .app-version {
-    color: #494949;
+    color: var(--text-dark-gray);
     font-family: 'Montserrat';
     position: absolute;
     font-size: 2.5vh;
@@ -23,6 +26,7 @@
     left: 1.5vw;
 }
 #config {
+    color: var(--text);
     font-size: 3.8vh;
     cursor: pointer;
 }
@@ -78,8 +82,9 @@ header {
 .sep-bar {
     margin: 1.8vh 0 1vh 0;
     justify-content: center;
-    border: solid .4vh rgba(25,25,25,.2);
-    transform: translateY(0);width: 0;
+    border: solid .4vh var(--sep-bar);
+    transform: translateY(0);
+    width: 0;
 }
 .page-image img {
     object-fit: cover;
@@ -97,7 +102,7 @@ header {
     opacity: 0;
 }
 .page-title {
-    color: white;
+    color: var(--text);
     font-family: 'Montserrat';
     font-size: 2.8vh;
     font-weight: 800;
@@ -111,8 +116,8 @@ header {
     height: 3vh;
 }
 .info p {
-    background-color: rgba(20, 20, 20, 0.75);
-    color: white;
+    background-color: var(--tag);
+    color: var(--text);
     font-family: 'Montserrat';
     font-size: 1.7vh;
     height: 2.3vh;
@@ -131,7 +136,7 @@ header {
 /* Painel de Jogos */
 #playingNowSection-title {
     display: flex;
-    color: white;
+    color: var(--text);
     font-family: 'Montserrat';
     font-size: 4.4vh;
     font-weight: 600;
@@ -147,6 +152,7 @@ header {
     margin: 0;
 }
 #playingNowSection-title i {
+    color: var(--text);
     margin-right: 1vh;
 }
 .playingNow-panel {
@@ -169,7 +175,7 @@ header {
     flex-direction: column;
 }
 .playingNow-no-games {
-    color: rgb(30,30,30);
+    color: var(--text-dark-gray);
     font-family: 'Montserrat';
     font-weight: 500;
     font-size: 1.5vw;
@@ -201,7 +207,7 @@ header {
     flex: 1;
     font-family: 'Montserrat';
     font-weight: 700;
-    color: white;
+    color: var(--text);
     margin: 0;
 }
 /* Status dos jogos */

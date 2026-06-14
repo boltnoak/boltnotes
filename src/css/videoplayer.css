@@ -39,7 +39,7 @@
     object-fit: cover;
 }
 #video-player {
-    background: #050505;
+    background: var(--bg);
     padding: 1.5vh;
     border-radius: 2.3vh;
     overflow: hidden;
@@ -175,7 +175,6 @@
     display: flex;
     flex-direction: row;
     margin: 0;
-    background: #050505;
     justify-content: center;
     gap: .8vw;
     object-fit: cover;
@@ -187,36 +186,36 @@
     flex: 0 0 auto;
     white-space: nowrap;
     scroll-snap-align: start;
-    color: white;
+    color: var(--text);
     padding: 1.6vh;
     cursor: pointer;
     display: flex;
     transition: background 0.1s;
     margin-top: .9vh;
     font-family: 'Montserrat';
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    font-size: 2vh;
+    font-size: 1.9vh;
     object-fit: cover;
     border-radius: 1vh;
     flex-direction: column;
 }
 .video-item-btn.active {
-    background-color: rgba(15,15,15,.7);
+    background-color: var(--more-video-active);
 }
 .video-item-btn:hover {
-    background-color: rgba(15,15,15,.4);
+    background-color: var(--more-video-hover);
 }
 .moreVideo-date {
     font-family: 'Montserrat';
-    font-weight: 600;
+    font-weight: 500;
     padding: .8vh .6vw;
     border-radius: .8vh;
     font-size: 1.8vh;
     margin: 0;
-    background-color: rgba(30,30,30,.4);
+    background-color: var(--tag);
     margin-top: 1vh;
-    color: white;
+    color: var(--text);
     display: flex;
 }
 #more-videos.noMore {

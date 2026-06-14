@@ -44,7 +44,7 @@ i {
 }
 .sep-bar-v {
     margin: 0 .4vw;
-    border: solid .4vh rgba(25,25,25,.4);
+    border: solid .4vh var(--sep-bar);
     border-radius: 1vh;
     justify-content: center;
 }
@@ -257,7 +257,7 @@ html.window-normal .app-container {
 }
 #menuTitle {
     margin-left: 1vh;
-    color: white;
+    color: var(--text);
     font-family: 'Montserrat';
     font-size: 2.4vh;
     font-weight: 600;
@@ -284,6 +284,7 @@ html.window-normal .app-container {
     flex-direction: row;
 }
 #menuMin, #menuMax, #menuClose {
+    color: var(--text);
     object-fit: cover;
     padding: 2vh;
     cursor: pointer;
@@ -294,6 +295,7 @@ html.window-normal .app-container {
 }
 #menuClose:hover {
     background-color: var(--red);
+    color: white;
 }
 #menu {
   -webkit-app-region: drag;
@@ -349,7 +351,7 @@ html.window-normal .app-container {
     transition: border 0.25s ease-in-out;
     padding: 0 .5vw;
     font-size: 3vh;
-    color: white;
+    color: var(--text);
     font-family: 'Montserrat';
     font-weight: 700;
     position: absolute;
@@ -363,12 +365,13 @@ html.window-normal .app-container {
     flex-direction: row-reverse;
 }
 .back i {
+    color: var(--text);
     font-size: 2.5vh;
     width: fit-content;
     margin-right: .3vw;
 }
 .back:hover {
-    border: solid .6vh white;
+    border: solid .6vh var(--text);
 }
 button:focus,
 a:focus,
@@ -457,7 +460,7 @@ header {
 }
 .sep-bar {
     margin: 8px 4px;
-    border: solid 2px #1a1a1a;
+    border: solid 2px var(--sep-bar);
     border-radius: 8px;
     justify-content: center;
 }

@@ -78,6 +78,15 @@ async function updateMaximizeIcon() {
         : 'fa-regular fa-window-maximize';
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+  const versao = await window.api.getAppVersion();
+  
+  const elementoVersao = document.getElementById('app-version');
+  if (elementoVersao) {
+    elementoVersao.innerText = `v${versao}`;
+  }
+});
+
 async function initMenu() {
     const res = await fetch('components/menu.bolt');
     const data = await res.text();

@@ -74,7 +74,7 @@
     z-index: 999;
 }
 .reviews {
-    background-color: #050505;
+    background-color: var(--bg);
     display: flex;
     flex-direction: column;
     margin-top: 2vh;

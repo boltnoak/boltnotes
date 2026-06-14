@@ -1,5 +1,8 @@
 :root {
     --bg: #050505;
+
+    --sep-bar: rgba(20, 20, 20, 0.4);
+
     --text: white;
     --text-dark-gray: rgb(80,80,80);
     --text-gray: rgb(150, 150, 150);
@@ -11,4 +14,42 @@
     --tab: rgb(8,8,8);
     --tab-hover: rgb(12,12,12);
     --tab-active: rgb(14,14,14);
+
+    --btn: rgb(20,20,20);
+    --btn-hover: rgb(25,25,25);
+
+    --tag: rgba(25, 25, 25, 0.75);
+
+    --more-video-active: rgb(10,10,10);
+    --more-video-hover: rgb(9,9,9);
+
+    --fortnite-season-tags: rgb(11,11,11);
+}
+/*
+:root {
+    --bg: rgb(250, 250, 250);
+
+    --sep-bar: rgba(200, 200, 200, 0.4);
+
+    --text: black;
+    --text-dark-gray: rgb(7,7,7);
+    --text-gray: rgb(50, 50, 50);
+    --text-light-gray: rgb(110, 110, 110);
+
+    --blue: rgb(20, 150, 255);
+    --red: rgb(255, 70, 70);
+
+    --btn: rgb(220,220,220);
+    --btn-hover: rgb(227,227,227);
+
+    --tag: rgba(200, 200, 200, 0.75);
+
+    --tab: rgb(220,220,220);
+    --tab-hover: rgb(225,225,225);
+    --tab-active: rgb(235,235,235);
+
+    --more-video-active: rgba(215,215,215,.7);
+    --more-video-hover: rgba(215,215,215,.4);
+
+    --fortnite-season-tags: rgb(235,235,235);
 }

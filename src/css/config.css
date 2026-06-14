@@ -20,7 +20,6 @@
     font-weight: 500;
     justify-content: start;
 }
-
 .tabs {
     width: 35%;
     display: flex;
@@ -32,7 +31,7 @@
 .tab {
     font-family: 'Montserrat';
     background-color: var(--tab);
-    color: white;
+    color: var(--text);
     display: inline-block;
     width: 90%;
     font-weight: 500;
@@ -65,7 +64,7 @@
 .tab-configs {
     display: flex;
     flex-direction: column;
-    margin: 0 1vw 0 .6vw;
+    margin: 1vh 1vw 0 .6vw;
     width: 100%;
     display: none;
 }
@@ -78,7 +77,7 @@
 }
 .sep {
     font-family: 'Montserrat';
-    color: white;
+    color: var(--text);
     font-weight: 800;
     font-size: 4vh;
     margin: 2.5vh 0 .1vh 0;
@@ -87,7 +86,7 @@
     display: inline-block;
     width: 3.3vw;
     height: 3.2vh;
-    background-color: rgb(11,11,11);
+    background-color: var(--tab);
     border-radius: 2.5vh;
     position: relative;
     cursor: pointer;
@@ -97,22 +96,29 @@
 .toggle::after {
     content: '';
     position: absolute;
-    width: 2.3vh;
-    height: 2.35vh;
+    width: 2.14vh;
+    height: 2.14vh;
     border-radius: 50%;
     background-color: var(--text);
     transition: transform 0.2s, border .2s;
     object-fit: cover;
-    border: solid .5vh rgb(11,11,11);
+    border: solid .5vh var(--tab);
 }
-
+#app-version {
+    color: var(--text-dark-gray);
+    font-family: 'Montserrat';
+    font-size: 2.5vh;
+    font-weight: 600;
+    user-select: none;
+    left: 1.5vw;
+}
 .toggle.active::after {
-    transform: translateX(1.65vw);
+    transform: translateX(1.8vw);
     border: solid .5vh var(--blue);
 }
 .sep-bar {
     margin: 0 .5vw 0 .1vw;
-    border: solid .4vh rgba(25,25,25,.4);
+    border: solid .4vh var(--sep-bar);
     border-radius: 1vh;
     justify-content: center;
 }
