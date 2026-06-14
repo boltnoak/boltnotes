@@ -153,10 +153,19 @@ async function downloadPackage(name) {
   }
 }
 
-
 async function getRemoteManifest() {
-    const response = await fetchWithRetry(MANIFEST_URL, {}, 5, 10000);
-    return response.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3000);
+
+  try {
+    const response = await fetch(MANIFEST_URL, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (err) {
+    clearTimeout(timeout);
+    throw err;
+  }
 }
 
 function getLocalManifest() {
@@ -194,6 +203,11 @@ async function syncAssets() {
   try {
     remote = await getRemoteManifest();
   } catch (err) {
+    const local = getLocalManifest();
+    if (local) {
+      console.warn('[Assets] Offline, usando assets locais.');
+      return;
+    }
     throw new Error(`Falha ao buscar manifest de assets remoto.`);
   }
 
@@ -462,9 +476,11 @@ if (!gotTheLock) {
 
     createWindow();
 
-    if (app.isPackaged) {
+    setInterval(() => {
+      if (app.isPackaged) {
         autoUpdater.checkForUpdates();
-    }
+      }
+    }, 30 * 60 * 1000);
 
     const configs = getConfig();
 
@@ -476,22 +492,33 @@ if (!gotTheLock) {
       if (configs.maximize_on_start) {
         win.maximize();
       }
-      
+
       makeTray();
       win.show();
 
       syncAssets()
-      .then(() => {
-        assetsReady = true;
-        win.webContents.send('assets-ready');
-      })
-      .catch(err => {
-        console.error(err);
-        win.webContents.send(
-          'assets-error',
-          err.message
-        );
-      });
+        .then(() => {
+          assetsReady = true;
+          win.webContents.send('assets-ready');
+        })
+        .catch(err => {
+          console.error(err);
+          win.webContents.send('assets-error', err.message);
+        });
+
+        setInterval(() => {
+          if (app.isPackaged) {
+            autoUpdater.checkForUpdates();
+          }
+
+          syncAssets()
+            .then(() => {
+              win?.webContents.send('assets-ready');
+            })
+            .catch(err => {
+              console.warn('Assets - Erro na verificação periódica:', err.message);
+            });
+        }, 30 * 60 * 1000);
     });
 
     win.on('maximize', () => {
@@ -534,8 +561,8 @@ autoUpdater.on('update-downloaded', (info) => {
 
     const { Notification } = require('electron');
     new Notification({
-        title: 'BoltNotes atualizado!',
-        body: `Versão ${info.version} baixada.`,
+        title: 'Atualização baixada!',
+        body: `Nova versão ${info.version}.`,
         icon: path.join(__dirname, 'icon.png')
     }).show();
 });
