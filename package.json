@@ -33,11 +33,13 @@
     "linux": {
       "target": "AppImage",
       "category": "Utility",
-      "icon": "build/icons"
+      "icon": "build/icons",
+      "artifactName": "${name}-linux-${arch}.${ext}"
     },
     "win": {
       "target": "nsis",
-      "icon": "build/icons/icon.ico"
+      "icon": "build/icons/icon.ico",
+      "artifactName": "${name}-windows-${arch}-setup.${ext}"
     },
     "publish": [
       {
