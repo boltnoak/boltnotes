@@ -43,7 +43,7 @@
       {
         "provider": "github",
         "owner": "boltnoak",
-        "repo": "boltnotes-releases",
+        "repo": "boltnotes",
         "releaseType": "release"
       }
     ]
