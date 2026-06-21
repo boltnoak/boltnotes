@@ -4,15 +4,16 @@ const pageBase = document.querySelector('base').href.replace('file://', '');
 // Recarregar página e ferramentas de dev
 window.addEventListener('keydown', (e) => {
   if (e.code == "F5") {
-  const bodyElement = document.querySelector('.pageBody');
+    const bodyElement = document.querySelector('.pageBody');
     if (bodyElement) {
-      // Salva o scroll da DIV .pageBody
       sessionStorage.setItem('pageBodyScroll', bodyElement.scrollTop);
     }
-  window.location.reload()};
+    window.location.reload();
+  };
   
   if (e.code == "F12") {
-  window.electronAPI.devTools()};
+    window.electronAPI.devTools();
+  };
 });
 
 // Restaurar o scroll após o reload
@@ -37,6 +38,32 @@ window.addEventListener('load', () => {
     }
   }
 });
+
+let lastScrollPercent = 0;
+
+function getScrollPercent() {
+    const bodyElement = document.querySelector('.pageBody');
+    if (!bodyElement) return 0;
+    const maxScroll = bodyElement.scrollHeight - bodyElement.clientHeight;
+    return maxScroll > 0 ? bodyElement.scrollTop / maxScroll : 0;
+}
+
+function applyScrollPercent(percent) {
+    const bodyElement = document.querySelector('.pageBody');
+    if (!bodyElement) return;
+    const maxScroll = bodyElement.scrollHeight - bodyElement.clientHeight;
+    bodyElement.scrollTop = percent * maxScroll;
+}
+
+window.addEventListener('resize', () => {
+    applyScrollPercent(lastScrollPercent);
+});
+
+document.addEventListener('scroll', (e) => {
+    if (e.target.classList?.contains('pageBody')) {
+        lastScrollPercent = getScrollPercent();
+    }
+}, true);
 
 // Menu
 function minimizeApp() {

@@ -3,7 +3,7 @@
   "productName": "BoltNotes",
   "version": "0.1.44",
   "description": "Backlog de jogos, Notas e Fortnite",
-  "main": "src/main.js",
+  "main": "src-electron/main.js",
   "private": true,
   "build": {
     "appId": "com.boltnoak.boltnotes",
@@ -16,6 +16,7 @@
       }
     ],
     "files": [
+      "src-electron/**/*",
       "src/**/*",
       "build/**/*",
       "package.json",
@@ -66,13 +67,17 @@
     "electron-squirrel-startup": "^1.0.1",
     "electron-updater": "^6.8.3",
     "extract-zip": "^2.0.1",
+    "fflate": "^0.8.3",
     "music-metadata": "^11.12.3",
     "open-graph-scraper": "^6.11.0"
   },
   "devDependencies": {
     "archiver": "^6.0.2",
+    "concurrently": "^10.0.3",
     "electron": "^41.2.1",
     "electron-builder": "^26.8.1",
-    "electron-reloader": "^1.2.3"
+    "electron-reloader": "^1.2.3",
+    "vite-plugin-electron-renderer": "^1.0.0",
+    "wait-on": "^9.0.10"
   }
 }

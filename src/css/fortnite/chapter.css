@@ -12,7 +12,7 @@ body {
 }
 
 #fnSeason, .fn-season {
-    margin: 0 7.5vw;
+    margin: 0 2vw;
     padding: 0;
 }
 
@@ -116,7 +116,7 @@ body {
 .banner {
     background-position: center;
     background-size: cover;
-    height: 45vh;
+    height: 65vh;
     position: relative;
     margin: 0;
     opacity: 100%;
@@ -128,7 +128,6 @@ body {
 }
 /* Status */
 .season {
-    margin-top: 1.5vh;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -177,7 +176,8 @@ body {
 .seasonCharacter-div {
     position: relative;
     width: 50vw;
-    height: 75vh;
+    min-height: 78vh;
+    height: fit-content;
     overflow: hidden;
     -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
     mask-image: linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
@@ -242,7 +242,7 @@ body {
 .season-status {
     margin: 0;
     gap: .8vw;
-    margin-top: 1vh;
+    margin-top: 1.5vh;
     display: flex;
     flex-direction: row;
 }
@@ -492,6 +492,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 15vw;
+    flex: 1;
 }
 .season-events:hover .event-data {
     background-color: var(--tab-hover);

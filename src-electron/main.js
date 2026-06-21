@@ -262,7 +262,9 @@ const COVERS = path.join(
 );
 
 const BUNDLE = path.join(
-    __dirname
+    __dirname,
+    '..',
+    'src'
 );
 
 function startFolders() {
@@ -355,14 +357,14 @@ function createWindow() {
     win = new BrowserWindow({
         width: larguraProporcional,
         height: alturaProporcional,
-        autoHideMenuBar: true,
-        frame: true,
+        autoHideMenuBar: process.platform !== 'linux',
+        frame: process.platform !== 'linux',
         transparent: true,
         roundedCorners: false,
         backgroundColor: '#00000000',
         show: false,
         hasShadow: false,
-        resizable: true,
+        resizable: process.platform == 'linux',
         maximizable: true,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
@@ -516,12 +518,10 @@ if (!gotTheLock) {
     });
 
     win.on('maximize', () => {
-  win.setResizable(false); // ← trava resize quando maximizado
   win.webContents.send('window-state-change', 'maximized');
 });
 
 win.on('unmaximize', () => {
-  win.setResizable(true); // ← libera ao restaurar
   win.webContents.send('window-state-change', 'normal');
 });
     win.on('close', (event) => {
@@ -576,12 +576,10 @@ ipcMain.on('menu:maximize-app', () => {
   if (!win) return;
 
   if (win.isMaximized()) {
-    win.setResizable(true);
     win.unmaximize();
   } else {
     win.setMaximizable(true);
     win.maximize();
-    win.setResizable(false);
   }
 });
 ipcMain.on('menu:minimize-app', () => { win.minimize(); });
@@ -733,12 +731,18 @@ function manageStartup(abrirComOOS) {
         fs.mkdirSync(autostartDir, { recursive: true });
       }
 
+      const isPackaged = app.isPackaged;
+      const iconPath = isPackaged
+        ? path.join(process.resourcesPath, 'tray-icon.png')
+        : path.join('build', 'icon.png');
+      const execPath = process.env.APPIMAGE || app.getPath('exe');
+
       const desktopContent = `[Desktop Entry]
 Type=Application
 Name=BoltNotes
 Comment=Aplicativo de Notas e Hub de Jogos
-Exec="${app.getPath('exe')}"
-Icon=${path.join(__dirname, 'icon.png')}
+Exec="${execPath}"
+Icon=${iconPath}
 Terminal=false
 StartupNotify=false
 X-GNOME-Autostart-enabled=true
@@ -796,7 +800,6 @@ function makeTray() {
     { label: 'Notas', click: () => navigateTo('notes.html') },
     { label: 'Backlog de Jogos', click: () => navigateTo('games.html') },
     { type: 'separator' },
-    { label: 'Início', click: () => navigateTo('index.html') },
     { label: 'Preferências', click: () => navigateTo('config.html') },
     { label: 'Fechar app', 
       click: () => {

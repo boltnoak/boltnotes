@@ -31,8 +31,7 @@
             <div class="rating-option" data-value="10">10</div>
         </div>
     </div>
-    <div class="season" data-locked="true">
-        <div class="season-tags">
+    <div class="season-tags">
             <div class="status rating-container">
                 <i class="fa-solid fa-star"></i>Nota: <span class="status-rating"></span>
                 
@@ -51,6 +50,7 @@
             </p>
             <p class="status"><i class="fa-solid fa-calendar-day"></i>Lançado em: <span></span></p>
         </div>
+    <div class="season" data-locked="true">
         <div class="season-status">
             <div class="seasonCharacter-div">
                 <img class="season-character">
