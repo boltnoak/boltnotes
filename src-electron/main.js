@@ -113,8 +113,6 @@ function downloadFile(url, destination, onProgress, retries = 3) {
   });
 }
 
-
-  
 async function downloadPackage(name) {
   const url = `https://github.com/boltnoak/boltnotes-assets/releases/latest/download/${name}`;
   const zipPath = path.join(app.getPath('userData'), name);
