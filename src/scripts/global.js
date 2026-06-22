@@ -1,4 +1,3 @@
-
 const pageBase = document.querySelector('base').href.replace('file://', '');
 
 // Recarregar página e ferramentas de dev

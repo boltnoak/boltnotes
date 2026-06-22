@@ -59,6 +59,9 @@ body {
 .back {
     margin: 0 0 0 .5vw;
 }
+.home i {
+    color: var(--text);
+}
 .home {
     border-radius: 4vh;
     border: solid .6vh transparent;

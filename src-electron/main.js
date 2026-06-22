@@ -318,7 +318,8 @@ function getConfig() {
     playing_now_on_home: false,
     notes_on_home: true,
     fortnite_on_home: true,
-    show_version: true
+    show_version: true,
+    theme: 'dark'
   };
   try {
     if (fs.existsSync(configPath)) {
@@ -983,4 +984,57 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
       resolve(null);
     });
   });
+});
+
+// Temas
+const THEMES_DIR = path.join(BUNDLE, 'themes');
+const USER_THEMES_DIR = path.join(DOCUMENTS, 'Themes');
+
+function ensureThemesFolder() {
+    if (!fs.existsSync(USER_THEMES_DIR)) {
+        fs.mkdirSync(USER_THEMES_DIR, { recursive: true });
+    }
+    const defaults = fs.readdirSync(THEMES_DIR);
+    defaults.forEach(file => {
+        const dest = path.join(USER_THEMES_DIR, file);
+        if (!fs.existsSync(dest)) {
+            fs.copyFileSync(path.join(THEMES_DIR, file), dest);
+        }
+    });
+}
+
+ipcMain.handle('themes:list', () => {
+    ensureThemesFolder();
+    return fs.readdirSync(USER_THEMES_DIR)
+        .filter(f => f.endsWith('.boltss'))
+        .map(file => {
+            const themeName = file.replace('.boltss', '');
+            const themePath = path.join(USER_THEMES_DIR, file);
+            
+            try {
+                const content = fs.readFileSync(themePath, 'utf-8');
+                
+                const bgMatch = content.match(/--bg\s*:\s*([^;}\n]+)/);
+                
+                const bgColor = bgMatch ? bgMatch[1].trim() : '#050505';
+                
+                return {
+                    name: themeName,
+                    bg: bgColor
+                };
+            } catch (e) {
+                return { name: themeName, bg: '#000000' };
+            }
+        });
+});
+
+ipcMain.handle('themes:get', (_, themeName) => {
+    const themePath = path.join(USER_THEMES_DIR, `${themeName}.boltss`);
+    if (!fs.existsSync(themePath)) return null;
+    return fs.readFileSync(themePath, 'utf-8');
+});
+
+ipcMain.handle('themes:get-current', () => {
+    const config = getConfig();
+    return config.theme || 'dark';
 });

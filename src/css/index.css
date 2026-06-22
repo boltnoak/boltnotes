@@ -38,6 +38,8 @@ header {
 .banner {
     height: 18vh;
     background-image: url(assets://default-banner.jpg);
+    background-position: center;
+    background-size: cover;
     display: flex;
     flex-direction: row;
     align-items: center;

@@ -1,5 +1,4 @@
 @import url('../fonts/css/all.min.css');
-@import url(themes.css);
 
 @font-face {
     font-family: 'HeadingNow';
@@ -219,6 +218,7 @@ body {
 /* Estado Base do Container: Quadrado por padrão (Maximizado) */
 .app-container {
     background-color: var(--bg);
+    transition: background .2s;
     border-radius: 0;
     height: 100vh;
     width: 100vw;

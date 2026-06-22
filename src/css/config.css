@@ -86,23 +86,24 @@
     display: inline-block;
     width: 3.3vw;
     height: 3.2vh;
-    background-color: var(--tab);
+    background-color: var(--tab-hover);
     border-radius: 1.2vh;
     position: relative;
     cursor: pointer;
-    transition: background-color 0.2s, border .2s;
+    transition: background-color 0.15s, border .2s;
 }
 
 .toggle::after {
     content: '';
     position: absolute;
-    width: 2.14vh;
-    height: 2.2vh;
-    border-radius: 40%;
+    width: 2.18vh;
+    top: .05rem;
+    height: 2.16vh;
+    border-radius: 1.25vh;
     background-color: var(--text);
-    transition: transform 0.2s, border .2s;
+    transition: transform 0.1s, border .2s;
     object-fit: cover;
-    border: solid .5vh var(--tab);
+    border: solid .5vh var(--tab-hover);
 }
 #app-version {
     color: var(--text-dark-gray);
@@ -113,7 +114,7 @@
     left: 1.5vw;
 }
 .toggle.active::after {
-    transform: translateX(1.8vw);
+    transform: translateX(1.65vw);
     border: solid .5vh var(--blue);
 }
 .sep-bar {
@@ -126,4 +127,87 @@
     background-color: var(--tab-hover);
     padding: 1vh .6vw;
     border-radius: 1vh;
+}
+
+.theme-selector-div {
+    position: relative;
+    font-family: 'Montserrat';
+    user-select: none;
+    font-weight: 600;
+    width: 100%;
+}
+.themeSelector-select {
+    margin: 0;
+    display: grid;
+    padding: 0;
+    height: fit-content;
+    grid-template-columns: repeat(auto-fill, minmax(12vw, 1fr));
+
+}
+.sorting-options select {
+    display: none;
+}
+.sortingOptions-trigger {
+    background-color: rgba(20, 20, 20, 0.4);
+    padding: .5vh .5vw;
+    border-radius: 1vh;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text);
+    transition: background 0.2s ease;
+    width: 9.5vw;
+}
+.sortingOptions-select {
+    position: absolute;
+    top: 4.5vh;
+    left: 0;
+    right: 0;
+    background-color: rgb(10,10,10);
+    border-top: none;
+    border-radius: 1vh;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+.themeSelector-select li:hover {
+    border: solid .6vh var(--text);
+}
+.themeSelector-select li {
+    display: flex;
+    align-items: center;
+    gap: .5vh;
+    padding: 1.5vh .5vw;
+    color: var(--text);
+    cursor: pointer;
+    transition: border 0.2s;
+    flex-direction: column;
+    border: solid .6vh transparent;
+    border-radius: 2vh;
+}
+.themes {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+#theme-selector {
+    display: none;
+}
+.themeSelector-btn span {
+    display: none;
+}
+/* Estilo da bolinha de preview da cor */
+.theme-color-preview {
+    height: 12vh;
+    width: 12vw;
+    border-radius: 1vh; /* Torna redondo */
+    display: inline-block;
+    border: 1px solid var(--text-dark-gray); /* Bordinha sutil para cores muito escuras não sumirem */
+    flex-shrink: 0; /* Impede a bolinha de achatar se o texto for grande */
 }

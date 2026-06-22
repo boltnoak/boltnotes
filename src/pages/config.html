@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BoltNotes — Preferencias</title>
     <link rel="stylesheet" href="css/config.css">
+    <script src="scripts/theme-loader.js"></script>
 </head>
 <body>
 <div class="app-container">
@@ -16,7 +17,7 @@
             <div data-code="updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i>Atualizações</div>
             <!-- <p class="sep-bar"></p>
             <div data-code="fortnite" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-gamepad"></i>Fortnite</div> -->
-            <!-- <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-half-stroke"></i>Aparência</div> -->
+            <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-half-stroke"></i>Aparência</div>
             <p class="sep-bar"></p>
             <div data-code="about" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-info"></i>Locais</div>
         </div>
@@ -62,20 +63,31 @@
                 <a class="toggle" data-code="playing_now_on_home" onclick="toggleConfig(this)"></a>
             </div>
         </div>
+        <div id="aparencia" class="tab-configs">
+            <div class="config-item themes">
+                <div class="theme-selector-div">
+                    <select id="theme-selector"></select>
+                    <div class="themeSelector-btn">
+                        <span></span><p class="sep">Temas</p>
+                    </div>
+                    <ul class="themeSelector-select"></ul>
+                </div>
+            </div>
+        </div>
         <div id="updates" class="tab-configs">
             <p class="sep">Versão atual:</p>
             <div class="config-item version">
-                    <span id="app-version"></span>
+                <span id="app-version"></span>
             </div>
         </div>
         <div id="fortnite" class="tab-configs">
             <p class="sep">Banner</p>
         </div>
         <div id="about" class="tab-configs">
-            <!-- <p class="sep">Pasta de temas</p>
+            <p class="sep">Pasta de temas</p>
             <div class="config-item">
                 <p class="path" id="themes-folder"></p>
-            </div> -->
+            </div>
             <p class="sep">Notas, Reviews e Jogos</p>
             <div class="config-item">
                 <p class="path" id="documents"></p>

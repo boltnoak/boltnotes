@@ -44,6 +44,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     rename: (oldName, newName) => ipcRenderer.invoke('notes:rename', oldName, newName)
   },
 
+  themes: {
+      list: () => ipcRenderer.invoke('themes:list'),
+      get: (name) => ipcRenderer.invoke('themes:get', name),
+      getCurrent: () => ipcRenderer.invoke('themes:get-current')
+  },
+
   checkAssetsStatus: () => ipcRenderer.invoke('assets-check-status'),
   onAssetsProgress: (callback) => {
     ipcRenderer.on('assets-progress', (_, data) => callback(data));
