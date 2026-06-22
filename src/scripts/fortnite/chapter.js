@@ -12,6 +12,7 @@ async function loadHeader() {
     document.body.insertAdjacentHTML('afterbegin', `
         <header>
             <a class="back">Voltar</a>
+            <a class="home" href="pages/index.html"></a>
             <div class="chapter-section">
                 <i id="before-chapter"></i>
                 <p id="chapter-name"></p>
@@ -20,25 +21,28 @@ async function loadHeader() {
             <!--<a class="chapters"></a>-->
         </header>`);
     
-    // const chapterBtn = document.querySelector('.chapters');
-    // const chaptersa = document.getElementById('chapters-popup');
+    const chapterBtn = document.querySelector('.chapters');
+    const chaptersa = document.getElementById('chapters-popup');
 
-    // if (chapterBtn && chaptersa) {
-    //     chapterBtn.addEventListener('click', () => {
-    //         if (chaptersa.style.display === 'none' || chaptersa.style.display === '') {
-    //             chaptersa.style.display = 'flex';
-    //         } else {
-    //             chaptersa.style.display = 'none';
-    //         }
-    //     });
-    // }
+    if (chapterBtn && chaptersa) {
+        chapterBtn.addEventListener('click', () => {
+            if (chaptersa.style.display === 'none' || chaptersa.style.display === '') {
+                chaptersa.style.display = 'flex';
+            } else {
+                chaptersa.style.display = 'none';
+            }
+        });
+    }
 }
 loadHeader();
 
 const backIcon = document.createElement('i');
 backIcon.className = 'fa-solid fa-caret-left';
+const homeIcon = document.createElement('i');
+homeIcon.className = 'fa-solid fa-home';
 
 if (document.querySelector('.back')) document.querySelector('.back').appendChild(backIcon);
+if (document.querySelector('.home')) document.querySelector('.home').appendChild(homeIcon);
 
 const chaptersIcon = document.createElement('i');
 chaptersIcon.className = 'fa-solid fa-book';
@@ -71,14 +75,9 @@ if (match) {
     }
     
     if (before) {
-        if (chapterBefore <= 0) {
-            before.style.visibility = "hidden";
-        } else {
-            const hasBefore = await window.electronAPI.exists(`pages/fortnite/chapter${chapterBefore}.html`);
-            before.style.visibility = hasBefore ? "visible" : "hidden";
-        }
+        const hasBefore = await window.electronAPI.exists(`pages/fortnite/chapter${chapterBefore}.html`);
+        before.style.visibility = hasBefore ? "visible" : "hidden";
     }
-
     if (next) {
         const hasNext = await window.electronAPI.exists(`pages/fortnite/chapter${chapterNext}.html`);
         next.style.visibility = hasNext ? "visible" : "hidden";
@@ -447,8 +446,7 @@ function openMap(el) {
     if (mapPopup && mapImage && code) {
         mapPopup.style.display = "flex";
         
-        // CORREÇÃO: Adicionado o :// de volta em ambas as URLs
-        mapImage.style.backgroundImage = `url('assets://${code}-viewmap.jpg'), url('assets://${code}-map.jpg')`;
+        mapImage.style.backgroundImage = `url('assets://${code}-map.jpg')`;
         
         configurarZoomMapa(); 
         resetarZoomMapa();    

@@ -87,7 +87,7 @@
     width: 3.3vw;
     height: 3.2vh;
     background-color: var(--tab);
-    border-radius: 2.5vh;
+    border-radius: 1.2vh;
     position: relative;
     cursor: pointer;
     transition: background-color 0.2s, border .2s;
@@ -97,8 +97,8 @@
     content: '';
     position: absolute;
     width: 2.14vh;
-    height: 2.14vh;
-    border-radius: 50%;
+    height: 2.2vh;
+    border-radius: 40%;
     background-color: var(--text);
     transition: transform 0.2s, border .2s;
     object-fit: cover;
@@ -123,8 +123,7 @@
     justify-content: center;
 }
 .path {
-    background-color: rgba(1,1,1,.2);
+    background-color: var(--tab-hover);
     padding: 1vh .6vw;
     border-radius: 1vh;
-    width: 100%;
 }

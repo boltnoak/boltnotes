@@ -5,12 +5,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const isMaximized = ipcRenderer.sendSync('menu:is-maximized-sync');
     
     if (isMaximized) {
-  document.documentElement.classList.add('window-maximized');    // ← adiciona
+  document.documentElement.classList.add('window-maximized');
   document.documentElement.classList.remove('window-normal');
   window.sessionStorage.setItem('windowState', 'maximized');
 } else {
   document.documentElement.classList.add('window-normal');
-  document.documentElement.classList.remove('window-maximized'); // ← remove
+  document.documentElement.classList.remove('window-maximized');
   window.sessionStorage.setItem('windowState', 'normal');
 }
   } catch (err) {
@@ -19,10 +19,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+const isDev = process.argv.includes('--development');
+
 contextBridge.exposeInMainWorld('electronAPI', {
   onWindowStateChange: (callback) => ipcRenderer.on('window-state-change', (event, state) => callback(state)),
+  existsAssets: (filePath) => ipcRenderer.invoke('exists-assets',filePath),
   exists: (filePath) => ipcRenderer.invoke('exists',filePath),
   devTools: () => ipcRenderer.send('devTools'),
+  isDev: isDev,
 
   menu: { maximizeApp: () => ipcRenderer.send('menu:maximize-app'),
     minimizeApp: () => ipcRenderer.send('menu:minimize-app'),

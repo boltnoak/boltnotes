@@ -45,8 +45,10 @@ async function loadInfo() {
   const userData = await window.info.getUserData();
   const documents = await window.info.getDocuments();
 
-  document.getElementById('user-data').textContent = userData;
+  document.getElementById('user-config').textContent = userData + '/config.json';
   document.getElementById('documents').textContent = documents;
+  document.getElementById('assets-folder').textContent = userData + '/assets';
+  document.getElementById('themes-folder').textContent = documents + '/Temas';
 }
 
 loadInfo();

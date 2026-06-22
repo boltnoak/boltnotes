@@ -1,8 +1,7 @@
 <div id="menu" class="drag">
     <p id="menuTitle"></p>
     <a id="update-btn">
-        <i class="fa-solid fa-arrow-rotate-right"></i>
-        Instalar Atualização
+        Atualizar
     </a>
     <div class="menuButtons">
         <i id="menuMin" class="fa-solid fa-window-minimize" onclick="minimizeApp()"></i>

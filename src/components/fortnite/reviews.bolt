@@ -1,0 +1,28 @@
+<div class="reviews">
+    <div class="review-two">
+        <div class="reviewTopic-big">
+            <p class="review-topic">GAMEPLAY</p>
+            <p id="${code}-gameplay" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.gameplay || ""}</p>
+        </div>
+        <div class="reviewTopic-smaller">
+            <p class="review-topic">LOOT POOL</p>
+            <p id="${code}-loot" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.loot || ""}</p>
+        </div>
+    </div>
+    
+    <div class="reviewTopic-mapa">
+        <p class="review-topic">MAPA</p>
+        <p id="${code}-mapa" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.mapa || ""}</p>
+    </div>
+        
+    <div class="review-two">
+        <div class="reviewTopic-big">
+            <p class="review-topic">HISTÓRIA</p>
+            <p id="${code}-story" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.story || ""}</p>
+        </div>
+        <div class="reviewTopic-small">
+            <p class="review-topic">PASSE DE BATALHA</p>
+            <p id="${code}-passe" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.passe || ""}</p>
+        </div>
+    </div>
+</div>

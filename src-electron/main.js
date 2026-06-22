@@ -368,7 +368,8 @@ function createWindow() {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,
           nodeIntegration: false,
-          autoplayPolicy: 'no-user-gesture-required'
+          autoplayPolicy: 'no-user-gesture-required',
+          additionalArguments: [app.isPackaged ? '--production' : '--development']
         }
     });
     win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
@@ -647,7 +648,7 @@ ipcMain.on('devTools', () => {
     win.webContents.toggleDevTools();
   }
 });
-ipcMain.handle("exists", async (_, filePath) => {
+ipcMain.handle("exists-assets", async (_, filePath) => {
   if (filePath.startsWith('assets://')) {
     const url = new URL(filePath);
     const filePart = url.pathname === '/' ? url.hostname : url.hostname + url.pathname;
@@ -656,6 +657,10 @@ ipcMain.handle("exists", async (_, filePath) => {
   }
 
   const fullPath = path.join(__dirname, filePath);
+  return fs.existsSync(fullPath);
+});
+ipcMain.handle("exists", async (_, filePath) => {
+  const fullPath = path.join(BUNDLE, filePath);
   return fs.existsSync(fullPath);
 });
 ipcMain.handle('load', (_, dirPath) => {

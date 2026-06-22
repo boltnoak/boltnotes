@@ -25,7 +25,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    gap: 1vh 1vw;
+    gap: 1vh .5vw;
 }
 #chapter-name {
     margin: 0;
@@ -53,6 +53,33 @@ body {
     color: var(--text);
 }
 #before-chapter:hover, #next-chapter:hover {
+    border: solid .6vh var(--text);
+}
+
+.back {
+    margin: 0 0 0 .5vw;
+}
+.home {
+    border-radius: 4vh;
+    border: solid .6vh transparent;
+    transition: border 0.25s ease-in-out;
+    padding: .5vh .4vw;
+    font-size: 2.7vh;
+    color: var(--text);
+    font-family: 'Montserrat';
+    font-weight: 700;
+    position: absolute;
+    margin: 0 0 0 8vw;
+    left: 0;
+    justify-content: center;
+    text-decoration: none;
+    user-select: none;
+    align-items: center;
+    display: flex;
+    flex-direction: row-reverse;
+    cursor: pointer;
+}
+.home:hover {
     border: solid .6vh var(--text);
 }
 
@@ -94,8 +121,8 @@ body {
     color: var(--text-light-gray);
     transition: color 0.25s ease-in-out;
     cursor: pointer;
-    top: .5vh;
-    font-size: 4.5vh;
+    padding: .8vh 0;
+    font-size: 4vh;
 }
 .season-trailers, .season-trailers::before, .season-trailers::after {
     cursor: pointer;
@@ -109,14 +136,14 @@ body {
     flex-direction: row;
     align-items: center;
     text-align: center;
-    gap: .5vw;
+    gap: .3vw;
     margin: 1vh 0;
 }
 /* Banner */
 .banner {
     background-position: center;
     background-size: cover;
-    height: 65vh;
+    height: 63vh;
     position: relative;
     margin: 0;
     opacity: 100%;
@@ -144,7 +171,7 @@ body {
     color: var(--text);
     display: flex;
     flex-direction: row;
-    gap: .5vw;
+    gap: .2vw;
     align-items: center;
     user-select: none;
 }
@@ -176,7 +203,7 @@ body {
 .seasonCharacter-div {
     position: relative;
     width: 50vw;
-    min-height: 78vh;
+    min-height: 72.5vh;
     height: fit-content;
     overflow: hidden;
     -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
@@ -218,12 +245,33 @@ body {
     margin: 0 0 .85vh 0;
     color: var(--text);
 }
+.seasonStatus-title-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    margin: .85vh 0 .6vh 0;
+    color: var(--text);
+}
 .seasonContents-title {
     font-family: 'Montserrat';
     font-weight: 700;
     font-size: 4vh;
     user-select: none;
     margin: 0;
+}
+.seasonStatus-title {
+    font-family: 'Montserrat';
+    font-weight: 700;
+    font-size: 4vh;
+    user-select: none;
+    margin: 0;
+}
+.seasonStatus-title-div i {
+    font-size: 3.5vh;
+    margin-right: .2vw;
+    color: var(--text);
 }
 .seasonContents-title-div i {
     font-size: 3.5vh;
@@ -242,16 +290,15 @@ body {
 .season-status {
     margin: 0;
     gap: .8vw;
-    margin-top: 1.5vh;
     display: flex;
     flex-direction: row;
 }
 #lock-unlock {
-    margin: 1.2vh .5vw;
-    font-size: 3vh;
-    opacity: .2;
+    margin: 0;
+    font-size: 4vh;
+    opacity: .5;
     background: transparent;
-    padding: 1vh .5vw;
+    padding: .8vh 0;
     border-radius: 1.1vh;
     color: var(--text);
     cursor: pointer;

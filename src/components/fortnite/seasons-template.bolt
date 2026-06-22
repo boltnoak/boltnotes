@@ -3,10 +3,10 @@
     <p class="sep-bar-season"></p>
     <div class="seasonTitle-div">
         <p class="season-title"></p>
+        <i id="lock-unlock"></i>
         <i class="season-trailers fa-solid fa-circle-play" data-tooltip="Ver trailers"></i>
     </div>
     <div class="banner">
-        <i id="lock-unlock"></i>
         <div class="rating-options">
             <div class="rating-option" data-value="0">0</div>
             <div class="rating-option" data-value="0.5">0.5</div>
@@ -51,6 +51,10 @@
             <p class="status"><i class="fa-solid fa-calendar-day"></i>Lançado em: <span></span></p>
         </div>
     <div class="season" data-locked="true">
+        <div class="seasonStatus-title-div">
+            <i class="fa-solid fa-note-sticky"></i>
+            <p class="seasonStatus-title">Review</p>
+        </div>
         <div class="season-status">
             <div class="seasonCharacter-div">
                 <img class="season-character">

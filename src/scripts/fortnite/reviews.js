@@ -2,9 +2,24 @@ window.reviews = window.reviews || {};
 window.stats = window.stats || {};
 
 let saveTimeout = null;
+let reviewsTemplateText = null;
 
-function initReviews() {
+async function getReviewsTemplate() {
+    if (!reviewsTemplateText) {
+        const res = await fetch('components/fortnite/reviews.bolt');
+        reviewsTemplateText = await res.text();
+    }
+    return reviewsTemplateText;
+}
+
+function renderReviewsTemplate(templateText, vars) {
+    const fn = new Function(...Object.keys(vars), `return \`${templateText}\`;`);
+    return fn(...Object.values(vars));
+}
+
+async function initReviews() {
     const seasons = document.querySelectorAll('.fn-season');
+    const reviewsHTML = await getReviewsTemplate();
 
     seasons.forEach(season => {
         const code = season.getAttribute('data-code');
@@ -14,23 +29,9 @@ function initReviews() {
         if (!content || content.innerHTML.trim() !== "") return;
 
         const isSeasonLocked = data.locked ?? (season.querySelector('.season')?.dataset.locked === "true");
-
         const editableAttr = isSeasonLocked ? 'contenteditable="false"' : 'contenteditable="true"';
 
-        content.innerHTML = `
-            <div class="reviews">
-                <p class="review-topic">LOOT POOL</p>
-                <p id="${code}-loot" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.loot || ""}</p>
-                <!--<p class="sep-bar-season"></p>-->
-                <p class="review-topic">MAPA</p>
-                <p id="${code}-mapa" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.mapa || ""}</p>
-                <!--<p class="sep-bar-season"></p>-->
-                <p class="review-topic">PASSE DE BATALHA</p>
-                <p id="${code}-passe" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.passe || ""}</p>
-                <!--<p class="sep-bar-season"></p>-->
-                <p class="review-topic">HISTÓRIA</p>
-                <p id="${code}-story" placeholder="Vazio" class="review-topictext" ${editableAttr} oninput="debouncedSave('${code}')">${data.story || ""}</p>
-            </div>`;
+        content.innerHTML = renderReviewsTemplate(reviewsHTML, { code, data, editableAttr });
     });
 }
 
@@ -42,6 +43,7 @@ function debouncedSave(code) {
         const levels = document.getElementById(`${code}-levels`)?.textContent || "0";
         const wins = document.getElementById(`${code}-wins`)?.textContent || "0";
 
+        const gameplay = document.getElementById(`${code}-gameplay`)?.innerText || "";
         const loot = document.getElementById(`${code}-loot`)?.innerText || "";
         const mapa = document.getElementById(`${code}-mapa`)?.innerText || "";
         const passe = document.getElementById(`${code}-passe`)?.innerText || "";
@@ -49,6 +51,7 @@ function debouncedSave(code) {
 
         window.reviews[code] = { 
             ...window.reviews[code], 
+            gameplay,
             loot,
             mapa,
             passe,
@@ -80,6 +83,7 @@ async function autoSave(code) {
     const winsEl = document.getElementById(`${code}-wins`);
     const ratingEl = document.getElementById(`${code}-rating`);
 
+    const gameplayEl = document.getElementById(`${code}-gameplay`);
     const lootEl = document.getElementById(`${code}-loot`);
     const mapaEl = document.getElementById(`${code}-mapa`);
     const passeEl = document.getElementById(`${code}-passe`);

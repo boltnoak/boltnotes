@@ -3,6 +3,13 @@ const pageBase = document.querySelector('base').href.replace('file://', '');
 
 // Recarregar página e ferramentas de dev
 window.addEventListener('keydown', (e) => {
+  if (!window.electronAPI || !window.electronAPI.isDev) {
+    if (e.code === "F5" || e.code === "F12") {
+      e.preventDefault();
+    }
+    return;
+  }
+
   if (e.code == "F5") {
     const bodyElement = document.querySelector('.pageBody');
     if (bodyElement) {

@@ -52,6 +52,7 @@
     background-color: var(--tab-active);
     padding: .5vh 3vh .5vh 1vh;
     border-radius: 1vh;
+    height: min-content;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     border-bottom: solid .5vh rgba(255,255,255,.035);
@@ -64,8 +65,7 @@
     font-family: 'Montserrat';
     margin: 0;
     flex: 1;
-    min-height: 0;
-    max-height: 15vh;
+    height: 13.5vh;
     background-color: var(--tab);
     padding: 1.5vh;
     border-radius: 1vh;
@@ -75,6 +75,18 @@
     caret-color: var(--text);
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+.reviewTopic-big {
+    width: 100%;
+}
+.reviewTopic-mapa {
+    height: 24.45vh;
+}
+.reviewTopic-smaller {
+    width: 80%;
+}
+.reviewTopic-small {
+    width: 90%;
 }
 .review-topictext[contenteditable="true"]:empty {
     cursor: text;
@@ -94,7 +106,7 @@
     background-color: var(--bg);
     display: flex;
     flex-direction: column;
-    margin-top: .5vh;
+    margin-top: 1.5vh;
     height: 100%;
     width: 100%;
 }
@@ -110,11 +122,12 @@
     display: flex;
     flex-direction: column;
 }
-.review-section div {
+.review-two {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    background-color: var(--bg);
+    gap: .75vw;
 }
-
 .review-header {
     display: flex;
     flex-direction: row;

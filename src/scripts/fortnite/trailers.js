@@ -87,7 +87,7 @@ async function openTrailer(el) {
             // 2. Testa qual desses formatos realmente existe no disco
             for (const formato of formatosSuportados) {
                 const fileNameTemp = `${code}_${tipo}.${formato}`;
-                const fileExists = await window.electronAPI.exists(`assets://${fileNameTemp}`);
+                const fileExists = await window.electronAPI.existsAssets(`assets://${fileNameTemp}`);
 
                 if (fileExists) {
                     fileNameValido = fileNameTemp;
@@ -218,7 +218,7 @@ async function openLiveEvent(el) {
     document.getElementById("video-popup").style.display = "flex";
     document.querySelector('html').style.overflow = "hidden";
 
-    const ext = await window.electronAPI.exists(`assets://live-event-${code}.webm`) ? 'webm' : 'mp4';
+    const ext = await window.electronAPI.existsAssets(`assets://live-event-${code}.webm`) ? 'webm' : 'mp4';
     const path = `assets://live-event-${code}.${ext}`;
     const video = document.getElementById('video');
     const wrapper = document.querySelector('.video-wrapper');
@@ -293,7 +293,7 @@ async function chooseTeam(team) {
 
     const code = 'c7s2';
     const key = `${code}-${team}`;
-    const ext = await window.electronAPI.exists(`assets://live-event-${key}.webm`) ? 'webm' : 'mp4';
+    const ext = await window.electronAPI.existsAssets(`assets://live-event-${key}.webm`) ? 'webm' : 'mp4';
     const path = `assets://live-event-${key}.${ext}`;
 
     const title = document.getElementById('video-title');
