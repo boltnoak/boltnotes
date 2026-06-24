@@ -134,14 +134,48 @@ async function checkUpdates() {
     const resposta = await window.updates.checkUpdates();
     
     if (resposta.status === 'available') {
-      statusElemento.innerText = `Nova versão disponível!`;
-    statusElemento.style.color = "var(--text-gray)";
+        statusElemento.innerText = `Nova versão disponível!`;
+        statusElemento.style.color = "var(--text-gray)";
+        statusElemento.style.opacity = 1;
+        setTimeout(() => {
+            statusElemento.style.opacity = 0;
+        }, 3500);
     } else {
-      statusElemento.innerText = "Já atualizado.";
-    statusElemento.style.color = "var(--text-dark-gray)";
+        statusElemento.innerText = "Já atualizado.";
+        statusElemento.style.color = "var(--text-dark-gray)";
+        statusElemento.style.opacity = 1;
+        setTimeout(() => {
+            statusElemento.style.opacity = 0;
+        }, 3500);
     }
   } catch (erro) {
-    statusElemento.innerText = "Erro ao verificar.";
-    statusElemento.style.color = "var(--red)";
-  }
+        statusElemento.innerText = "Erro ao verificar. Tente novamente.";
+        statusElemento.style.color = "var(--red)";
+        statusElemento.style.opacity = 1;
+        setTimeout(() => {
+            statusElemento.style.opacity = 0;
+        }, 3500);
+    }
+}
+
+async function syncAssets() {
+    const syncAssetsCMD = await window.electronAPI.syncAssets();
+    const text = document.getElementById('syncAssets-text');
+
+    if (syncAssetsCMD.success) {
+        text.textContent = 'Assets sincronizados!';
+        text.style.color = 'var(--blue)';
+        text.style.opacity = 1;
+        setTimeout(() => {
+            text.style.opacity = 0;
+        }, 3500);
+    }
+    if (syncAssetsCMD.error) {
+        text.textContent = 'Erro ao sincronizar. Tente novamente.';
+        text.style.color = 'var(--red)';
+        text.style.opacity = 1;
+        setTimeout(() => {
+            text.style.opacity = 0;
+        }, 3500);
+    }
 }

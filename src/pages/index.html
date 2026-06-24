@@ -82,7 +82,7 @@
             <span id="app-version"></span>
         </div>
         <a class="config" href="pages/config.html">
-            <i id="config" class="fa-solid fa-gear" data-tooltip="Preferencias"></i>
+            <i id="config" class="fa-solid fa-gear" data-tooltip="Configurações"></i>
         </a>
     </header>
 
@@ -103,8 +103,15 @@
 
     <div id="starting-screen">
         <div class="loading-content">
-            <h2 id="loading-title">Atualizando Arquivos</h2>
-            <p id="loading-details">Verificando pacotes...</p>
+            <h2 id="loading-title">Sincronizando Assets</h2>
+
+            <div class="spinner-div">
+                <div class="spinner"></div>
+            </div>
+            <div class="loading-details-div">
+                <p id="loading-details">Verificando pacotes...</p>
+                <p id="loading-progress"></p>
+            </div>
             
             <div class="progress-container">
                 <div id="progress-bar-fill">

@@ -247,4 +247,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateSepBar();
 });
 
-// document.getElementById('playingNowSection-title').innerHTML = 'Temporada 3 - No Corre<i class="fa-solid fa-bars-progress"></i>'
+// document.getElementById('playingNowSection-title').innerHTML = 'Temporada 3 - No Corre<i class="fa-solid fa-bars-progress"></i>';
+

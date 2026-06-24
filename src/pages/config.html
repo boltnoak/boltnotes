@@ -4,7 +4,7 @@
     <base href="../">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BoltNotes — Preferencias</title>
+    <title>BoltNotes — Configurações</title>
     <link rel="stylesheet" href="css/config.css">
     <script src="scripts/theme-loader.js"></script>
 </head>
@@ -15,9 +15,9 @@
             <div data-code="basics" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-diamond"></i>Geral</div>
             <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i>Página inicial</div>
             <div data-code="updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i>Atualizações</div>
+            <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-half-stroke"></i>Aparência</div>
             <!-- <p class="sep-bar"></p>
             <div data-code="fortnite" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-gamepad"></i>Fortnite</div> -->
-            <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-half-stroke"></i>Aparência</div>
             <p class="sep-bar"></p>
             <div data-code="about" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-info"></i>Locais</div>
         </div>
@@ -36,6 +36,15 @@
             <div class="config-item">
                 <p>Minimizar para a bandeja do sistema ao fechar</p>
                 <a class="toggle" data-code="minimize_to_tray" onclick="toggleConfig(this)"></a>
+            </div>
+            <p class="sep">Ferramentas</p>
+            <div class="syncAssets">
+                <div id="syncAssets-btn" class="btn" onclick="syncAssets()">Sincronizar assets</div>
+                <p id="syncAssets-text"></p>
+            </div>
+            <div class="checkUpdates">
+                <div id="checkUpdates-btn" class="btn" onclick="checkUpdates()">Verificar atualizações</div>
+                <p id="checkUpdates-text"></p>
             </div>
         </div>
         <div id="features" class="tab-configs">
@@ -79,11 +88,6 @@
             <div class="config-item version">
                 <span id="app-version"></span>
             </div>
-            <p class="sep">Atualizar</p>
-            <div class="checkUpdates">
-                <div id="checkUpdates-btn" class="btn" onclick="checkUpdates()">Verificar atualizações</div>
-                <p id="checkUpdates-text"></p>
-            </div>
         </div>
         <div id="fortnite" class="tab-configs">
             <p class="sep">Banner</p>
@@ -101,10 +105,6 @@
             <div class="config-item">
                 <p class="path" id="user-config"></p>
             </div>
-            <!-- <p class="sep">Pasta de assets</p>
-            <div class="config-item">
-                <p class="path" id="assets-folder"></p>
-            </div> -->
         </div>
     </div>
 

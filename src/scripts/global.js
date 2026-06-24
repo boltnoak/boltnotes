@@ -227,6 +227,7 @@ window.addEventListener('load', async () => {
     const loadingScreen = document.getElementById('loading-screen');
     const startingScreen = document.getElementById('starting-screen');
     const loadingDetails = document.getElementById('loading-details');
+    const loadingProgress = document.getElementById('loading-progress');
     const progressBarFill = document.getElementById('progress-bar-fill');
 
     if (isIndexPage) {
@@ -264,7 +265,8 @@ window.addEventListener('load', async () => {
                 const mb = (data.downloaded / 1024 / 1024).toFixed(1);
                 const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
 
-                loadingDetails.textContent = `Baixando ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`;
+                loadingDetails.textContent = `Baixando ${data.package} (${data.percent ?? '...'}%)`;
+                loadingProgress.textContent = `${mb} MB / ${totalMb} MB`;
 
                 if (data.percent !== null) {
                     progressBarFill.style.width = `${data.percent}%`;
@@ -277,8 +279,8 @@ window.addEventListener('load', async () => {
             if (loadingTitle) loadingTitle.textContent = "Tudo pronto!";
             if (loadingDetails) loadingDetails.textContent = "";
             if (progressBarFill) progressBarFill.style.width = "100%";
-            // const shineEffect = document.querySelector('.shine-effect');
-            // if (shineEffect) shineEffect.style.display = 'none';
+            const shineEffect = document.querySelector('.shine-effect');
+            if (shineEffect) shineEffect.style.display = 'none';
             
             if (startingScreen) {
                 setTimeout(() => {

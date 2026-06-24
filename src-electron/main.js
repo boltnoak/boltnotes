@@ -222,7 +222,7 @@ async function syncAssets() {
     if (local) {
       console.warn('Assets - Offline, usando assets locais.');
     }
-    throw new Error(`Falha ao buscar manifest de assets remoto.`);
+    throw new Error(`Falha ao sincronizar assets. Tente sincronizar nas configurações > Geral > Sincronizar assets.`);
   }
 
   local = getLocalManifest() || { version: 0, packages: [] };
@@ -265,7 +265,15 @@ async function syncAssets() {
   console.log('Assets - Sincronização concluída com sucesso!');
   return true;
 }
-
+ipcMain.handle('sync-assets', async () => {
+  try {
+    await syncAssets(); 
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao sincronizar assets:", error);
+    return { success: false, error: error.message };
+  }
+});
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -850,7 +858,7 @@ function makeTray() {
     { label: 'Notas', click: () => navigateTo('notes.html') },
     { label: 'Backlog de Jogos', click: () => navigateTo('games.html') },
     { type: 'separator' },
-    { label: 'Preferências', click: () => navigateTo('config.html') },
+    { label: 'Configurações', click: () => navigateTo('config.html') },
     { label: 'Fechar app', 
       click: () => {
         isQuitting = true;
