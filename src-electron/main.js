@@ -663,18 +663,27 @@ ipcMain.handle('updates:check-update', async () => {
   if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true;
   }
-  
+
   try {
     const result = await autoUpdater.checkForUpdates();
-    
-    if (result && result.updateInfo) {
-      return { status: 'available', version: result.updateInfo.version };
-    } else {
-      return { status: 'up-to-date' };
+    const currentVersion = app.getVersion();
+    const latestVersion = result?.updateInfo?.version;
+
+    if (latestVersion && latestVersion !== currentVersion) {
+      return {
+        status: 'available',
+        version: latestVersion
+      };
     }
+
+    return {
+      status: 'up-to-date'
+    };
   } catch (error) {
     console.error(error);
-    return { status: 'up-to-date' }; 
+    return {
+      status: 'error'
+    };
   }
 })
 

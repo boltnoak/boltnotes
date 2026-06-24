@@ -250,16 +250,15 @@ async function checkUpdates() {
     });
 
     try {
-        const versaoAtual = await window.electronAPI.getAppVersion();
         const result = await window.electronAPI.updates.checkUpdates();
 
-        if (result && result.status === 'available' && result.version !== versaoAtual) {
+        if (result.status === 'available') {
             if (!downloadIniciado) {
                 text.textContent = `Nova versão v${result.version}! Baixando...`;
                 text.style.color = 'var(--text)';
             }
         } else {
-            text.textContent = 'Aplicativo já na versão mais recente.';
+            text.textContent = 'Aplicativo já está na versão mais recente.';
             text.style.color = 'var(--blue)';
             
             setTimeout(() => {
@@ -267,6 +266,8 @@ async function checkUpdates() {
             }, 3500);
         }
     } catch (err) {
+        console.error('Erro ao buscar atualizações:', err);
+
         text.textContent = 'Erro ao buscar atualizações.';
         text.style.color = 'var(--red)';
     }
