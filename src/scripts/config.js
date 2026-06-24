@@ -227,20 +227,33 @@ loadInfo();
 
 async function checkUpdates() {
     const text = document.getElementById('checkUpdates-text');
+    const btn = document.getElementById('update-btn');
     if (!text) return;
 
     text.textContent = 'Verificando atualizações...';
     text.style.color = 'var(--text)';
     text.style.opacity = 1;
 
+    window.electronAPI.onUpdateProgress((percent) => {
+        text.textContent = `Baixando atualização... ${Math.round(percent)}%`;
+        text.style.color = 'var(--blue)';
+    });
+
+    window.electronAPI.onUpdateReady(() => {
+        text.textContent = 'Atualização baixada!';
+        text.style.color = 'var(--blue)';
+        
+        if (btn) btn.style.display = 'block';
+    });
+
     try {
         const result = await window.electronAPI.updates.checkUpdates();
 
         if (result && result.status === 'available') {
-            text.textContent = `Nova versão disponível!`;
+            text.textContent = `Nova versão v${result.version} encontrada! Baixando...`;
             text.style.color = 'var(--blue)';
         } else {
-            text.textContent = 'BoltNotes já atualizado!';
+            text.textContent = 'Aplicativo já na versão mais recente.';
             text.style.color = 'var(--blue)';
             
             setTimeout(() => {
