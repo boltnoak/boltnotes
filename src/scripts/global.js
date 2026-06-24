@@ -278,6 +278,7 @@ window.addEventListener('load', async () => {
             const loadingTitle = document.getElementById('loading-title');
             if (loadingTitle) loadingTitle.textContent = "Tudo pronto!";
             if (loadingDetails) loadingDetails.textContent = "";
+            if (loadingProgress) loadingProgress.textContent = "";
             if (progressBarFill) progressBarFill.style.width = "100%";
             const shineEffect = document.querySelector('.shine-effect');
             if (shineEffect) shineEffect.style.display = 'none';

@@ -12,7 +12,9 @@
 <div class="app-container">
     <div class="pageBody">
         <div class="tabs">
-            <div data-code="basics" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-diamond"></i>Geral</div>
+            <div data-code="fast-config" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-diamond"></i>Configurações Rápidas</div>
+            <p class="sep-bar"></p>
+            <div data-code="basics" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-diamond"></i>Geral</div>
             <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i>Página inicial</div>
             <div data-code="updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i>Atualizações</div>
             <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-half-stroke"></i>Aparência</div>
@@ -22,7 +24,54 @@
             <div data-code="about" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-info"></i>Locais</div>
         </div>
         <p class="sep-bar-v"></p>
-        <div id="basics" class="tab-configs active">
+        <div id="fast-config" class="tab-configs active">
+            <p class="sep">Mostrar/ocultar páginas</p>
+            <div class="config-item">
+                <p>Mostrar "Backlog de Jogos" em Home</p>
+                <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
+            </div>
+            <div class="config-item">
+                <p>Mostrar "Notas" em Home</p>
+                <a class="toggle" data-code="notes_on_home" onclick="toggleConfig(this)"></a>
+            </div>
+            <div class="config-item">
+                <p>Mostrar "Fortnite" em Home</p>
+                <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
+            </div>
+            <p class="sep">Destaque</p>
+            <div class="config-item featured">
+                <div class="featured-selector-div">
+                    <select id="featured-selector">
+                        <option value="none">Nada</option>
+                        <option value="playing_now">Jogando no momento</option>
+                        <option value="fn_fast_edit">Fortnite BR: Edição rápida</option>
+                    </select>
+                    <div class="featuredSelector-btn">
+                        <span id="featuredSelector-btn-name"></span>
+                    </div>
+                    <ul class="featuredSelector-select"></ul>
+                </div>
+            </div>
+            <p class="sep">Ferramentas</p>
+            <div class="syncAssets">
+                <div id="syncAssets-btn" class="btn" onclick="syncAssets()">Sincronizar assets</div>
+                <p id="syncAssets-text"></p>
+            </div>
+            <div class="checkUpdates">
+                <div id="checkUpdates-btn" class="btn" onclick="checkUpdates()">Verificar atualizações</div>
+                <p id="checkUpdates-text"></p>
+            </div>
+            <div class="config-item themes">
+                <div class="theme-selector-div">
+                    <select id="theme-selector"></select>
+                    <div class="themeSelector-btn">
+                        <span></span><p class="sep">Temas</p>
+                    </div>
+                    <ul class="themeSelector-select"></ul>
+                </div>
+            </div>
+        </div>
+        <div id="basics" class="tab-configs">
             <p class="sep">Inicialização</p>
             <div class="config-item">
                 <p>Maximizar app na inicialização</p>
@@ -67,9 +116,18 @@
                 <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
             </div>
             <p class="sep">Destaque</p>
-            <div class="config-item">
-                <p>Mostrar "Jogando no momento" em Home</p>
-                <a class="toggle" data-code="playing_now_on_home" onclick="toggleConfig(this)"></a>
+            <div class="config-item featured">
+                <div class="featured-selector-div">
+                    <select id="featured-selector">
+                        <option value="none">Nada</option>
+                        <option value="playing_now">Jogando no momento</option>
+                        <option value="fn_fast_edit">Fortnite BR: Edição rápida</option>
+                    </select>
+                    <div class="featuredSelector-btn">
+                        <span id="featuredSelector-btn-name"></span>
+                    </div>
+                    <ul class="featuredSelector-select"></ul>
+                </div>
             </div>
         </div>
         <div id="aparencia" class="tab-configs">

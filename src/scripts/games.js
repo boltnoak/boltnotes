@@ -326,19 +326,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.getElementById('playingNowSection-toggle').className = "fa-solid fa-angle-down";
 document.querySelector('.playingNow-panel').style.display = "none";
-
-const playingNowTitle = document.getElementById('playingNowSection-title');
-
-playingNowTitle.addEventListener('click', () => {
-  const toggle = document.getElementById('playingNowSection-toggle');
-  const platingNow = document.querySelector('.playingNow-panel');
-  const view = document.getElementById('view-games');
-
-  if (toggle.className === "fa-solid fa-angle-up") {
-    toggle.className = "fa-solid fa-angle-down";
-    platingNow.style.display = "none";
-  } else {
-    toggle.className = "fa-solid fa-angle-up";
-    platingNow.style.display = "flex";
-  } 
-});

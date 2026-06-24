@@ -76,12 +76,11 @@ async function loadLatestFN() {
         const assetDir = await window.api.load('assets://');
         const seasons = await window.api.fortnite.getSeasons();
 
-        const latest =
-            getLatestSeason(seasons);
+        const latest = getLatestSeason(seasons);
 
         if (!latest) return;
 
-        const latestPath = `assets://${latest.key}.jpg`;
+        const latestPath = `assets://${latest.key}-lobby.jpg`;
 
         console.log(`Temporada mais recente do Fortnite: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
 
@@ -91,7 +90,7 @@ async function loadLatestFN() {
             img.src = latestPath;
             document.querySelector('.shine-effect-v').style.display = "none";
         } 
-        // else if (banner && latestPath) { banner.style.backgroundImage = `url('${latestPath}')`}
+        else if (banner && latestPath) { banner.style.backgroundImage = `url('${latestPath}')`}
 
     } catch (err) {
         console.error("Erro ao inicializar:", err);

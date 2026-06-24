@@ -19,14 +19,16 @@ header {
     width: 100%;
 }
 .sidebar {
-    width: 25%;
+    width: 30%;
+    flex: 1;
+    padding: 1vh;
     margin-bottom: 6.5vh;
     justify-content: space-between;
     display: flex;
     flex-direction: column;
 }
 .sep-bar-v {
-    margin: 0 .2vw;
+    margin: 0;
     border: solid .4vh rgba(25,25,25,.4);
     border-radius: 1vh;
     justify-content: center;
@@ -35,24 +37,24 @@ header {
 /* Painel de jogando no momento */
 #playingNowSection-title {
     display: flex;
+    justify-content: center;
+    text-align: center;
     color: white;
     font-family: 'Montserrat';
-    font-size: 2.3vh;
+    font-size: 2.6vh;
     font-weight: 600;
-    margin: 2vh 2.5vw;
+    margin: 1vh 0;
     padding: 0;
-    width: max-content;
+    width: 100%;
     cursor: pointer;
     user-select: none;
-    text-align: center;
-    justify-content: center;
-    gap: .6vw;
 }
 #playingNowSection-title p {
-    margin: 0;
+    margin: 0 .5vw 0 0;
 }
-.fa-solid.fa-gamepad {
-    justify-self: center;
+#playingNowSection-title i {
+    margin: 0 .5vw 0 0;
+    align-self: center;
 }
 .playingNow-panel {
     gap: 2vh;
@@ -268,7 +270,7 @@ header {
 /* Jogos */
 .game {
     width: 30vw;
-    background-color: rgba(20, 20, 20, 0.2);
+    background-color: var(--tab);
     border-radius: 1.4vh;
     overflow: hidden;
 }
@@ -289,7 +291,7 @@ header {
     flex: 1;
     font-family: 'Montserrat';
     font-weight: 700;
-    color: white;
+    color: var(--text);
     margin: 0;
 }
 /* Status dos jogos */

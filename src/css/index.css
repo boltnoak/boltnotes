@@ -93,8 +93,20 @@ header {
     transform: translateY(0);
     background-color: rgba(30,30,30,.1);
 }
+.page-image-text {
+    position: absolute;
+    justify-content: center;
+    background-image: url(assets://fortnite-logo.png);
+    align-items: center;
+    height: 100%;
+    width: 70%;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0 3.5vw;
+}
 .sep-bar {
-    margin: 1.5vh 0 1.5vh 0;
+    margin: 1.5vh 0 1vh 0;
     justify-content: center;
     border: solid .4vh var(--sep-bar);
     transform: translateY(0);
@@ -147,13 +159,13 @@ header {
 }
 
 /* Painel de Jogos */
-#playingNowSection-title {
+#featured-title {
     display: flex;
     color: var(--text);
     font-family: 'Montserrat';
-    font-size: 4.4vh;
+    font-size: 4vh;
     font-weight: 600;
-    margin: 0 14.8vw .7vh 14.8vw;
+    margin: 0 14.8vw 1vh 14.8vw;
     padding: 0;
     text-align: center;
     flex-direction: row-reverse;
@@ -161,10 +173,10 @@ header {
     align-items: center;
     user-select: none;
 }
-#playingNowSection-title p {
+#featured-title p {
     margin: 0;
 }
-#playingNowSection-title i {
+#featured-title i {
     color: var(--text);
     margin-right: 1vh;
 }
@@ -199,7 +211,7 @@ header {
 /* Jogos */
 .game {
     width: 30vw;
-    background-color: rgba(20, 20, 20, 0.2);
+    background-color: var(--tab);
     border-radius: 1.4vh;
     overflow: hidden;
 }
@@ -224,7 +236,7 @@ header {
     margin: 0;
 }
 /* Status dos jogos */
-.status {
+.playingNow-panel .status {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -279,32 +291,112 @@ header {
 .recent-season {
     display: flex;
     flex-direction: row;
-    width: fit-content;
-    background-color: rgba(20, 20, 20, 0.2);
+    width: max-content;
+    background-color: var(--tab);
     gap: .7vw;
+    width: 50vw;
+    width: fit-content;
     border-radius: 1.8vh;
-    padding: 1vh .65vw;
+    padding: 1.5vh .9vw;
     overflow: hidden;
 }
+#recent-season-name {
+    margin: 0;
+    font-size: 4vh;
+    font-weight: 900;
+    font-family: 'Montserrat';
+}
 .recentSeason-panel img {
-    width: 28vw;
+    width: 22vw;
+    height: 25vh;
+    object-fit: cover;
     border-radius: 1vh;
 }
 .season-status {
-    width: 20vw;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    justify-content: space-between;
 }
-.a {
-    background-color: #494949;
+
+.status {
+    font-family: 'Montserrat';
+    font-weight: 500;
+    font-size: 3vh;
+    margin: 0;
+    color: var(--text);
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    align-items: center;
+    user-select: none;
+}
+.season-status-div {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1vh;
+}
+.level-progress-text {
+    font-family: 'Montserrat';
+    font-weight: 500;
+    font-size: 2.7vh;
+    margin: 0;
+    color: var(--blue);
+    display: flex;
+    gap: .3vw;
+    align-items: center;
+    user-select: none;
+}
+.level-progress {
+    margin: 0 0 0;
+}
+.fa-square-caret-up, .fa-trophy, .fa-calendar-day, .fa-star {
+    font-size: 3vh;
+    color: var(--text);
+}
+.statusLevel-add, .statusWin-add {
+    margin-left: .6vw;
+}
+.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus {
+    font-size: 2vh;
+    background: var(--btn);
+    color: var(--text);
+    padding: .8vh .15vw .8vh .5vw;
+    border-radius: .8vh;
+    transition: background .1s linear;
+    display: flex;
+}
+.statusLevel-add:hover, .statusLevel-minus:hover, .statusWin-add:hover, .statusWin-minus:hover {
+    background: var(--btn-hover);
+    cursor: pointer;
+}
+.fa-square-caret-up, .fa-trophy {
+    margin-right: .25vw;
+}
+.status-level {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+.status-win {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+.level-progress-bar {
+    background-color: var(--tag);
     height: 1.2vh;
     width: 100%;
     overflow: hidden;
     padding: 0;
-    margin: 0;
+    margin: 1vh 0 0 0;
     border-radius: 1vh;
 }
-.b {
+.level-progress-bar-fill {
     background-color: var(--blue);
-    width: 50%;
+    width: 0%;
     padding: 0;
     height: 100%;
     margin: 0;
@@ -314,7 +406,8 @@ header {
     flex-direction: row;
     align-items: center;
     font-family: 'Montserrat';
-    font-weight: 700;
+    font-weight: 500;
+    font-size: 2.7vh;
     margin: 1vh 0 .4vh 0;
     object-fit: cover;
 }

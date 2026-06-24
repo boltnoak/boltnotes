@@ -660,7 +660,10 @@ async function fetchWithCache(url, cacheFileName) {
 }
 
 ipcMain.handle('updates:check-update', async () => {
-  autoUpdater.forceDevUpdateConfig = true;
+  if (!app.isPackaged) {
+    autoUpdater.forceDevUpdateConfig = true;
+  }
+  
   try {
     const result = await autoUpdater.checkForUpdates();
     
