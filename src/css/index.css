@@ -428,7 +428,7 @@ header {
     backdrop-filter: blur(1px);
 }
 #changelog-popup i {
-    color: var(--text);
+    color: var(--text-light-gray);
 }
 .changelog-content {
     background-color: var(--bg);

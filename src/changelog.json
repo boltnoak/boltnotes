@@ -1,4 +1,5 @@
 [
+    "Removida a verificação de atualizações e sincronização de assets que acontecia a cada 30 minutos.",
     "# Correções",
-    "Corrigido o botão 'Verificar atualizações' não atualizar."
+    "Função de verificar atualizações agora reporta corretamente."
 ]

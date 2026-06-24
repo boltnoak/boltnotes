@@ -539,19 +539,6 @@ if (!gotTheLock) {
           console.error(err);
           win.webContents.send('assets-error', err.message);
         });
-
-        setInterval(() => {
-          if (app.isPackaged) {
-            autoUpdater.checkForUpdates();
-          }
-          syncAssets()
-            .then(() => {
-              win?.webContents.send('assets-ready');
-            })
-            .catch(err => {
-              console.warn('Assets - Erro na verificação periódica:', err.message);
-            });
-        }, 30 * 60 * 1000);
     });
 
     win.on('maximize', () => {
