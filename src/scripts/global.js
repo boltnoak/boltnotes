@@ -191,6 +191,38 @@ initMenu();
 // Detecta se a página atual é a página de entrada (index.html)
 const isIndexPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
 
+async function checkChangelog() {
+    const { shouldShow, version } = await window.electronAPI.changelog.check();
+    if (!shouldShow) return;
+
+    const changes = await window.electronAPI.changelog.get();
+    
+    if (changes && changes.length > 0) {
+        const popup = document.getElementById('changelog-popup');
+        const list = document.getElementById('changelog-list');
+        const title = document.getElementById('changelog-version');
+        const closeBtn = document.getElementById('close-changelog-btn');
+
+        title.innerHTML = `<i class="fa-solid fa-rectangle-list"></i>Mudanças da versão ${version}${title.textContent}`;
+        list.innerHTML = changes.map(line => {
+            if (line.trim().startsWith('#')) {
+                const nomeDoTopico = line.replace('#', '').trim();
+                return `<div class="changelog-category">
+                    <i class="fa-solid fa-circle-dot"></i>
+                    <h4 class="changelog-category-text">${nomeDoTopico}:</h4>
+                </div>`;
+            }
+            return `<div class="changelog-topic"><li><i class="fa-solid fa-caret-right"></i>${line}</li></div>`;
+        }).join('');
+        popup.style.display = 'flex';
+
+        closeBtn.addEventListener('click', async () => {
+            popup.style.display = 'none';
+            await window.electronAPI.changelog.markSeen(); 
+        }, { once: true });
+    }
+}
+
 window.addEventListener('load', async () => {
     const loadingScreen = document.getElementById('loading-screen');
     const startingScreen = document.getElementById('starting-screen');
@@ -207,6 +239,7 @@ window.addEventListener('load', async () => {
             setTimeout(() => {
                 if (loadingScreen) loadingScreen.remove();
                 if (startingScreen) startingScreen.remove();
+                checkChangelog();
             }, 400);
         } else {
             if (startingScreen) {
@@ -225,7 +258,7 @@ window.addEventListener('load', async () => {
                 if (!loadingDetails || !progressBarFill) return;
                 
                 const now = Date.now();
-                if (now - lastUpdate < 200) return;
+                if (data.percent !== 100 && (now - lastUpdate < 200)) return;
                 lastUpdate = now;
 
                 const mb = (data.downloaded / 1024 / 1024).toFixed(1);
@@ -244,6 +277,8 @@ window.addEventListener('load', async () => {
             if (loadingTitle) loadingTitle.textContent = "Tudo pronto!";
             if (loadingDetails) loadingDetails.textContent = "";
             if (progressBarFill) progressBarFill.style.width = "100%";
+            // const shineEffect = document.querySelector('.shine-effect');
+            // if (shineEffect) shineEffect.style.display = 'none';
             
             if (startingScreen) {
                 setTimeout(() => {
@@ -251,8 +286,9 @@ window.addEventListener('load', async () => {
                     setTimeout(() => {
                         startingScreen.style.display = "none";
                         startingScreen.remove();
+                        checkChangelog();
                     }, 500);
-                }, 500);
+                }, 400);
             }
         });
 

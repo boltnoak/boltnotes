@@ -2,7 +2,7 @@
 
 .pageBody {
     font-family: 'Montserrat';
-    color: white;
+    color: var(--text);
     display: flex;
     flex-direction: row;
     transform: translateY(6.5vh);
@@ -13,18 +13,37 @@ header {
 }
 
 /* Básico */
-.boltnotes-logo {
-    transform: translateX(20vw) translateY(20vh);
+.boltnotes-logo-div {
     display: flex;
     justify-content: center;
-    height: 32vh;
+    align-items: center;
+    height: 80%; 
+    width: 100%;
+}
+
+.notes-logo {
+  font-family: 'Vazirmatn';
+  font-weight: 100;
+  letter-spacing: .1rem;
+  font-size: 20vh;
+  text-transform: uppercase;
+  margin: 0 0 2vh 0;
+  user-select: none;
+}
+.boltnotes-logo {
+    height: 100%; 
+    width: 60vh;
+    background-color: var(--text);
+    mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
+    -webkit-mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
+    user-select: none;
 }
 .sep-bar-v {
-    margin: 0 1vw 0 0;
+    margin: 0 1vw 7.5vh 1vw;
 }
 .note-sep-bar {
     margin: 0 0 1.8vh 0;
-    border: solid .4vh rgba(25,25,25,.4);
+    border: solid .4vh var(--sep-bar);
     display: none;
 }
 
@@ -33,7 +52,8 @@ header {
     display: flex;
     flex-direction: column;
     height: 87vh;
-    padding: 0 1vw;
+    width: 23%;
+    padding: 0 0 0 1vw;
     position: relative;
     justify-content: space-between;
 }
@@ -50,14 +70,13 @@ header {
 .tab {
     display: flex;
     font-size: 2vh;
-    font-weight: 400;
+    font-weight: 500;
     flex-direction: row;
     background-color: var(--tab);
-    padding: 2vh 1.5vh;
+    padding: 2vh 1vw;
     border-radius: 1vh;
     cursor: pointer;
     margin: .5vh 0;
-    width: 15.4vw;
     justify-content: space-between;
     align-items: center;
     transition: background .1s linear;
@@ -72,6 +91,7 @@ header {
 #delete-note {
     transition: color .1s linear;
     margin-right: .45vh;
+    color: var(--text);
 }
 #delete-note:hover {
     color: var(--red);
@@ -81,42 +101,47 @@ header {
     flex-direction: row;
     left: 0;
     bottom: 0;
-    margin: 0 0 1vh 0;
+    margin: 1vh 0;
     overflow-y: auto;
     align-items: center;
 }
 #newNote-name {
     font-size: 2vh;
-    font-weight: 400;
+    font-weight: 500;
     font-family: 'Montserrat';
-    background-color: rgba(22, 22, 22, 0.329);
+    background-color: var(--tab);
     border: none;
-    padding: 2vh 1.4vh;
-    color: white;
+    color: var(--text);
+    flex: 1;
+    padding: 2vh 1vw;
     border-radius: 1.3vh;
-    width: 11.8vw;
     transition: border .1s linear;
     margin-right: .4vw;
     z-index: 98;
 }
+#newNote-name::placeholder {
+    color: var(--text);
+    opacity: .5;
+}
 #newNote-add {
-    background-color: rgb(20, 20, 20);
-    padding: 2.4vh 2vh;
+    background-color: var(--btn);
+    padding: 2vh 1vw;
     border-radius: 1.3vh;
     text-align: center;
     transition: background .15s linear;
+    color: var(--text);
     cursor: pointer;
     z-index: 98;
 }
 #newNote-add:hover {
-    background-color: rgb(25,25,25);
+    background-color: var(--btn-hover);
 }
 
 /* Visualização de notas */
 .note-view {
     display: flex;
     flex-direction: column;
-    width: 81%;
+    width: 70%;
 }
 .title-bar {
     display: flex;
@@ -138,33 +163,39 @@ header {
 }
 #title-note:focus {
     padding: .5vh;
-    border: solid .4vh rgba(0, 110, 194, 0.6);
+    border: solid .4vh var(--blue);
     border-radius: 1vh;
     outline: none;
 }
 #edit-note {
     cursor: pointer;
+    color: var(--text);
+    font-size: 3vh;
 }
 #content {
-    margin: 0 1.5vw;
+    margin: 0 .5vw;
     font-size: 2.5vh;
     white-space: pre-wrap;
     caret-color: var(--text);
+    user-select: text;
+    height: 91.8%;
 }
 /* Texto da visualização de notas */
 #content:focus {
   outline: none;
 }
 #content a {
-    color: rgb(0,135,230);
+    color: var(--blue);
     text-decoration: none;
     font-weight: 400;
     margin: 0;
-    transition: color .1s;
+    transition: opacity .1s;
+    opacity: .75;
 }
 #content a:hover {
-    color: rgb(60,170,255);
+    color: var(--blue);
     text-decoration: underline;
+    opacity: 1;
 }
 #content p {
     margin: .5vh;

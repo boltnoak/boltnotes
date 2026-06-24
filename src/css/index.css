@@ -32,6 +32,7 @@
 }
 header {
     margin: 1vh 0;
+    z-index: 97;
 }
 
 /* Banner */
@@ -39,7 +40,7 @@ header {
     height: 18vh;
     background-image: url(assets://default-banner.jpg);
     background-position: center;
-    background-size: cover;
+    background-size: 300%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -47,8 +48,19 @@ header {
     z-index: 1;
     padding: 1.5vh;
 }
-.logo-banner {
+.boltnotes-logo-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 16vh; 
+    width: fit-content;
+}
+.boltnotes-logo {
     height: 16vh;
+    width: 16vw;
+    background-color: white;
+    mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
+    -webkit-mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
     user-select: none;
 }
 
@@ -82,11 +94,10 @@ header {
     background-color: rgba(30,30,30,.1);
 }
 .sep-bar {
-    margin: 1.8vh 0 1vh 0;
+    margin: 1.5vh 0 1.5vh 0;
     justify-content: center;
     border: solid .4vh var(--sep-bar);
     transform: translateY(0);
-    width: 0;
 }
 .page-image img {
     object-fit: cover;
@@ -310,4 +321,136 @@ header {
 .level-status p, .win-status p {
     padding: 0;
     margin: 0;
+}
+
+
+#changelog-popup {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 98;
+    backdrop-filter: blur(1px);
+}
+#changelog-popup i {
+    color: var(--text);
+}
+.changelog-content {
+    background-color: var(--bg);
+    border-radius: 1.5vh;
+    padding: 1.5vh 1vw 2vh 1vw;
+    max-width: max-content;
+    width: 100%;
+    font-family: 'Montserrat';
+    color: var(--text);
+    animation: changelog-pop 0.25s ease;
+}
+
+@keyframes changelog-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+.changelog-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .5vw;
+    margin: 0;
+}
+.changelog-sep-bar {
+    margin: .25vh 0 1.2vh 0;
+    justify-content: center;
+    border: solid .4vh var(--sep-bar);
+    transform: translateY(0);
+    width: 99%;
+}
+#changelog-version {
+    font-size: 4vh;
+    font-weight: 900;
+    margin: 0;
+    color: var(--text);
+    display: flex;
+    flex-direction: row;
+    gap: .5vw;
+    width: max-content;
+    align-items: center;
+    white-space: nowrap;
+}
+.changelog-category {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .3vw;
+    margin: 0;
+    padding: 0;
+}
+.changelog-category {
+    margin: 0;
+    padding: 0;
+}
+.changelog-category-text {
+    font-size: 4vh;
+    font-weight: 900;
+    margin: 0;
+    padding: 0;
+    color: var(--text);
+}
+#changelog-version i {
+    font-size: 4vh;
+}
+.changelog-topic {
+    display: flex;
+    flex-direction: row;
+    gap: .5vw;
+    align-items: center;
+}
+#changelog-list {
+    list-style: none;
+    margin: 0 0 0 .5vw;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 35vh;
+    max-height: 35vh;
+    overflow-y: auto;
+    gap: .5vh;
+    user-select: text;
+    cursor: default;
+}
+#changelog-list i {
+    font-size: 2.5vh;
+    margin-right: .4vw;
+    width: 2.6%;
+}
+#changelog-list li {
+    font-size: 2.2vh;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.4;
+    width: 30vw;
+    position: relative;
+    align-items: center;
+}
+#close-changelog-btn {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--text);
+    font-size: 3vh;
+    margin: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border 0.15s linear;
+    border: solid .6vh transparent;
+    padding: .5vh .3vw;
+}
+#close-changelog-btn:hover {
+    border: solid .6vh var(--text);
 }

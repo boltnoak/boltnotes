@@ -46,12 +46,12 @@
 .tab i {
     font-size: 2.6vh;
     color: var(--text);
-    margin: 0 .3vw 0 0;
+    margin: 0 .4vw 0 0;
 }
 .i {
     font-size: 2.6vh;
     color: var(--text);
-    margin: 0 .3vw 0 0;
+    margin: 0 .4vw 0 0;
     height: 2.6vh;
 }
 .tab.active {
@@ -183,7 +183,7 @@
     display: flex;
     align-items: center;
     gap: .5vh;
-    padding: 1.5vh .5vw;
+    padding: .8vh .2vw;
     color: var(--text);
     cursor: pointer;
     transition: border 0.2s;
@@ -205,9 +205,41 @@
 /* Estilo da bolinha de preview da cor */
 .theme-color-preview {
     height: 12vh;
-    width: 12vw;
+    width: 12.7vw;
     border-radius: 1vh; /* Torna redondo */
     display: inline-block;
     border: 1px solid var(--text-dark-gray); /* Bordinha sutil para cores muito escuras não sumirem */
     flex-shrink: 0; /* Impede a bolinha de achatar se o texto for grande */
+}
+
+.btn {
+    font-family: 'Montserrat';
+    font-family: 2vh;
+    font-weight: 600;
+    background-color: var(--btn-color);
+    padding: 1vh .7vw;
+    border-radius: 1vh;
+    cursor: pointer;
+    transition: background .15s linear;
+    width: fit-content;
+}
+.checkUpdates {
+    margin: .5vh 0 0 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .8vw;
+}
+#checkUpdates-text {
+    font-family: 'Montserrat';
+    font-family: 2vh;
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    transition: color .15s linear;
+    width: fit-content;
+}
+.btn:hover {
+    background-color: var(--btn-hover-color);
 }

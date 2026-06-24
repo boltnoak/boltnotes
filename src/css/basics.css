@@ -497,3 +497,7 @@ footer {
     text-decoration: none;
     background-color: transparent;
 }
+::selection {
+  background-color: var(--blue);
+  color: var(--text);
+}

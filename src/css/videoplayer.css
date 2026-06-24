@@ -16,7 +16,7 @@
     justify-content: center;
     flex-direction: column;
     z-index: 99;
-    background: rgba(0,0,0,.7);
+    background: rgba(0,0,0,.6);
     margin: 0;
     transform: translateY(6.4vh);
     height: 86.7vh;
@@ -24,6 +24,7 @@
     animation: popupBGIn .5s ease forwards;
     overflow: hidden;
     opacity: 0;
+    backdrop-filter: blur(4px);
 }
 .video-popup.open #video-player {
     animation: popupIn .3s ease forwards;

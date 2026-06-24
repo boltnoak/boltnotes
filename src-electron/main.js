@@ -7,6 +7,7 @@ const path = require('path');
 const os = require('os');
 const log = require('electron-log');
 const extract = require('extract-zip');
+const { exec } = require('child_process');
 
 const ASSETS_DIR = path.join(
   app.getPath('userData'),
@@ -59,11 +60,8 @@ function downloadFile(url, destination, onProgress, retries = 3) {
 
         response.pipe(file);
 
-        // VERIFICAÇÃO CRÍTICA AQUI
-        file.on('finish', () => {
+        file.on('close', () => {
           file.close(() => {
-            // Se o servidor informou o tamanho total e o que baixamos não bate certo,
-            // o arquivo foi cortado e está corrompido.
             if (total && downloaded !== total) {
               fs.unlink(destination, () => {}); // Apaga o lixo
               if (triesLeft > 0) {
@@ -73,6 +71,7 @@ function downloadFile(url, destination, onProgress, retries = 3) {
                 reject(new Error(`Download incompleto e corrompido: obtidos ${downloaded} de ${total} bytes.`));
               }
             } else {
+              if (onProgress && total) onProgress(total, total);
               resolve();
             }
           });
@@ -140,13 +139,31 @@ async function downloadPackage(name) {
   process.stdout.write('\n');
 
   try {
-    await extract(zipPath, { dir: ASSETS_DIR });
+    await new Promise((resolve, reject) => {
+      exec(`unzip -o "${zipPath}" -d "${ASSETS_DIR}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.warn('Assets - Unzip nativo falhou ou não instalado, tentando extract-zip...');
+          extract(zipPath, { dir: ASSETS_DIR })
+            .then(resolve)
+            .catch(reject);
+        } else {
+          console.log(`Assets - Extração via terminal concluída.`);
+          resolve();
+        }
+      });
+    });
+    
+    console.log(`Assets - Extração de ${name} finalizada com sucesso!`);
   } catch (err) {
     console.error(`Erro ao extrair ${name}:`, err);
     throw err;
   } finally {
-    if (fs.existsSync(zipPath)) {
-      fs.unlinkSync(zipPath);
+    try {
+      if (fs.existsSync(zipPath)) {
+        fs.unlinkSync(zipPath);
+      }
+    } catch (e) {
+      console.warn(`Aviso: não foi possível apagar o zip temporário ${name}:`, e.message);
     }
   }
 }
@@ -201,15 +218,15 @@ async function syncAssets() {
   try {
     remote = await getRemoteManifest();
   } catch (err) {
-    const local = getLocalManifest();
+    local = getLocalManifest();
     if (local) {
-      console.warn('[Assets] Offline, usando assets locais.');
-      return;
+      console.warn('Assets - Offline, usando assets locais.');
     }
     throw new Error(`Falha ao buscar manifest de assets remoto.`);
   }
 
   local = getLocalManifest() || { version: 0, packages: [] };
+  let changed = false;
 
   for (const pkg of remote.packages) {
     const localPkg = local.packages.find(p => p.name === pkg.name);
@@ -231,13 +248,22 @@ async function syncAssets() {
         local.packages.push(pkg);
       }
 
+      changed = true;
       fs.writeFileSync(LOCAL_MANIFEST, JSON.stringify(local, null, 2));
       console.log(`Assets - ${pkg.name} salvo no manifest local`);
 
     } catch (err) {
       console.error(`Assets - Erro ao baixar ${pkg.name}:`, err.message);
+      throw err;
     }
   }
+  if (changed || local.version !== remote.version) {
+    local.version = remote.version;
+    fs.writeFileSync(LOCAL_MANIFEST, JSON.stringify(local, null, 2));
+  }
+
+  console.log('Assets - Sincronização concluída com sucesso!');
+  return true;
 }
 
 
@@ -270,6 +296,7 @@ function startFolders() {
         DOCUMENTS,
         path.join(DOCUMENTS, 'Fortnite'),
         path.join(DOCUMENTS, 'Games'),
+        path.join(DOCUMENTS, 'Games', 'Custom Covers'),
         path.join(DOCUMENTS, 'Notes')
     ];
 
@@ -319,6 +346,7 @@ function getConfig() {
     notes_on_home: true,
     fortnite_on_home: true,
     show_version: true,
+    last_seen_version: null,
     theme: 'dark'
   };
   try {
@@ -414,6 +442,7 @@ if (!gotTheLock) {
         '.png': 'image/png',
         '.jpg': 'image/jpeg',
         '.jpeg': 'image/jpeg',
+        '.svg': 'image/svg+xml',
         '.mkv': 'video/x-matroska',
         '.mp4': 'video/mp4'
       };
@@ -621,6 +650,23 @@ async function fetchWithCache(url, cacheFileName) {
     return null;
   }
 }
+
+ipcMain.handle('updates:check-update', async () => {
+  autoUpdater.forceDevUpdateConfig = true;
+  try {
+    const result = await autoUpdater.checkForUpdates();
+    
+    if (result && result.updateInfo) {
+      return { status: 'available', version: result.updateInfo.version };
+    } else {
+      return { status: 'up-to-date' };
+    }
+  } catch (error) {
+    console.error(error);
+    return { status: 'up-to-date' }; 
+  }
+})
+
 ipcMain.handle('fortnite:fetch-trailers', async () => {
     return await fetchWithCache(
         'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers.json',
@@ -1037,4 +1083,35 @@ ipcMain.handle('themes:get', (_, themeName) => {
 ipcMain.handle('themes:get-current', () => {
     const config = getConfig();
     return config.theme || 'dark';
+});
+
+ipcMain.handle('changelog:check', () => {
+    const config = getConfig();
+    const currentVersion = app.getVersion();
+    const lastSeenVersion = config.last_seen_version || null;
+
+    return { shouldShow: lastSeenVersion !== currentVersion, version: currentVersion };
+});
+ipcMain.handle('changelog:mark-seen', async () => {
+    const configPath = path.join(app.getPath('userData'),'config.json');
+    const currentConfig = getConfig();
+    currentConfig.last_seen_version = app.getVersion();
+    
+    try {
+        await fs.promises.writeFile(configPath, JSON.stringify(currentConfig, null, 2), 'utf-8');
+        return true;
+    } catch (error) {
+        console.error("Erro ao salvar config:", error);
+        return false;
+    }
+});
+ipcMain.handle('changelog:get', async () => {
+  const changelogPath = path.join(BUNDLE, 'changelog.json');
+  try {
+    const data = await fs.promises.readFile(changelogPath, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Erro ao ler changelog:", error);
+    return null;
+  }
 });

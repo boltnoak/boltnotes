@@ -61,6 +61,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('assets-error', (_, msg) => callback(msg));
   },
 
+  changelog: {
+    check: () => ipcRenderer.invoke('changelog:check'),
+    markSeen: () => ipcRenderer.invoke('changelog:mark-seen'),
+    get: () => ipcRenderer.invoke('changelog:get')
+  },
+
+  updates: {
+    checkUpdates: () => ipcRenderer.invoke('updates:check-update')
+  },
+
   onUpdateStatus: (callback) => ipcRenderer.on('update-status', (event, msg) => callback(msg)),
   onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, percent) => callback(percent)),
 

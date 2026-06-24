@@ -12,7 +12,7 @@
 <div class="app-container">
     <div class="pageBody">
         <div class="tabs">
-            <div data-code="basics" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-certificate"></i>Básico</div>
+            <div data-code="basics" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-diamond"></i>Geral</div>
             <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i>Página inicial</div>
             <div data-code="updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i>Atualizações</div>
             <!-- <p class="sep-bar"></p>
@@ -75,9 +75,14 @@
             </div>
         </div>
         <div id="updates" class="tab-configs">
-            <p class="sep">Versão atual:</p>
+            <p class="sep">Versão atual</p>
             <div class="config-item version">
                 <span id="app-version"></span>
+            </div>
+            <p class="sep">Atualizar</p>
+            <div class="checkUpdates">
+                <div id="checkUpdates-btn" class="btn" onclick="checkUpdates()">Verificar atualizações</div>
+                <p id="checkUpdates-text"></p>
             </div>
         </div>
         <div id="fortnite" class="tab-configs">

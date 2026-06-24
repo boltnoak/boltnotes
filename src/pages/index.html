@@ -12,7 +12,9 @@
 <div class="app-container">
     <div class="pageBody">
     <div class="banner">
-        <img class="logo-banner" src="assets://boltnotes-logo.png">
+        <div class="boltnotes-logo-div">
+            <div class="boltnotes-logo"></div>
+        </div>
     </div>
     <div class="banner-bar"></div>
     <div class="pages-section">
@@ -83,6 +85,17 @@
             <i id="config" class="fa-solid fa-gear" data-tooltip="Preferencias"></i>
         </a>
     </header>
+
+    <div id="changelog-popup">
+        <div class="changelog-content">
+            <div class="changelog-title">
+                <h2 id="changelog-version"></h2>
+                <i id="close-changelog-btn" class="fa-solid fa-xmark"></i>
+            </div>
+            <p class="changelog-sep-bar"></p>
+            <ul id="changelog-list"></ul>
+        </div>
+    </div>
 
     <div id="loading-screen">
         <div class="spinner"></div>

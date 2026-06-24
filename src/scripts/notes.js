@@ -66,6 +66,7 @@ fetch(`documents://notes.data`)
         
         titleBar.style.display = 'flex';
       });
+      verificarHashEAbriNota();
     });
 
     const activeTab = document.querySelector(".tab.active");
@@ -128,9 +129,12 @@ function loadNote(tab) {
 
       renderContent();
 
+      document.title = `BoltNotes — ${name}`;
       document.getElementById('title-note').textContent = name;
       document.getElementById('menuTitle').textContent = document.title;
       document.querySelector('.note-sep-bar').style.display = 'flex';
+
+      window.location.hash = safeName;
     })
     .catch(err => console.error("Erro ao carregar a nota:", err));
 }
@@ -141,7 +145,41 @@ function deleteNote(el) {
   window.api.notes.delete(name);
   window.location.reload();
 }
+function verificarHashEAbriNota() {
+  const hash = window.location.hash.substring(1);
 
+  if (hash) {
+    const nomeDaNotaSalva = decodeURIComponent(hash);
+    const abas = document.querySelectorAll('.tab');
+
+    const abaCorrespondente = Array.from(abas).find(tab => {
+      return tab.firstChild.textContent.trim() === nomeDaNotaSalva;
+    });
+
+    if (abaCorrespondente) {
+      abaCorrespondente.classList.add("active");
+
+      document.title = `BoltNotes — ${nomeDaNotaSalva}`;
+      document.getElementById('title-note').textContent = nomeDaNotaSalva;
+      document.getElementById('menuTitle').textContent = nomeDaNotaSalva;
+      
+      // 3. Exibe as barras que estavam ocultas
+      titleBar.style.display = 'flex';
+
+      loadNote(abaCorrespondente);
+    } else {
+      console.log(`Aba não encontrada para a hash: ${nomeDaNotaSalva}`);
+    }
+  }
+  // } else {
+  //   const primeiraAba = document.querySelector(".tab");
+  //   if (primeiraAba) {
+  //     primeiraAba.classList.add("active");
+  //     loadNote(primeiraAba);
+  //     titleBar.style.display = 'flex';
+  //   }
+  // }
+}
 function renderContent() {
   if (editing) {
     content.innerHTML = rawContent.replace(/\n/g, "<br>");
@@ -155,7 +193,6 @@ function renderContent() {
 
   content.contentEditable = editing;
 }
-
 content.addEventListener("click", (e) => {
   const link = e.target.closest('a');
   if (link) {
@@ -183,7 +220,7 @@ if (newBtn) {
 
     name = name.trim();
 
-    if (!/^[a-z0-9 ]+$/i.test(name)) {
+    if (!/^[a-z0-9 áéíóúâêîôûãõçíàèìòù]+$/i.test(name)) {
       alert("Nome inválido");
       return;
     }
@@ -194,6 +231,8 @@ if (newBtn) {
       await window.api.notes.create(name);
       await loadPages();
 
+      const safeNewName = encodeURIComponent(name);
+      window.location.hash = safeNewName;
       window.location.reload();
     } catch (err) {
       console.error("Erro:", err);
@@ -267,14 +306,23 @@ async function finishTitleExecution() {
   }
 
   if (!/^[a-z0-9 ]+$/i.test(newName)) {
-    alert("Nome inválido. Use apenas letras, números e espaços.");
-    noteTitleElement.textContent = cleanOldTitleName;
-    return;
+    const invalid = newName.match(/[^a-z0-9 áéíóúâêîôûãõçíàèìòù]/gi);
+
+    if (invalid) {
+      const todosProibidos = "! @ # $ % % & * ( ) _ + - = { } [ ] ^ ~ ; : . , / ? \\ | ' \"";
+
+      alert(`Nome inválido.\n\nCaracteres não permitidos: ${todosProibidos}`);
+      
+      noteTitleElement.textContent = cleanOldTitleName;
+      return;
+    }
   }
 
   try {
     console.log("Enviando para o main:", cleanOldTitleName, newName);
     await window.electronAPI.notes.rename(cleanOldTitleName, newName);
+    const safeNewName = encodeURIComponent(newName);
+    window.location.hash = safeNewName;
     window.location.reload();
   } catch (err) {
     console.error("Erro ao renomear o título:", err);

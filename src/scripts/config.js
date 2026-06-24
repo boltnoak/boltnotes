@@ -123,3 +123,25 @@ async function changeTheme(selectEl) {
 }
 
 loadInfo();
+
+async function checkUpdates() {
+  const statusElemento = document.getElementById('checkUpdates-text');
+  
+  statusElemento.innerText = "Verificando...";
+  statusElemento.style.color = "var(--text)";
+
+  try {
+    const resposta = await window.updates.checkUpdates();
+    
+    if (resposta.status === 'available') {
+      statusElemento.innerText = `Nova versão disponível!`;
+    statusElemento.style.color = "var(--text-gray)";
+    } else {
+      statusElemento.innerText = "Já atualizado.";
+    statusElemento.style.color = "var(--text-dark-gray)";
+    }
+  } catch (erro) {
+    statusElemento.innerText = "Erro ao verificar.";
+    statusElemento.style.color = "var(--red)";
+  }
+}
