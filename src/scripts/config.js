@@ -230,13 +230,16 @@ async function checkUpdates() {
     const btn = document.getElementById('update-btn');
     if (!text) return;
 
+    let downloadIniciado = false;
+
     text.textContent = 'Verificando atualizações...';
-    text.style.color = 'var(--text)';
+    text.style.color = 'var(--text-light-gray)';
     text.style.opacity = 1;
 
     window.electronAPI.onUpdateProgress((percent) => {
+        downloadIniciado = true;
         text.textContent = `Baixando atualização... ${Math.round(percent)}%`;
-        text.style.color = 'var(--blue)';
+        text.style.color = 'var(--text)';
     });
 
     window.electronAPI.onUpdateReady(() => {
@@ -247,11 +250,14 @@ async function checkUpdates() {
     });
 
     try {
+        const versaoAtual = await window.electronAPI.getAppVersion();
         const result = await window.electronAPI.updates.checkUpdates();
 
-        if (result && result.status === 'available') {
-            text.textContent = `Nova versão v${result.version} encontrada! Baixando...`;
-            text.style.color = 'var(--blue)';
+        if (result && result.status === 'available' && result.version !== versaoAtual) {
+            if (!downloadIniciado) {
+                text.textContent = `Nova versão v${result.version}! Baixando...`;
+                text.style.color = 'var(--text)';
+            }
         } else {
             text.textContent = 'Aplicativo já na versão mais recente.';
             text.style.color = 'var(--blue)';
