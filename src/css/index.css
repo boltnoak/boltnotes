@@ -428,7 +428,7 @@ header {
     backdrop-filter: blur(1px);
 }
 #changelog-popup i {
-    color: var(--text-light-gray);
+    color: var(--text-gray);
 }
 .changelog-content {
     background-color: var(--bg);
@@ -459,7 +459,7 @@ header {
     margin: 0;
 }
 .changelog-sep-bar {
-    margin: .25vh 0 1.2vh 0;
+    margin: .4vh 0 .01vh 0;
     justify-content: center;
     border: solid .4vh var(--sep-bar);
     transform: translateY(0);
@@ -498,6 +498,7 @@ header {
 }
 #changelog-version i {
     font-size: 4vh;
+    color: var(--text);
 }
 .changelog-topic {
     display: flex;
@@ -532,10 +533,12 @@ header {
     position: relative;
     align-items: center;
 }
+#changelog-list li i {
+    color: var(--text-light-gray);
+}
 #close-changelog-btn {
     width: 1.25rem;
     height: 1.25rem;
-    color: var(--text);
     font-size: 3vh;
     margin: 0;
     border-radius: 50%;
@@ -546,4 +549,7 @@ header {
 }
 #close-changelog-btn:hover {
     border: solid .6vh var(--text);
+}
+#close-changelog-btn::before {
+    color: var(--text);
 }

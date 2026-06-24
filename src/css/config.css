@@ -221,28 +221,36 @@
     flex-direction: row;
     justify-content: start;
     align-items: start;
-    gap: .5vw;
+    gap: 0;
+    background-color: var(--btn);
+    width: fit-content;
+    border-radius: 1vh;
+    overflow: hidden;
 }
 .featuredSelector-select li:hover {
     background-color: var(--btn-hover);
+    border-radius: 1vh;
 }
 .featuredSelector-select .active-config {
     background-color: var(--btn-color);
+    border-radius: 1vh;
 }
 .featuredSelector-select .active-config:hover {
     background-color: var(--btn-hover-color);
+    border-radius: 1vh;
 }
 .featuredSelector-select li {
     display: flex;
     align-items: center;
-    padding: 1vh .6vw;
+    padding: 1vh 1.25vw;
+    object-fit: cover;
     color: var(--text);
     cursor: pointer;
     transition: border 0.2s;
     background-color: var(--btn);
     flex-direction: column;
-    transition: background .1s linear;
-    border-radius: 1vh;
+    transition: background .1s linear, border-radius .1s linear;
+    border-radius: 0;
 }
 .featured {
     display: flex;
@@ -299,7 +307,7 @@
     flex-direction: row;
     align-items: center;
     gap: .7vw;
-    margin: 0 0 1vh 0;
+    margin: .25vh 0 1.2vh 0;
 }
 #syncAssets-text {
     display: flex;
