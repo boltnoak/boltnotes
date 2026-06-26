@@ -15,6 +15,7 @@
     --btn-hover: rgb(227,227,227);
     --btn-color: rgb(20, 150, 255);
     --btn-hover-color: rgb(20, 170, 255);
+    --btn-text-color: rgb(0, 75, 127.5);
 
     --tag: rgba(200, 200, 200, 0.75);
 

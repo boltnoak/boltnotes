@@ -1,9 +1,10 @@
 @import url('../fonts/css/all.min.css');
 
 @font-face {
-    font-family: 'HeadingNow';
-    src: url(../fonts/HeadingNowTrial-68Heavy.ttf) format('truetype');
+    font-family: 'Gantari';
+    src: url(../fonts/Gantari-VariableFont.ttf) format('truetype');
     font-display: block;
+    font-stretch: wider;
 }
 @font-face{
     font-family: 'Montserrat';
@@ -528,6 +529,6 @@ footer {
     background-color: transparent;
 }
 ::selection {
-  background-color: var(--blue);
-  color: var(--text);
+  background-color: var(--text-gray);
+  color: var(--bg);
 }

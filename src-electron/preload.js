@@ -52,13 +52,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   checkAssetsStatus: () => ipcRenderer.invoke('assets-check-status'),
   onAssetsProgress: (callback) => {
-    ipcRenderer.on('assets-progress', (_, data) => callback(data));
+    const listener = (_, data) => callback(data);
+    ipcRenderer.on('assets-progress', listener);
+    return () => ipcRenderer.removeListener('assets-progress', listener);
   },
   onAssetsReady: (callback) => {
     ipcRenderer.on('assets-ready', () => callback());
   },
   onAssetsError: (callback) => {
-    ipcRenderer.on('assets-error', (_, msg) => callback(msg));
+    ipcRenderer.on('assets-error', (event, errorMessage) => callback(errorMessage));
   },
 
   changelog: {

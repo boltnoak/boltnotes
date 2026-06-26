@@ -16,19 +16,17 @@ header {
 }
 
 .page-content {
-    width: 100%;
+    width: 78%;
 }
 .sidebar {
     width: 30%;
     flex: 1;
-    padding: 1vh;
-    margin-bottom: 6.5vh;
+    margin: 0 0 6.5vh .5vw;
     justify-content: space-between;
     display: flex;
     flex-direction: column;
 }
 .sep-bar-v {
-    margin: 0;
     border: solid .4vh rgba(25,25,25,.4);
     border-radius: 1vh;
     justify-content: center;
@@ -201,17 +199,20 @@ header {
 #view-games.grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(13vw, 1fr));
+    grid-auto-rows: 30vh;
 }
 #view-games.grid::-webkit-scrollbar {
     display: none;
 }
 #view-games.grid .game {
-    height: max-content;
+    height: 30vh;
     width: 14.5vw;
 }
 #view-games.grid .game-info {
     display: flex;
     flex-direction: column;
+    height: 10vh;
+    justify-content: space-between;
     gap: 1vh;
 }
 #view-games.grid .sort-number {
@@ -283,7 +284,7 @@ header {
 .game-info {
     display: flex;
     flex-direction: column;
-    padding: 1.6vh 1vw;
+    padding: 1vh 1vw;
     padding-top: .5vh;
 }
 .game-title {
@@ -336,7 +337,7 @@ header {
     padding: 0;
     height: 1vh;
     width: 100%;
-    margin-top: 1vh;
+    margin-top: .5vh;
     flex: none;
 }
 .status.jogando {

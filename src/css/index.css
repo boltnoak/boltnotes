@@ -96,14 +96,14 @@ header {
 .page-image-text {
     position: absolute;
     justify-content: center;
-    background-image: url(assets://fortnite-logo.png);
+    background-image: url(assets://fortnite-logo.svg);
     align-items: center;
-    height: 100%;
-    width: 70%;
+    height: 8vh;
+    width: 100%;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    margin: 0 3.5vw;
+    margin: 8.5vh 0;
 }
 .sep-bar {
     margin: 1.5vh 0 1vh 0;
@@ -338,7 +338,7 @@ header {
 }
 .level-progress-text {
     font-family: 'Montserrat';
-    font-weight: 500;
+    font-weight: 600;
     font-size: 2.7vh;
     margin: 0;
     color: var(--blue);

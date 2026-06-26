@@ -390,7 +390,7 @@ async function preencherValores() {
     
     if (levels) levels.textContent = data.levels || "0";
     if (levelsBar) levelsBar.style.width = `${(data.levels / 200) * 100}%`;
-    if (levelsText) levelsText.textContent = `Passe: ${(data.levels / 200) * 100}% - ${data.levels} / 200`
+    if (levelsText) levelsText.textContent = `Passe: ${((data.levels / 200) * 100).toFixed(1)}% - ${data.levels} / 200`
     if (wins) wins.textContent = data.wins || "0";
 
     const levelAdd = document.querySelector('.statusLevel-add');

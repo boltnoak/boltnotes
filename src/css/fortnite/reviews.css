@@ -43,14 +43,16 @@
     padding: 0;
 }
 .review-topic {
-    font-family: 'Montserrat';
+    font-family: 'Gantari';
     margin: 0;
     font-size: 4vh;
     flex: 1;
-    font-weight: 1000;
+    font-weight: 900;
+    -webkit-text-stroke: .1vh var(--text);
+    letter-spacing: .1vw;
     align-items: center;
     background-color: var(--tab-active);
-    padding: .5vh 3vh .5vh 1vh;
+    padding: .5vh .6vw .25vh .6vw;
     border-radius: 1vh;
     height: min-content;
     border-bottom-left-radius: 0;
@@ -86,7 +88,7 @@
     width: 80%;
 }
 .reviewTopic-small {
-    width: 90%;
+    width: 75%;
 }
 .review-topictext[contenteditable="true"]:empty {
     cursor: text;

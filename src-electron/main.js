@@ -7,7 +7,7 @@ const path = require('path');
 const os = require('os');
 const log = require('electron-log');
 const extract = require('extract-zip');
-const { exec } = require('child_process');
+const AdmZip = require('adm-zip');
 
 const ASSETS_DIR = path.join(
   app.getPath('userData'),
@@ -24,7 +24,6 @@ const MANIFEST_URL =
 
 function downloadFile(url, destination, onProgress, retries = 3) {
   return new Promise((resolve, reject) => {
-
     const attempt = (currentUrl, triesLeft) => {
       const req = https.get(currentUrl, {
         headers: {
@@ -32,7 +31,6 @@ function downloadFile(url, destination, onProgress, retries = 3) {
           'user-agent': 'BoltNotes'
         }
       }, response => {
-
         if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
           response.resume();
           return attempt(response.headers.location, triesLeft);
@@ -60,25 +58,26 @@ function downloadFile(url, destination, onProgress, retries = 3) {
 
         response.pipe(file);
 
-        file.on('close', () => {
-          file.close(() => {
-            if (total && downloaded !== total) {
-              fs.unlink(destination, () => {}); // Apaga o lixo
-              if (triesLeft > 0) {
-                console.warn(`[Download] Incompleto (${downloaded}/${total} bytes). A tentar novamente...`);
-                setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
-              } else {
-                reject(new Error(`Download incompleto e corrompido: obtidos ${downloaded} de ${total} bytes.`));
-              }
+        file.on('finish', () => {
+          if (total && downloaded !== total) {
+            fs.unlink(destination, () => {});
+            if (triesLeft > 0) {
+              console.warn(`Download - Incompleto (${downloaded}/${total} bytes). A tentar novamente...`);
+              setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
             } else {
-              if (onProgress && total) onProgress(total, total);
-              resolve();
+              reject(new Error(`Download incompleto e corrompido: obtidos ${downloaded} de ${total} bytes.`));
             }
-          });
+          } else {
+            if (onProgress && total) onProgress(total, total);
+              
+            const fileName = path.basename(destination);
+
+            resolve();
+          }
         });
 
         response.on('error', (err) => {
-          file.close();
+          file.destroy();
           fs.unlink(destination, () => {});
           if (triesLeft > 0) {
             setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
@@ -114,7 +113,9 @@ function downloadFile(url, destination, onProgress, retries = 3) {
 
 async function downloadPackage(name) {
   const url = `https://github.com/boltnoak/boltnotes-assets/releases/latest/download/${name}`;
-  const zipPath = path.join(app.getPath('userData'), name);
+  const zipName = name.endsWith('.zip') ? name : `${name}.zip`;
+
+  const zipPath = path.join(app.getPath('userData'), zipName);
 
   let lastLog = '';
 
@@ -138,47 +139,28 @@ async function downloadPackage(name) {
 
   process.stdout.write('\n');
 
-  try {
-    await new Promise((resolve, reject) => {
-      exec(`unzip -o "${zipPath}" -d "${ASSETS_DIR}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.warn('Assets - Unzip nativo falhou ou não instalado, tentando extract-zip...');
-          extract(zipPath, { dir: ASSETS_DIR })
-            .then(resolve)
-            .catch(reject);
-        } else {
-          console.log(`Assets - Extração via terminal concluída.`);
-          resolve();
-        }
-      });
+  const zip = new AdmZip(zipPath);
+
+  await new Promise((resolve, reject) => {
+    zip.extractAllToAsync(ASSETS_DIR, true, false, (error) => {
+      if (error) reject(error);
+      else resolve();
     });
-    
-    console.log(`Assets - Extração de ${name} finalizada com sucesso!`);
+  });
+
+  try {
+    fs.unlinkSync(zipPath);
   } catch (err) {
-    console.error(`Erro ao extrair ${name}:`, err);
-    throw err;
-  } finally {
-    try {
-      if (fs.existsSync(zipPath)) {
-        fs.unlinkSync(zipPath);
-      }
-    } catch (e) {
-      console.warn(`Aviso: não foi possível apagar o zip temporário ${name}:`, e.message);
-    }
+    console.error(`Erro ao deletar o arquivo temporário: ${err.message}`);
   }
 }
 
 async function getRemoteManifest() {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 3000);
-
   try {
-    const response = await fetch(MANIFEST_URL, { signal: controller.signal });
-    clearTimeout(timeout);
+    const response = await fetchWithRetry(MANIFEST_URL, {}, 3, 2000);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   } catch (err) {
-    clearTimeout(timeout);
     throw err;
   }
 }
@@ -193,15 +175,20 @@ function getLocalManifest() {
   );
 }
 
-async function fetchWithRetry(url, options = {}, retries = 3, delay = 5000) {
+async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000, timeoutMs = 8000) {
     for (let i = 0; i < retries; i++) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
         try {
-            const response = await fetch(url, options);
+            const response = await fetch(url, { ...options, signal: controller.signal });
+            clearTimeout(timeout);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response;
         } catch (err) {
+            clearTimeout(timeout);
             if (i < retries - 1) {
-                console.log(`[Fetch] Tentativa ${i + 1} falhou (${err.message}), tentando em ${delay/1000}s...`);
+                console.log(`Fetch - Tentativa ${i + 1} falhou (${err.message}), tentando em ${delay/1000}s...`);
                 await new Promise(r => setTimeout(r, delay));
             } else {
                 throw err;
@@ -214,22 +201,32 @@ async function syncAssets() {
   fs.mkdirSync(ASSETS_DIR, { recursive: true });
 
   let remote, local;
+  const failedPackages = [];
 
   try {
     remote = await getRemoteManifest();
+
+    if (!remote || !remote.packages) {
+      throw new Error('Manifest remoto inválido ou incompleto.');
+    }
   } catch (err) {
+    console.warn('Assets - Não foi possível obter o manifest remoto:', err.message);
+    
     local = getLocalManifest();
-    if (local) {
+    if (local && local.packages) {
       console.warn('Assets - Offline, usando assets locais.');
+      return { success: true, offline: true };
     }
     throw new Error(`Falha ao sincronizar assets. Tente sincronizar nas configurações > Geral > Sincronizar assets.`);
   }
 
   local = getLocalManifest() || { version: 0, packages: [] };
+  local.packages = local.packages || [];
   let changed = false;
 
   for (const pkg of remote.packages) {
-    const localPkg = local.packages.find(p => p.name === pkg.name);
+    const idx = local.packages.findIndex(p => p.name === pkg.name);
+    const localPkg = idx >= 0 ? local.packages[idx] : null;
 
     if (localPkg && localPkg.hash === pkg.hash) {
       console.log(`Assets - ${pkg.name} (atualizado)`);
@@ -241,7 +238,8 @@ async function syncAssets() {
     try {
       await downloadPackage(pkg.name);
 
-      const idx = local.packages.findIndex(p => p.name === pkg.name);
+      console.log(`Assets - downloadPackage finalizado com sucesso para ${pkg.name}!`);
+
       if (idx >= 0) {
         local.packages[idx] = pkg;
       } else {
@@ -254,7 +252,7 @@ async function syncAssets() {
 
     } catch (err) {
       console.error(`Assets - Erro ao baixar ${pkg.name}:`, err.message);
-      throw err;
+      failedPackages.push(pkg.name);
     }
   }
   if (changed || local.version !== remote.version) {
@@ -262,8 +260,13 @@ async function syncAssets() {
     fs.writeFileSync(LOCAL_MANIFEST, JSON.stringify(local, null, 2));
   }
 
+  if (failedPackages.length > 0) {
+    console.warn(`Assets - ${failedPackages.length} pacote(s) falharam: ${failedPackages.join(', ')}`);
+    throw new Error(`Falha ao baixar: ${failedPackages.join(', ')}`);
+  }
+
   console.log('Assets - Sincronização concluída com sucesso!');
-  return true;
+  return { success: true };
 }
 ipcMain.handle('sync-assets', async () => {
   try {
@@ -355,7 +358,8 @@ function getConfig() {
     fortnite_on_home: true,
     show_version: true,
     last_seen_version: null,
-    theme: 'dark'
+    theme: 'dark',
+    featured: 'none'
   };
   try {
     if (fs.existsSync(configPath)) {
@@ -636,7 +640,7 @@ async function fetchWithCache(url, cacheFileName) {
     fs.writeFileSync(cachePath, JSON.stringify(data), 'utf-8');
     return data;
   } catch (error) {
-    console.warn(`Falha ao buscar online, usando cache: ${cacheFileName}`);
+    console.warn(`Falha ao buscar online. Usando cache: ${cacheFileName}`);
     
     if (fs.existsSync(cachePath)) {
       return JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
@@ -1049,10 +1053,17 @@ function ensureThemesFolder() {
     }
     const defaults = fs.readdirSync(THEMES_DIR);
     defaults.forEach(file => {
-        const dest = path.join(USER_THEMES_DIR, file);
-        if (!fs.existsSync(dest)) {
-            fs.copyFileSync(path.join(THEMES_DIR, file), dest);
-        }
+      const srcPath = path.join(THEMES_DIR, file);
+      const destPath = path.join(USER_THEMES_DIR, file);
+
+      if (!fs.existsSync(destPath)) {
+        fs.copyFileSync(srcPath, destPath);
+      } else {
+        const srcBuffer = fs.readFileSync(srcPath);
+        const destBuffer = fs.readFileSync(destPath);
+
+        if (!srcBuffer.equals(destBuffer)) fs.copyFileSync(srcPath, destPath);
+      }
     });
 }
 

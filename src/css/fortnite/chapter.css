@@ -412,29 +412,27 @@ body {
     cursor: pointer;
 }
 .map-popup {
-    position: fixed; /* Mudado para fixed para garantir que cubra a tela inteira de forma estável */
+    position: fixed;
     top: 0;
     left: 0;
     z-index: 99;
     width: 100vw;
-    height: 100vh; /* Adicionado para garantir altura total do fundo escuro */
+    height: 100vh;
     overflow: hidden;
-    background: rgba(0, 0, 0, .85);
+    background: rgba(0,0,0,.6);
     display: flex;
     align-items: center;
     transform: translateY(6.4vh);
     height: 86.7vh;
     justify-content: center;
+    backdrop-filter: blur(4px);
 }
 
 .mapPopup-content {
     position: relative;
-    /* Ajustado: se você tinha margin de 13vw nas laterais, a largura útil deve ser 74vw (100 - 26) para não vazar da tela */
-
-    
     height: 100%;
     width: 100%;
-    overflow: hidden; /* CRÍTICO: Impede que o mapa "saia" da caixa preta ao expandir */
+    overflow: hidden;
     animation: popupIn .15s ease forwards;
     isolation: isolate;
     transform: translateZ(0);
@@ -442,7 +440,7 @@ body {
     border-radius: 1.5vh;
 }
 .mapPopup-div {
-    background: #050505;
+    background: var(--bg);
     padding: 1.5vh;width: 74vw;
     height: 80%;
     width: 45%;

@@ -80,14 +80,15 @@ async function loadLatestFN() {
 
         if (!latest) return;
 
-        const latestPath = `assets://${latest.key}-lobby.jpg`;
+        const latestPathLobby = `assets://${latest.key}-lobby.jpg`;
+        const latestPath = `assets://${latest.key}.jpg`;
 
         console.log(`Temporada mais recente do Fortnite: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
 
         const img = document.getElementById("latest-season");
         const banner = document.getElementById("latestSeasonBG");
         if (img && latestPath) {
-            img.src = latestPath;
+            img.src = latestPathLobby;
             document.querySelector('.shine-effect-v').style.display = "none";
         } 
         else if (banner && latestPath) { banner.style.backgroundImage = `url('${latestPath}')`}

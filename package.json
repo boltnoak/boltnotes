@@ -51,7 +51,7 @@
     ]
   },
   "scripts": {
-    "start": "electron .",
+    "start": "electron . 2>/dev/null",
     "dist": "electron-builder",
     "build-assets": "node scripts/build-assets.js",
     "build-assets:publish": "node scripts/build-assets.js",

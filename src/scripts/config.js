@@ -226,26 +226,21 @@ async function changeFeatured(selectEl) {
 loadInfo();
 
 async function checkUpdates() {
-    const text = document.getElementById('checkUpdates-text');
+    const text = document.querySelectorAll('#checkUpdates-text');
     const btn = document.getElementById('update-btn');
     if (!text) return;
 
     let downloadIniciado = false;
 
-    text.textContent = 'Verificando atualizações...';
-    text.style.color = 'var(--text-light-gray)';
-    text.style.opacity = 1;
+    showMessage(text, 'Verificando atualizações...', 'var(--text-light-gray)');
 
     window.electronAPI.onUpdateProgress((percent) => {
         downloadIniciado = true;
-        text.textContent = `Baixando atualização... ${Math.round(percent)}%`;
-        text.style.color = 'var(--text)';
+        showMessage(text, `Baixando atualização... ${Math.round(percent)}%`, 'var(--text)');
     });
 
     window.electronAPI.onUpdateReady(() => {
-        text.textContent = 'Atualização baixada!';
-        text.style.color = 'var(--blue)';
-        
+        showMessage(text, 'Atualização baixada!', 'var(--blue)');
         if (btn) btn.style.display = 'block';
     });
 
@@ -254,16 +249,10 @@ async function checkUpdates() {
 
         if (result.status === 'available') {
             if (!downloadIniciado) {
-                text.textContent = `Nova versão v${result.version}! Baixando...`;
-                text.style.color = 'var(--text)';
+                showMessage(text, `Nova versão v${result.version}! Baixando...`, 'var(--text)');
             }
         } else {
-            text.textContent = 'Aplicativo já está na versão mais recente.';
-            text.style.color = 'var(--blue)';
-            
-            setTimeout(() => {
-                text.style.opacity = 0;
-            }, 3500);
+            showMessage(text, 'Aplicativo já está na versão mais recente.', 'var(--blue)');
         }
     } catch (err) {
         console.error('Erro ao buscar atualizações:', err);
@@ -272,55 +261,67 @@ async function checkUpdates() {
         text.style.color = 'var(--red)';
     }
 }
+let listenersRegistrados = false;
 
 async function syncAssets() {
-    const text = document.getElementById('syncAssets-text');
-    if (!text) return;
+  const text = document.querySelectorAll('#syncAssets-text');
+  if (!text) return;
 
-    let respondeuPeloAwait = false;
+  showMessage(text, 'Iniciando...', 'var(--text-light-gray)');
 
-    window.electronAPI.onAssetsProgress((data) => {
-        if (respondeuPeloAwait) return;
+  if (!listenersRegistrados) {
+    window.electronAPI.onAssetsProgress((() => {
+      let lastUpdate = 0;
+      return (data) => {
+            const now = Date.now();
+            if (data.percent !== 100 && (now - lastUpdate < 200)) return;
+            lastUpdate = now;
 
-        const progresso = (data && typeof data === 'object') ? (data.percent || data.progress) : data;
-        
-        const mb = (data.downloaded / 1024 / 1024).toFixed(1);
-        const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
+            const mb = (data.downloaded / 1024 / 1024).toFixed(1);
+            const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
 
-        text.textContent = `Baixando ${data.package} (${data.percent ?? '...'}%) ${mb} MB / ${totalMb} MB`;
-        text.style.color = 'var(--text)';
-        text.style.opacity = 1;
+            showMessage(text, `Baixando ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`);
+      };
+    })());
+
+    window.electronAPI.onAssetsReady(() => {
+      setTimeout(() => {
+          showMessage(text, 'Assets sincronizados!', 'var(--blue)')
+      }, 400);
     });
 
-    text.textContent = 'Iniciando...';
-    text.style.color = 'var(--text--light-gray)';
-    text.style.opacity = 1;
+    listenersRegistrados = true;
+  }
 
-    try {
-        const result = await window.electronAPI.syncAssets();
-
-        respondeuPeloAwait = true;
-
-        if (result && result.success) {
-            exibirMensagemFeedback(text, 'Assets sincronizados!', 'var(--blue)');
-        } else {
-            const erroMsg = result && result.error ? result.error : 'Erro ao sincronizar.';
-            exibirMensagemFeedback(text, erroMsg, 'var(--red)');
-        }
-    } catch (err) {
-        respondeuPeloAwait = true;
-        exibirMensagemFeedback(text, 'Erro de comunicação com o sistema.', 'var(--red)');
+  try {
+    const result = await window.electronAPI.syncAssets();
+    if (result && result.success) {
+      showMessage(text, 'Assets sincronizados!', 'var(--blue)');
+    } else {
+      const erroMsg = result && result.error ? result.error : 'Erro ao sincronizar.';
+      showMessage(text, erroMsg, 'var(--red)');
     }
+  } catch (err) {
+    showMessage(text, 'Erro de comunicação com o sistema.', 'var(--red)');
+  }
 }
 
-function exibirMensagemFeedback(elemento, mensagem, cor) {
-    elemento.textContent = mensagem;
-    elemento.style.color = cor;
-    elemento.style.opacity = 1;
-    
-    if (elemento.timeoutId) clearTimeout(elemento.timeoutId);
-    
-    elemento.timeoutId = setTimeout(() => {
-        elemento.style.opacity = 0;
-    }, 3500);
+function showMessage(element,msg,color) {
+    const elementList = element instanceof NodeList || Array.isArray(element) 
+        ? element 
+        : [element];
+
+    elementList.forEach(element => {
+        if (!element) return;
+
+        element.textContent = msg;
+        element.style.color = color;
+        element.style.opacity = 1;
+        
+        if (element.timeoutId) clearTimeout(element.timeoutId);
+        
+        element.timeoutId = setTimeout(() => {
+            element.style.opacity = 0;
+        }, 3500);
+    });
 }

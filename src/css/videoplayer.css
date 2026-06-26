@@ -44,6 +44,7 @@
     padding: 1.5vh;
     border-radius: 2.3vh;
     overflow: hidden;
+    min-width: 10vw;
 }
 #video{
     height: 69vh;

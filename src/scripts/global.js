@@ -1,6 +1,6 @@
 const pageBase = document.querySelector('base').href.replace('file://', '');
 
-// Recarregar página e ferramentas de dev
+// Ferramentas de dev
 window.addEventListener('keydown', (e) => {
   if (!window.electronAPI || !window.electronAPI.isDev) {
     if (e.code === "F5" || e.code === "F12") {
@@ -23,53 +23,53 @@ window.addEventListener('keydown', (e) => {
 });
 
 // Restaurar o scroll após o reload
-window.addEventListener('load', () => {
-  const savedScroll = sessionStorage.getItem('pageBodyScroll');
+// window.addEventListener('load', () => {
+//   const savedScroll = sessionStorage.getItem('pageBodyScroll');
   
-  if (savedScroll) {
-    const bodyElement = document.querySelector('.pageBody');
-    const target = parseInt(savedScroll, 10);
+//   if (savedScroll) {
+//     const bodyElement = document.querySelector('.pageBody');
+//     const target = parseInt(savedScroll, 10);
 
-    if (bodyElement) {
-      let attempts = 0;
-      const scrollRetry = setInterval(() => {
-        bodyElement.scrollTop = target;
-        attempts++;
+//     if (bodyElement) {
+//       let attempts = 0;
+//       const scrollRetry = setInterval(() => {
+//         bodyElement.scrollTop = target;
+//         attempts++;
 
-        if (Math.abs(bodyElement.scrollTop - target) <= 1 || attempts > 20) {
-          clearInterval(scrollRetry);
-          sessionStorage.removeItem('pageBodyScroll');
-        }
-      }, 100);
-    }
-  }
-});
+//         if (Math.abs(bodyElement.scrollTop - target) <= 1 || attempts > 20) {
+//           clearInterval(scrollRetry);
+//           sessionStorage.removeItem('pageBodyScroll');
+//         }
+//       }, 100);
+//     }
+//   }
+// });
 
-let lastScrollPercent = 0;
+// let lastScrollPercent = 0;
 
-function getScrollPercent() {
-    const bodyElement = document.querySelector('.pageBody');
-    if (!bodyElement) return 0;
-    const maxScroll = bodyElement.scrollHeight - bodyElement.clientHeight;
-    return maxScroll > 0 ? bodyElement.scrollTop / maxScroll : 0;
-}
+// function getScrollPercent() {
+//     const bodyElement = document.querySelector('.pageBody');
+//     if (!bodyElement) return 0;
+//     const maxScroll = bodyElement.scrollHeight - bodyElement.clientHeight;
+//     return maxScroll > 0 ? bodyElement.scrollTop / maxScroll : 0;
+// }
 
-function applyScrollPercent(percent) {
-    const bodyElement = document.querySelector('.pageBody');
-    if (!bodyElement) return;
-    const maxScroll = bodyElement.scrollHeight - bodyElement.clientHeight;
-    bodyElement.scrollTop = percent * maxScroll;
-}
+// function applyScrollPercent(percent) {
+//     const bodyElement = document.querySelector('.pageBody');
+//     if (!bodyElement) return;
+//     const maxScroll = bodyElement.scrollHeight - bodyElement.clientHeight;
+//     bodyElement.scrollTop = percent * maxScroll;
+// }
 
-window.addEventListener('resize', () => {
-    applyScrollPercent(lastScrollPercent);
-});
+// window.addEventListener('resize', () => {
+//     applyScrollPercent(lastScrollPercent);
+// });
 
-document.addEventListener('scroll', (e) => {
-    if (e.target.classList?.contains('pageBody')) {
-        lastScrollPercent = getScrollPercent();
-    }
-}, true);
+// document.addEventListener('scroll', (e) => {
+//     if (e.target.classList?.contains('pageBody')) {
+//         lastScrollPercent = getScrollPercent();
+//     }
+// }, true);
 
 // Menu
 function minimizeApp() {
@@ -188,7 +188,6 @@ async function initMenu() {
 
 initMenu();
 
-// Detecta se a página atual é a página de entrada (index.html)
 const isIndexPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
 
 async function checkChangelog() {
@@ -276,11 +275,11 @@ window.addEventListener('load', async () => {
 
         window.electronAPI.onAssetsReady(() => {
             const loadingTitle = document.getElementById('loading-title');
+            const shineEffect = document.querySelector('.shine-effect');
             if (loadingTitle) loadingTitle.textContent = "Tudo pronto!";
             if (loadingDetails) loadingDetails.textContent = "";
             if (loadingProgress) loadingProgress.textContent = "";
             if (progressBarFill) progressBarFill.style.width = "100%";
-            const shineEffect = document.querySelector('.shine-effect');
             if (shineEffect) shineEffect.style.display = 'none';
             
             if (startingScreen) {
@@ -316,16 +315,14 @@ window.addEventListener('load', async () => {
                         startingScreen.style.display = "none"; 
                         startingScreen.remove();
                     }, 500);
-                }, 3000);
+                }, 2500);
             }
         });
-    } 
-    else {
-        if (loadingScreen) {
-            loadingScreen.classList.add('hidden');
-            setTimeout(() => {
-                loadingScreen.remove();
-            }, 400);
-        }
+    } else {
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+            loadingScreen.remove();
+        }, 400);
+        return;
     }
 });
