@@ -90,15 +90,18 @@ contextBridge.exposeInMainWorld('api', {
     save: (name,content) => ipcRenderer.invoke('notes:save',name,content),
     count: () => ipcRenderer.invoke('notes:count') },
   
-  games: { add: (game) => ipcRenderer.invoke('games:add',game),
-    ensureCover: (data) => ipcRenderer.invoke('games:ensure-cover',data) },
+  games: { addGame: (gameData) => ipcRenderer.invoke('games:add', gameData),
+    ensureCover: (data) => ipcRenderer.invoke('games:ensure-cover',data),
+    finishedCount: () => ipcRenderer.invoke('games:finished-count'),
+    achieCount: () => ipcRenderer.invoke('games:achie-count'),
+    getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
+    addGame: (gameData) => ipcRenderer.invoke('games:add', gameData) },
 
   openLink: (url) => ipcRenderer.invoke('open-external-link', url),
   getAppVersion: () => ipcRenderer.invoke('app-version'),
 
   fortnite: { getTrailers: () => ipcRenderer.invoke('fortnite:fetch-trailers'),
     getSeasons: () => ipcRenderer.invoke('fortnite:fetch-seasons'),
-    getGamesDB: () => ipcRenderer.invoke('games:fetch-gamesdb'),
     listTrailers: () => ipcRenderer.invoke('fortnite:list-trailers') },
 
   addGameToGist: (gameData) => ipcRenderer.invoke('add-game-to-gist', gameData),

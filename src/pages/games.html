@@ -13,20 +13,23 @@
     <div class="pageBody">
         <div class="sidebar">
             <div>
-                <div id="playingNowSection-title"><p><i class="fa-solid fa-gamepad"></i>Jogando no momento:</p></div>
+                <div id="playingNowSection-title"><p><i class="fa-solid fa-gamepad"></i>Jogando no momento</p></div>
                 <div class="playingNow-panel">
                     <div id="playingNow-games"></div>
                 </div>
             </div>
             
             <div class="add-game-form">
-                <input type="text" id="gameName" placeholder="Nome do Jogo">
-                <input type="text" id="gameAppId" placeholder="App ID do Jogo">
+                <div class="add-game-form-title"><i class="fa-solid fa-square-plus"></i><p>Novo jogo</p></div>
+                <input type="text" id="gameName" placeholder="Nome">
+                <div class="appid-div">
+                    <input type="text" id="gameAppId" placeholder="AppID">
+                    <!-- <a class="steamdb-btn" id="steamdb-btn" onclick="searchAppID()" target="_blank">
+                        <i class="fa-solid fa-folder-open"></i></a> -->
+                    <i class="steamdb-btn fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
+                </div>
                 <div class="add-game-form-options">
-                    <a class="steamdb-btn" href="https://steamdb.info/search/">
-                        <i class="fa-brands fa-steam"></i>
-                    </a>
-                    <a id="addGameBtn">Adicionar</a>
+                    <a id="addGameBtn"><i class="fa-solid fa-plus"></i>Adicionar</a>
                 </div>
             </div>
         </div>
@@ -34,7 +37,7 @@
         <div class="page-content">
             <div class="view-bar">
                 <div class="view-options">
-                    <i id="view-grid" class="fa-solid fa-grip"></i>
+                    <i id="view-grid" class="fa-solid fa-grip active"></i>
                     <i id="view-list" class="fa-solid fa-bars"></i>
                 </div>
                 <div class="sorting-addGame">

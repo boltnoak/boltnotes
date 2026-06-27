@@ -1,27 +1,20 @@
+const FILE = "Games/games.json";
+
 function parseBRDate(dateStr) {
-  if (!dateStr || !dateStr.includes("/")) return 0;
-
-  const [d, m, y] = dateStr.split("/").map(Number);
-  return new Date(y, m - 1, d).getTime();
-}
-
-async function loadGamesDB() {
-    if (cachedGamesDB) {
-        console.log("Database carregados do cache!");
-        return cachedGamesDB;
-    }
-    try {
-        const content = await window.api.fortnite.getGamesDB(); 
-        cachedGamesDB = content || {};
-        return cachedGamesDB;
-    } catch (e) {
-        console.error("Erro ao buscar Database:", e);
-        return {};
-    }
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return null;
+    
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    
+    return new Date(year, month, day);
 }
 
 async function loadGames() {
-    const data = await loadGamesDB();
+    const data = await window.electronAPI.json.load(FILE);
     const stats = await loadStatus();
 
     const playingNow = document.querySelector(".playingNow-panel");
@@ -32,31 +25,56 @@ async function loadGames() {
     playingNow.innerHTML = "";
     list.innerHTML = "";
 
-    // 1. Pega as suas duas listas
     let listaStats = Array.isArray(stats) ? stats : (stats.games || []);
     const dbGames = data.games ? [...data.games] : [];
 
-    // ==========================================
-    // 2. A NOVA LÓGICA DE MESCLAGEM
-    // ==========================================
-    // Agora nós percorremos a SUA lista pessoal, ignorando os jogos do DB que você não tem.
     let games = listaStats.map(localGame => {
-        // Procura no DB global se existe a "ficha" desse jogo para pegar a capa e o appid oficial
         const gameNoDB = dbGames.find(g => 
             (localGame.appid && g.appid === localGame.appid) || 
             (localGame.name && g.name.toLowerCase() === localGame.name.toLowerCase())
         ) || {};
 
-        // Retorna o seu jogo com as informações extras da nuvem (como a capa)
-        return {
-            ...gameNoDB,    // Traz: appid, cover (da nuvem, se existir)
-            ...localGame    // Traz: name, status, rating, completeDate, storyProgress (do seu PC)
+        const combinedGame = {
+            ...gameNoDB,
+            ...localGame
         };
+
+        combinedGame.isPreOrder = false;
+
+        const currentStatus = (combinedGame.status || "").toLowerCase().trim();
+        const hasProgress = (combinedGame.storyProgress || 0) > 0;
+
+        // Se o jogo já tem status ativo ou progresso, ele NUNCA é pré-venda
+        if (currentStatus === "zerado" || currentStatus === "jogando" || hasProgress) {
+            combinedGame.isPreOrder = false;
+        } 
+        // Só analisa a data se ela existir e for no formato correto com barras
+        else if (combinedGame.releaseDate && combinedGame.releaseDate.includes("/")) {
+            const parts = combinedGame.releaseDate.split('/');
+            
+            if (parts.length === 3) {
+                const d = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10) - 1;
+                const y = parseInt(parts[2], 10);
+
+                const gameDate = new Date(y, m, d);
+                
+                if (!isNaN(gameDate.getTime())) {
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+                    gameDate.setHours(0, 0, 0, 0);
+
+                    // SÓ FICA PRE-ORDER SE A DATA DO JOGO FOR DEPOIS DA DATA ATUAL (FUTURO)
+                    if (gameDate.getTime() > hoje.getTime()) {
+                        combinedGame.isPreOrder = true;
+                    }
+                }
+            }
+        }
+
+        return combinedGame;
     });
 
-    // ==========================================
-    // 3. DAQUI PARA BAIXO O CÓDIGO CONTINUA IGUAL
-    // ==========================================
     const sort = document.getElementById("realSorting-options")?.value || "date-recent";
 
     const playing = games.filter(g => (g.status || "").toLowerCase().trim() === "jogando");
@@ -120,15 +138,18 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const img = document.createElement("img");
     img.className = "game-cover";
 
-    // O await aqui garante que a capa seja carregada do disco antes de renderizar
     const localPath = await window.api.games.ensureCover({
         appid: game.appid,
         name: game.name,
         cover: game.cover
     });
 
-    img.src = localPath ? `file://${localPath}` : "placeholder.jpg";
+    if (game.isPreOrder === true) {
+        div.classList.add("pre-order");
+    }
 
+    img.src = localPath ? `file://${localPath}` : '';
+    
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
 
@@ -174,13 +195,12 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         title.prepend(index);
     }
 
-    if (isListView) {
-        div.style.display = 'none'
-    }
-
     // Lógica de texto complementar do status
     if (status === "zerado") {
-        tag.textContent = game.completeDate || "";
+        const statusText = document.createElement("span");
+        statusText.className = "zerado-text";
+        statusText.textContent = game.completeDate || "";
+        gameInfo.appendChild(statusText);
         gameInfo.appendChild(tag);
     } else if (status === "ajogar") {
         const statusText = document.createElement("span");
@@ -190,12 +210,10 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         gameInfo.appendChild(tag);
         div.classList.add('ajogarGame')
     } else {
-        // Se for "jogando" ou "wishlist", mantém o texto base
         if (status !== "jogando") tag.textContent = game.status;
         gameInfo.appendChild(tag);
     }
-    
-    // Adiciona a barra de progresso dentro da tag
+
     tag.appendChild(tagFill);
 
     div.appendChild(img);
@@ -213,7 +231,7 @@ async function loadStatus() {
         return cachedStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(`Games/status.json`);
+        const content = await window.electronAPI.json.load(`Games/campaigns.json`);
         cachedStatus = content || {};
         return cachedStatus;
     } catch (e) {
@@ -260,15 +278,15 @@ const viewListBtn = document.getElementById("view-list");
 viewGridBtn.addEventListener("click", () => {
   gameList.classList.remove("list");
   gameList.classList.add("grid");
-  viewGridBtn.style.background = 'rgba(50, 50, 50, 0.4)';
-  viewListBtn.style.background = 'rgba(20, 20, 20, 0.4)';
+  viewGridBtn.classList.add('active');
+  viewListBtn.classList.remove('active');
 });
 
 viewListBtn.addEventListener("click", () => {
   gameList.classList.remove("grid");
   gameList.classList.add("list");
-  viewListBtn.style.background = 'rgba(50, 50, 50, 0.4)';
-  viewGridBtn.style.background = 'rgba(20, 20, 20, 0.4)';
+  viewGridBtn.classList.remove('active');
+  viewListBtn.classList.add('active');
 });
 
 document.getElementById("realSorting-options")
@@ -324,5 +342,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.getElementById('playingNowSection-toggle').className = "fa-solid fa-angle-down";
-document.querySelector('.playingNow-panel').style.display = "none";
+document.getElementById('steamdb-btn').addEventListener('click', () => {
+    event.preventDefault(); 
+
+    const gameNameInput = document.getElementById('gameName');
+    const name = gameNameInput ? gameNameInput.value.trim() : '';
+
+    if (!name) {
+        alert('Por favor, digite o nome do jogo primeiro para pesquisar no SteamDB.');
+        return;
+    }
+
+    const searchName = name.trim().replace(/ /g, '+');
+
+    const searchBtn = document.getElementById('steamdb-btn');
+
+    const url = `https://steamdb.info/search/?a=all&q=${searchName}`;
+
+    window.api.openLink(url);
+});
+
+document.getElementById('addGameBtn').addEventListener('click', async () => {
+    const nameInput = document.getElementById('gameName').value.trim();
+    const appIdInput = document.getElementById('gameAppId').value.trim();
+
+    if (!nameInput) {
+        alert('AppID não definido.');
+        return;
+    }
+
+    const newGame = {
+        name: nameInput,
+        appid: appIdInput ? parseInt(appIdInput) : null,
+        releaseDate: "",
+        developer: "",
+        publisher: ""
+    };
+
+    const addBtn = document.getElementById('addGameBtn');
+    addBtn.style.pointerEvents = 'none';
+    addBtn.style.opacity = '0.25';
+
+    if (newGame.appid) {
+        const steamData = await window.api.games.getSteamData(newGame.appid);
+        
+        if (steamData) {
+            newGame.releaseDate = steamData.releaseDate;
+            newGame.developer = steamData.developer;
+            newGame.publisher = steamData.publisher;
+        }
+    }
+
+    const response = await window.api.games.addGame(newGame);
+
+    if (response.success) {
+        window.location.reload();
+    } else {
+        alert('Erro ao salvar o jogo: ' + response.error);
+    }
+
+    addBtn.style.pointerEvents = 'auto';
+    addBtn.style.opacity = '1';
+});

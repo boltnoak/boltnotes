@@ -175,7 +175,7 @@ function getLocalManifest() {
   );
 }
 
-async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000, timeoutMs = 8000) {
+async function fetchWithRetry(url, options = {}, retries = 3, delay = 500, timeoutMs = 8000) {
     for (let i = 0; i < retries; i++) {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -294,6 +294,12 @@ const APPDATA = path.join(
 const COVERS = path.join(
     APPDATA,
     'game-covers'
+);
+
+const USER_COVERS = path.join(
+    DOCUMENTS,
+    'Games',
+    'Custom Covers'
 );
 
 const BUNDLE = path.join(
@@ -690,12 +696,6 @@ ipcMain.handle('fortnite:fetch-seasons', async () => {
         'fn-seasons.json'
     );
 });
-ipcMain.handle('games:fetch-gamesdb', async () => {
-    return await fetchWithCache(
-        'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/gamesdb.json',
-        'gamesdb.json'
-    );
-});
 ipcMain.handle('fortnite:list-trailers', () => {
     return fs.readdirSync(
         path.join(ASSETS_DIR, 'fortnite/trailers')
@@ -811,7 +811,7 @@ X-GNOME-Autostart-enabled=true
 
       try {
         fs.writeFileSync(desktopFilePath, desktopContent, 'utf-8');
-        console.log("[Startup] Arquivo .desktop criado com sucesso no Linux.");
+        console.log("Startup - Arquivo .desktop criado com sucesso no Linux.");
       } catch (err) {
         console.error("Erro ao criar arquivo de inicialização no Linux:", err);
       }
@@ -820,7 +820,7 @@ X-GNOME-Autostart-enabled=true
       if (fs.existsSync(desktopFilePath)) {
         try {
           fs.unlinkSync(desktopFilePath);
-          console.log("[Startup] Arquivo .desktop removido do autostart.");
+          console.log("Startup- Arquivo .desktop removido do autostart.");
         } catch (err) {
           console.error("Erro ao remover arquivo de inicialização no Linux:", err);
         }
@@ -959,6 +959,49 @@ ipcMain.handle('notes:count', () => {
 
   return count;
 });
+ipcMain.handle('games:finished-count', async () => {
+  const filePath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
+  let count = 0;
+
+  try {
+    const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+    const gamesList = JSON.parse(fileContent);
+
+    if (Array.isArray(gamesList)) {
+      for (const game of gamesList) {
+        if (game.status && game.status.toLowerCase() === 'zerado') {
+          count++;
+        }
+      }
+    }
+  } catch (error) { 
+    console.error('Erro ao ler o arquivo campaigns.json ou contar os jogos:', error);
+  }
+
+  return count;
+});
+ipcMain.handle('games:achie-count', async () => {
+  const filePath = path.join(DOCUMENTS, 'Games', 'achievements.json');
+  let count = 0;
+
+  try {
+    const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+    const gamesList = JSON.parse(fileContent);
+
+    if (Array.isArray(gamesList)) {
+      for (const game of gamesList) {
+        if (game.status && game.status.toLowerCase() === 'platinado') {
+          count++;
+        }
+      }
+    }
+  } catch (error) { 
+    console.error('Erro ao ler o arquivo achievements.json ou contar os jogos:', error);
+  }
+
+  return count;
+});
+
 ipcMain.handle('notes:rename', async (event, oldName, newName) => {
   console.log("Renomeando nota de:", oldName, "para:", newName);
 
@@ -999,10 +1042,105 @@ ipcMain.handle('notes:rename', async (event, oldName, newName) => {
 });
 
 // Jogos
+ipcMain.handle('games:add', async (_, newGameData) => {
+  const gamesPath = path.join(DOCUMENTS, 'Games', 'games.json');
+  const statusPath = path.join(DOCUMENTS, 'Games', 'campaigns.json'); 
+
+  try {
+    const gamesDir = path.dirname(gamesPath);
+    if (!fs.existsSync(gamesDir)) fs.mkdirSync(gamesDir, { recursive: true });
+
+    let gamesData = { games: [] };
+    if (fs.existsSync(gamesPath)) {
+      const content = await fs.promises.readFile(gamesPath, 'utf-8');
+      if (content.trim()) gamesData = JSON.parse(content);
+    }
+    if (!gamesData.games || !Array.isArray(gamesData.games)) gamesData.games = [];
+
+    const gameInfo = {
+      name: newGameData.name,
+      appid: newGameData.appid,
+      releaseDate: newGameData.releaseDate,
+      developer: newGameData.developer,
+      publisher: newGameData.publisher
+    };
+    gamesData.games.push(gameInfo);
+    await fs.promises.writeFile(gamesPath, JSON.stringify(gamesData, null, 2), 'utf-8');
+
+    const statusDir = path.dirname(statusPath);
+    if (!fs.existsSync(statusDir)) fs.mkdirSync(statusDir, { recursive: true });
+
+    let statusList = [];
+    if (fs.existsSync(statusPath)) {
+      const content = await fs.promises.readFile(statusPath, 'utf-8');
+      if (content.trim()) statusList = JSON.parse(content);
+    }
+    if (!Array.isArray(statusList)) statusList = [];
+
+    const statusInfo = {
+      name: newGameData.name,
+      status: "ajogar",
+      rating: 0,
+      completeDate: "",
+      storyProgress: 0
+    };
+    statusList.push(statusInfo);
+    await fs.promises.writeFile(statusPath, JSON.stringify(statusList, null, 2), 'utf-8');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Erro ao adicionar o jogo globalmente:', error);
+    return { success: false, error: error.message };
+  }
+});
+ipcMain.handle('games:get-steam-data', async (_, appid) => {
+  if (!appid) return null;
+
+  const url = `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=br&l=pt`;
+
+  return new Promise((resolve) => {
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          
+          if (json[appid] && json[appid].success) {
+            const gameDetails = json[appid].data;
+            
+            // 1. Trata e formata a Data de Lançamento (DD/MM/AAAA)
+            let formattedDate = gameDetails.release_date.date;
+            const parsedDate = new Date(formattedDate);
+            if (!isNaN(parsedDate.getTime())) {
+              formattedDate = parsedDate.toLocaleDateString('pt-BR');
+            }
+
+            // 2. Pega as arrays de developers e publishers e junta em texto (ex: "Valve, Hidden Path")
+            const developers = gameDetails.developers ? gameDetails.developers.join(', ') : '';
+            const publishers = gameDetails.publishers ? gameDetails.publishers.join(', ') : '';
+
+            // 3. Retorna o objeto com tudo o que precisamos
+            return resolve({
+              releaseDate: formattedDate,
+              developer: developers,
+              publisher: publishers
+            });
+          }
+          resolve(null);
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }).on('error', () => resolve(null));
+  });
+});
 ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
   const https = require('https');
 
   const coversDir = path.join(COVERS);
+  const userCoverDir = path.join(USER_COVERS);
 
   if (!fs.existsSync(coversDir)) {
     fs.mkdirSync(coversDir, { recursive: true });
@@ -1018,8 +1156,13 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
   if (!url && appid) {
     url = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`;
   }
+  if (url && !appid) {
+    const customCover = path.join(userCoverDir, url.includes('.') ? url : `${url}.png`);
+    return fs.existsSync(customCover) ? customCover : null;
+  }
   if (!url) {
-    return null;
+    const placeholderPath = path.join(ASSETS_DIR, 'placeholder.jpg');
+    return fs.existsSync(placeholderPath) ? placeholderPath : null;
   }
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(filePath);

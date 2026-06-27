@@ -11,6 +11,11 @@
     src: url(../fonts/Montserrat-Variable-Font.ttf) format('truetype');
     font-display: block;
 }
+@font-face{
+    font-family: 'Vazirmatn';
+    src: url(../fonts/Vazirmatn-VariableFont.ttf) format('truetype');
+    font-display: block;
+}
 i {
     color: white;
 }

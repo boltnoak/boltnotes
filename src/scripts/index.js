@@ -205,7 +205,7 @@ async function loadStatus() {
         return cachedStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(`Games/status.json`);
+        const content = await window.electronAPI.json.load(`Games/campaigns.json`);
         cachedStatus = content || {};
         return cachedStatus;
     } catch (e) {
@@ -440,3 +440,17 @@ async function preencherValores() {
 
 let saveTimeout = null;
 
+async function loadGamesTags() {
+    const finishedCount = await window.api.games.finishedCount();
+    const achieCount = await window.api.games.achieCount();
+
+    const finished = document.getElementById('games-zerados');
+
+    finished.textContent = `${finishedCount} Zerados`
+
+    const achie = document.getElementById('games-platinados');
+
+    achie.textContent = `${achieCount} Platinas`
+}
+
+loadGamesTags()

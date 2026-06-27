@@ -199,7 +199,7 @@ content.addEventListener("click", (e) => {
     e.preventDefault();
     const url = link.getAttribute('href');
     if (url) {
-      window.api.openLink(url); 
+      window.api.openLink(url);
     }
   }
 });

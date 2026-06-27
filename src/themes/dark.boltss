@@ -8,6 +8,7 @@
     --text-gray: rgb(150, 150, 150);
     --text-light-gray: rgb(210, 210, 210);
 
+    --green: rgb(0, 130, 70);
     --blue: rgb(20, 150, 255);
     --red: rgb(255, 70, 70);
 
