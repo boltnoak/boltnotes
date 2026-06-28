@@ -69,6 +69,7 @@
     "electron-squirrel-startup": "^1.0.1",
     "electron-updater": "^6.8.3",
     "extract-zip": "^2.0.1",
+    "fast-xml-parser": "^5.9.3",
     "fflate": "^0.8.3",
     "music-metadata": "^11.12.3",
     "open-graph-scraper": "^6.11.0"

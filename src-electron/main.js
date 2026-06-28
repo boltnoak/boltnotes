@@ -8,6 +8,7 @@ const os = require('os');
 const log = require('electron-log');
 const extract = require('extract-zip');
 const AdmZip = require('adm-zip');
+const { XMLParser } = require('fast-xml-parser');
 
 const ASSETS_DIR = path.join(
   app.getPath('userData'),
@@ -1044,9 +1045,37 @@ ipcMain.handle('notes:rename', async (event, oldName, newName) => {
 // Jogos
 ipcMain.handle('games:add', async (_, newGameData) => {
   const gamesPath = path.join(DOCUMENTS, 'Games', 'games.json');
-  const statusPath = path.join(DOCUMENTS, 'Games', 'campaigns.json'); 
+  const statusPath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
+  const achievementsPath = path.join(DOCUMENTS, 'Games', 'achievements.json');
 
   try {
+    let hasAchievements = false;
+    let totalAchievements = 0;
+
+    if (newGameData.appid) {
+      try {
+        const cleanAppId = String(newGameData.appid).trim();
+        
+        const url = `https://store.steampowered.com/api/appdetails/?appids=${cleanAppId}`;
+        const response = await net.fetch(url);
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data && data[cleanAppId] && data[cleanAppId].success) {
+            const gameDetails = data[cleanAppId].data;
+            
+            if (gameDetails.achievements) {
+              totalAchievements = Number(gameDetails.achievements.total) || 0;
+              hasAchievements = totalAchievements > 0;
+            }
+          }
+        }
+      } catch (steamError) {
+        console.error(`Erro ao buscar conquistas na API da Loja para o appid ${newGameData.appid}:`, steamError);
+      }
+    }
+
     const gamesDir = path.dirname(gamesPath);
     if (!fs.existsSync(gamesDir)) fs.mkdirSync(gamesDir, { recursive: true });
 
@@ -1080,12 +1109,33 @@ ipcMain.handle('games:add', async (_, newGameData) => {
     const statusInfo = {
       name: newGameData.name,
       status: "ajogar",
-      rating: 0,
+      rating: "",
       completeDate: "",
       storyProgress: 0
     };
     statusList.push(statusInfo);
     await fs.promises.writeFile(statusPath, JSON.stringify(statusList, null, 2), 'utf-8');
+
+    const achievementsDir = path.dirname(achievementsPath);
+    if (!fs.existsSync(achievementsDir)) fs.mkdirSync(achievementsDir, { recursive: true });
+
+    let achievementsList = [];
+    if (fs.existsSync(achievementsPath)) {
+      const content = await fs.promises.readFile(achievementsPath, 'utf-8');
+      if (content.trim()) achievementsList = JSON.parse(content);
+    }
+    if (!Array.isArray(achievementsList)) achievementsList = [];
+
+    const achievementsInfo = {
+      name: newGameData.name,
+      appid: newGameData.appid,
+      hasAchievements: hasAchievements,
+      totalAchievements: totalAchievements,
+      unlockedAchievements: 0,
+      status: "aplatinar"
+    };
+    achievementsList.push(achievementsInfo);
+    await fs.promises.writeFile(achievementsPath, JSON.stringify(achievementsList, null, 2), 'utf-8');
 
     return { success: true };
   } catch (error) {

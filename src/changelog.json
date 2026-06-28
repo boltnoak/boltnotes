@@ -1,6 +1,6 @@
 [
     "# Backlog de jogos",
-    "Visual melhorado",
-    "Jogos em 'Jogando no momento' não tem mais uma capa.",
-    "Adionar jogo agora funciona."
+    "Texto que fala nota do jogo.",
+    "Adicionadas abas 'Campanhas' e 'Consquistas'.",
+    "Adicionar jogos agora adiciona o jogo em achievements.json também."
 ] 

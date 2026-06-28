@@ -12,13 +12,12 @@
 <div class="app-container">
     <div class="pageBody">
         <div class="sidebar">
-            <div>
+            <div class="playingNowSection">
                 <div id="playingNowSection-title"><p><i class="fa-solid fa-gamepad"></i>Jogando no momento</p></div>
                 <div class="playingNow-panel">
                     <div id="playingNow-games"></div>
                 </div>
             </div>
-            
             <div class="add-game-form">
                 <div class="add-game-form-title"><i class="fa-solid fa-square-plus"></i><p>Novo jogo</p></div>
                 <input type="text" id="gameName" placeholder="Nome">
@@ -35,6 +34,10 @@
         </div>
         <p class="sep-bar-v"></p>
         <div class="page-content">
+            <div class="modes">
+                <p class="mode-btn campaign active">Campanhas</p>
+                <p class="mode-btn achievements">Conquistas</p>
+            </div>
             <div class="view-bar">
                 <div class="view-options">
                     <i id="view-grid" class="fa-solid fa-grip active"></i>
@@ -61,9 +64,16 @@
                     </div>
                 </div>
             </div>
-            <div id="view-games"></div>
+            <div id="view-games" class="grid active"></div>
+            <div id="view-achie" class="grid"></div>
         </div>
     </div>
+
+    <!-- <div class="game-popup-div">
+        <div class="game-popup">
+
+        </div>
+    </div> -->
 
     <header>
         <a class="back" href="pages/index.html">Voltar<i class="fa-solid fa-caret-left"></i></a>

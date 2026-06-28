@@ -80,7 +80,6 @@ async function loadGames() {
     const playing = games.filter(g => (g.status || "").toLowerCase().trim() === "jogando");
     let others = games.filter(g => (g.status || "").toLowerCase().trim() !== "jogando");
 
-    // Lógica de Ordenação
     if (sort === "date-recent") {
         others.sort((a, b) => parseBRDate(b.completeDate) - parseBRDate(a.completeDate));
     } else if (sort === "date-old") {
@@ -109,13 +108,11 @@ async function loadGames() {
             .map((g, i) => [g.appid || g.name, i + 1])
     );
 
-    // Renderiza jogos sendo jogados
     for (const game of playing) {
         const card = await createGameCard(game, true);
         playingNow.appendChild(card);
     }
 
-    // Tela vazia se não houver jogos jogando
     if (playingNow.childElementCount === 0) {
         const noGames = document.createElement("div");
         noGames.className = "playingNow-no-games";
@@ -123,14 +120,12 @@ async function loadGames() {
         playingNow.appendChild(noGames);
     }
 
-    // Renderiza o resto
     for (const game of others) {
         const index = completedMap.get(game.appid || game.name) || null;
         const card = await createGameCard(game, false, index);
         list.appendChild(card);
     }
 }
-
 async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
     div.className = "game";
@@ -148,7 +143,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         div.classList.add("pre-order");
     }
 
-    img.src = localPath ? `file://${localPath}` : '';
+    img.src = localPath ? `file://${localPath}` : 'assets://placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -156,16 +151,64 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const title = document.createElement("p");
     title.className = "game-title";
 
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'status-div';
+
     const status = (game.status || "").toLowerCase().trim();
 
     const tag = document.createElement("span");
     tag.className = "status";
+
+    const rating = document.createElement("span");
+    rating.className = "rating";
 
     const tagFill = document.createElement("span");
     tagFill.className = "status-fill";
     tagFill.style.width = (game.storyProgress || 0) + "%";
 
     gameInfo.appendChild(title);
+    gameInfo.appendChild(rating);
+    gameInfo.appendChild(statusDiv);
+
+    const ratingUnderlineOpacity = '70%,transparent'
+    if (game.rating >= 0) {
+        rating.textContent = 'Horrivél';
+        rating.style.color = 'var(--red)';
+        rating.style.textDecorationColor = `color-mix(in srgb, var(--red-light) ${ratingUnderlineOpacity})`;
+    }
+    if (game.rating > 2) {
+        rating.textContent = 'Ruim';
+        rating.style.textDecorationColor = `color-mix(in srgb, var(--red-light) ${ratingUnderlineOpacity})`;
+    }
+    if (game.rating > 4) {
+        rating.textContent = 'Ok';
+        rating.style.color = 'var(--orange)';
+        rating.style.textDecorationColor = `color-mix(in srgb, var(--orange-light) ${ratingUnderlineOpacity})`;
+    }
+    if (game.rating > 6) {
+        rating.textContent = 'Bom';
+        rating.style.color = 'var(--blue)';
+        rating.style.textDecorationColor = `color-mix(in srgb, var(--blue-light) ${ratingUnderlineOpacity})`;
+    }
+    if (game.rating > 7) {
+        rating.textContent = 'Muito bom';
+        rating.style.textDecorationColor = `color-mix(in srgb, var(--blue-light) ${ratingUnderlineOpacity})`;
+    }
+    if (game.rating >= 8) {
+        rating.textContent = 'Ótimo';
+        rating.style.color = 'var(--green-light)';
+        rating.style.textDecorationColor = `color-mix(in srgb, var(--green-light) ${ratingUnderlineOpacity})`;
+    }
+    if (game.rating == 10) {
+        rating.textContent = 'Excelente';
+        rating.style.color = 'var(--yellow)';
+        rating.style.textDecorationColor = `color-mix(in srgb, var(--yellow-light) ${ratingUnderlineOpacity})`;
+    }
+    if (game.rating <= "") {
+        rating.textContent = 'Sem nota';
+        rating.style.color = 'var(--text-dark-gray)';
+        rating.style.textDecoration = 'none';
+    }
 
     // Adiciona a classe de cor apropriada
     if (status === "jogando") tag.classList.add("jogando");
@@ -178,8 +221,8 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         const statusPercentage = document.createElement("span");
         statusPercentage.className = "jogando-text";
         statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
-        gameInfo.appendChild(statusPercentage);
-        gameInfo.appendChild(tag);
+        statusDiv.appendChild(statusPercentage);
+        statusDiv.appendChild(tag);
     }
 
     title.textContent = game.name;
@@ -195,20 +238,20 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         title.prepend(index);
     }
 
-    // Lógica de texto complementar do status
     if (status === "zerado") {
         const statusText = document.createElement("span");
-        statusText.className = "zerado-text";
+        statusText.className = "status-text";
         statusText.textContent = game.completeDate || "";
-        gameInfo.appendChild(statusText);
-        gameInfo.appendChild(tag);
+        statusDiv.appendChild(statusText);
+        statusDiv.appendChild(tag);
+        div.classList.add('zerado')
     } else if (status === "ajogar") {
         const statusText = document.createElement("span");
-        statusText.className = "ajogar-text";
+        statusText.className = "status-text";
         statusText.textContent = `A Jogar (${game.storyProgress || 0}%)`;
-        gameInfo.appendChild(statusText);
-        gameInfo.appendChild(tag);
-        div.classList.add('ajogarGame')
+        statusDiv.appendChild(statusText);
+        statusDiv.appendChild(tag);
+        div.classList.add('ajogar')
     } else {
         if (status !== "jogando") tag.textContent = game.status;
         gameInfo.appendChild(tag);
@@ -223,46 +266,236 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 }
 
 let cachedGamesDB = null;
-let cachedStatus = null;
+let cachedCampaignStatus = null;
+let cachedAchieStatus = null;
 
 async function loadStatus() {
-    if (cachedStatus) {
-        console.log("Reviews carregados do cache!");
-        return cachedStatus;
+    if (cachedCampaignStatus) {
+        return cachedCampaignStatus;
     }
     try {
         const content = await window.electronAPI.json.load(`Games/campaigns.json`);
-        cachedStatus = content || {};
-        return cachedStatus;
+        cachedCampaignStatus = content || {};
+        return cachedCampaignStatus;
     } catch (e) {
-        console.error("Erro ao ler meus_reviews.json:", e);
+        console.error("Erro ao ler campaigns.json:", e);
         return {};
     }
 }
 
+async function loadGamesAchie() {
+    const data = await window.electronAPI.json.load(FILE);
+    const stats = await loadStatusAchie();
 
+    const list = document.getElementById("view-achie");
 
-// document.getElementById("add-game").addEventListener("click", async () => {
-//   const name = document.getElementById("game-name").value;
-//   const status = document.getElementById("game-status").value;
+    if (!list) return;
 
-//   if (!name) return;
+    list.innerHTML = "";
 
-//   await window.api.games.add({
-//     name,
-//     status,
-//     platform: "PC",
-//     rating: 0,
-//     notes: "",
-//     completeDate: ""
-//   });
+    let listaStats = Array.isArray(stats) ? stats : (stats.games || []);
+    const dbGames = data.games ? [...data.games] : [];
 
-//   loadGames();
-// });
+    let games = listaStats.map(localGame => {
+        const gameNoDB = dbGames.find(g => 
+            (localGame.appid && g.appid === localGame.appid) || 
+            (localGame.name && g.name.toLowerCase() === localGame.name.toLowerCase())
+        ) || {};
 
+        const combinedGame = {
+            ...gameNoDB,
+            ...localGame
+        };
+
+        combinedGame.isPreOrder = false;
+
+        const currentStatus = (combinedGame.status || "").toLowerCase().trim();
+        const hasProgress = (combinedGame.storyProgress || 0) > 0;
+
+        if (currentStatus === "platinado" || currentStatus === "platinando" || hasProgress) {
+            combinedGame.isPreOrder = false;
+        }
+        else if (combinedGame.releaseDate && combinedGame.releaseDate.includes("/")) {
+            const parts = combinedGame.releaseDate.split('/');
+            
+            if (parts.length === 3) {
+                const d = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10) - 1;
+                const y = parseInt(parts[2], 10);
+
+                const gameDate = new Date(y, m, d);
+                
+                if (!isNaN(gameDate.getTime())) {
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+                    gameDate.setHours(0, 0, 0, 0);
+
+                    if (gameDate.getTime() > hoje.getTime()) {
+                        combinedGame.isPreOrder = true;
+                    }
+                }
+            }
+        }
+
+        return combinedGame;
+    });
+
+    const sort = document.getElementById("realSorting-options")?.value || "date-recent";
+    let others = games.filter(g => (g.status || "").toLowerCase().trim() !== "platinando");
+
+    if (sort === "date-recent") {
+        others.sort((a, b) => parseBRDate(b.completeDate) - parseBRDate(a.completeDate));
+    } else if (sort === "date-old") {
+        others.sort((a, b) => parseBRDate(a.completeDate) - parseBRDate(b.completeDate));
+    } else if (sort === "rating-high") {
+        others.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sort === "rating-low") {
+        others.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+    }
+
+    const isGrid = list.classList.contains("grid");
+
+    if (isGrid) {
+        const order = { "platinando": 0, "aplatinar": 1, "platinado": 2 };
+        others.sort((a, b) => {
+            const sa = (a.status || "").toLowerCase().trim();
+            const sb = (b.status || "").toLowerCase().trim();
+            return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
+        });
+    } else {
+        const order = { "platinando": 0, "platinado": 1 };
+        others.sort((a, b) => {
+            const sa = (a.status || "").toLowerCase().trim();
+            const sb = (b.status || "").toLowerCase().trim();
+            return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
+        });
+    }
+
+    const completedMap = new Map(
+        games
+            .filter(g => (g.status || "").toLowerCase() === "platinado")
+            .sort((a, b) => parseBRDate(a.completeDate) - parseBRDate(b.completeDate))
+            .map((g, i) => [g.appid || g.name, i + 1])
+    );
+
+    for (const game of others) {
+        const index = completedMap.get(game.appid || game.name) || null;
+        const card = await createGameAchieCard(game, index);
+        list.appendChild(card);
+    }
+}
+async function createGameAchieCard(game, completedIndex = null) {
+    const div = document.createElement("div");
+    div.className = "game";
+
+    const img = document.createElement("img");
+    img.className = "game-cover";
+
+    const localPath = await window.api.games.ensureCover({
+        appid: game.appid,
+        name: game.name,
+        cover: game.cover
+    });
+
+    if (game.isPreOrder === true) {
+        div.classList.add("pre-order");
+    }
+    if (game.hasAchievements === false) {
+        div.classList.add("no-achie");
+    }
+
+    img.src = localPath ? `file://${localPath}` : 'assets://placeholder.png';
+    
+    const gameInfo = document.createElement("div");
+    gameInfo.className = "game-info";
+
+    const title = document.createElement("p");
+    title.className = "game-title";
+
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'status-div';
+
+    const status = (game.status || "").toLowerCase().trim();
+
+    const tag = document.createElement("span");
+    tag.className = "status";
+
+    const tagFill = document.createElement("span");
+    tagFill.className = "status-fill";
+    const percentage = game.totalAchievements > 0 
+        ? Math.round((game.unlockedAchievements / game.totalAchievements) * 100) 
+        : 0;
+
+    tagFill.style.width = percentage + "%";
+
+    gameInfo.appendChild(title);
+    gameInfo.appendChild(statusDiv);
+
+    if (status === "platinando") tag.classList.add("platinando");
+    else if (status === "platinado") tag.classList.add("platinado");
+    else if (status === "aplatinar") tag.classList.add("aplatinar");
+
+    if (status === "platinando") {
+        const statusText = document.createElement("span");
+        statusText.className = "platinando-text";
+        statusText.textContent = `${game.unlockedAchievements}/${game.totalAchievements} (${percentage}%)`;
+        statusDiv.appendChild(statusText);
+        statusDiv.appendChild(tag);
+        div.classList.add('platinando');
+    }
+
+    title.textContent = game.name;
+
+    const listElement = document.getElementById("view-achie");
+    const isListView = listElement ? listElement.classList.contains("list") : false;
+
+    if (completedIndex !== null && isListView) {
+        const index = document.createElement("span");
+        index.className = "sort-number";
+        index.textContent = `#${completedIndex}`;
+        title.prepend(index);
+    }
+
+    if (status === "platinado") {
+        const statusText = document.createElement("span");
+        statusText.className = "status-text";
+        statusText.textContent = game.completeDate || "";
+        statusDiv.appendChild(statusText);
+        statusDiv.appendChild(tag);
+        div.classList.add('platinado')
+    } else if (status === "aplatinar") {
+        const statusText = document.createElement("span");
+        statusText.className = "status-text";
+        statusText.textContent = `À Platinar - ${game.unlockedAchievements || 0}/${game.totalAchievements}`;
+        statusDiv.appendChild(statusText);
+        statusDiv.appendChild(tag);
+        div.classList.add('aplatinar')
+    } else {
+        if (status !== "platinando") tag.textContent = game.status;
+        gameInfo.appendChild(tag);
+    }
+
+    tag.appendChild(tagFill);
+    div.appendChild(img);
+    div.appendChild(gameInfo);
+    return div;
+}
+
+async function loadStatusAchie() {
+    if (cachedAchieStatus) {
+        return cachedAchieStatus;
+    }
+    try {
+        const content = await window.electronAPI.json.load(`Games/achievements.json`);
+        cachedAchieStatus = content || {};
+        return cachedAchieStatus;
+    } catch (e) {
+        console.error("Erro ao ler achievements.json:", e);
+        return {};
+    }
+}
 
 const steamDbBtn = document.querySelector('.steamdb-btn');
-
 steamDbBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const url = steamDbBtn.getAttribute('href');
@@ -272,28 +505,60 @@ steamDbBtn.addEventListener("click", (e) => {
 });
 
 const gameList = document.getElementById("view-games");
+const achieList = document.getElementById("view-achie");
 const viewGridBtn = document.getElementById("view-grid");
 const viewListBtn = document.getElementById("view-list");
+const achievementsBtn = document.querySelector(".mode-btn.achievements");
+const campaignBtn = document.querySelector(".mode-btn.campaign");
+const viewGames = document.getElementById("view-games");
+const viewAchie = document.getElementById("view-achie");
 
-viewGridBtn.addEventListener("click", () => {
-  gameList.classList.remove("list");
-  gameList.classList.add("grid");
-  viewGridBtn.classList.add('active');
-  viewListBtn.classList.remove('active');
-});
+function toggleViewMode(mode) {
+    const isGrid = mode === 'grid';
 
-viewListBtn.addEventListener("click", () => {
-  gameList.classList.remove("grid");
-  gameList.classList.add("list");
-  viewGridBtn.classList.remove('active');
-  viewListBtn.classList.add('active');
-});
+    viewGridBtn.classList.toggle('active', isGrid);
+    viewListBtn.classList.toggle('active', !isGrid);
 
-document.getElementById("realSorting-options")
-  .addEventListener("change", loadGames);
+    if (campaignBtn.classList.contains('active')) {
+        gameList.classList.remove(isGrid ? 'list' : 'grid');
+        gameList.classList.add(mode);
+        loadGames();
+    }
+    if (achievementsBtn.classList.contains('active')) {
+        achieList.classList.remove(isGrid ? 'list' : 'grid');
+        achieList.classList.add(mode);
+        loadGamesAchie();
+    }
+}
+function switchMainView(targetView) {
+    const isCampaign = targetView === 'campaign';
 
-document.getElementById('view-games').classList.add('grid');
+    viewGames.classList.toggle('active', isCampaign);
+    viewAchie.classList.toggle('active', !isCampaign);
+
+    campaignBtn.classList.toggle('active', isCampaign);
+    achievementsBtn.classList.toggle('active', !isCampaign);
+
+    const currentMode = viewGridBtn.classList.contains('active') ? 'grid' : 'list';
+    toggleViewMode(currentMode);
+}
+
+viewGridBtn.addEventListener("click", () => toggleViewMode('grid'));
+viewListBtn.addEventListener("click", () => toggleViewMode('list'));
+campaignBtn.addEventListener("click", () => switchMainView('campaign'));
+achievementsBtn.addEventListener("click", () => switchMainView('achievements'));
+
 loadGames();
+loadGamesAchie();
+
+document.getElementById("realSorting-options").addEventListener("change", () => {
+    const campaignBtn = document.querySelector(".mode-btn.campaign");
+    if (campaignBtn.classList.contains('active')) {
+        loadGames();
+    } else {
+        loadGamesAchie();
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.sorting-options');
