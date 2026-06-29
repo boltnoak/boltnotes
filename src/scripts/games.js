@@ -210,13 +210,11 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         rating.style.textDecoration = 'none';
     }
 
-    // Adiciona a classe de cor apropriada
     if (status === "jogando") tag.classList.add("jogando");
     else if (status === "zerado") tag.classList.add("zerado");
     else if (status === "ajogar") tag.classList.add("ajogar");
     else if (status === "wishlist") tag.classList.add("wishlist");
 
-    // Se estiver jogando, mostra a porcentagem na tag
     if (status === "jogando") {
         const statusPercentage = document.createElement("span");
         statusPercentage.className = "jogando-text";
@@ -227,7 +225,6 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     title.textContent = game.name;
 
-    // Lógica para mostrar o número (Index) no modo Lista
     const listElement = document.getElementById("view-games");
     const isListView = listElement ? listElement.classList.contains("list") : false;
 
@@ -341,7 +338,7 @@ async function loadGamesAchie() {
     });
 
     const sort = document.getElementById("realSorting-options")?.value || "date-recent";
-    let others = games.filter(g => (g.status || "").toLowerCase().trim() !== "platinando");
+    let others = games.filter(g => (g.status || "").toLowerCase().trim());
 
     if (sort === "date-recent") {
         others.sort((a, b) => parseBRDate(b.completeDate) - parseBRDate(a.completeDate));
@@ -470,9 +467,6 @@ async function createGameAchieCard(game, completedIndex = null) {
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
         div.classList.add('aplatinar')
-    } else {
-        if (status !== "platinando") tag.textContent = game.status;
-        gameInfo.appendChild(tag);
     }
 
     tag.appendChild(tagFill);

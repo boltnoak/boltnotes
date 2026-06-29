@@ -1,6 +1,3 @@
 [
-    "# Backlog de jogos",
-    "Texto que fala nota do jogo.",
-    "Adicionadas abas 'Campanhas' e 'Consquistas'.",
-    "Adicionar jogos agora adiciona o jogo em achievements.json também."
+    "Jogos com status 'platinando' agora aparece na aba 'Conquistas' em backlog de jogos."
 ] 
