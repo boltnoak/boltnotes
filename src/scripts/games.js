@@ -435,7 +435,7 @@ async function createGameAchieCard(game, completedIndex = null) {
     if (status === "platinando") {
         const statusText = document.createElement("span");
         statusText.className = "platinando-text";
-        statusText.textContent = `${game.unlockedAchievements}/${game.totalAchievements} (${percentage}%)`;
+        statusText.textContent = `Platinando - ${game.unlockedAchievements}/${game.totalAchievements}`;
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
         div.classList.add('platinando');
