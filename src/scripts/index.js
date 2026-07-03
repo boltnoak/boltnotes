@@ -185,10 +185,11 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     if (status === "jogando") {
         tag.classList.add("jogando");
         const statusPercentage = document.createElement("span");
-        statusPercentage.className = "jogando-text";
+        statusPercentage.className = "status-text";
         statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
         gameInfo.appendChild(statusPercentage);
         gameInfo.appendChild(tag);
+        div.classList.add('jogando');
     }
     
     tag.appendChild(tagFill);
@@ -353,8 +354,9 @@ async function inicializarTitulo() {
     const img = document.getElementById('recentSeason-image');
 
     if (titleEl && img) {
-        img.src = `assets://${code}.jpg`;
+        img.style.backgroundImage = `url(assets://${code}.jpg)`;
         titleEl.innerHTML = `Fortnite BR — Edição rápida<i class="fa-solid fa-square-poll-horizontal"></i>`;
+        document.querySelector('.shine-effect-v-latest-season').style.display = 'none'
     }
 
     const name = document.getElementById('recent-season-name');
@@ -390,7 +392,7 @@ async function preencherValores() {
     
     if (levels) levels.textContent = data.levels || "0";
     if (levelsBar) levelsBar.style.width = `${(data.levels / 200) * 100}%`;
-    if (levelsText) levelsText.textContent = `Passe: ${((data.levels / 200) * 100).toFixed(1)}% - ${data.levels} / 200`
+    if (levelsText) levelsText.textContent = `Progresso - ${((data.levels / 200) * 100).toFixed(1)}%`
     if (wins) wins.textContent = data.wins || "0";
 
     const levelAdd = document.querySelector('.statusLevel-add');

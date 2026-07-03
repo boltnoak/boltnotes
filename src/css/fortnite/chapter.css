@@ -184,7 +184,6 @@ body {
 }
 .statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus  {
     font-size: 2vh;
-    background: var(--btn);
     color: var(--text);
     padding: .8vh .5vw;
     border-radius: .8vh;

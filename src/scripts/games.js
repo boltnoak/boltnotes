@@ -217,10 +217,11 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     if (status === "jogando") {
         const statusPercentage = document.createElement("span");
-        statusPercentage.className = "jogando-text";
+        statusPercentage.className = "status-text";
         statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
         statusDiv.appendChild(statusPercentage);
         statusDiv.appendChild(tag);
+        div.classList.add('jogando');
     }
 
     title.textContent = game.name;
@@ -241,17 +242,14 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         statusText.textContent = game.completeDate || "";
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
-        div.classList.add('zerado')
+        div.classList.add('zerado');
     } else if (status === "ajogar") {
         const statusText = document.createElement("span");
         statusText.className = "status-text";
         statusText.textContent = `A Jogar (${game.storyProgress || 0}%)`;
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
-        div.classList.add('ajogar')
-    } else {
-        if (status !== "jogando") tag.textContent = game.status;
-        gameInfo.appendChild(tag);
+        div.classList.add('ajogar');
     }
 
     tag.appendChild(tagFill);

@@ -52,12 +52,14 @@
     letter-spacing: .1vw;
     align-items: center;
     background-color: var(--tab-active);
-    padding: .5vh .6vw .25vh .6vw;
+    color: var(--text);
+    padding: .5vh .7vw .6vh .7vw;
+    text-align: center;
     border-radius: 1vh;
     height: min-content;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    border-bottom: solid .5vh rgba(255,255,255,.035);
+    border-bottom: solid .5vh var(--btn-hover);
 }
 .review-topic i {
     margin-right: .2vw;
@@ -68,7 +70,7 @@
     margin: 0;
     flex: 1;
     height: 13.5vh;
-    background-color: var(--tab);
+    background-color: var(--tab-hover);
     padding: 1.5vh;
     border-radius: 1vh;
     font-size: 2.6vh;

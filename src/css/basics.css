@@ -198,7 +198,7 @@ i {
 
     animation: shine 2s infinite linear;
 }
-.shine-effect-v {
+.shine-effect-v, .shine-effect-v-latest-season {
     position: absolute;
     top: -25vw;
     width: 100%;

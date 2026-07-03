@@ -63,6 +63,20 @@ header {
     -webkit-mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
     user-select: none;
 }
+.fortnite-icon {
+    height: 12vh;
+    width: 11vw;
+    background-color: var(--text-dark-gray);
+    mask: url(assets://fortnite-icon.svg) no-repeat center / contain;
+    -webkit-mask: url(assets://fortnite-icon.svg) no-repeat center / contain;
+    user-select: none;
+    font-size: 15vh;
+    color: var(--text-dark-gray);
+    opacity: .1;
+    z-index: 1;
+    margin-bottom: .9vh;
+    transform: translateX(.15vw);
+}
 
 /* Seção de páginas */
 .pages-section {
@@ -71,7 +85,7 @@ header {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin: 0 14.8vw;
+    margin: 0 10vw;
     padding-top: 2vh;
 }
 
@@ -79,7 +93,7 @@ header {
 .page {
     text-decoration: none;
     width: 45vh;
-    border-radius: 1.3vh;
+    border-radius: 1.2vh;
     transition: transform .15s;
     overflow: hidden;
     cursor: pointer;
@@ -88,22 +102,109 @@ header {
     transform: translateY(-.7vh);
 }
 .page-image {
-    height: 25vh;
+    height: 28vh;
     overflow: hidden;
     transform: translateY(0);
-    background-color: rgba(30,30,30,.1);
+    background: linear-gradient(to bottom, var(--tab-hover), var(--tab-active));
+    border-radius: 1.2vh;
+    margin-bottom: 1.6vh;
+    display: flex;
+    flex-direction: row;
+}
+.text-backlog {
+    font-family: 'Vazirmatn';
+    font-weight: 200;
+    margin: 0;
+    color: var(--text);
+    font-size: 3.16vh;
+    height: 3.16vh;
+}
+.text-br {
+    font-family: 'Vazirmatn';
+    font-weight: 400;
+    color: var(--text);
+    font-size: 2.75vh;
+    height: 2.75vh;
+    margin: 0 0 2.5vh 0;
+}
+.games-backlog-icon {
+    font-size: 15vh;
+    color: var(--text-dark-gray);
+    opacity: .1;
+    z-index: 1;
+    transform: translateX(.15vw) translateY(-.5vh);
+}
+.text {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: end;
+    transform: translateX(-2.5vw);
+    width: fit-content;
+}
+.fortnite-text {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: end;
+    transform: translateX(-2.65vw);
+    width: fit-content;
+    z-index: 1;
+}
+.page-image-sidebar {
+    width: 35%;
+    background-color: var(--tab);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1vh;
+}
+.page-image-sidebar div {
+    background-color: var(--tab-active);
+    height: 4vh;
+    margin: .5vh .5vw;
+    border-radius: 1vh;
+}
+.text-games {
+    font-family: 'Gantari';
+    font-weight: 900;
+    color: var(--text);
+    margin: 0;
+    font-size: 5.5vh;
+    -webkit-text-stroke: .15vh var(--text);
+    height: 5.5vh;
+    margin: 0 0 2vh 0;
+}
+.text-notes {
+    font-family: 'Vazirmatn';
+    font-weight: 200;
+    color: var(--text);
+    margin: 0;
+    font-size: 5.5vh;
+    width: 70%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .page-image-text {
-    position: absolute;
     justify-content: center;
-    background-image: url(assets://fortnite-logo.svg);
+    /* background-image: url(assets://fortnite-logo.svg); */
     align-items: center;
-    height: 8vh;
     width: 100%;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    margin: 8.5vh 0;
+    z-index: 99;
+    background-color: var(--text);
+    mask: url(assets://fortnite-logo.svg) no-repeat center / contain;
+    -webkit-mask: url(assets://fortnite-logo.svg) no-repeat center / contain;
+    user-select: none;
+    opacity: 1;
+    background-clip: padding-box;
+    font-size: 5.5vh;
+    height: 5.5vh;
+    margin: 1.5vh 0 0 0;
 }
 .sep-bar {
     margin: 1.5vh 0 1vh 0;
@@ -113,18 +214,8 @@ header {
 }
 .page-image img {
     object-fit: cover;
-    height: 25vh;
     width: 100%;
-}
-#latest-season {
-    height: 25vh;
-    width: 100%;
-    object-fit: cover;
-    overflow: hidden;
-}
-#latest-season[src=""],
-#latest-season:not([src]) {
-    opacity: 0;
+    z-index: 2;
 }
 .page-title {
     color: var(--text);
@@ -210,10 +301,13 @@ header {
 
 /* Jogos */
 .game {
-    width: 30vw;
+    width: 28vw;
     background-color: var(--tab);
     border-radius: 1.4vh;
     overflow: hidden;
+    gap: 0;
+    display: flex;
+    flex-direction: column;
 }
 .game-cover {
     height: 20vh;
@@ -272,7 +366,7 @@ header {
     z-index: 1;
     left: 1vh;
 }
-.jogando-text {
+.game.jogando .status-text {
     color: var(--blue);
     font-family: 'Montserrat';
     font-weight: 600;
@@ -293,11 +387,11 @@ header {
     flex-direction: row;
     width: max-content;
     background-color: var(--tab);
-    gap: .7vw;
+    gap: 1vw;
     width: 50vw;
     width: fit-content;
-    border-radius: 1.8vh;
-    padding: 1.5vh .9vw;
+    border-radius: 1.5vh;
+    padding: 1.2vh;
     overflow: hidden;
 }
 #recent-season-name {
@@ -316,6 +410,7 @@ header {
     display: flex;
     flex-direction: column;
     width: fit-content;
+    height: 24.5vh;
     justify-content: space-between;
 }
 
@@ -327,7 +422,7 @@ header {
     color: var(--text);
     display: flex;
     flex-direction: row;
-    gap: 0;
+    gap: .5vw;
     align-items: center;
     user-select: none;
 }
@@ -335,6 +430,16 @@ header {
     display: flex;
     flex-direction: column;
     gap: 1.1vh;
+}
+.recentSeason-image {
+    height: 25vh;
+    width: 22vw;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    transform: translateY(0);
+    border-radius: 1vh;
+    background-color: rgba(30,30,30,.1);
 }
 .level-progress-text {
     font-family: 'Montserrat';
@@ -350,18 +455,16 @@ header {
 .level-progress {
     margin: 0 0 0;
 }
-.fa-square-caret-up, .fa-trophy, .fa-calendar-day, .fa-star {
+.fa-square-caret-up, .fa-trophy {
     font-size: 3vh;
     color: var(--text);
-}
-.statusLevel-add, .statusWin-add {
-    margin-left: .6vw;
+    width: fit-content;
 }
 .statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus {
     font-size: 2vh;
-    background: var(--btn);
     color: var(--text);
-    padding: .8vh .15vw .8vh .5vw;
+    padding: .8vh .8vw;
+    width: fit-content;
     border-radius: .8vh;
     transition: background .1s linear;
     display: flex;
@@ -369,9 +472,6 @@ header {
 .statusLevel-add:hover, .statusLevel-minus:hover, .statusWin-add:hover, .statusWin-minus:hover {
     background: var(--btn-hover);
     cursor: pointer;
-}
-.fa-square-caret-up, .fa-trophy {
-    margin-right: .25vw;
 }
 .status-level {
     width: 100%;

@@ -8,13 +8,13 @@
     --text-gray: rgba(150, 150, 150);
     --text-light-gray: rgba(210, 210, 210);
 
-    --green: rgba(0, 130, 70);
+    --green: rgba(0, 150, 70);
     --blue: rgba(20, 150, 255);
     --yellow: rgba(250, 215, 70);
     --orange: rgba(250, 125, 50);
     --red: rgba(255, 70, 70);
 
-    --green-light: rgba(0, 180, 120);
+    --green-light: rgba(0, 200, 90);
     --blue-light: rgba(20, 180, 255);
     --yellow-light: rgba(250, 255, 90);
     --orange-light: rgba(250, 140, 90);

@@ -20,9 +20,14 @@
     <div class="pages-section">
         <a class="page" id="games" href="pages/games.html">
             <div class="page-image">
-                <img src="assets://games-image.png">
+                <img src="assets://games-backlog-characters.png">
+                <div class="text">
+                    <i class="games-backlog-icon fa-solid fa-gamepad"></i>
+                    <p class="text-backlog">BACKLOG DE</p>
+                    <p class="text-games">JOGOS</p>
+                </div>
             </div>
-            <p class="page-title">Backlog de Jogos</p>
+            <!-- <p class="page-title">Backlog de Jogos</p> -->
             <div class="info">
                 <p id="games-zerados"></p>
                 <p id="games-platinados"></p>
@@ -30,20 +35,27 @@
         </a>
         <a class="page" id="notes" href="pages/notes.html">
             <div class="page-image">
-                <img src="assets://notes-image.png">
+                <div class="page-image-sidebar">
+                    <div></div>
+                    <div></div>
+                </div>
+                <p class="text-notes">NOTAS</p>
             </div>
-            <p class="page-title">Notas</p>
+            <!-- <p class="page-title">Notas</p> -->
             <div class="info">
                 <p id="note-count"></p>
             </div>
         </a>
         <a class="page" id="fortnite" href="pages/fortnite.html">
             <div class="page-image">
-                <div class="page-image-text"></div>
-                <img id="latest-season">
-                <div class="shine-effect-v"></div>
+                <img src="assets://fortnite-character.png">
+                <div class="fortnite-text">
+                    <div class="fortnite-icon"></div>
+                    <div class="page-image-text"></div>
+                    <p class="text-br">BATTLE ROYALE</p>
+                </div>
             </div>
-            <p class="page-title">Fortnite</p>
+            <!-- <p class="page-title">Fortnite</p> -->
             <div class="info">
                 <p id="chapter-count"></p>
                 <p id="season-count"></p>
@@ -56,7 +68,9 @@
             
             <div class="recentSeason-panel">
                 <div class="recent-season">
-                    <img id="recentSeason-image">
+                    <div class="recentSeason-image" id="recentSeason-image">
+                        <div class="shine-effect-v-latest-season"></div>
+                    </div>
                     <div class="season-status">
                         <p id="recent-season-name"></p>
                         <div class="season-status-div">
@@ -74,7 +88,7 @@
                             </p>
                         </div>
                         <div class="level-progress">
-                            <p class="level-progress-text">Passe:</p>
+                            <p class="level-progress-text"></p>
                             <div class="level-progress-bar">
                                 <p class="level-progress-bar-fill"></p>
                             </div>
