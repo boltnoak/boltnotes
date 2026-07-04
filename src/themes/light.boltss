@@ -1,31 +1,39 @@
 :root {
-    --bg: rgb(250, 250, 250);
+    --bg: rgba(250, 250, 250);
 
-    --sep-bar: rgba(200, 200, 200, 0.4);
+    --sep-bar: rgba(210, 210, 210, 0.4);
 
-    --text: black;
-    --text-dark-gray: rgb(7,7,7);
-    --text-gray: rgb(50, 50, 50);
-    --text-light-gray: rgb(110, 110, 110);
+    --text: rgba(0, 0, 0);
+    --text-dark-gray: rgba(7,7,7);
+    --text-gray: rgba(50, 50, 50);
+    --text-light-gray: rgba(110, 110, 110);
 
-    --green: rgb(0, 130, 70);
-    --blue: rgb(20, 150, 255);
-    --red: rgb(255, 70, 70);
+    --green: rgba(0, 150, 70);
+    --blue: rgba(20, 150, 255);
+    --yellow: rgba(250, 190, 0);
+    --orange: rgba(250, 125, 50);
+    --red: rgba(255, 70, 70);
 
-    --btn: rgb(220,220,220);
-    --btn-hover: rgb(227,227,227);
-    --btn-color: rgb(20, 150, 255);
-    --btn-hover-color: rgb(20, 170, 255);
-    --btn-text-color: rgb(0, 75, 127.5);
+    --green-light: rgba(0, 200, 90);
+    --blue-light: rgba(20, 180, 255);
+    --yellow-light: rgba(250, 255, 50);
+    --orange-light: rgba(250, 140, 90);
+    --red-light: rgba(255, 90, 90);
 
-    --tag: rgba(200, 200, 200, 0.75);
+    --btn: rgba(220,220,220);
+    --btn-hover: rgba(227,227,227);
+    --btn-color: rgba(20, 150, 255);
+    --btn-hover-color: rgba(20, 170, 255);
+    --btn-text-color: rgba(0, 75, 127.5);
 
-    --tab: rgb(220,220,220);
-    --tab-hover: rgb(225,225,225);
-    --tab-active: rgb(235,235,235);
+    --tag: rgba(220,220,220,.75);
+
+    --tab: rgba(220,220,220);
+    --tab-hover: rgba(225,225,225);
+    --tab-active: rgba(235,235,235);
 
     --more-video-active: rgba(215,215,215,.7);
     --more-video-hover: rgba(215,215,215,.4);
 
-    --fortnite-season-tags: rgb(235,235,235);
+    --fortnite-season-tags: rgba(235,235,235);
 }

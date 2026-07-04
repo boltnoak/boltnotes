@@ -300,6 +300,22 @@ header {
     padding: 1.25vh .8vw;
     text-align: start;
 }
+#reload-btn {
+    background-color: var(--tab);
+    color: var(--text);
+    display: flex;
+    padding: 1.2vh 1vw;
+    width: fit-content;
+    text-align: center;
+    justify-content: center;
+    align-self: center;
+    border-radius: 1vh;
+    cursor: pointer;
+    transition: background .1s linear;
+}
+#reload-btn:hover {
+    background-color: var(--tab-hover);
+}
 #view-games.list .game:hover {
     transform: none;
     background-color: var(--tab-hover);

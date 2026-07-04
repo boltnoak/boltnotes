@@ -47,6 +47,7 @@ header {
     justify-content: center;
     z-index: 1;
     padding: 1.5vh;
+    margin-bottom: 1.6vh;
 }
 .boltnotes-logo-div {
     display: flex;
@@ -86,7 +87,6 @@ header {
     align-items: center;
     justify-content: center;
     margin: 0 10vw;
-    padding-top: 2vh;
 }
 
 /* Páginas */
@@ -94,12 +94,12 @@ header {
     text-decoration: none;
     width: 45vh;
     border-radius: 1.2vh;
-    transition: transform .15s;
     overflow: hidden;
     cursor: pointer;
+    transition: transform .05s linear;
 }
 .page:hover {
-    transform: translateY(-.7vh);
+    transform: scale(1.02);
 }
 .page-image {
     height: 28vh;
@@ -107,7 +107,6 @@ header {
     transform: translateY(0);
     background: linear-gradient(to bottom, var(--tab-hover), var(--tab-active));
     border-radius: 1.2vh;
-    margin-bottom: 1.6vh;
     display: flex;
     flex-direction: row;
 }
@@ -228,19 +227,18 @@ header {
 .info {
     display: flex;
     justify-content: center;
-    gap: 1vh;
-    height: 3vh;
+    gap: .5vw;
+    margin-top: 1.25vh;
 }
 .info p {
-    background-color: var(--tag);
     color: var(--text);
+    background-color: var(--tag);
     font-family: 'Montserrat';
-    font-size: 1.7vh;
-    height: 2.3vh;
+    font-size: 1.9vh;
     font-weight: 500;
     margin: 0;
-    padding: .4vh .6vw;
-    border-radius: .8vh;
+    padding: .6vh .6vw;
+    border-radius: .7vh;
     display: inline-block;
     align-self: center;
     text-align: center;

@@ -661,3 +661,8 @@ document.getElementById('addGameBtn').addEventListener('click', async () => {
     addBtn.style.pointerEvents = 'auto';
     addBtn.style.opacity = '1';
 });
+
+
+document.getElementById('reload-btn').addEventListener('click', () => {
+    window.location.reload();
+});

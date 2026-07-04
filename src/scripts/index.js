@@ -452,7 +452,7 @@ async function loadGamesTags() {
 
     const achie = document.getElementById('games-platinados');
 
-    achie.textContent = `${achieCount} Platinas`
+    achie.textContent = `${achieCount} Platinados`
 }
 
 loadGamesTags()
