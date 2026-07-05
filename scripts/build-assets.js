@@ -93,6 +93,19 @@ async function main() {
         }
     }
 
+    for (const [folder, data] of Object.entries(state)) {
+        const source = path.join(ASSETS_DIR, folder);
+        if (fs.existsSync(source)) continue;
+
+        const zipName = `${folder}.zip`;
+        // console.log(`~ ${zipName} — Não está na pasta, mantendo no state.`);
+        manifest.packages.push({
+            name: zipName,
+            size: data.zipSize,
+            hash: data.zipHash
+        });
+    }
+
     fs.writeFileSync(
         path.join(OUTPUT_DIR, 'manifest.json'),
         JSON.stringify(manifest, null, 2)
@@ -100,7 +113,7 @@ async function main() {
 
     // upload só dos que mudaram + manifest
     if (changed.length === 0) {
-        console.log('Nenhuma pasta mudou. Atualizando apenas o manifest...');
+        console.log('Nenhuma mudança. Atualizando apenas o manifest...');
         execSync(`gh release upload assets ${OUTPUT_DIR}/manifest.json --repo boltnoak/boltnotes-assets --clobber`, { stdio: 'inherit' });
     } else {
         const files = changed.map(c => c.zipPath).join(' ');

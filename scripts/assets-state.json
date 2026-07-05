@@ -113,5 +113,15 @@
     "folderHash": "1ddf933115756548bd49df21c0c8c303c2681be24bd484d67059ebddd162aec0",
     "zipHash": "1a47fa8ad6ef0a2d3978421e30f363a9b09625fc516c58716dbb36149a62ba59",
     "zipSize": 1859160
+  },
+  "fortnite-c3s2-assets": {
+    "folderHash": "2727350403c5c40194c88735ae1cdc8f68c5410f4f502537c2e885d32dde46c1",
+    "zipHash": "689f3399b19c92019888ab136198d9bc2ab5ae45715e5b76109988f1e991f9c6",
+    "zipSize": 30090516
+  },
+  "fortnite-c3s1-assets": {
+    "folderHash": "f1d4fc9fddc66d8607a4167ebdfe1b0fa2770cec5a96f33c8d311981b08fc92f",
+    "zipHash": "bcb97d1aabc5974e76fe6e29f3a9097b2f2cca53ba0eb9146952fc8530cc2cff",
+    "zipSize": 35527635
   }
 }
