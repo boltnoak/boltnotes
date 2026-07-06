@@ -102,6 +102,10 @@ i {
     justify-content: space-between;
     align-items: center;
 }
+::placeholder {
+    color: var(--text-dark-gray);
+    opacity: .5;
+}
 #loading-details {
     color: var(--text-gray);
     font-size: 2vh;
@@ -488,11 +492,11 @@ header {
     background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #111;
+    background: var(--btn);
     border-radius: 1vh;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #515151;
+    background: var(--btn-hover);
     cursor: default;
 }
 .sep-bar {

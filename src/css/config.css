@@ -73,7 +73,7 @@
     display: flex;
 }
 .toggle.active {
-    background-color: var(--blue);
+    background-color: var(--btn-hover-color);
 }
 .sep {
     font-family: 'Montserrat';
@@ -115,7 +115,7 @@
 }
 .toggle.active::after {
     transform: translateX(1.65vw);
-    border: solid .5vh var(--blue);
+    border: solid .5vh var(--btn-hover-color);
 }
 .sep-bar {
     margin: 0 .5vw 0 .1vw;

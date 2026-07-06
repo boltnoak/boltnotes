@@ -119,10 +119,6 @@ header {
     margin-right: .4vw;
     z-index: 98;
 }
-#newNote-name::placeholder {
-    color: var(--text);
-    opacity: .5;
-}
 #newNote-add {
     background-color: var(--btn);
     padding: 2vh 1vw;
