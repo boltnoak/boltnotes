@@ -308,7 +308,7 @@ html.window-normal .app-container {
     display: none;
     font-family: 'Montserrat';
     font-weight: 600;
-    background-color: var(--blue);
+    background-color: var(--btn-hover-color);
     color: var(--text);
     border: none;
     font-size: 2vh;
