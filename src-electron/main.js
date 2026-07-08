@@ -297,6 +297,16 @@ const COVERS = path.join(
     'game-covers'
 );
 
+const GAMELOGOS = path.join(
+    APPDATA,
+    'game-logos'
+);
+
+const HEROS = path.join(
+    APPDATA,
+    'game-heros'
+);
+
 const USER_COVERS = path.join(
     DOCUMENTS,
     'Games',
@@ -1188,52 +1198,84 @@ ipcMain.handle('games:get-steam-data', async (_, appid) => {
 });
 ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
   const https = require('https');
+  const fs = require('fs');
+  const path = require('path');
 
   const coversDir = path.join(COVERS);
+  const herosDir = path.join(HEROS);
+  const logosDir = path.join(GAMELOGOS);
   const userCoverDir = path.join(USER_COVERS);
+  const placeholderPath = path.join(ASSETS_DIR, 'placeholder.jpg');
 
-  if (!fs.existsSync(coversDir)) {
-    fs.mkdirSync(coversDir, { recursive: true });
-  }
+  if (!fs.existsSync(coversDir)) fs.mkdirSync(coversDir, { recursive: true });
+  if (!fs.existsSync(herosDir)) fs.mkdirSync(herosDir, { recursive: true });
+  if (!fs.existsSync(logosDir)) fs.mkdirSync(logosDir, { recursive: true });
 
   const safeName = name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-  const filePath = path.join(coversDir, safeName + '.jpg');
 
-  if (fs.existsSync(filePath)) {
-    return filePath;
-  }
-  let url = cover;
-  if (!url && appid) {
-    url = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`;
-  }
-  if (url && !appid) {
-    const customCover = path.join(userCoverDir, url.includes('.') ? url : `${url}.png`);
-    return fs.existsSync(customCover) ? customCover : null;
-  }
-  if (!url) {
-    const placeholderPath = path.join(ASSETS_DIR, 'placeholder.jpg');
-    return fs.existsSync(placeholderPath) ? placeholderPath : null;
-  }
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(filePath);
+  const coverFilePath = path.join(coversDir, safeName + '.jpg');
+  const heroFilePath = path.join(herosDir, safeName + '.jpg');
+  const logoFilePath = path.join(logosDir, safeName + '.png');
 
-    https.get(url, res => {
-      if (res.statusCode !== 200) {
-        fs.unlinkSync(filePath);
-        return resolve(null);
+  const result = { cover: null, hero: null, logo: null };
+
+  const downloadImage = (url, destPath) => {
+    return new Promise((resolve) => {
+      if (fs.existsSync(destPath)) {
+        return resolve(destPath);
       }
 
-      res.pipe(file);
+      const file = fs.createWriteStream(destPath);
+      https.get(url, res => {
+        if (res.statusCode !== 200) {
+          file.close();
+          if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
+          return resolve(null);
+        }
 
-      file.on('finish', () => {
+        res.pipe(file);
+        file.on('finish', () => {
+          file.close();
+          resolve(destPath);
+        });
+      }).on('error', () => {
         file.close();
-        resolve(filePath);
+        if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
+        resolve(null);
       });
-    }).on('error', err => {
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      resolve(null);
     });
-  });
+  };
+
+  let coverUrl = cover;
+  if (!coverUrl && appid) {
+    coverUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`;
+  }
+
+  if (coverUrl && !appid) {
+    const customCover = path.join(userCoverDir, coverUrl.includes('.') ? coverUrl : `${coverUrl}.png`);
+    result.cover = fs.existsSync(customCover) ? customCover : (fs.existsSync(placeholderPath) ? placeholderPath : null);
+  } else if (!coverUrl) {
+    result.cover = fs.existsSync(placeholderPath) ? placeholderPath : null;
+  } else {
+    result.cover = await downloadImage(coverUrl, coverFilePath);
+  }
+
+  if (appid) {
+    const heroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`;
+    result.hero = await downloadImage(heroUrl, heroFilePath);
+    
+    if (!result.hero) {
+      const fallbackHeroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/page_bg_generated_v6b.jpg`;
+      result.hero = await downloadImage(fallbackHeroUrl, heroFilePath);
+    }
+
+    const logoUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/logo.png`;
+    result.logo = await downloadImage(logoUrl, logoFilePath);
+  }
+
+  if (!result.hero && fs.existsSync(placeholderPath)) result.hero = placeholderPath;
+
+  return result;
 });
 
 // Temas

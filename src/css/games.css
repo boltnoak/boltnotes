@@ -580,14 +580,57 @@ header {
     border-radius: 8px;
     justify-content: center;
 }
+#addGame-close {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 3vh;
+    margin: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border 0.15s linear;
+    border: solid .6vh transparent;
+    padding: .5vh .3vw;
+}
+#addGame-close:hover {
+    border: solid .6vh var(--text);
+}
 .add-game-form {
     display: flex;
     flex-direction: column;
     gap: 1vh;
-    height: 30%;
     font-family: 'Montserrat';
-    padding: 0;
-    margin: 1.5vh 0 0 .8vw;
+    padding: 1vh .8vw 1.8vh .8vw;
+    margin: 0;
+    background-color: var(--bg);
+    border-radius: 2vh;
+}
+.addGameOpen {
+    margin: 0 0 1vh .8vw;
+    font-weight: 600;
+    transition: all .1s linear;
+    cursor: pointer;
+    text-decoration: underline .21vh;
+    text-underline-offset: .3vh;
+    text-decoration-color: transparent;
+    transition: all .1s linear;
+}
+.addGameOpen:hover {
+    text-decoration-color: var(--text);
+}
+#addGame-popup {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 99;
+    background: rgba(0,0,0,.6);
+    margin: 0;
+    height: 100%;
+    transition: background 1s linear;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
 }
 .add-game-form input {
     font-size: 2vh;
@@ -596,7 +639,6 @@ header {
     background-color: var(--tab);
     border: none;
     color: var(--text);
-    flex: 1;
     padding: 2vh 1vw;
     margin: 0;
     border-radius: 1.3vh;
@@ -639,13 +681,13 @@ header {
     display: none;
 }
 .add-game-form-title {
-    margin: 0 0 .5vh 0;
+    margin: 0 0 .25vh 0;
     font-size: 3vh;
     font-weight: 600;
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     text-align: center;
 }
 .add-game-form-title p {
@@ -802,7 +844,7 @@ header {
 
 
 .game-popup-div{
-    position: fixed;
+    position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
@@ -816,14 +858,235 @@ header {
     transition: background 1s linear;
     animation: popupBGIn .5s ease forwards;
     overflow: hidden;
-    opacity: 0;
     backdrop-filter: blur(4px);
 }
 .game-popup {
     background: var(--bg);
-    padding: 1.5vh;
-    border-radius: 2.3vh;
+    border-radius: 1.6vh;
     overflow: hidden;
-    min-width: 10vw;
+    width: 60vw;
     height: 70vh;
+}
+
+.game-banner-div {
+    overflow: hidden;
+    height: 21vh;
+    width: 100%;
+}
+.game-banner {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+.game-logo {
+    position: absolute;
+    margin: 0 0 0 2vw;
+    width: 20vw;
+    left: 20vw;
+    align-self: center;
+}
+.status-div{
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    background-color: var(--tab);
+    padding: 1.2vh .7vw;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+.achie-info {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .4vw;
+}
+.achie-info p {
+    margin: 0;
+    font-weight: 700;
+    color: var(--blue);
+}
+.achie-bar {
+    width: 18vw;
+    flex: 1;
+    display: flex;
+    height: 1vh;
+    background-color: var(--tag);
+    margin: 0;
+    overflow: hidden;
+    border-radius: 1vh;
+}
+.achie-bar-fill {
+    width: 100%;
+    height: 1vh;
+    background-color: var(--blue);
+    margin: 0;
+}
+.game-popup-status {
+    display: flex;
+    flex-direction: row;
+    gap: .4vw;
+}
+.game-popup-info {
+    display: flex;
+    flex-direction: row;
+    gap: .7vw;
+}
+.achie-quant {
+    font-size: 2vh;
+    font-weight: 700;
+    align-self: center;
+}
+.campaign-status-tag {
+    font-size: 2vh;
+    font-weight: 700;
+    background-color: var(--green);
+    width: fit-content;
+    border-radius: .8vh;
+    padding: .3vh .15vw .3vh 1vw;
+}
+.campaign-status-tag {
+    font-size: 2vh;
+    font-weight: 700;
+    background-color: var(--green);
+    width: fit-content;
+    border-radius: .8vh;
+    padding: .3vh .4vw .3vh 1.5vw;
+    color: var(--text-green);
+}
+.campaign-status-tag::before {
+    content: '';
+    position: absolute;
+    width: .8vw;
+    height: 1.6vh;
+    border-radius: 50%;
+    background-color: var(--green-light);
+    object-fit: cover;
+    align-self: center;
+    transform: translateX(-1.08vw);
+}
+.achie-status-tag {
+    font-size: 2vh;
+    font-weight: 700;
+    background-color: var(--green);
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    gap: .35vw;
+    border-radius: .8vh;
+    padding: .3vh .15vw .3vh 1vw;
+}
+.game-content {
+    margin: 2vh 1vw 2vh 1vw;
+    height: fit-content;
+}
+.achie-info-title {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    position: relative;
+    width: 21.3vw;
+    justify-content: space-between;
+    overflow: hidden;
+}
+.achie-info-title-text {
+    margin: 0;
+    font-weight: 900;
+    font-size: 3vh;
+    color: var(--text-light-gray);
+}
+.achie-info-title-numbers {
+    margin: 0;
+    font-weight: 600;
+    font-size: 2.25vh;
+    align-self: center;
+    overflow: hidden;
+    color: var(--text-gray);
+}
+.dev-pub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.8vh;
+    position: relative;
+    overflow: hidden;
+    color: var(--text-dark-gray);
+}
+.game-popup-title {
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 5.5vw;
+    padding-left: 0%;
+    color: var(--text);
+}
+.dev-pub p {
+    font-size: 2vh;
+    font-weight: 700;
+    margin: 0;
+    animation: scroll-text 6s linear infinite;
+}
+.game-releaseDate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.8vh;
+    position: relative;
+    overflow: hidden;
+    color: var(--text-dark-gray);
+}
+.game-releaseDate p {
+    font-size: 2vh;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text);
+}
+@keyframes scroll-text {
+    0% {
+        transform: translateX(0%);
+        opacity: 1;
+    }
+    10% {
+        transform: translateX(0%);
+        opacity: 1;
+    }
+    85% {
+        transform: translateX(-130%);
+        opacity: 1;
+    }
+    90% {
+        transform: translateX(-130%);
+        opacity: 0;
+    }
+    93% {
+        transform: translateX(0%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0%);
+        opacity: 1;
+    }
+}
+.achie-status-tag {
+    font-size: 2vh;
+    font-weight: 700;
+    background-color: var(--yellow);
+    width: fit-content;
+    border-radius: .8vh;
+    padding: .3vh .4vw .3vh 1.5vw;
+    color: var(--text-yellow);
+}
+.achie-status-tag::before {
+    content: '';
+    position: absolute;
+    width: .8vw;
+    height: 1.6vh;
+    border-radius: 50%;
+    background-color: var(--yellow-light);
+    object-fit: cover;
+    align-self: center;
+    transform: translateX(-1.08vw);
 }

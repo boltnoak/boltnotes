@@ -13,33 +13,21 @@
     <div class="pageBody">
         <div class="sidebar">
             <div>
-            <div class="playingNowSection">
-                <div id="playingNowSection-title"><p><i class="fa-solid fa-gamepad"></i>Jogando no momento</p></div>
-                <div class="playingNow-panel">
-                    <div id="playingNow-games"></div>
+                <div class="playingNowSection">
+                    <div id="playingNowSection-title"><p><i class="fa-solid fa-gamepad"></i>Jogando no momento</p></div>
+                    <div class="playingNow-panel">
+                        <div id="playingNow-games"></div>
+                    </div>
                 </div>
+                <!-- <div class="sep-bar-sidebar"></div>
+                <div class="playingNowSection">
+                    <div id="playingNowSection-title"><p><i class="fa-solid fa-trophy"></i>Platinando no momento</p></div>
+                    <div class="playingNow-panel">
+                        <div id="playingNow-games"></div>
+                    </div>
+                </div> -->
             </div>
-            <!-- <div class="sep-bar-sidebar"></div>
-            <div class="playingNowSection">
-                <div id="playingNowSection-title"><p><i class="fa-solid fa-trophy"></i>Platinando no momento</p></div>
-                <div class="playingNow-panel">
-                    <div id="playingNow-games"></div>
-                </div>
-            </div> -->
-            </div>
-            <div class="add-game-form">
-                <div class="add-game-form-title"><i class="fa-solid fa-square-plus"></i><p>Novo jogo</p></div>
-                <input type="text" id="gameName" placeholder="Nome">
-                <div class="appid-div">
-                    <input type="text" id="gameAppId" placeholder="AppID">
-                    <!-- <a class="steamdb-btn" id="steamdb-btn" onclick="searchAppID()" target="_blank">
-                        <i class="fa-solid fa-folder-open"></i></a> -->
-                    <i class="steamdb-btn fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
-                </div>
-                <div class="add-game-form-options">
-                    <a id="addGameBtn"><i class="fa-solid fa-plus"></i>Adicionar</a>
-                </div>
-            </div>
+            <p class="addGameOpen"><i class="fa-solid fa-plus"></i>Adicionar novo jogo</p>
         </div>
         <p class="sep-bar-v"></p>
         <div class="page-content">
@@ -79,11 +67,34 @@
         </div>
     </div>
 
-    <!-- <div class="game-popup-div">
+    <div class="game-popup-div">
         <div class="game-popup">
-
+            <div class="game-banner-div">
+                <img class="game-banner" src="file:///home/miguel/.config/BoltNotes/game-heros/portal__revolution.jpg">
+                <img class="game-logo" src="file:///home/miguel/.config/BoltNotes/game-logos/portal__revolution.png" alt="">
+            </div>
+                <div class="status-div">
+                <div class="game-popup-status">
+                    <div class="campaign-status-tag">Zerado</div>
+                    <div class="achie-status-tag">Platinado</div>
+                </div>
+                <div class="game-popup-info">
+                    <div class="game-releaseDate">LANÇADO EM<p>06/01/2024</p></div>
+                    <div class="dev-pub">DEVELOPER<div class="game-popup-title"><p>Second Face Software</p></div></div>
+                    <div class="dev-pub">PUBLISHER<div class="game-popup-title"><p>Second Face Software</p></div></div>
+                </div>
+            </div>
+            <div class="game-content">
+                <div class="achie-info-title"><p class="achie-info-title-text">CONQUISTAS</p><p class="achie-info-title-numbers">144/144</p></div>
+                <div class="achie-info">
+                    <p>100%</p>
+                    <div class="achie-bar"><div class="achie-bar-fill"></div></div>
+                </div>
+            </div>
+                
+                
         </div>
-    </div> -->
+    </div>
 
     <header>
         <a class="back" href="pages/index.html">Voltar<i class="fa-solid fa-caret-left"></i></a>
@@ -91,6 +102,22 @@
 
     <div id="loading-screen">
         <div class="spinner"></div>
+    </div>
+</div>
+
+<div id="addGame-popup">
+    <div class="add-game-form">
+        <div class="add-game-form-title"><p><i class="fa-solid fa-square-plus"></i>Adicionar jogo</p><i id="addGame-close" class="fa-solid fa-xmark"></i></div>
+        <input type="text" id="gameName" placeholder="Nome">
+        <div class="appid-div">
+            <input type="text" id="gameAppId" placeholder="AppID">
+            <!-- <a class="steamdb-btn" id="steamdb-btn" onclick="searchAppID()" target="_blank">
+                <i class="fa-solid fa-folder-open"></i></a> -->
+            <i class="steamdb-btn fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
+        </div>
+        <div class="add-game-form-options">
+            <a id="addGameBtn"><i class="fa-solid fa-plus"></i>Adicionar</a>
+        </div>
     </div>
 </div>
 

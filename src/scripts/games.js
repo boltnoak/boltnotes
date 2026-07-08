@@ -133,7 +133,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const img = document.createElement("img");
     img.className = "game-cover";
 
-    const localPath = await window.api.games.ensureCover({
+    const { cover: localPath } = await window.api.games.ensureCover({
         appid: game.appid,
         name: game.name,
         cover: game.cover
@@ -386,7 +386,7 @@ async function createGameAchieCard(game, completedIndex = null) {
     const img = document.createElement("img");
     img.className = "game-cover";
 
-    const localPath = await window.api.games.ensureCover({
+    const { cover: localPath } = await window.api.games.ensureCover({
         appid: game.appid,
         name: game.name,
         cover: game.cover
@@ -666,3 +666,20 @@ document.getElementById('addGameBtn').addEventListener('click', async () => {
 document.getElementById('reload-btn').addEventListener('click', () => {
     window.location.reload();
 });
+
+const closeAddBtn = document.getElementById('addGame-close');
+const addGamePopup = document.getElementById('addGame-popup');
+const addGameOpenBtn = document.querySelector('.addGameOpen');
+
+closeAddBtn.addEventListener('click', () => addGamePopup.style.display = 'none');
+
+addGameOpenBtn.addEventListener('click', () => addGamePopup.style.display = 'flex');
+
+const titleContainer = document.querySelector('.game-popup-title');
+const title= document.querySelector('.game-popup-title p');
+
+setTimeout(() => {
+    if (title.scrollWidth <= titleContainer.clientWidth) {
+        title.style.animation = 'none';
+    }
+}, 50);
