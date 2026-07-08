@@ -83,18 +83,48 @@ function parseBRDate(dateStr) {
 
 let cachedGamesDB = null;
 let cachedStatus = null;
+let cachedAchie = null;
+
 
 async function loadGamesDB() {
     if (cachedGamesDB) {
-        console.log("Trailers carregados do cache!");
+        console.log("Reviews carregados do cache!");
         return cachedGamesDB;
     }
     try {
-        const content = await window.api.fortnite.getGamesDB(); 
-        cachedGamesDB = content || {};
+        const achievements = await window.electronAPI.json.load(`Games/games.json`);
+        cachedGamesDB = achievements || {};
         return cachedGamesDB;
     } catch (e) {
-        console.error("Erro ao buscar trailers da internet:", e);
+        console.error("Erro ao ler meus_reviews.json:", e);
+        return {};
+    }
+}
+async function loadStatusAchie() {
+    if (cachedAchie) {
+        console.log("Reviews carregados do cache!");
+        return cachedAchie;
+    }
+    try {
+        const achievements = await window.electronAPI.json.load(`Games/achievements.json`);
+        cachedAchie = achievements || {};
+        return cachedAchie;
+    } catch (e) {
+        console.error("Erro ao ler meus_reviews.json:", e);
+        return {};
+    }
+}
+async function loadStatus() {
+    if (cachedStatus) {
+        console.log("Reviews carregados do cache!");
+        return cachedStatus;
+    }
+    try {
+        const campaigns = await window.electronAPI.json.load(`Games/campaigns.json`);
+        cachedStatus = campaigns || {};
+        return cachedStatus;
+    } catch (e) {
+        console.error("Erro ao ler meus_reviews.json:", e);
         return {};
     }
 }
@@ -102,11 +132,9 @@ async function loadGamesDB() {
 async function loadGames() {
     const data = await loadGamesDB();
     const stats = await loadStatus();
-
     const playingNow = document.querySelector(".playingNow-panel");
 
     if (!playingNow) return;
-
     playingNow.innerHTML = "";
 
     let listaStats = Array.isArray(stats) ? stats : (stats.games || []);
@@ -125,22 +153,10 @@ async function loadGames() {
     });
 
     const playing = games.filter(g => (g.status || "").toLowerCase().trim() === "jogando");
-    let others = games.filter(g => (g.status || "").toLowerCase().trim() !== "jogando");
-
-    const completedMap = new Map(
-        games
-            .filter(g => (g.status || "").toLowerCase() === "zerado")
-            .sort((a, b) => parseBRDate(a.completeDate) - parseBRDate(b.completeDate))
-            .map((g, i) => [g.appid || g.name, i + 1])
-    );
-
-    // Renderiza jogos sendo jogados
     for (const game of playing) {
-        const card = await createGameCard(game, true);
+        const card = await createGameCard(game);
         playingNow.appendChild(card);
     }
-
-    // Tela vazia se não houver jogos jogando
     if (playingNow.childElementCount === 0) {
         const noGames = document.createElement("div");
         noGames.className = "playingNow-no-games";
@@ -148,8 +164,7 @@ async function loadGames() {
         playingNow.appendChild(noGames);
     }
 }
-
-async function createGameCard(game, isPlaying = false, completedIndex = null) {
+async function createGameCard(game) {
     const div = document.createElement("div");
     div.className = "game";
 
@@ -162,7 +177,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         cover: game.cover
     });
 
-    img.src = localPath ? `file://${localPath}` : "placeholder.jpg";
+    img.src = localPath ? `file://${localPath}` : "assets://placeholder.png";
 
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -183,13 +198,13 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     gameInfo.appendChild(title);
     
     if (status === "jogando") {
-        tag.classList.add("jogando");
-        const statusPercentage = document.createElement("span");
-        statusPercentage.className = "status-text";
-        statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
-        gameInfo.appendChild(statusPercentage);
-        gameInfo.appendChild(tag);
-        div.classList.add('jogando');
+        // tag.classList.add("jogando");
+        // const statusPercentage = document.createElement("span");
+        // statusPercentage.className = "status-text";
+        // statusPercentage.textContent = `Jogando`;
+        // gameInfo.appendChild(statusPercentage);
+        // gameInfo.appendChild(tag);
+        // div.classList.add('jogando');
     }
     
     tag.appendChild(tagFill);
@@ -198,21 +213,6 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     div.appendChild(gameInfo);
 
     return div;
-}
-
-async function loadStatus() {
-    if (cachedStatus) {
-        console.log("Reviews carregados do cache!");
-        return cachedStatus;
-    }
-    try {
-        const content = await window.electronAPI.json.load(`Games/campaigns.json`);
-        cachedStatus = content || {};
-        return cachedStatus;
-    } catch (e) {
-        console.error("Erro ao ler meus_reviews.json:", e);
-        return {};
-    }
 }
 
 loadGames();
@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         inicializarTitulo();
         document.querySelector('.playingNow-panel').style.display = 'none';
     } if (currentFeatured === 'playing_now') {
-        document.querySelector('#featured-title').innerHTML = `Jogando no momento<i id="playingNowSection-toggle" class="fa-solid fa-gamepad"></i>`;
+        document.querySelector('#featured-title').innerHTML = `Jogando no momento<i class="fa-solid fa-gamepad"></i>`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
     } else {
         for (const [key, value] of Object.entries(featuredPanels)) {

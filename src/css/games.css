@@ -27,10 +27,11 @@ header {
 .sidebar {
     width: 100%;
     flex: 1;
-    margin: 0 0 6.5vh .8vw;
+    margin: 0 0 6.5vh 0;
     justify-content: space-between;
     display: flex;
     flex-direction: column;
+    gap: 0;
 }
 .sep-bar-v {
     margin: 0 0 1.5vh 1vw;
@@ -72,9 +73,7 @@ header {
 
 
 /* Painel de jogando no momento */
-.playingNowSection {
-    height: 70%;
-}
+.playingNowSection
 #playingNowSection-title {
     display: flex;
     justify-content: center;
@@ -98,10 +97,11 @@ header {
     color: var(--text);
 }
 .playingNow-panel {
-    gap: 1.5vh;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
+    height: 20vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: .8vh .8vw .8vh .8vw;
 }
 .playingNow-games {
     padding: 1.5vh;
@@ -120,12 +120,14 @@ header {
     font-family: 'Montserrat';
     font-weight: 500;
     font-size: 2.25vh;
-    text-align: center;
-    justify-content: center;
-    margin: 1.5vh 0;
+    margin: 0;
     width: 100%;
+    height: 95%;
+    display: flex;
     text-align: center;
     justify-content: center;
+    align-items: center;
+    opacity: .5;
 }
 
 /* Barra de visualização */
@@ -485,11 +487,19 @@ header {
     color: var(--yellow);
 }
 .playingNow-panel .game {
-    width: 21vw;
-    padding: .7vh 0;
+    width: 99%;
+    padding: 0;
+    margin-top: 1.5vh;
+    border: .6vh solid var(--blue);
+    background-color: transparent;
+    border-radius: 2vh;
 }
 .playingNow-panel .game-info {
     gap: .5vh;
+    background-color: var(--tab);
+    border-radius: .8vh;
+    padding: 1vh;
+    margin: 1vh;
 }
 .game.jogando .status-text {
     color: var(--blue);
@@ -564,6 +574,12 @@ header {
     padding: 0;
     margin: .5vh 0 0 0;
 }
+.sep-bar-sidebar {
+    margin: 1.25vh 0 1.25vh .8vw;
+    border: solid 2px var(--sep-bar);
+    border-radius: 8px;
+    justify-content: center;
+}
 .add-game-form {
     display: flex;
     flex-direction: column;
@@ -571,7 +587,7 @@ header {
     height: 30%;
     font-family: 'Montserrat';
     padding: 0;
-    margin: 1.5vh 0 0 0;
+    margin: 1.5vh 0 0 .8vw;
 }
 .add-game-form input {
     font-size: 2vh;

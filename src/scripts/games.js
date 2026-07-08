@@ -216,11 +216,11 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     else if (status === "wishlist") tag.classList.add("wishlist");
 
     if (status === "jogando") {
-        const statusPercentage = document.createElement("span");
-        statusPercentage.className = "status-text";
-        statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
-        statusDiv.appendChild(statusPercentage);
-        statusDiv.appendChild(tag);
+        // const statusPercentage = document.createElement("span");
+        // statusPercentage.className = "status-text";
+        // statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
+        // statusDiv.appendChild(statusPercentage);
+        // statusDiv.appendChild(tag);
         div.classList.add('jogando');
     }
 

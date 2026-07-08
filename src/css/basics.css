@@ -370,12 +370,6 @@ html.window-normal .app-container {
     pointer-events: none;
     transition: opacity .1s ease, transform .1s ease;
 }
-#config[data-tooltip]::after {
-    transform: translate(-100%, -50%);
-}
-#config[data-tooltip]:hover::after {
-    transform: translate(-108%, -50%);
-}
 [data-tooltip]:hover::after {
     opacity: 1;
     transform: translate(8%, -50%);
