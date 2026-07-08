@@ -44,11 +44,9 @@ async function loadGames() {
         const currentStatus = (combinedGame.status || "").toLowerCase().trim();
         const hasProgress = (combinedGame.storyProgress || 0) > 0;
 
-        // Se o jogo já tem status ativo ou progresso, ele NUNCA é pré-venda
         if (currentStatus === "zerado" || currentStatus === "jogando" || hasProgress) {
             combinedGame.isPreOrder = false;
-        } 
-        // Só analisa a data se ela existir e for no formato correto com barras
+        }
         else if (combinedGame.releaseDate && combinedGame.releaseDate.includes("/")) {
             const parts = combinedGame.releaseDate.split('/');
             
@@ -64,7 +62,6 @@ async function loadGames() {
                     hoje.setHours(0, 0, 0, 0);
                     gameDate.setHours(0, 0, 0, 0);
 
-                    // SÓ FICA PRE-ORDER SE A DATA DO JOGO FOR DEPOIS DA DATA ATUAL (FUTURO)
                     if (gameDate.getTime() > hoje.getTime()) {
                         combinedGame.isPreOrder = true;
                     }
@@ -164,7 +161,8 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     const tagFill = document.createElement("span");
     tagFill.className = "status-fill";
-    tagFill.style.width = (game.storyProgress || 0) + "%";
+    // tagFill.style.width = (game.storyProgress || 0) + "%";
+    tagFill.style.width = "100%";
 
     gameInfo.appendChild(title);
     gameInfo.appendChild(rating);
@@ -225,6 +223,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     }
 
     title.textContent = game.name;
+    div.dataset.id = game.name;
 
     const listElement = document.getElementById("view-games");
     const isListView = listElement ? listElement.classList.contains("list") : false;
@@ -246,7 +245,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     } else if (status === "ajogar") {
         const statusText = document.createElement("span");
         statusText.className = "status-text";
-        statusText.textContent = `A Jogar (${game.storyProgress || 0}%)`;
+        statusText.textContent = `À Jogar`;
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
         div.classList.add('ajogar');
@@ -256,6 +255,18 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     div.appendChild(img);
     div.appendChild(gameInfo);
+
+    div.addEventListener('click', () => openGamePopup(div,
+        game.status,
+        game.releaseDate,
+        game.rating,
+        game.developer,
+        game.publisher,
+        game.hasAchievements,
+        game.totalAchievements,
+        game.unlockedAchievements,
+        div
+    ));
 
     return div;
 }
@@ -336,7 +347,7 @@ async function loadGamesAchie() {
     });
 
     const sort = document.getElementById("realSorting-options")?.value || "date-recent";
-    let others = games.filter(g => (g.status || "").toLowerCase().trim());
+    let others = games.filter(g => (g.achieStatus || "").toLowerCase().trim());
 
     if (sort === "date-recent") {
         others.sort((a, b) => parseBRDate(b.completeDate) - parseBRDate(a.completeDate));
@@ -353,22 +364,22 @@ async function loadGamesAchie() {
     if (isGrid) {
         const order = { "platinando": 0, "aplatinar": 1, "platinado": 2 };
         others.sort((a, b) => {
-            const sa = (a.status || "").toLowerCase().trim();
-            const sb = (b.status || "").toLowerCase().trim();
+            const sa = (a.achieStatus || "").toLowerCase().trim();
+            const sb = (b.achieStatus || "").toLowerCase().trim();
             return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
         });
     } else {
         const order = { "platinando": 0, "platinado": 1 };
         others.sort((a, b) => {
-            const sa = (a.status || "").toLowerCase().trim();
-            const sb = (b.status || "").toLowerCase().trim();
+            const sa = (a.achieStatus || "").toLowerCase().trim();
+            const sb = (b.achieStatus || "").toLowerCase().trim();
             return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
         });
     }
 
     const completedMap = new Map(
         games
-            .filter(g => (g.status || "").toLowerCase() === "platinado")
+            .filter(g => (g.achieStatus || "").toLowerCase() === "platinado")
             .sort((a, b) => parseBRDate(a.completeDate) - parseBRDate(b.completeDate))
             .map((g, i) => [g.appid || g.name, i + 1])
     );
@@ -410,7 +421,7 @@ async function createGameAchieCard(game, completedIndex = null) {
     const statusDiv = document.createElement('div');
     statusDiv.className = 'status-div';
 
-    const status = (game.status || "").toLowerCase().trim();
+    const status = (game.achieStatus || "").toLowerCase().trim();
 
     const tag = document.createElement("span");
     tag.className = "status";
@@ -675,11 +686,84 @@ closeAddBtn.addEventListener('click', () => addGamePopup.style.display = 'none')
 
 addGameOpenBtn.addEventListener('click', () => addGamePopup.style.display = 'flex');
 
-const titleContainer = document.querySelector('.game-popup-title');
-const title= document.querySelector('.game-popup-title p');
 
-setTimeout(() => {
-    if (title.scrollWidth <= titleContainer.clientWidth) {
-        title.style.animation = 'none';
+
+async function openGamePopup(el, status, releaseDate, rating, developer, publisher) {
+    const name = el.dataset.id.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+    const popup = document.querySelector('.game-popup-div');
+    const banner = document.querySelector('.game-banner');
+    const logo = document.querySelector('.game-logo');
+    const devText = document.querySelector('.dev-name');
+    const pubText = document.querySelector('.pub-name');
+    const releaseDateText = document.querySelector('.game-releaseDate-text');
+    const statusText = document.querySelector('.campaign-status-tag');
+    const achieStatusText = document.querySelector('.achie-status-tag');
+
+
+    console.log(name, releaseDate, developer, publisher, rating);
+
+    banner.src = `appdata:///game-heros/${name}.jpg`;
+    logo.src = `appdata:///game-logos/${name}.png`;
+    logo.alt = el.dataset.id;
+    devText.textContent = developer;
+    pubText.textContent = publisher;
+    releaseDateText.textContent = releaseDate;
+    
+    if (status.toLowerCase() == 'zerado') {
+        statusText.textContent = 'Zerado';
+        statusText.classList.remove('ajogar');
+        statusText.classList.remove('jogando');
+        statusText.classList.add('zerado');
     }
-}, 50);
+    if (status.toLowerCase() == 'jogando') {
+        statusText.textContent = 'Jogando';
+        statusText.classList.remove('ajogar');
+        statusText.classList.add('jogando');
+        statusText.classList.remove('zerado');
+    }
+    if (status.toLowerCase() == 'ajogar') {
+        statusText.textContent = 'Á Jogar';
+        statusText.classList.add('ajogar');
+        statusText.classList.remove('jogando');
+        statusText.classList.remove('zerado');
+    }
+    // if (game.achieStatus.toLowerCase() == 'platinado') {
+    //     achieStatusText.textContent = 'Platinado';
+    //     achieStatusText.classList.remove('ajogar');
+    //     achieStatusText.classList.remove('jogando');
+    //     achieStatusText.classList.add('zerado');
+    // }
+    // if (game.achieStatus.toLowerCase() == 'jogando') {
+    //     achieStatusText.textContent = 'Jogando';
+    //     achieStatusText.classList.remove('ajogar');
+    //     achieStatusText.classList.add('jogando');
+    //     achieStatusText.classList.remove('zerado');
+    // }
+    // if (game.achieStatus.toLowerCase() == 'ajogar') {
+    //     achieStatusText.textContent = 'Á Jogar';
+    //     achieStatusText.classList.add('ajogar');
+    //     achieStatusText.classList.remove('jogando');
+    //     achieStatusText.classList.remove('zerado');
+    // }
+
+    popup.style.display = 'flex';
+    const titleContainer = document.querySelector('.game-popup-title');
+    const title= document.querySelector('.game-popup-title p');
+
+    setTimeout(() => {
+        if (pubText.scrollWidth <= titleContainer.clientWidth) {
+            pubText.style.animation = 'none';
+        }
+        if (devText.scrollWidth <= titleContainer.clientWidth) {
+            devText.style.animation = 'none';
+        }
+    }, 1);
+}
+
+const gamePopup = document.querySelector('.game-popup-div');
+const closeGamePopup = document.querySelector('.game-popup-div');
+closeGamePopup.addEventListener('click', (e) => {
+    if (e.target === gamePopup) {
+        gamePopup.style.display = 'none';
+    }
+});

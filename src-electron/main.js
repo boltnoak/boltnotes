@@ -354,6 +354,15 @@ protocol.registerSchemesAsPrivileged([
         supportFetchAPI: true,
         corsEnabled: true
       }
+    },
+    {
+      scheme: 'appdata',
+      privileges: {
+        standard: true,
+        secure: true,
+        supportFetchAPI: true,
+        corsEnabled: true
+      }
     }
 ]);
 
@@ -459,6 +468,66 @@ if (!gotTheLock) {
           : url.hostname + url.pathname;
 
       const fullPath = path.join(ASSETS_DIR, decodeURIComponent(filePart));
+
+      if (!fs.existsSync(fullPath)) {
+        return new Response('Not Found', { status: 404 });
+      }
+
+      const stat = fs.statSync(fullPath);
+      const range = req.headers.get('range');
+
+      const mime = {
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.svg': 'image/svg+xml',
+        '.mkv': 'video/x-matroska',
+        '.mp4': 'video/mp4'
+      };
+
+      const ext = path.extname(fullPath).toLowerCase();
+
+      if (!range) {
+        const stream = fs.createReadStream(fullPath);
+
+        return new Response(stream, {
+          status: 200,
+          headers: {
+            'Content-Type': mime[ext] || 'application/octet-stream',
+            'Content-Length': stat.size,
+            'Accept-Ranges': 'bytes'
+          }
+        });
+      }
+
+      // RANGE REQUEST
+      const match = /bytes=(\d+)-(\d*)/.exec(range);
+      const start = Number(match[1]);
+      const end = match[2] ? Number(match[2]) : stat.size - 1;
+
+      const chunkSize = end - start + 1;
+      const stream = fs.createReadStream(fullPath, { start, end });
+
+      return new Response(stream, {
+        status: 206,
+        headers: {
+          'Content-Range': `bytes ${start}-${end}/${stat.size}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunkSize,
+          'Content-Type': mime[ext] || 'application/octet-stream'
+        }
+      });
+    });
+
+    protocol.handle('appdata', (req) => {
+      const url = new URL(req.url);
+
+      const filePart =
+        url.pathname === '/'
+          ? url.hostname
+          : url.hostname + url.pathname;
+
+      const fullPath = path.join(APPDATA, decodeURIComponent(filePart));
 
       if (!fs.existsSync(fullPath)) {
         return new Response('Not Found', { status: 404 });
@@ -1142,7 +1211,7 @@ ipcMain.handle('games:add', async (_, newGameData) => {
       hasAchievements: hasAchievements,
       totalAchievements: totalAchievements,
       unlockedAchievements: 0,
-      status: "aplatinar"
+      achieStatus: "aplatinar"
     };
     achievementsList.push(achievementsInfo);
     await fs.promises.writeFile(achievementsPath, JSON.stringify(achievementsList, null, 2), 'utf-8');

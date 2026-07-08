@@ -8,7 +8,7 @@
     --text-gray: rgba(150, 150, 150);
     --text-light-gray: rgba(210, 210, 210);
     --text-green: rgba(0, 70, 30);
-    --text-blue: rgba(20, 150, 255);
+    --text-blue: rgb(0, 90, 150);
     --text-yellow: rgba(250, 110, 50);
     --text-orange: rgba(250, 125, 50);
     --text-red: rgba(255, 70, 70);

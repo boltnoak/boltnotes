@@ -841,23 +841,27 @@ header {
     max-height: 85%;
 }
 
-
+@keyframes popupIn {
+    from { opacity: 0; transform: scale(0.95) }
+    to { opacity: 1; transform: scale(1) }}
+@keyframes popupOut {
+    from { opacity: 1; transform: scale(1) }
+    to { opacity: 0; transform: scale(0.95) }}
 
 .game-popup-div{
     position: absolute;
     inset: 0;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    z-index: 99;
+    z-index: 98;
     background: rgba(0,0,0,.6);
     margin: 0;
-    transform: translateY(6.4vh);
+    transform: translateY(6.5vh);
     height: 93.6vh;
     transition: background 1s linear;
     animation: popupBGIn .5s ease forwards;
-    overflow: hidden;
     backdrop-filter: blur(4px);
 }
 .game-popup {
@@ -866,6 +870,8 @@ header {
     overflow: hidden;
     width: 60vw;
     height: 70vh;
+    z-index: 99;
+    animation: popupIn .2s ease forwards;
 }
 
 .game-banner-div {
@@ -880,12 +886,14 @@ header {
 }
 .game-logo {
     position: absolute;
-    margin: 0 0 0 2vw;
-    width: 20vw;
+    margin: 0;
+    max-width: 20vw;
+    max-height: 15vh;
     left: 20vw;
     align-self: center;
+    transform: translateX(-15vw) translateY(-.4vh) scale(1.2);
 }
-.status-div{
+.game-status-div{
     height: fit-content;
     display: flex;
     align-items: center;
@@ -943,14 +951,6 @@ header {
     background-color: var(--green);
     width: fit-content;
     border-radius: .8vh;
-    padding: .3vh .15vw .3vh 1vw;
-}
-.campaign-status-tag {
-    font-size: 2vh;
-    font-weight: 700;
-    background-color: var(--green);
-    width: fit-content;
-    border-radius: .8vh;
     padding: .3vh .4vw .3vh 1.5vw;
     color: var(--text-green);
 }
@@ -964,6 +964,20 @@ header {
     object-fit: cover;
     align-self: center;
     transform: translateX(-1.08vw);
+}
+.campaign-status-tag.jogando {
+    background-color: var(--blue);
+    color: var(--text-blue);
+}
+.campaign-status-tag.jogando::before {
+    background-color: var(--blue-light);
+}
+.campaign-status-tag.ajogar {
+    background-color: var(--text-dark-gray);
+    color: var(--text-gray);
+}
+.campaign-status-tag.ajogar::before {
+    background-color: var(--text-gray);
 }
 .achie-status-tag {
     font-size: 2vh;
@@ -1021,7 +1035,7 @@ header {
     padding-left: 0%;
     color: var(--text);
 }
-.dev-pub p {
+.dev-name, .pub-name {
     font-size: 2vh;
     font-weight: 700;
     margin: 0;
@@ -1089,4 +1103,10 @@ header {
     object-fit: cover;
     align-self: center;
     transform: translateX(-1.08vw);
+}
+.close-game-popup {
+    position: absolute;
+    transform: translateX(-2.5vw);
+    padding: 1vh;
+    cursor: pointer;
 }

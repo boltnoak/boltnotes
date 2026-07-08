@@ -1,40 +1,13 @@
 @import url(../basics.css);
 
-.pageBody {
-    padding-top: 0;
-    height: 93.3vh;
-}
 .banner-bg {
     background-position: top;
     background-size: cover;
-    height: 38vh;
+    transform: translateY(6.2vh);
+    height: 86.7vh;
 }
 .sep-bar-v {
     margin: 1.5vh 1.5vw .5vh 1.5vw;
-}
-#menu {
-    background: transparent;
-}
-#menuTitle, #menuMin, #menuMax, #menuClose {
-    color: white;
-}
-.tag {
-    font-family: 'Montserrat';
-    font-weight: 500;
-    background-color: rgba(20, 20, 20, 0.75);
-    padding: .4rem .7rem;
-    border-radius: .35rem;
-    transform: skewX(-7deg);
-    color: white;
-    text-align: center;
-    margin-top: 1.4vh;
-    margin-bottom: .5vh;
-}
-.tags {
-    display: flex;
-    flex-direction: row;
-    gap: .6rem;
-    justify-content: center;
 }
 .logo {
     height: 15vh;
@@ -98,7 +71,7 @@
     font-weight: 800;
     display: grid;
     width: 100%;
-    height: 48vh;
+    height: 47.33vh;
     max-height: 65vh;
     margin: 0;
     padding: 0;
@@ -118,7 +91,9 @@
 .fortnite-contents {
     display: flex;
     flex-direction: row;
-    margin: 0 1.5vw;
+    padding: 1.5vh 1.5vw 0 1.5vw;
+    background-color: rgba(0,0,0,.6);
+    backdrop-filter: blur(6px);
 }
 .chapters {
     width: 100%;
@@ -154,6 +129,10 @@
     flex-direction: column;
     width: 18.5vw;
 }
+.chapter-image-div {
+    height: 17vh;
+    overflow: hidden;
+}
 .chapter-image {
     width: 100%;
     height: 17vh;
@@ -173,8 +152,14 @@
     text-decoration: none;
     object-fit: cover;
     justify-self: center;
-    background: var(--tab);
+    background: rgba(0,0,0,.1);
+    backdrop-filter: blur(15px);
     padding: .7vh 0 1vh 0;
     z-index: 2;
     position: relative;
+    transition: background .1s linear;
+}
+#chapter:hover .title {
+    background: rgba(90,90,90,.1);
+    backdrop-filter: blur(15px);
 }
