@@ -69,7 +69,7 @@
         <p class="seasonContents-title"></p>
     </div>
     <div class="season-contents">
-        <div class="season-events" style="display: none;" onclick="openLiveEvent(this)">
+        <div class="season-events" style="display: none;">
             <img class="event-img">
             <div class="event-data">
                 <p class="event-title"></p>

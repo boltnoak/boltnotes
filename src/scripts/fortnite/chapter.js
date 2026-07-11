@@ -1,12 +1,10 @@
 const FILE = "Fortnite/reviews.json";
 const FILE_STATS = "Fortnite/stats.json";
 
-const fileName = window.location.pathname
-    .split('/')
-    .pop()
-    .replace('.html', '');
-
-const match = fileName.match(/chapter(\d+)/i);
+let reviews = {};
+let stats = {};
+let cachedSeasonInfo = null;
+let seasonTemplateHTML = null;
 
 async function loadHeader() {
     document.body.insertAdjacentHTML('afterbegin', `
@@ -49,41 +47,49 @@ chaptersIcon.className = 'fa-solid fa-book';
 
 if (document.querySelector('.chapters')) document.querySelector('.chapters').appendChild(chaptersIcon);
 
-const matcha = window.location.pathname.match(/chapter(\d+)\.html/);
-const CURRENT_CHAPTER = `c${matcha[1]}`;
-window.addEventListener('DOMContentLoaded', async () => {
-const match = window.location.pathname.match(/chapter(\d+)\.html/);
+const urlParams = new URLSearchParams(window.location.search);
+let chapterNum = parseInt(urlParams.get('num'), 10) || 3;
+let CURRENT_CHAPTER = `c${chapterNum}`;
 
-if (match) {
-    const currentChapter = parseInt(match[1], 10);
-    const chapterBefore = currentChapter - 1;
-    const chapterNext = currentChapter + 1;
+async function mudarCapitulo(novoCapituloNum) {
+    chapterNum = novoCapituloNum;
+    CURRENT_CHAPTER = `c${chapterNum}`;
+
+    const titleText = `Capítulo ${chapterNum}`;
+    document.title = `BoltNotes — Fortnite ${titleText}`;
+    const menuTitle = document.getElementById('menuTitle');
+    menuTitle.textContent = `BoltNotes — Fortnite ${titleText}`;
+    
+    const chapterNameEl = document.getElementById('chapter-name');
+    if (chapterNameEl) chapterNameEl.textContent = titleText;
 
     const before = document.getElementById('before-chapter');
     const next = document.getElementById('next-chapter');
-    const chapterNameEl = document.getElementById('chapter-name');
-
-    const titleText = `Capítulo ${currentChapter}`;
-    document.title = `BoltNotes — Fortnite ${titleText}`;
-    if (chapterNameEl) chapterNameEl.textContent = titleText;
-        
-    if (before) {
-        before.onclick = () => window.location.href = `pages/fortnite/chapter${chapterBefore}.html`;
-    }
-    if (next) {
-        next.onclick = () => window.location.href = `pages/fortnite/chapter${chapterNext}.html`;
-    }
     
-    if (before) {
-        const hasBefore = await window.electronAPI.exists(`pages/fortnite/chapter${chapterBefore}.html`);
-        before.style.visibility = hasBefore ? "visible" : "hidden";
+    const data = await window.api.fortnite.getSeasons();
+    const keys = Object.keys(data);
+
+    const chaptersCount = keys.map(chave => {
+        const match = chave.match(/c(\d+)/);
+        return match ? parseInt(match[1], 10) : 0;
+    });
+
+    const chaptersMax = Math.max(...chaptersCount);
+
+    if (before) before.style.visibility = (chapterNum - 1) >= 1 ? "visible" : "hidden";
+    if (next) next.style.visibility = (chapterNum + 1) <= chaptersMax ? "visible" : "hidden";
+
+    if (cachedSeasonInfo) {
+        await renderizarCapitulo(CURRENT_CHAPTER, cachedSeasonInfo);
+        
+        if (typeof initVideoEvents === "function") initVideoEvents();
     }
-    if (next) {
-        const hasNext = await window.electronAPI.exists(`pages/fortnite/chapter${chapterNext}.html`);
-        next.style.visibility = hasNext ? "visible" : "hidden";
+
+    const scroll = document.querySelector('.pageBody');
+    if (scroll) {
+        scroll.scrollTo({ top: 0 });
     }
 }
-});
 
 const before = document.getElementById('before-chapter');
 const next = document.getElementById('next-chapter');
@@ -91,11 +97,6 @@ const next = document.getElementById('next-chapter');
 if (before) before.className = "fa-solid fa-angle-left";
 if (next) next.className = "fa-solid fa-angle-right";
 
-let cachedSeasonInfo = null;
-
-// ==========================================
-// 1. CARREGAMENTO DE DADOS
-// ==========================================
 async function loadCloudSeasonInfo() {
     if (cachedSeasonInfo) return cachedSeasonInfo;
     try {
@@ -108,45 +109,53 @@ async function loadCloudSeasonInfo() {
     }
 }
 
-// ==========================================
-// 2. INICIALIZAÇÃO PRINCIPAL (O MAESTRO)
-// ==========================================
 async function inicializarDados() {
     try {
-        // A. Carrega Popups
         if (!document.getElementById("video-popup")) {
             const res = await fetch('components/fortnite/popups.bolt');
             document.body.insertAdjacentHTML('afterbegin', await res.text());
         }
 
-        // B. Carrega os Dados (Nuvem e Local)
         const cloudData = await loadCloudSeasonInfo();
         const localData = await window.electronAPI.json.load(FILE);
         const statsData = await window.electronAPI.json.load(FILE_STATS);
-        reviews = (localData && typeof localData === 'object') ? localData : {};
-        stats = (statsData && typeof statsData === 'object') ? statsData : {};
+        window.reviews = (localData && typeof localData === 'object') ? localData : {};
+        window.stats = (statsData && typeof statsData === 'object') ? statsData : {};
 
-        // C. Renderiza os cards na tela e preenche
+        const data = await window.api.fortnite.getSeasons();
+        const keys = Object.keys(data);
+
+        const chaptersCount = keys.map(chave => {
+            const match = chave.match(/c(\d+)/);
+            return match ? parseInt(match[1], 10) : 0;
+        });
+
+        const chaptersMax = Math.max(...chaptersCount);
+
+        const beforeBtn = document.getElementById('before-chapter');
+        const nextBtn = document.getElementById('next-chapter');
+        
+        if (beforeBtn) {
+            beforeBtn.onclick = () => { if (chapterNum - 1 >= 1) mudarCapitulo(chapterNum - 1); };
+        }
+        if (nextBtn) {
+            nextBtn.onclick = () => { if (chapterNum + 1 <= chaptersMax) mudarCapitulo(chapterNum + 1); };
+        }
+
+        await mudarCapitulo(chapterNum);
         await renderizarCapitulo(CURRENT_CHAPTER, cloudData);
 
-        // D. Inicia eventos de vídeos
         if (typeof initVideoEvents === "function") initVideoEvents();
-
     } catch (err) {
         console.error("Erro ao inicializar:", err);
     }
 }
 
-// ==========================================
-// 3. RENDERIZAÇÃO DINÂMICA (O CLONADOR)
-// ==========================================
-let seasonTemplateHTML = null;
-
 async function getSeasonTemplate() {
     if (document.getElementById('season-template')) return;
 
     try {
-        const res = await fetch('../components/fortnite/seasons-template.bolt');
+        const res = await fetch('components/fortnite/seasons-template.bolt');
         const data = await res.text();
         document.body.insertAdjacentHTML('afterbegin', data);
     } catch (err) {
@@ -174,22 +183,14 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
     for (const code of keys) {
         const info = cloudData[code];
-        const reviewData = (window.reviews && window.reviews[code]) || null;
-        const statsData = (window.stats && window.stats[code]) || null;
 
-        if (!reviewData) {
-            window.reviews = {
-                [code]: { loot: "", mapa: "", passe: "", story: "", locked: false },
-                ...window.reviews
-            };
+        if (!window.reviews[code]) {
+            window.reviews[code] = { loot: "", mapa: "", passe: "", story: "" };
             localDataUpdated = true;
         }
-        
-        if (!statsData) {
-            window.stats = {
-                [code]: { levels: "", wins: "", rating: "" },
-                ...window.stats
-            };
+
+        if (!window.stats[code]) {
+            window.stats[code] = { levels: "0", wins: "0", rating: "N/A", locked: false };
             localStatsUpdated = true;
         }
 
@@ -201,7 +202,6 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         const card = clone.querySelector('.fn-season');
         if (card) card.dataset.code = code;
 
-        // Imagens de Background, Personagem e Mapa
         const bg = clone.querySelector('.banner');
         if (bg) bg.style.backgroundImage = `url('assets://${code}.jpg')`;
 
@@ -211,18 +211,16 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         const seasonMap = clone.querySelector('.season-map');
         if (seasonMap) seasonMap.src = `assets://${code}-map.jpg`;
 
-        // Bloqueio de Edição
         const seasonDiv = clone.querySelector('.season');
         const isLocked = currentStats.locked ?? false;
         if (seasonDiv) seasonDiv.dataset.locked = isLocked;
 
-        // Ícone/botão de bloqueio de edição
         const lockIcon = clone.getElementById('lock-unlock');
 
         if (lockIcon) {
             lockIcon.className = currentStats.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
             
-            lockIcon.onclick = (e) => {
+            lockIcon.onclick = async (e) => {
                 e.stopPropagation();
 
                 currentStats.locked = !currentStats.locked;
@@ -247,19 +245,20 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                 if (rContainer) {
                     if (currentStats.locked) {
                         rContainer.classList.add('disabled');
-                        if (rOptions) rOptions.classList.remove('active'); // Fecha se estiver aberto
+                        if (rOptions) rOptions.classList.remove('active'); 
                     } else {
                         rContainer.classList.remove('disabled');
                     }
                 }
 
-                if (typeof debouncedSave === "function") debouncedSave(code);
-            };
+                try {
+                    await window.electronAPI.json.save(FILE_STATS, window.stats);
+                } catch (error) {
+                    console.error("Erro ao salvar o estado do cadeado:", error);
+                }
+            }
         }
 
-        // ==========================================
-        // CONTROLE DE NOTAS (INVERTIDO: 10 -> 0)
-        // ==========================================
         const ratingSpan = clone.querySelector('.status-rating');
         const ratingContainer = clone.querySelector('.rating-container');
         const ratingOptionsContainer = clone.querySelector('.rating-options');
@@ -291,16 +290,12 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         if (ratingContainer && ratingOptionsContainer) {
             ratingContainer.addEventListener('click', (e) => {
-                // Só abre o menu de notas se NÃO estiver com a classe disabled
                 if (!ratingContainer.classList.contains('disabled')) {
                     ratingOptionsContainer.classList.toggle('active');
                 }
             });
         }
 
-        // ==========================================
-        // CONTROLE DE NÍVEIS E VITÓRIAS (BOTÕES)
-        // ==========================================
         const levelAdd = clone.querySelector('.statusLevel-add');
         const levelMinus = clone.querySelector('.statusLevel-minus');
         const winAdd = clone.querySelector('.statusWin-add');
@@ -324,7 +319,6 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);
         if (winMinus) winMinus.onclick = () => updateStat('wins', -1, winsSpan);
 
-        // Atualiza os IDs dinâmicos para a função preencherValores() continuar funcionando
         if (ratingSpan) ratingSpan.id = `${code}-rating`;
         if (levelsSpan) levelsSpan.id = `${code}-levels`;
         if (winsSpan) winsSpan.id = `${code}-wins`;
@@ -332,7 +326,6 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         const releaseDateSpan = clone.querySelector('.status i.fa-calendar-day')?.nextElementSibling;
         if (releaseDateSpan) releaseDateSpan.id = `${code}-releaseDate`;
 
-        // Exibe os botões se a temporada não estiver bloqueada
         if (!isLocked) {
             if (levelAdd) levelAdd.style.display = 'inline-block';
             if (levelMinus) levelMinus.style.display = 'inline-block';
@@ -340,11 +333,9 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
             if (winMinus) winMinus.style.display = 'inline-block';
         }
 
-        // Configuração do Trailer
         const trailerBtn = clone.querySelector('.season-trailers');
         if (trailerBtn) trailerBtn.onclick = () => typeof openTrailer === "function" && openTrailer(trailerBtn);
 
-        // Renderiza Eventos (se houver)
         const listaDeEventos = info.events || info.event;
 
         const listEventsMap = clone.querySelector('.seasonContents-title');
@@ -364,8 +355,6 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
             const templateEvent = clone.querySelector('.season-events');
 
             if (templateEvent) {
-                // Remove o esqueleto original do fragmento para não duplicar, 
-                // mas mantém a referência na memória para clonar
                 templateEvent.remove(); 
 
                 listaDeEventos.forEach(evt => {
@@ -378,11 +367,17 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                     newEvent.querySelector('.event-date').textContent = evt.date || '';
                     
                     eventsContainer.insertBefore(newEvent, eventsContainer.firstChild);
+                    newEvent.onclick = function() {
+                        openLiveEvent(
+                            this,
+                            evt.img.replace('-cover.png', ''),
+                            evt.title || 'Evento'
+                        )
+                    }
                 });
             }
         }
 
-        // Título e Data Básica
         const titleEl = clone.querySelector('.season-title');
         if (titleEl) {
             titleEl.id = `${code}-name`;
@@ -390,28 +385,22 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
             titleEl.textContent = m ? `Temporada ${m[1]} - ${info.name || ""}` : `Temporada ${info.name || ""}`;
         }
 
-        // Insere o fragmento clonado e modificado na tela
         container.appendChild(clone);
     }
 
-    // Salva o JSON no PC se novos blocos vazios foram criados
-    if (localDataUpdated) await window.electronAPI.json.save(FILE, reviews);
-    if (localStatsUpdated) await window.electronAPI.json.save(FILE_STATS, stats);
+    if (localDataUpdated) await window.electronAPI.json.save(FILE, window.reviews);
+    if (localStatsUpdated) await window.electronAPI.json.save(FILE_STATS, window.stats);
 
-    // Preenche com as notas salvas
     preencherValores();
 }
 
-// ==========================================
-// 4. PREENCHIMENTO DOS DADOS LOCAIS
-// ==========================================
 function preencherValores() {
-    const allCodes = new Set([...Object.keys(reviews), ...Object.keys(stats)]);
+    const allCodes = new Set([...Object.keys(window.reviews), ...Object.keys(window.stats)]);
 
     allCodes.forEach(code => {
         const info = cachedSeasonInfo[code] || {};
-        const reviewData = reviews[code] || {};
-        const statsData = stats[code] || {};
+        const reviewData = window.reviews[code] || {};
+        const statsData = window.stats[code] || {};
 
         const rating = document.getElementById(`${code}-rating`);
         const levels = document.getElementById(`${code}-levels`);
@@ -429,9 +418,6 @@ function preencherValores() {
     }
 }
 
-// ==========================================
-// 5. EVENTOS GLOBAIS (MAPA) E PROTEÇÃO DE SAVE
-// ==========================================
 addEventListener('click', (e) => {
     if (e.target.matches('.season-map')) openMap(e.target);
 });
@@ -470,9 +456,7 @@ function closeMap(el) {
         });
     }
 }
-// ==========================================
-// CONTROLE DE ZOOM E ARRASTO DO MAPA
-// ==========================================
+
 let scale = 1;
 let isDragging = false;
 let startX, startY;
@@ -483,52 +467,44 @@ function configurarZoomMapa() {
     if (isZoomInitialized) return;
 
     const mapImageEl = document.getElementById("mapPopup-image");
-    const container = document.querySelector(".mapPopup-content"); // O container que limita a borda
+    const container = document.querySelector(".mapPopup-content");
     
     if (!mapImageEl || !container) return;
 
-    // 1. ZOOM FOCO NO MOUSE
     mapImageEl.addEventListener("wheel", (e) => {
         e.preventDefault();
         
         const zoomSpeed = 0.2;
         const oldScale = scale;
 
-        // Calcula a nova escala
         if (e.deltaY < 0) {
             scale += zoomSpeed;
         } else {
             scale -= zoomSpeed;
         }
-        scale = Math.min(Math.max(1, scale), 10); // Limite de 1x a 5x
+        scale = Math.min(Math.max(1, scale), 10);
 
-        // Pega a posição do mouse relativa ao container
         const rect = container.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
-        // FÓRMULA MÁGICA: Ajusta a posição (X, Y) para o zoom ir na direção do mouse
         translateX = mouseX - (mouseX - translateX) * (scale / oldScale);
         translateY = mouseY - (mouseY - translateY) * (scale / oldScale);
 
-        // Aplica as bordas logo após o zoom
         aplicarRestricoesBorda(container);
         atualizarTransform();
     }, { passive: false });
 
-    // 2. INICIAR ARRASTO
     mapImageEl.addEventListener("mousedown", (e) => {
-        if (scale === 1) return; // Só arrasta se tiver zoom
+        if (scale === 1) return;
         isDragging = true;
-        
-        // ADICIONE ESTA LINHA: Liga o modo arrasto puro
+
         mapImageEl.classList.add("dragging"); 
         
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
     });
 
-    // 3. MOVIMENTAR E BATER NAS BORDAS
     window.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
 
@@ -539,12 +515,10 @@ function configurarZoomMapa() {
         atualizarTransform();
     });
 
-    // 4. SOLTAR O CLIQUE
     window.addEventListener("mouseup", () => {
         if (isDragging) {
             isDragging = false;
-            
-            // ADICIONE ESTA LINHA: Devolve a animação para o scroll do zoom ficar suave de novo
+
             mapImageEl.classList.remove("dragging"); 
         }
     });
@@ -556,24 +530,19 @@ function configurarZoomMapa() {
     isZoomInitialized = true;
 }
 
-// FUNÇÃO COMPLEMENTAR: Não deixa o mapa sair das bordas do container
 function aplicarRestricoesBorda(container) {
     const cw = container.clientWidth;
     const ch = container.clientHeight;
 
-    // Largura e altura reais do elemento com o zoom aplicado
     const larguraZoom = cw * scale;
     const alturaZoom = ch * scale;
 
-    // Limites horizontais (X)
-    const minX = cw - larguraZoom; // O máximo que pode ir para a esquerda
-    const maxX = 0;               // O máximo que pode ir para a direita
+    const minX = cw - larguraZoom;
+    const maxX = 0;
 
-    // Limites verticais (Y)
-    const minY = ch - alturaZoom; // O máximo que pode ir para cima
-    const maxY = 0;               // O máximo que pode ir para baixo
+    const minY = ch - alturaZoom;
+    const maxY = 0;
 
-    // Força as variáveis a ficarem dentro dos limites calculados
     translateX = Math.min(Math.max(translateX, minX), maxX);
     translateY = Math.min(Math.max(translateY, minY), maxY);
 }
@@ -679,4 +648,58 @@ function initEndEvent() {
     if (video) { video.volume = .5 }
 }
 
-initEndEvent();
+function getLatestSeason(data) {
+    const parsed = Object.entries(data)
+        .map(([key, value]) => {
+
+            const match = key.match(
+                /^c(\d+)(ms|s|og|remix)?(\d+)?$/i
+            );
+
+            if (!match) return null;
+
+            return {
+                key,
+                data: value,
+                chapter: Number(match[1]),
+                type: match[2] || '',
+                season: Number(match[3] || 0)
+            };
+        })
+        .filter(Boolean);
+
+    parsed.sort((a, b) => {
+
+        if (a.chapter !== b.chapter) {
+            return b.chapter - a.chapter;
+        }
+
+        return b.season - a.season;
+    });
+
+    return parsed[0] || null;
+}
+
+async function loadLatestFN() {
+    try {
+        const assetDir = await window.api.load('assets://');
+        const seasons = await window.api.fortnite.getSeasons();
+
+        const latest = getLatestSeason(seasons);
+
+        if (!latest) return;
+
+        const latestPathLobby = `assets://${latest.key}-lobby.jpg`;
+        const latestPath = `assets://${latest.key}.jpg`;
+
+        console.log(`Temporada mais recente do Fortnite: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
+
+        const banner = document.getElementById("latestSeasonBG");
+        if (banner && latestPath) { banner.style.backgroundImage = `url('${latestPath}')`}
+
+    } catch (err) {
+        console.error("Erro ao inicializar:", err);
+    }
+}
+
+loadLatestFN();

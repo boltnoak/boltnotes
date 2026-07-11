@@ -8,6 +8,26 @@ function parseLinks(text) {
   });
 }
 
+function getNoteContent() {
+    return noteContent.innerHTML
+        .replace(/<div><br><\/div>/gi, '\n')
+        .replace(/<br>/gi, '\n')
+        .replace(/<div>/gi, '\n')
+        .replace(/<\/div>/gi, '')
+        .replace(/&nbsp;/gi, ' ')
+        .trim();
+}
+function setNoteContent(text) {
+    if (!text) {
+        noteContent.innerHTML = '<div><br></div>';
+        return;
+    }
+    noteContent.innerHTML = text
+        .split('\n')
+        .map(line => `<div>${line || '<br>'}</div>`)
+        .join('');
+}
+
 function parseMarkdown(text) {
   return text
     .replace(/^### (.*)$/gm, "<h3>$1</h3>")
@@ -25,7 +45,6 @@ function getTextFromEditor() {
     .replace(/<div>/gi, "\n")
     .replace(/<\/p>/gi, "")
     .replace(/<p>/gi, "\n")
-    .replace(/\n+/g, "\n")
     .trim();
 }
 

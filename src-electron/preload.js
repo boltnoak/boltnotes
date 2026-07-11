@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onWindowStateChange: (callback) => ipcRenderer.on('window-state-change', (event, state) => callback(state)),
   existsAssets: (filePath) => ipcRenderer.invoke('exists-assets',filePath),
   exists: (filePath) => ipcRenderer.invoke('exists',filePath),
+  existsAppdata: (filePath) => ipcRenderer.invoke('exists-appdata',filePath),
   devTools: () => ipcRenderer.send('devTools'),
   isDev: isDev,
 

@@ -10,19 +10,19 @@
     --text-green: rgba(0, 70, 30);
     --text-blue: rgb(0, 90, 150);
     --text-yellow: rgba(250, 110, 50);
-    --text-orange: rgba(250, 125, 50);
+    --text-orange: rgb(160, 70, 0);
     --text-red: rgba(255, 70, 70);
 
     --green: rgba(0, 150, 70);
     --blue: rgba(20, 150, 255);
     --yellow: rgba(250, 190, 0);
-    --orange: rgba(250, 125, 50);
+    --orange: rgba(250, 130, 50);
     --red: rgba(255, 70, 70);
 
     --green-light: rgba(0, 200, 90);
     --blue-light: rgba(20, 180, 255);
     --yellow-light: rgba(250, 255, 50);
-    --orange-light: rgba(250, 140, 90);
+    --orange-light: rgba(250, 165, 50);
     --red-light: rgba(255, 90, 90);
 
     --tab: rgba(8,8,8);

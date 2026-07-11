@@ -19,13 +19,13 @@
                         <div id="playingNow-games"></div>
                     </div>
                 </div>
-                <!-- <div class="sep-bar-sidebar"></div>
-                <div class="playingNowSection">
-                    <div id="playingNowSection-title"><p><i class="fa-solid fa-trophy"></i>Platinando no momento</p></div>
-                    <div class="playingNow-panel">
-                        <div id="playingNow-games"></div>
+                <div class="sep-bar-sidebar"></div>
+                <div class="platinandoNowSection">
+                    <div id="platinandoNowSection-title"><p><i class="fa-solid fa-trophy"></i>Platinando no momento</p></div>
+                    <div class="platinandoNow-panel">
+                        <div id="platinandoNow-games"></div>
                     </div>
-                </div> -->
+                </div>
             </div>
             <p class="addGameOpen"><i class="fa-solid fa-plus"></i>Adicionar novo jogo</p>
         </div>
@@ -76,7 +76,17 @@
                 <div class="game-status-div">
                 <div class="game-popup-status">
                     <div class="campaign-status-tag"></div>
-                    <!-- <div class="achie-status-tag"></div> -->
+                    <div class="campaign-status-change">
+                        <li class="option-ajogar" data-value="ajogar">À Jogar</li>
+                        <li class="option-jogando" data-value="jogando">Jogando</li>
+                        <li class="option-zerado" data-value="zerado">Zerado</li>
+                    </div>
+                    <div class="achie-status-tag"></div>
+                    <div class="achie-status-change">
+                        <li class="option-aplatinar" data-value="aplatinar">À Platinar</li>
+                        <li class="option-platinando" data-value="platinando">Platinando</li>
+                        <li class="option-platinado" data-value="platinado">Platinado</li>
+                    </div>
                 </div>
                 <div class="game-popup-info">
                     <div class="game-releaseDate">LANÇADO EM<p class="game-releaseDate-text"></p></div>
@@ -84,20 +94,44 @@
                     <div class="dev-pub">PUBLISHER<div class="game-popup-title"><p class="pub-name"></p></div></div>
                 </div>
             </div>
-            <!-- <div class="game-content">
-                <div class="achie-info-title"><p class="achie-info-title-text">CONQUISTAS</p><p class="achie-info-title-numbers">144/144</p></div>
-                <div class="achie-info">
-                    <p>100%</p>
-                    <div class="achie-bar"><div class="achie-bar-fill"></div></div>
+            <div class="game-content">
+                <div class="game-popup-campaign-achie">
+                    <div class="game-achievements">
+                        <div>
+                            <div class="achie-info-title"><p class="achie-info-title-text">CONQUISTAS</p><p class="achie-info-title-numbers"></p></div>
+                            <div class="achie-info">
+                                <p class="achie-percentage"></p>
+                                <div class="achie-bar"><div class="achie-bar-fill"></div></div>
+                            </div>
+                        </div>
+                        <div class="achie-add-minus">
+                            <i id="achie-add" onclick="changeAchieProgress(this, true)" class="fa-solid fa-plus"></i>
+                            <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="fa-solid fa-minus"></i>
+                        </div>
+                    </div>
+                    <div class="sep-bar-vv achie-sep"></div>
+                    <div class="game-campaign-div">
+                        <div class="campaign-info-title"><p class="campaign-info-title-text"></p><p class="achie-info-title-numbers"></p></div>
+                        <div class="campaign-info">
+                            <p class="game-popup-completeDate"></p>
+                        </div>
+                    </div>
+                    <div class="sep-bar-vv campaign-sep"></div>
+                    <div class="game-rating-div">
+                        <div class="game-rating-title"><p class="game-rating-title-text">NOTA</p></div>
+                        <div class="rating-info">
+                            <p class="game-popup-rating"></p>
+                        </div>
+                    </div>
                 </div>
-            </div> -->
+            </div>
                 
                 
         </div>
     </div>
 
     <header>
-        <a class="back" href="pages/index.html">Voltar<i class="fa-solid fa-caret-left"></i></a>
+        <a class="back" href="pages/index.html">Início<i class="fa-solid fa-house"></i></a>
     </header>
 
     <div id="loading-screen">

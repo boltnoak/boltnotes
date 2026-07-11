@@ -1,8 +1,8 @@
 {
   "basics": {
-    "folderHash": "02f839211f3848f06bc8d2581b6a575271376a6f93ed48ee88c99ca271db3694",
-    "zipHash": "e85c6e05156e742369869e296820354232cee75da5a50e3c65f0233401de5a0a",
-    "zipSize": 4848572
+    "folderHash": "c0145aaaf97f0a2b4a4bc3ab8af10215ab47fd22a88fd7fcc1fe9e6cafe55679",
+    "zipHash": "57468096da5df91382cbac5c4b20be98b24ecd9849d95675a95059fe73146966",
+    "zipSize": 3250290
   },
   "fortnite-c3s3-assets": {
     "folderHash": "fdcfd546682eb101d7325955db92720dfb246f9ec0f536442b981a55af82d85c",
@@ -15,9 +15,9 @@
     "zipSize": 40325757
   },
   "fortnite-c4og-assets": {
-    "folderHash": "c46c3dfd20673f1bee9632a0d553761ab33f53267690fdfb46f2bbdb03abe734",
-    "zipHash": "84e3ea6c61845f3c4eb106b1cc3e51b10ab3a8429bcb6e48c5e7e05c830509f2",
-    "zipSize": 60426630
+    "folderHash": "82aebb65f1c66a8529dce2b68ab6a03b846e57f3588d8108507f3bc382f87a77",
+    "zipHash": "77ad52a27b2695cfb9115ae7220ec4cdeb11c3f631bf11e2068419df782a53be",
+    "zipSize": 196544984
   },
   "fortnite-c4s1-assets": {
     "folderHash": "d189845ce5b2bc92b165175601a96bda72815fba1134cbcf9653570920baf81e",
@@ -40,9 +40,9 @@
     "zipSize": 40886131
   },
   "fortnite-c5remix-assets": {
-    "folderHash": "374d2f626f1bcc05bceba4a4891daeac1c278b1fbcbecf31fd7256ed37782111",
-    "zipHash": "259e677236a832ffe19757bac5d641e317fd2651f56e204f309decac5b3a95e9",
-    "zipSize": 49339122
+    "folderHash": "bb2621d24eb39fc1460e685ae89ad0e58ab4768592c1fcd575405d53453c067c",
+    "zipHash": "958afdc9086281fb65fc3a21b278d96bbcca7179dc00fc9df8103eb269c2621d",
+    "zipSize": 253145358
   },
   "fortnite-c5s1-assets": {
     "folderHash": "9889dea81dd1fded9f566e2226773d84a57aaf55561b4f91cb6b469b53a01d90",
@@ -65,19 +65,19 @@
     "zipSize": 41910913
   },
   "fortnite-c6ms1-assets": {
-    "folderHash": "3f741ea813501609d4c120baf902a0887db4ec44a1ac5d72fde34c3c01bd982d",
-    "zipHash": "80de33f4024c09846e8f8308499a1680cadfc84f30eaa198359d1e45746b4490",
-    "zipSize": 51301653
+    "folderHash": "d707131f6e844f867ea12f830e079f7988fa135be3e7b592199f7472b69c5138",
+    "zipHash": "99af7d72a0381065b2de37cdc317e6fb761f96e89f511e8220c9052ce9f3d339",
+    "zipSize": 218117688
   },
   "fortnite-c6ms2-assets": {
-    "folderHash": "83040625ea54b25638f888f1dad2c01668024fedcbc6ab8bddb9c117731745c7",
-    "zipHash": "81d6db579b97c3e74fdb2d03d4c87f9e3e84754442d32c359aebd41dceb1c1fe",
-    "zipSize": 163268016
+    "folderHash": "0ef74a01320cf7b38a0cdc033f0b6275ddcfb7d8a88e33af58ef937967ff973e",
+    "zipHash": "693acdcf061d90c95ed13d7e286bc9376211a36f4f5a18b7143bcb099182868d",
+    "zipSize": 314924988
   },
   "fortnite-c6s1-assets": {
-    "folderHash": "e3e286fc16f61206f569011dc5f7867e8da4e4e30088f2b3380ad7f77a06272e",
-    "zipHash": "da06f2ff1865fae5da01b23c1316de889895160bda71e649ff9b47679862b143",
-    "zipSize": 104761018
+    "folderHash": "e28a854dd28a9feb59572aef80ff3307ba523f3a008f7194ce6bfe70460243f1",
+    "zipHash": "cdd72883bfc78bc847c6d61ac5c10d53c6328b135e11e0ebbd4a31ee7c788f76",
+    "zipSize": 150573344
   },
   "fortnite-c6s2-assets": {
     "folderHash": "6db385cc7f71c2aa247b027edb1b6f0b474e8248746c7bc83948c328885a6752",
@@ -85,24 +85,24 @@
     "zipSize": 61389010
   },
   "fortnite-c6s3-assets": {
-    "folderHash": "b920eea4b3d22f6c8a428524e642a3c159e9a085979e971aa5cf0715d44cdbe3",
-    "zipHash": "b26f929bca0603bc609dada0599fea4185be376a0f06a8748f2ff53905a85bde",
-    "zipSize": 35942029
+    "folderHash": "c644a5e32a03072cdbf44fc9e3fb9125e26b2cbd31248667e26f6d7270e18aaf",
+    "zipHash": "ba2a0311f535a4ae1279a8f0a6dceb4b0fbdccf665377ab5f1381d663b141c1c",
+    "zipSize": 131821591
   },
   "fortnite-c6s4-assets": {
-    "folderHash": "85dc4cbe077517270b83b86418ab8c6c875c4382118dd31377e3ce42967d0df0",
-    "zipHash": "5a0e5516fdf8b12da41a44a215c9080e8b28e2dcdb623f9a1b28825d7683539a",
-    "zipSize": 60284344
+    "folderHash": "cdd45a5bcb1efaad37f83daa4fca7b750081deca9dbde42a12f269ac9aa2d096",
+    "zipHash": "b94effcf652337b256be951dda3710bf6c95116f340ccfb7128ad744aabef5f2",
+    "zipSize": 146229428
   },
   "fortnite-c7s1-assets": {
-    "folderHash": "e2cf293351870d5628a7684e996a511351218dee4317490e04ecc6f7ce1edadb",
-    "zipHash": "192b74f12f44683787afcda3819516062dfc0d79a8283d0af1eabb7bf2353f8d",
-    "zipSize": 80978748
+    "folderHash": "f6f2d6c829dabd5a0cf967f51f3110f6f3c68ad5dd1cf6a3ddbaf5989c33a19c",
+    "zipHash": "beca103894ac08c5947bbc892b6e6d643801ca2f9444f2a6f1a138326392de9d",
+    "zipSize": 96259465
   },
   "fortnite-c7s2-assets": {
-    "folderHash": "55fa42d8384f2c7f4332e39f348a9be3d81a00b28967a69e61d2136911c97e6a",
-    "zipHash": "11328e6f905cb6bf75c0293e2a772a8c88d70b522f427b848e30b8d85dbbf9e6",
-    "zipSize": 69518984
+    "folderHash": "961efc783ff55e2c71923ed9bcc5f8e521ed9a373158ad1a0e0c3d7132c964fc",
+    "zipHash": "fcfc3e7b3e7a743035b301ba00a9820ca05570c6bd16ed4cf49562a4e28781b6",
+    "zipSize": 671030068
   },
   "fortnite-c7s3-assets": {
     "folderHash": "b6ee8c004774c87da8be5cc865168dd46548b2ea22bd7ff729ca0ebf6f5001c1",

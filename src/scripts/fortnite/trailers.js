@@ -7,7 +7,7 @@ async function loadLocalReviews() {
         return cachedReviews;
     }
     try {
-        const content = await window.electronAPI.json.load(`documents://Fortnite/reviews.json`);
+        const content = await window.electronAPI.json.load(`Fortnite/reviews.json`);
         cachedReviews = content || {};
         return cachedReviews;
     } catch (e) {
@@ -198,17 +198,26 @@ const EVENT_NAMES = {
 };
 
 let isTeamSelectVisible = false;
-
-async function openLiveEvent(el) {
+async function loadCloudSeasonInfo() {
+    if (cachedSeasonInfo) return cachedSeasonInfo;
+    try {
+        const content = await window.api.fortnite.getSeasons(); 
+        cachedSeasonInfo = content || {};
+        return cachedSeasonInfo;
+    } catch (e) {
+        console.error("Erro ao buscar dados da internet:", e);
+        return {};
+    }
+}
+async function openLiveEvent(el, fileCode, eventTitle) {
     const container = el.closest('.fn-season');
     const code = container?.dataset.code;
     const listContainer = document.getElementById("more-videos");
-    
+
     if (!code || !listContainer) return;
 
-    const eventName = document.querySelector('.event-title');
     const title = document.getElementById('video-title');
-    title.textContent = eventName.textContent || "Evento sem nome";
+    title.textContent = eventTitle;
 
     listContainer.innerHTML = "";
     const controls = document.getElementById('player-controls');
@@ -218,8 +227,8 @@ async function openLiveEvent(el) {
     document.getElementById("video-popup").style.display = "flex";
     document.querySelector('html').style.overflow = "hidden";
 
-    const ext = await window.electronAPI.existsAssets(`assets://live-event-${code}.webm`) ? 'webm' : 'mp4';
-    const path = `assets://live-event-${code}.${ext}`;
+    const ext = await window.electronAPI.existsAssets(`${fileCode}.webm`) ? 'webm' : 'mp4';
+    const path = `${fileCode}.${ext}`;
     const video = document.getElementById('video');
     const wrapper = document.querySelector('.video-wrapper');
             

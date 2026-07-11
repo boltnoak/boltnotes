@@ -22,6 +22,22 @@ window.addEventListener('keydown', (e) => {
   };
 });
 
+document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    if (!e.target.isContentEditable) return;
+    
+    e.preventDefault();
+    document.execCommand('insertLineBreak');
+});
+
+document.addEventListener('paste', (e) => {
+    if (!e.target.isContentEditable) return;
+    
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+});
+
 // Restaurar o scroll após o reload
 // window.addEventListener('load', () => {
 //   const savedScroll = sessionStorage.getItem('pageBodyScroll');

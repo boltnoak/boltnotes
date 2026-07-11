@@ -1,3 +1,7 @@
+const FILE = "Games/games.json";
+const CAMPAIGNS_FILE = "Games/campaigns.json";
+const ACHIEVEMENTS_FILE = "Games/achievements.json";
+
 async function updateNoteCount() {
   const count = await window.api.notes.count();
   const el = document.getElementById("note-count");
@@ -82,8 +86,8 @@ function parseBRDate(dateStr) {
 }
 
 let cachedGamesDB = null;
-let cachedStatus = null;
-let cachedAchie = null;
+let cachedCampaignStatus = null;
+let cachedAchieStatus = null;
 
 
 async function loadGamesDB() {
@@ -101,118 +105,480 @@ async function loadGamesDB() {
     }
 }
 async function loadStatusAchie() {
-    if (cachedAchie) {
-        console.log("Reviews carregados do cache!");
-        return cachedAchie;
+    if (cachedAchieStatus) {
+        return cachedAchieStatus;
     }
     try {
-        const achievements = await window.electronAPI.json.load(`Games/achievements.json`);
-        cachedAchie = achievements || {};
-        return cachedAchie;
+        const content = await window.electronAPI.json.load(`Games/achievements.json`);
+        cachedAchieStatus = Array.isArray(content) ? content : [];
+        return cachedAchieStatus;
     } catch (e) {
-        console.error("Erro ao ler meus_reviews.json:", e);
+        console.error("Erro ao ler achievements.json:", e);
         return {};
     }
 }
 async function loadStatus() {
-    if (cachedStatus) {
-        console.log("Reviews carregados do cache!");
-        return cachedStatus;
+    if (cachedCampaignStatus) {
+        return cachedCampaignStatus;
     }
     try {
-        const campaigns = await window.electronAPI.json.load(`Games/campaigns.json`);
-        cachedStatus = campaigns || {};
-        return cachedStatus;
+        const content = await window.electronAPI.json.load(`Games/campaigns.json`);
+        cachedCampaignStatus = content || {};
+        return cachedCampaignStatus;
     } catch (e) {
-        console.error("Erro ao ler meus_reviews.json:", e);
+        console.error("Erro ao ler campaigns.json:", e);
         return {};
     }
 }
 
-async function loadGames() {
-    const data = await loadGamesDB();
-    const stats = await loadStatus();
-    const playingNow = document.querySelector(".playingNow-panel");
+// async function loadGames() {
+//     const data = await loadGamesDB();
+//     const stats = await loadStatus();
+//     const playingNow = document.querySelector(".playingNow-panel");
 
+//     if (!playingNow) return;
+//     playingNow.innerHTML = "";
+
+//     let listaStats = Array.isArray(stats) ? stats : (stats.games || []);
+//     const dbGames = data.games ? [...data.games] : [];
+
+//     let games = listaStats.map(localGame => {
+//         const gameNoDB = dbGames.find(g => 
+//             (localGame.appid && g.appid === localGame.appid) || 
+//             (localGame.name && g.name.toLowerCase() === localGame.name.toLowerCase())
+//         ) || {};
+
+//         return {
+//             ...gameNoDB,
+//             ...localGame
+//         };
+//     });
+
+//     const playing = games.filter(g => (g.status || "").toLowerCase().trim() === "jogando");
+//     for (const game of playing) {
+//         const card = await createGameCard(game);
+//         playingNow.appendChild(card);
+//     }
+//     if (playingNow.childElementCount === 0) {
+//         const noGames = document.createElement("div");
+//         noGames.className = "playingNow-no-games";
+//         noGames.textContent = "Nenhum jogo sendo jogado.";
+//         playingNow.appendChild(noGames);
+//     }
+// }
+async function loadGames() {
+    const [data, stats] = await Promise.all([
+        window.electronAPI.json.load(FILE),
+        loadStatus()
+    ]);
+
+    const playingNow = document.querySelector(".playingNow-panel");
     if (!playingNow) return;
+
     playingNow.innerHTML = "";
 
-    let listaStats = Array.isArray(stats) ? stats : (stats.games || []);
-    const dbGames = data.games ? [...data.games] : [];
+    const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
+    const dbGames = data.games ? data.games : [];
 
-    let games = listaStats.map(localGame => {
-        const gameNoDB = dbGames.find(g => 
-            (localGame.appid && g.appid === localGame.appid) || 
-            (localGame.name && g.name.toLowerCase() === localGame.name.toLowerCase())
-        ) || {};
+    const dbByAppid = new Map();
+    const dbByName = new Map();
 
-        return {
-            ...gameNoDB,
-            ...localGame
-        };
+    for (const g of dbGames) {
+        if (g.appid != null) dbByAppid.set(String(g.appid), g);
+        if (g.name) dbByName.set(g.name.toLowerCase(), g);
+    }
+
+    const games = listaStats.map(localGame => {
+        const byAppid = localGame.appid != null ? dbByAppid.get(String(localGame.appid)) : null;
+        const byName = localGame.name ? dbByName.get(localGame.name.toLowerCase()) : null;
+        const gameNoDB = byAppid || byName || {};
+
+        const combinedGame = { ...gameNoDB, ...localGame };
+
+        const status = (combinedGame.status || "").toLowerCase().trim();
+        combinedGame._status = status;
+
+        return combinedGame;
     });
 
-    const playing = games.filter(g => (g.status || "").toLowerCase().trim() === "jogando");
-    for (const game of playing) {
-        const card = await createGameCard(game);
-        playingNow.appendChild(card);
+    const playing = [];
+
+    for (const g of games) {
+        if (g._status === "jogando") playing.push(g);
     }
-    if (playingNow.childElementCount === 0) {
+
+    const completedMap = new Map(
+        games
+            .filter(g => g._status === "zerado")
+            .sort((a, b) => (a._completeMs || 0) - (b._completeMs || 0))
+            .map((g, i) => [g.appid || g.name, i + 1])
+    );
+
+    const playingCards = await Promise.all(
+        playing.map(game => createGameCard(game, true))
+    );
+
+    const playingFragment = document.createDocumentFragment();
+    for (const card of playingCards) playingFragment.appendChild(card);
+
+    if (playingFragment.childElementCount === 0) {
         const noGames = document.createElement("div");
         noGames.className = "playingNow-no-games";
         noGames.textContent = "Nenhum jogo sendo jogado.";
-        playingNow.appendChild(noGames);
+        playingFragment.appendChild(noGames);
     }
+
+    playingNow.appendChild(playingFragment);
 }
-async function createGameCard(game) {
+async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
     div.className = "game";
-
     const img = document.createElement("img");
     img.className = "game-cover";
 
-    const localPath = await window.api.games.ensureCover({
+    const { cover: localPath } = await window.api.games.ensureCover({
         appid: game.appid,
         name: game.name,
         cover: game.cover
     });
 
-    img.src = localPath ? `file://${localPath}` : "assets://placeholder.png";
-
+    img.src = localPath ? `file://${localPath}` : 'assets://placeholder.png';
+    
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
-
     const title = document.createElement("p");
     title.className = "game-title";
-    title.textContent = game.name;
 
     const status = (game.status || "").toLowerCase().trim();
 
-    const tag = document.createElement("span");
-    tag.className = "status";
-
-    const tagFill = document.createElement("span");
-    tagFill.className = "status-fill";
-    tagFill.style.width = (game.storyProgress || 0) + "%";
-
     gameInfo.appendChild(title);
-    
-    if (status === "jogando") {
-        // tag.classList.add("jogando");
-        // const statusPercentage = document.createElement("span");
-        // statusPercentage.className = "status-text";
-        // statusPercentage.textContent = `Jogando`;
-        // gameInfo.appendChild(statusPercentage);
-        // gameInfo.appendChild(tag);
-        // div.classList.add('jogando');
-    }
-    
-    tag.appendChild(tagFill);
+
+    if (status === "jogando") div.classList.add('jogando');
+
+    title.textContent = game.name;
+    div.dataset.id = game.name;
 
     div.appendChild(img);
     div.appendChild(gameInfo);
 
+    div.addEventListener('click', () => openGamePopup(div,
+        game.status,
+        game.releaseDate,
+        game.rating,
+        game.developer,
+        game.publisher
+    ));
+
     return div;
+}
+
+async function openGamePopup(el, status, releaseDate, rating, developer, publisher) {
+    const title = el.dataset.id;
+    const name = el.dataset.id.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+
+    const popup = document.querySelector('.game-popup-div');
+    popup.setAttribute('data-name', title);
+
+    const banner = document.querySelector('.game-banner');
+    const logo = document.querySelector('.game-logo');
+    const devText = document.querySelector('.dev-name');
+    const pubText = document.querySelector('.pub-name');
+    const releaseDateText = document.querySelector('.game-releaseDate-text');
+    const statusText = document.querySelector('.campaign-status-tag');
+    const achieStatusText = document.querySelector('.achie-status-tag');
+    const achieCount = document.querySelector('.achie-info-title-numbers');
+    const achiePercentage = document.querySelector('.achie-percentage');
+    const achieBarFill = document.querySelector('.achie-bar-fill');
+    const achieTitle = document.querySelector('.achie-info-title');
+    const achieInfo = document.querySelector('.achie-info');
+
+    pubText.style.animation = '';
+    devText.style.animation = '';
+    achieStatusText.style.display = 'flex';
+
+    let jogoEncontrado = null;
+    let gameStatusFound = null;
+
+    try {
+        const games = await loadStatusAchie();
+        jogoEncontrado = games.find(g => g.name === title);
+        const gamesCamp = await loadStatus();
+        gameStatusFound = gamesCamp.find(g => g.name === title);
+    } catch (erro) { console.error("Erro ao carregar o JSON:", erro) }
+
+    console.log(name, status, releaseDate, developer, publisher, rating);
+
+    banner.src = `appdata:///game-heros/${name}.jpg`;
+    const logoExists = await window.electronAPI.existsAppdata(`game-logos/${name}.png`);
+    if (logoExists) {
+        logo.src = `appdata:///game-logos/${name}.png`;
+    } else {
+        logo.src = '';
+    }
+    logo.alt = el.dataset.id;
+    devText.textContent = developer;
+    pubText.textContent = publisher;
+    releaseDateText.textContent = releaseDate;
+
+    const achieGame = jogoEncontrado;
+    const gameCampaign = gameStatusFound;
+
+    const total = achieGame.totalAchievements || 0;
+    const unlocked = achieGame.unlockedAchievements || 0;
+    achieCount.textContent = `${unlocked}/${total}`;
+    const percentage = total > 0 ? Math.round((unlocked / total) * 100) : 0;
+
+    achieBarFill.style.width = `${percentage}%`;
+    achiePercentage.textContent = `${percentage}%`;
+
+    const hasAchie = achieGame.hasAchievements;
+    if (hasAchie) {
+        achieTitle.style.display = 'flex';
+        achieInfo.style.display = 'flex';
+    } else {
+        achieTitle.style.display = 'none';
+        achieInfo.style.display = 'none';
+        achieStatusText.style.display = 'none';
+    }
+
+    if (gameCampaign.status.toLowerCase() == 'zerado') {
+        statusText.textContent = 'Zerado';
+        statusText.classList.remove('ajogar');
+        statusText.classList.remove('jogando');
+        statusText.classList.add('zerado');
+    }
+    if (gameCampaign.status.toLowerCase() == 'jogando') {
+        statusText.textContent = 'Jogando';
+        statusText.classList.remove('ajogar');
+        statusText.classList.add('jogando');
+        statusText.classList.remove('zerado');
+    }
+    if (gameCampaign.status.toLowerCase() == 'ajogar') {
+        statusText.textContent = 'Á Jogar';
+        statusText.classList.add('ajogar');
+        statusText.classList.remove('jogando');
+        statusText.classList.remove('zerado');
+    }
+
+    if (jogoEncontrado && jogoEncontrado.achieStatus) {
+        const achieStatus = jogoEncontrado.achieStatus.toLowerCase();
+
+        if (achieStatus === 'platinado')  updateStatus(achieStatusText, 'platinado', 'Platinado');
+        if (achieStatus === 'platinando') updateStatus(achieStatusText, 'platinando', 'Platinando');
+        if (achieStatus === 'aplatinar')  updateStatus(achieStatusText, 'aplatinar', 'À Platinar');
+    } else {
+        achieStatusText.style.display = 'none';
+    }
+
+    popup.style.display = 'flex';
+    const titleDiv = document.querySelector('.game-popup-title');
+
+    requestAnimationFrame(() => {
+        if (pubText.scrollWidth <= titleDiv.clientWidth) {
+            pubText.style.animation = 'none';
+        }
+        if (devText.scrollWidth <= titleDiv.clientWidth) {
+            devText.style.animation = 'none';
+        }
+    });
+}
+
+const closeGamePopup = document.querySelector('.game-popup-div');
+closeGamePopup.addEventListener('click', (e) => {
+    if (e.target === gamePopup) {
+        
+    }
+});
+
+const gamePopupDiv = document.querySelector('.game-popup-div');
+const gamePopup = document.querySelector('.game-popup');
+gamePopupDiv.addEventListener('click', (e) => {
+    if (e.target === gamePopupDiv) {
+        gamePopup.classList.add('is-closing');
+        
+        gamePopup.addEventListener('animationend', () => {
+            gamePopupDiv.style.display = 'none';
+            gamePopup.classList.remove('is-closing');
+        }, { once: true });
+    }
+});
+
+const statusBtn = document.querySelector('.campaign-status-tag');
+const achieBtn = document.querySelector('.achie-status-tag');
+
+async function updateStatusJSON(game, statusClass) {
+    const [data, stats] = await Promise.all([
+        window.electronAPI.json.load(CAMPAIGNS_FILE),
+        loadStatus()
+    ]);
+
+    const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
+
+    const nomeDoJogoProcurado = game;
+    const novoStatus = statusClass;
+
+    const jogoEncontrado = listaStats.find(jogo => jogo.name === nomeDoJogoProcurado);
+
+    if (jogoEncontrado) {
+        jogoEncontrado.status = statusClass;
+
+        if (statusClass === "zerado") {
+            const dataAtual = new Date();
+            jogoEncontrado.completeDate = dataAtual.toLocaleDateString('pt-BR');
+        } else {
+            delete jogoEncontrado.completeDate; 
+        }
+        
+        await window.electronAPI.json.save(CAMPAIGNS_FILE, listaStats);
+        console.log(`Status de ${game} atualizado com sucesso!`);
+        return true;
+    } else {
+        console.warn("Jogo não encontrado na lista.");
+        return false;
+    }
+}
+async function updateAchieJSON(game, statusClass) {
+    const stats = await loadStatusAchie();
+
+    const listStats = Array.isArray(stats) ? stats : (stats.games || []);
+
+    const nomeDoJogoProcurado = game;
+    const novoStatus = statusClass;
+
+    const gameFoundAchie = listStats.find(jogo => jogo.name === nomeDoJogoProcurado);
+
+    if (gameFoundAchie) {
+        gameFoundAchie.achieStatus = statusClass;
+
+        if (statusClass === "platinado") {
+            const dateNow = new Date();
+            gameFoundAchie.completeDate = dateNow.toLocaleDateString('pt-BR');
+        }
+        
+        await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listStats);
+        console.log(`Status de ${game} atualizado com sucesso!`);
+        return true;
+    } else {
+        console.warn("Jogo não encontrado na lista.");
+        return false;
+    }
+}
+
+const options = document.querySelector('.campaign-status-change');
+
+statusBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (options.style.display === 'none') {
+        options.style.display = 'flex';
+        optionsAchie.style.display = 'none';
+    } else {
+        options.style.display = 'none';
+    }
+});
+
+document.addEventListener('click', (event) => {
+    if (!options.contains(event.target) && event.target !== statusBtn) {
+        options.style.display = 'none';
+    }
+});
+
+const optionAjogar = document.querySelector('.option-ajogar');
+const optionJogando = document.querySelector('.option-jogando');
+const optionZerado = document.querySelector('.option-zerado');
+
+optionAjogar.addEventListener('click', async () => {
+    const game = document.querySelector('.game-popup-div').dataset.name;
+    const statusText = document.querySelector('.campaign-status-tag');
+
+    await updateStatusJSON(game, "ajogar")
+    updateStatus(statusText, "ajogar", "À Jogar")
+    await loadGames();
+})
+optionJogando.addEventListener('click', async () => {
+    const game = document.querySelector('.game-popup-div').dataset.name;
+    const statusText = document.querySelector('.campaign-status-tag');
+
+    await updateStatusJSON(game, "jogando")
+    updateStatus(statusText, "jogando", "Jogando")
+    await loadGames();
+})
+optionZerado.addEventListener('click', async () => {
+    const game = document.querySelector('.game-popup-div').dataset.name;
+    const statusText = document.querySelector('.campaign-status-tag');
+
+    await updateStatusJSON(game, "zerado")
+    updateStatus(statusText, "zerado", "Zerado")
+    await loadGames();
+})
+const optionsAchie = document.querySelector('.achie-status-change');
+const optionAplatinar = document.querySelector('.option-aplatinar');
+const optionPlatinando = document.querySelector('.option-platinando');
+const optionPlatinado = document.querySelector('.option-platinado');
+
+achieBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (optionsAchie.style.display === 'none') {
+        optionsAchie.style.display = 'flex';
+        options.style.display = 'none';
+    } else {
+        optionsAchie.style.display = 'none';
+    }
+});
+
+document.addEventListener('click', (event) => {
+    if (!optionsAchie.contains(event.target) && event.target !== achieBtn) {
+        optionsAchie.style.display = 'none';
+    }
+});
+
+optionAplatinar.addEventListener('click', async () => {
+    const game = document.querySelector('.game-popup-div').dataset.name;
+    const statusText = document.querySelector('.achie-status-tag');
+
+    optionsAchie.style.display = 'none';
+    
+    await updateAchieJSON(game, "aplatinar")
+    updateAchie(statusText, "aplatinar", "À Platinar")
+    await loadGames();
+    await loadGamesAchie();
+})
+optionPlatinando.addEventListener('click', async () => {
+    const game = document.querySelector('.game-popup-div').dataset.name;
+    const statusText = document.querySelector('.achie-status-tag');
+
+    optionsAchie.style.display = 'none';
+    
+    await updateAchieJSON(game, "platinando")
+    updateAchie(statusText, "platinando", "Platinando")
+    await loadGames();
+    await loadGamesAchie();
+})
+optionPlatinado.addEventListener('click', async () => {
+    const game = document.querySelector('.game-popup-div').dataset.name;
+    const statusText = document.querySelector('.achie-status-tag');
+
+    optionsAchie.style.display = 'none';
+
+    await updateAchieJSON(game, "platinado")
+    updateAchie(statusText, "platinado", "Platinado")
+    await loadGames();
+    await loadGamesAchie();
+})
+
+function updateStatus(element, statusClass, text) {
+    element.textContent = text;
+    element.classList.remove('ajogar', 'jogando', 'zerado');
+    if (statusClass) {
+        element.classList.add(statusClass);
+    }
+}
+
+function updateAchie(element, statusClass, text) {
+    element.textContent = text;
+    element.classList.remove('platinado', 'platinando', 'aplatinar');
+    if (statusClass) {
+        element.classList.add(statusClass);
+    }
 }
 
 loadGames();
@@ -447,12 +813,66 @@ async function loadGamesTags() {
     const achieCount = await window.api.games.achieCount();
 
     const finished = document.getElementById('games-zerados');
-
-    finished.textContent = `${finishedCount} Zerados`
-
     const achie = document.getElementById('games-platinados');
 
-    achie.textContent = `${achieCount} Platinados`
+    finished.textContent = `${finishedCount} Zerados`;
+    achie.textContent = `${achieCount} Platinados`;
 }
 
 loadGamesTags()
+
+function getLatestSeason(data) {
+    const parsed = Object.entries(data)
+        .map(([key, value]) => {
+
+            const match = key.match(
+                /^c(\d+)(ms|s|og|remix)?(\d+)?$/i
+            );
+
+            if (!match) return null;
+
+            return {
+                key,
+                data: value,
+                chapter: Number(match[1]),
+                type: match[2] || '',
+                season: Number(match[3] || 0)
+            };
+        })
+        .filter(Boolean);
+
+    parsed.sort((a, b) => {
+
+        if (a.chapter !== b.chapter) {
+            return b.chapter - a.chapter;
+        }
+
+        return b.season - a.season;
+    });
+
+    return parsed[0] || null;
+}
+
+async function loadLatestFN() {
+    try {
+        const assetDir = await window.api.load('assets://');
+        const seasons = await window.api.fortnite.getSeasons();
+
+        const latest = getLatestSeason(seasons);
+
+        if (!latest) return;
+
+        const latestPathLobby = `assets://${latest.key}-lobby.jpg`;
+        const latestPath = `assets://${latest.key}.jpg`;
+
+        console.log(`Temporada mais recente do Fortnite: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
+
+        const banner = document.getElementById("latestSeasonBG");
+        if (banner && latestPath) { banner.style.backgroundImage = `url('${latestPath}')`}
+
+    } catch (err) {
+        console.error("Erro ao inicializar:", err);
+    }
+}
+
+loadLatestFN();

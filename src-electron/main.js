@@ -801,6 +801,10 @@ ipcMain.handle("exists", async (_, filePath) => {
   const fullPath = path.join(BUNDLE, filePath);
   return fs.existsSync(fullPath);
 });
+ipcMain.handle("exists-appdata", async (_, filePath) => {
+  const fullPath = path.join(APPDATA, filePath);
+  return fs.existsSync(fullPath);
+});
 ipcMain.handle('load', (_, dirPath) => {
   const fullPath = path.join(DOCUMENTS, dirPath);
 
@@ -1070,7 +1074,7 @@ ipcMain.handle('games:achie-count', async () => {
 
     if (Array.isArray(gamesList)) {
       for (const game of gamesList) {
-        if (game.status && game.status.toLowerCase() === 'platinado') {
+        if (game.achieStatus && game.achieStatus.toLowerCase() === 'platinado') {
           count++;
         }
       }
@@ -1189,8 +1193,7 @@ ipcMain.handle('games:add', async (_, newGameData) => {
       name: newGameData.name,
       status: "ajogar",
       rating: "",
-      completeDate: "",
-      storyProgress: 0
+      completeDate: ""
     };
     statusList.push(statusInfo);
     await fs.promises.writeFile(statusPath, JSON.stringify(statusList, null, 2), 'utf-8');
@@ -1282,34 +1285,52 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
 
   const safeName = name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
 
+  const mimeToExt = {
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/webp': '.webp',
+    'image/gif': '.gif'
+  };
+
   const coverFilePath = path.join(coversDir, safeName + '.jpg');
   const heroFilePath = path.join(herosDir, safeName + '.jpg');
   const logoFilePath = path.join(logosDir, safeName + '.png');
 
   const result = { cover: null, hero: null, logo: null };
 
-  const downloadImage = (url, destPath) => {
+  const downloadImage = (url, targetDir, baseName, fallbackExt = '.jpg') => {
     return new Promise((resolve) => {
-      if (fs.existsSync(destPath)) {
-        return resolve(destPath);
+      // 1. Verifica se já existe QUALQUER arquivo com esse nome base no diretório (evita baixar de novo)
+      const files = fs.existsSync(targetDir) ? fs.readdirSync(targetDir) : [];
+      const existingFile = files.find(f => f.startsWith(baseName + '.'));
+      if (existingFile) {
+        return resolve(path.join(targetDir, existingFile));
       }
 
-      const file = fs.createWriteStream(destPath);
       https.get(url, res => {
         if (res.statusCode !== 200) {
-          file.close();
-          if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
           return resolve(null);
         }
 
+        // 2. Pega o formato real vindo da Steam através do Content-Type
+        const contentType = res.headers['content-type'];
+        const ext = mimeToExt[contentType] || fallbackExt; // Usa fallback se não mapeado
+        const finalPath = path.join(targetDir, baseName + ext);
+
+        const file = fs.createWriteStream(finalPath);
         res.pipe(file);
+
         file.on('finish', () => {
           file.close();
-          resolve(destPath);
+          resolve(finalPath);
+        });
+
+        file.on('error', () => {
+          file.close();
+          if (fs.existsSync(finalPath)) fs.unlinkSync(finalPath);
+          resolve(null);
         });
       }).on('error', () => {
-        file.close();
-        if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
         resolve(null);
       });
     });
@@ -1326,20 +1347,20 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
   } else if (!coverUrl) {
     result.cover = fs.existsSync(placeholderPath) ? placeholderPath : null;
   } else {
-    result.cover = await downloadImage(coverUrl, coverFilePath);
+    result.cover = await downloadImage(coverUrl, coversDir, safeName, '.jpg');
   }
 
   if (appid) {
     const heroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`;
-    result.hero = await downloadImage(heroUrl, heroFilePath);
+    result.hero = await downloadImage(heroUrl, herosDir, safeName, '.jpg');
     
     if (!result.hero) {
       const fallbackHeroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/page_bg_generated_v6b.jpg`;
-      result.hero = await downloadImage(fallbackHeroUrl, heroFilePath);
+      result.hero = await downloadImage(fallbackHeroUrl, herosDir, safeName, '.jpg');
     }
 
     const logoUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/logo.png`;
-    result.logo = await downloadImage(logoUrl, logoFilePath);
+    result.logo = await downloadImage(logoUrl, logosDir, safeName, '.png');
   }
 
   if (!result.hero && fs.existsSync(placeholderPath)) result.hero = placeholderPath;
