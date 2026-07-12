@@ -16,6 +16,7 @@
             <p class="sep-bar"></p>
             <div data-code="basics" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-diamond"></i>Geral</div>
             <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i>Página inicial</div>
+            <div data-code="assets" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-cubes-stacked"></i>Recursos</div>
             <div data-code="updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i>Atualizações</div>
             <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-half-stroke"></i>Aparência</div>
             <!-- <p class="sep-bar"></p>
@@ -27,15 +28,15 @@
         <div id="fast-config" class="tab-configs active">
             <p class="sep">Mostrar/ocultar páginas</p>
             <div class="config-item">
-                <p>Mostrar "Backlog de Jogos" em Home</p>
+                <p>Backlog de Jogos</p>
                 <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
             </div>
             <div class="config-item">
-                <p>Mostrar "Notas" em Home</p>
+                <p>Notas</p>
                 <a class="toggle" data-code="notes_on_home" onclick="toggleConfig(this)"></a>
             </div>
             <div class="config-item">
-                <p>Mostrar "Fortnite" em Home</p>
+                <p>Fortnite</p>
                 <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
             </div>
             <p class="sep">Destaque</p>
@@ -52,7 +53,7 @@
                     <ul class="featuredSelector-select"></ul>
                 </div>
             </div>
-            <p class="sep">Ferramentas</p>
+            <p class="sep">Assets e Atualizações</p>
             <div class="syncAssets">
                 <div id="syncAssets-btn" class="btn" onclick="syncAssets()">Sincronizar assets</div>
                 <p id="syncAssets-text"></p>
@@ -86,33 +87,23 @@
                 <p>Minimizar para a bandeja do sistema ao fechar</p>
                 <a class="toggle" data-code="minimize_to_tray" onclick="toggleConfig(this)"></a>
             </div>
-            <p class="sep">Ferramentas</p>
-            <div class="syncAssets">
-                <div id="syncAssets-btn" class="btn" onclick="syncAssets()">Sincronizar assets</div>
-                <p id="syncAssets-text"></p>
-            </div>
-            <div class="checkUpdates">
-                <div id="checkUpdates-btn" class="btn" onclick="checkUpdates()">Verificar atualizações</div>
-                <p id="checkUpdates-text"></p>
-            </div>
         </div>
         <div id="features" class="tab-configs">
-            <p class="sep">Geral</p>
             <div class="config-item">
-                <p>Mostrar número da versão do app</p>
+                <p>Mostrar versão do app</p>
                 <a class="toggle" data-code="show_version" onclick="toggleConfig(this)"></a>
             </div>
             <p class="sep">Mostrar/ocultar páginas</p>
             <div class="config-item">
-                <p>Mostrar "Backlog de Jogos" em Home</p>
+                <p>Backlog de Jogos</p>
                 <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
             </div>
             <div class="config-item">
-                <p>Mostrar "Notas" em Home</p>
+                <p>Notas</p>
                 <a class="toggle" data-code="notes_on_home" onclick="toggleConfig(this)"></a>
             </div>
             <div class="config-item">
-                <p>Mostrar "Fortnite" em Home</p>
+                <p>Fortnite</p>
                 <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
             </div>
             <p class="sep">Destaque</p>
@@ -141,10 +132,25 @@
                 </div>
             </div>
         </div>
+        <div id="assets" class="tab-configs">
+            <div class="syncAssets">
+                <div id="syncAssets-btn" class="btn" onclick="syncAssets()">Sincronizar recursos</div>
+                <p id="syncAssets-text"></p>
+            </div>
+            <p class="sep">Desativar/Ativar Recursos</p>
+            <div class="config-item mark-item">
+                <p>Fortnite</p>
+                <a class="mark" data-code="fortnite" data-assets-code onclick="toggleAssetsConfig(this)"></a>
+            </div>
+        </div>
         <div id="updates" class="tab-configs">
             <p class="sep">Versão atual</p>
             <div class="config-item version">
                 <span id="app-version"></span>
+            </div>
+            <div class="checkUpdates">
+                <div id="checkUpdates-btn" class="btn" onclick="checkUpdates()">Verificar atualizações</div>
+                <p id="checkUpdates-text"></p>
             </div>
         </div>
         <div id="fortnite" class="tab-configs">

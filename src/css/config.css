@@ -105,6 +105,36 @@
     object-fit: cover;
     border: solid .5vh var(--tab-hover);
 }
+.mark {
+    display: inline-block;
+    width: 1.5vw;
+    height: 3vh;
+    background-color: var(--tab-hover);
+    border-radius: .6vh;
+    position: relative;
+    transition: background-color 0.15s, border .2s;
+}
+.mark-item {
+    cursor: pointer;
+}
+.mark::after {
+    content: '\f00c';
+    position: absolute;
+    width: 2.16vh;
+    font-weight: 900;
+    visibility: hidden;
+    font-family: "Font Awesome 7 Free";
+    padding: .5vh;
+    color: var(-text);
+    transition: visibility 0.1s, border .2s;
+    object-fit: cover;
+}
+.mark.active {
+    background-color: var(--btn-hover-color);
+}
+.mark.active::after {
+    visibility: visible;
+}
 #app-version {
     color: var(--text-dark-gray);
     font-family: 'Montserrat';

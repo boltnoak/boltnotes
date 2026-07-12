@@ -204,6 +204,8 @@ async function syncAssets() {
   let remote, local;
   const failedPackages = [];
 
+  const assetsConfig = getAssetsConfig();
+
   try {
     remote = await getRemoteManifest();
 
@@ -228,6 +230,11 @@ async function syncAssets() {
   for (const pkg of remote.packages) {
     const idx = local.packages.findIndex(p => p.name === pkg.name);
     const localPkg = idx >= 0 ? local.packages[idx] : null;
+
+    if (pkg.name.startsWith('fortnite') && assetsConfig.fortnite === false) {
+        console.log(`Assets - ${pkg.name} ignorado (Fortnite desativado)`);
+        continue;
+    }
 
     if (localPkg && localPkg.hash === pkg.hash) {
       console.log(`Assets - ${pkg.name} (atualizado)`);
@@ -763,6 +770,29 @@ ipcMain.handle('updates:check-update', async () => {
     };
   }
 })
+
+function getAssetsConfig() {
+    const configPath = path.join(APPDATA, 'assets-config.json');
+    if (!fs.existsSync(configPath)) {
+        const defaults = { fortnite: true };
+        fs.writeFileSync(configPath, JSON.stringify(defaults, null, 2));
+        return defaults;
+    }
+    try {
+        return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    } catch {
+        return { fortnite: true };
+    }
+}
+ipcMain.handle('assets-config:get', () => getAssetsConfig());
+
+ipcMain.on('assets-config:update', (_, key, value) => {
+    const configPath = path.join(APPDATA, 'assets-config.json');
+    const config = getAssetsConfig();
+    config[key] = value;
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+});
+
 
 ipcMain.handle('fortnite:fetch-trailers', async () => {
     return await fetchWithCache(

@@ -105,6 +105,11 @@ contextBridge.exposeInMainWorld('api', {
     getSeasons: () => ipcRenderer.invoke('fortnite:fetch-seasons'),
     listTrailers: () => ipcRenderer.invoke('fortnite:list-trailers') },
 
+  assetsConfig: {
+    get: () => ipcRenderer.invoke('assets-config:get'),
+    update: (key, value) => ipcRenderer.send('assets-config:update', key, value)
+  },
+
   addGameToGist: (gameData) => ipcRenderer.invoke('add-game-to-gist', gameData),
   restartApp: () => ipcRenderer.send('update:restart')
 });

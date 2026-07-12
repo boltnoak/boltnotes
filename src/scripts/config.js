@@ -8,8 +8,27 @@ function toggleConfig(el) {
     window.electronAPI.config.updateConfig(option, isActive);
 }
 
+function toggleAssetsConfig(el) {
+    const option = el.dataset.code;
+
+    el.classList.toggle('active');
+    
+    const isActive = el.classList.contains('active');
+
+    window.api.assetsConfig.update(option, isActive);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
+
+    const assetsConf = await window.api.assetsConfig.get();
+
+    document.querySelectorAll('a[data-assets-code]').forEach(button => {
+        const code = button.dataset.code;
+        if (assetsConf[code] !== false) {
+            button.classList.add('active');
+        }
+    });
     
     const themeContainers = document.querySelectorAll('.theme-selector-div');
 
