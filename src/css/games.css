@@ -345,7 +345,7 @@ header {
 
 /* Visualisação em lista */
 #view-games.list {
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 1vh;
     color: var(--text);
     padding-right: 0;
@@ -355,6 +355,7 @@ header {
   color: var(--text-gray);
   font-weight: bold;
   display: flex;
+  align-items: center;
   margin-right: .5vw;
 }
 #view-games.list .game {
@@ -394,6 +395,7 @@ header {
     padding: 0;
     margin: 0;
     flex-direction: row;
+    align-items: center;
     justify-content: start;
     gap: 1vw;
 }
@@ -789,11 +791,10 @@ header {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    text-align: center;
+    justify-content: center;
 }
 .add-game-form-title p {
-    margin: 0;
+    margin: 0 0 .2vh 0;
 }
 .add-game-form-options {
     display: flex;
@@ -863,6 +864,7 @@ header {
   color: var(--text-gray);
   font-weight: bold;
   display: flex;
+  align-items: center;
   margin-right: .5vw;
 }
 #view-achie.list .game {
@@ -889,6 +891,7 @@ header {
     padding: 0;
     margin: 0;
     flex-direction: row;
+    align-items: center;
     justify-content: start;
     gap: 1vw;
 }
@@ -974,7 +977,7 @@ header {
     z-index: 99;
     animation: popupIn .2s ease forwards;
 }
-.game-popup.is-closing {
+.is-closing {
     animation: popupOut .2s ease forwards;
 }
 .game-banner-div {

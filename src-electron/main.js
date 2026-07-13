@@ -1000,7 +1000,6 @@ function makeTray() {
     { label: 'Fortnite', click: () => navigateTo('fortnite.html') },
     { type: 'separator' },
     { label: 'Configurações', click: () => navigateTo('config.html') },
-    { label: 'Welcome test', click: () => navigateTo('welcome.html') },
     { label: 'Fechar app',
       click: () => {
         isQuitting = true;

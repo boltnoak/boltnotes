@@ -101,16 +101,6 @@ async function loadGames() {
         else others.push(g);
     }
 
-    if (sort === "date-recent") {
-        others.sort((a, b) => (b._completeMs || 0) - (a._completeMs || 0));
-    } else if (sort === "date-old") {
-        others.sort((a, b) => (a._completeMs || 0) - (b._completeMs || 0));
-    } else if (sort === "rating-high") {
-        others.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    } else if (sort === "rating-low") {
-        others.sort((a, b) => (a.rating || 0) - (b.rating || 0));
-    }
-
     if (list.classList.contains("grid")) {
         const order = { ajogar: 0, zerado: 1 };
         others.sort((a, b) => {
@@ -122,10 +112,41 @@ async function loadGames() {
 
     const completedMap = new Map(
         games
-            .filter(g => g._status === "zerado")
-            .sort((a, b) => (a._completeMs || 0) - (b._completeMs || 0))
+            .filter(g => g._status.toLowerCase() === "zerado")
             .map((g, i) => [g.appid || g.name, i + 1])
     );
+
+    others.sort((a, b) => {
+        const sa = (a.status || "").toLowerCase().trim();
+        const sb = (b.status || "").toLowerCase().trim();
+
+        if (sa === "ajogar" && sb === "zerado") return -1;
+        if (sa === "zerado" && sb === "ajogar") return 1;
+
+        if (sort === "date-recent") {
+            const diff = (b._completeMs || 0) - (a._completeMs || 0);
+            if (diff !== 0) return diff;
+            
+            const idxA = completedMap.get(a.appid || a.name) || 0;
+            const idxB = completedMap.get(b.appid || b.name) || 0;
+            return idxB - idxA; 
+        }
+        if (sort === "date-old") {
+            const diff = (a._completeMs || 0) - (b._completeMs || 0);
+            if (diff !== 0) return diff;
+            
+            const idxA = completedMap.get(a.appid || a.name) || 0;
+            const idxB = completedMap.get(b.appid || b.name) || 0;
+            return idxA - idxB;
+        }
+        if (sort === "rating-high") {
+            return (b.rating || 0) - (a.rating || 0);
+        }
+        if (sort === "rating-low") {
+            return (a.rating || 0) - (b.rating || 0);
+        }
+        return 0;
+    });
 
     const playingCards = await Promise.all(
         playing.map(game => createGameCard(game, true))
@@ -193,7 +214,6 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     const tagFill = document.createElement("span");
     tagFill.className = "status-fill";
-    // tagFill.style.width = (game.storyProgress || 0) + "%";
     tagFill.style.width = "100%";
 
     gameInfo.appendChild(title);
@@ -248,14 +268,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     else if (status === "ajogar") tag.classList.add("ajogar");
     else if (status === "wishlist") tag.classList.add("wishlist");
 
-    if (status === "jogando") {
-        // const statusPercentage = document.createElement("span");
-        // statusPercentage.className = "status-text";
-        // statusPercentage.textContent = `Progresso: ${(game.storyProgress || 0)}%`;
-        // statusDiv.appendChild(statusPercentage);
-        // statusDiv.appendChild(tag);
-        div.classList.add('jogando');
-    }
+    if (status === "jogando") div.classList.add('jogando');
 
     title.textContent = game.name;
     div.dataset.id = game.name;
@@ -292,13 +305,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     }
     div.appendChild(gameInfo);
 
-    div.addEventListener('click', () => openGamePopup(div,
-        game.status,
-        game.releaseDate,
-        game.rating,
-        game.developer,
-        game.publisher
-    ));
+    div.addEventListener('click', () => openGamePopup(div));
 
     return div;
 }
@@ -373,22 +380,6 @@ async function loadGamesAchie() {
         combinedGame._achieStatus = status;
         combinedGame._completeMs = parseBRDate(combinedGame.completeDate)?.getTime?.() ?? NaN;
 
-        if (status !== "platinado" && status !== "platinando" && combinedGame.releaseDate?.includes("/")) {
-            const parts = combinedGame.releaseDate.split("/");
-            if (parts.length === 3) {
-                const d = parseInt(parts[0], 10);
-                const m = parseInt(parts[1], 10) - 1;
-                const y = parseInt(parts[2], 10);
-                const gameDate = new Date(y, m, d);
-                if (!isNaN(gameDate.getTime())) {
-                    const hoje = new Date();
-                    hoje.setHours(0, 0, 0, 0);
-                    gameDate.setHours(0, 0, 0, 0);
-                    combinedGame.isPreOrder = gameDate.getTime() > hoje.getTime();
-                }
-            }
-        }
-
         return combinedGame;
     });
 
@@ -402,33 +393,25 @@ async function loadGamesAchie() {
         else others.push(g);
     }
 
-    if (sort === "date-recent") {
-        others.sort((a, b) => parseBRDate(b.completeDate) - parseBRDate(a.completeDate));
-    } else if (sort === "date-old") {
-        others.sort((a, b) => parseBRDate(a.completeDate) - parseBRDate(b.completeDate));
-    } else if (sort === "rating-high") {
-        others.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    } else if (sort === "rating-low") {
-        others.sort((a, b) => (a.rating || 0) - (b.rating || 0));
-    }
-
     const isGrid = list.classList.contains("grid");
 
-    if (isGrid) {
-        const order = { "platinando": 0, "aplatinar": 1, "platinado": 2 };
-        others.sort((a, b) => {
-            const sa = (a.achieStatus || "").toLowerCase().trim();
-            const sb = (b.achieStatus || "").toLowerCase().trim();
-            return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
-        });
-    } else {
-        const order = { "platinando": 0, "platinado": 1 };
-        others.sort((a, b) => {
-            const sa = (a.achieStatus || "").toLowerCase().trim();
-            const sb = (b.achieStatus || "").toLowerCase().trim();
-            return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
-        });
-    }
+    // if (isGrid) {
+    //     const order = { "aplatinar": 0, "platinado": 1 };
+    //     others.sort((a, b) => {
+    //         const sa = (a.achieStatus || "").toLowerCase().trim();
+    //         const sb = (b.achieStatus || "").toLowerCase().trim();
+    //         return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
+    //     });
+    // } else {
+    //     const order = { "platinado": 0 };
+    //     others.sort((a, b) => {
+    //         const sa = (a.achieStatus || "").toLowerCase().trim();
+    //         const sb = (b.achieStatus || "").toLowerCase().trim();
+    //         return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
+    //     });
+    // }
+
+    const platinadosOrdenados = others.filter(g => (g.achieStatus || "").toLowerCase().trim() === "platinado");
 
     const platinadoMap = new Map(
         games
@@ -436,6 +419,42 @@ async function loadGamesAchie() {
             .sort((a, b) => parseBRDate(a.completeDate) - parseBRDate(b.completeDate))
             .map((g, i) => [g.appid || g.name, i + 1])
     );
+
+    platinadosOrdenados.forEach((g, i) => {
+        platinadoMap.set(g.appid || g.name, platinadosOrdenados.length - i);
+    });
+    
+    others.sort((a, b) => {
+        const sa = (a.achieStatus || "").toLowerCase().trim();
+        const sb = (b.achieStatus || "").toLowerCase().trim();
+
+        if (sa === "aplatinar" && sb === "platinado") return -1;
+        if (sa === "platinado" && sb === "aplatinar") return 1;
+
+        if (sort === "date-recent") {
+            const diff = (b._completeMs || 0) - (a._completeMs || 0);
+            if (diff !== 0) return diff;
+            
+            const idxA = platinadoMap.get(a.appid || a.name) || 0;
+            const idxB = platinadoMap.get(b.appid || b.name) || 0;
+            return idxB - idxA; 
+        }
+        if (sort === "date-old") {
+            const diff = (a._completeMs || 0) - (b._completeMs || 0);
+            if (diff !== 0) return diff;
+            
+            const idxA = platinadoMap.get(a.appid || a.name) || 0;
+            const idxB = platinadoMap.get(b.appid || b.name) || 0;
+            return idxA - idxB;
+        }
+        if (sort === "rating-high") {
+            return (b.rating || 0) - (a.rating || 0);
+        }
+        if (sort === "rating-low") {
+            return (a.rating || 0) - (b.rating || 0);
+        }
+        return 0;
+    });
 
     const platinandoCards = await Promise.all(
         platinando.map(game => createGameAchieCard(game))
@@ -586,14 +605,17 @@ steamDbBtn.addEventListener("click", (e) => {
     }
 });
 
-const gameList = document.getElementById("view-games");
-const achieList = document.getElementById("view-achie");
 const viewGridBtn = document.getElementById("view-grid");
 const viewListBtn = document.getElementById("view-list");
 const achievementsBtn = document.querySelector(".mode-btn.achievements");
 const campaignBtn = document.querySelector(".mode-btn.campaign");
 const viewGames = document.getElementById("view-games");
 const viewAchie = document.getElementById("view-achie");
+
+const sortRatingHigh = document.querySelector('.sortingOptions-select li[data-value="rating-high"]');
+const sortRatingLow = document.querySelector('.sortingOptions-select li[data-value="rating-low"]');
+const sortRecent = document.querySelector('.sortingOptions-select li[data-value="date-recent"]');
+const sortOld = document.querySelector('.sortingOptions-select li[data-value="date-old"]');
 
 function toggleViewMode(mode) {
     const isGrid = mode === 'grid';
@@ -602,14 +624,28 @@ function toggleViewMode(mode) {
     viewListBtn.classList.toggle('active', !isGrid);
 
     if (campaignBtn.classList.contains('active')) {
-        gameList.classList.remove(isGrid ? 'list' : 'grid');
-        gameList.classList.add(mode);
+        viewGames.classList.remove(isGrid ? 'list' : 'grid');
+        viewGames.classList.add(mode);
+
+        if (sortRatingHigh) sortRatingHigh.style.display = 'block';
+        if (sortRatingLow) sortRatingLow.style.display = 'block';
+
+        if (sortRecent) sortRecent.click();
+        
         loadGamesAchie();
         loadGames();
     }
     if (achievementsBtn.classList.contains('active')) {
-        achieList.classList.remove(isGrid ? 'list' : 'grid');
-        achieList.classList.add(mode);
+        viewAchie.classList.remove(isGrid ? 'list' : 'grid');
+        viewAchie.classList.add(mode);
+
+        if (sortRatingHigh) sortRatingHigh.style.display = 'none';
+        if (sortRatingLow) sortRatingLow.style.display = 'none';
+        if (sortRecent) sortRecent.style.display = 'block';
+        if (sortOld) sortOld.style.display = 'block';
+
+        if (sortRecent) sortRecent.click();
+
         loadGames();
         loadGamesAchie();
     }
@@ -682,8 +718,6 @@ document.addEventListener('DOMContentLoaded', () => {
             triggerIcon.className = 'fa-solid fa-angle-up';
         });
     });
-
-    
 
     document.addEventListener('click', () => {
         container.classList.remove('open');
@@ -759,11 +793,9 @@ document.getElementById('reload-btn').addEventListener('click', () => {
     window.location.reload();
 });
 
-const closeAddBtn = document.getElementById('addGame-close');
 const addGamePopup = document.getElementById('addGame-popup');
 const addGameOpenBtn = document.querySelector('.addGameOpen');
 
-closeAddBtn.addEventListener('click', () => addGamePopup.style.display = 'none');
 addGameOpenBtn.addEventListener('click', () => addGamePopup.style.display = 'flex');
 
 function updateStatus(element, statusClass, text) {
@@ -1151,7 +1183,20 @@ optionZerado.addEventListener('click', async () => {
     achieSep.style.display = 'block';
     campaignDiv.style.display = 'flex';
     ratingDiv.style.display = 'flex';
-    achieBtns.style.display = 'none';
+
+    const stats = await loadStatusAchie();
+    const listStats = Array.isArray(stats) ? stats : (stats.games || []);
+
+    const nomeDoJogoProcurado = game;
+    const gameFoundAchie = listStats.find(jogo => jogo.name === nomeDoJogoProcurado);
+
+    if (gameFoundAchie) {
+        if (gameFoundAchie.achieStatus === "platinando") {
+            achieBtns.style.display = 'flex';
+        } else {
+            achieBtns.style.display = 'none';
+        }
+    }
 
     await updateStatusJSON(game, "zerado")
     updateStatus(statusText, "zerado", "Zerado")
@@ -1224,3 +1269,15 @@ optionPlatinado.addEventListener('click', async () => {
     await loadGames();
     await loadGamesAchie();
 })
+
+const addGamePopupDiv = document.querySelector('.add-game-form');
+addGamePopup.addEventListener('click', (e) => {
+    if (e.target === addGamePopup) {
+        addGamePopupDiv.classList.add('is-closing');
+        
+        addGamePopupDiv.addEventListener('animationend', () => {
+            addGamePopup.style.display = 'none';
+            addGamePopupDiv.classList.remove('is-closing');
+        }, { once: true });
+    }
+});

@@ -261,13 +261,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     div.appendChild(img);
     div.appendChild(gameInfo);
 
-    div.addEventListener('click', () => openGamePopup(div,
-        game.status,
-        game.releaseDate,
-        game.rating,
-        game.developer,
-        game.publisher
-    ));
+    div.addEventListener('click', () => openGamePopup(div));
 
     return div;
 }
@@ -291,6 +285,20 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     const achieBarFill = document.querySelector('.achie-bar-fill');
     const achieTitle = document.querySelector('.achie-info-title');
     const achieInfo = document.querySelector('.achie-info');
+    const achieBtns = document.querySelector('.achie-add-minus');
+    const achieAddBtn = document.getElementById('achie-add');
+    const achieMinusBtn = document.getElementById('achie-minus');
+    const completeDateText = document.querySelector('.game-popup-completeDate');
+    const achieDiv = document.querySelector('.game-achievements');
+    const campaignText = document.querySelector('.campaign-info-title-text');
+    const ratingText = document.querySelector('.game-popup-rating');
+    const achieSep = document.querySelector('.achie-sep');
+    const campaignSep = document.querySelector('.campaign-sep');
+    const campaignDiv = document.querySelector('.game-campaign-div');
+    const ratingDiv = document.querySelector('.game-rating-div');
+    
+    achieAddBtn.setAttribute('data-id', title);
+    achieMinusBtn.setAttribute('data-id', title);
 
     pubText.style.animation = '';
     devText.style.animation = '';
@@ -298,15 +306,27 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
 
     let jogoEncontrado = null;
     let gameStatusFound = null;
+    let fullGame = null;
 
     try {
         const games = await loadStatusAchie();
-        jogoEncontrado = games.find(g => g.name === title);
+        const fullGamesData = await loadGamesDB();
+        const fullGamesArray = Array.isArray(fullGamesData) ? fullGamesData : (fullGamesData.games || []);
         const gamesCamp = await loadStatus();
-        gameStatusFound = gamesCamp.find(g => g.name === title);
-    } catch (erro) { console.error("Erro ao carregar o JSON:", erro) }
 
-    console.log(name, status, releaseDate, developer, publisher, rating);
+        jogoEncontrado = games.find(g => g.name === title) || {};
+        fullGame = fullGamesArray.find(g => g.name === title) || {};
+        gameStatusFound = gamesCamp.find(g => g.name === title) || {};
+    } catch (erro) {
+        console.error("Erro ao carregar o JSON:", erro);
+        jogoEncontrado = {};
+        fullGame = {};
+        gameStatusFound = {};
+    }
+
+    const achieGame = jogoEncontrado;
+    const gameCampaign = gameStatusFound;
+    const fullGamess = fullGame;
 
     banner.src = `appdata:///game-heros/${name}.jpg`;
     const logoExists = await window.electronAPI.existsAppdata(`game-logos/${name}.png`);
@@ -316,12 +336,11 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         logo.src = '';
     }
     logo.alt = el.dataset.id;
-    devText.textContent = developer;
-    pubText.textContent = publisher;
-    releaseDateText.textContent = releaseDate;
-
-    const achieGame = jogoEncontrado;
-    const gameCampaign = gameStatusFound;
+    devText.textContent = fullGamess.developer || "Erro";
+    pubText.textContent = fullGamess.publisher || "Erro";
+    releaseDateText.textContent = fullGamess.releaseDate || "Erro";
+    completeDateText.textContent = gameCampaign.completeDate || "";
+    ratingText.textContent = Number(gameCampaign.rating).toFixed(1);
 
     const total = achieGame.totalAchievements || 0;
     const unlocked = achieGame.unlockedAchievements || 0;
@@ -332,43 +351,72 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     achiePercentage.textContent = `${percentage}%`;
 
     const hasAchie = achieGame.hasAchievements;
+
+    const campStatus = gameCampaign.status.toLowerCase();
+    const achStatus = achieGame.achieStatus?.toLowerCase();
+    const showAchieBtns = 
+        campStatus === 'jogando' || 
+        achStatus === 'platinando';
+
     if (hasAchie) {
         achieTitle.style.display = 'flex';
         achieInfo.style.display = 'flex';
+        achieStatusText.style.display = 'flex';
+        achieBtns.style.display = 'flex';
+        achieDiv.style.display = 'flex';
+        achieSep.style.display = 'block';
     } else {
         achieTitle.style.display = 'none';
         achieInfo.style.display = 'none';
         achieStatusText.style.display = 'none';
+        achieBtns.style.display = 'none';
+        achieDiv.style.display = 'none';
+        achieSep.style.display = 'none';
     }
 
-    if (gameCampaign.status.toLowerCase() == 'zerado') {
-        statusText.textContent = 'Zerado';
-        statusText.classList.remove('ajogar');
-        statusText.classList.remove('jogando');
-        statusText.classList.add('zerado');
+    if (gameCampaign.status.toLowerCase() == 'ajogar') {
+        updateStatus(statusText, 'ajogar', 'À Jogar');
+        campaignSep.style.display = 'none';
+        achieSep.style.display = 'none';
+        campaignDiv.style.display = 'none';
+        ratingDiv.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'jogando') {
-        statusText.textContent = 'Jogando';
-        statusText.classList.remove('ajogar');
-        statusText.classList.add('jogando');
-        statusText.classList.remove('zerado');
+        updateStatus(statusText, 'jogando', 'Jogando');
+        campaignSep.style.display = 'none';
+        achieSep.style.display = 'none';
+        campaignDiv.style.display = 'none';
+        ratingDiv.style.display = 'none';
     }
-    if (gameCampaign.status.toLowerCase() == 'ajogar') {
-        statusText.textContent = 'Á Jogar';
-        statusText.classList.add('ajogar');
-        statusText.classList.remove('jogando');
-        statusText.classList.remove('zerado');
+    if (gameCampaign.status.toLowerCase() == 'zerado') {
+        updateStatus(statusText, 'zerado', 'Zerado');
+        campaignText.textContent = 'ZERADO';
+        campaignSep.style.display = 'block';
+        campaignDiv.style.display = 'flex';
+        ratingDiv.style.display = 'flex';
+    }
+
+    if (achieGame.achieStatus.toLowerCase() == 'aplatinar') {
+        updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
+    }
+    if (achieGame.achieStatus.toLowerCase() == 'platinando') {
+        updateAchie(achieStatusText, 'platinando', 'Platinando');
+    }
+    if (achieGame.achieStatus.toLowerCase() == 'platinado') {
+        updateAchie(achieStatusText, 'platinado', 'Platinado');
     }
 
     if (jogoEncontrado && jogoEncontrado.achieStatus) {
         const achieStatus = jogoEncontrado.achieStatus.toLowerCase();
 
-        if (achieStatus === 'platinado')  updateStatus(achieStatusText, 'platinado', 'Platinado');
-        if (achieStatus === 'platinando') updateStatus(achieStatusText, 'platinando', 'Platinando');
-        if (achieStatus === 'aplatinar')  updateStatus(achieStatusText, 'aplatinar', 'À Platinar');
+        if (achieStatus === 'platinado')  updateAchie(achieStatusText, 'platinado', 'Platinado');
+        if (achieStatus === 'platinando') updateAchie(achieStatusText, 'platinando', 'Platinando');
+        if (achieStatus === 'aplatinar')  updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
     } else {
         achieStatusText.style.display = 'none';
     }
+
+    achieBtns.style.display = showAchieBtns ? 'flex' : 'none';
 
     popup.style.display = 'flex';
     const titleDiv = document.querySelector('.game-popup-title');
@@ -465,6 +513,9 @@ async function updateAchieJSON(game, statusClass) {
 }
 
 const options = document.querySelector('.campaign-status-change');
+const optionAjogar = document.querySelector('.option-ajogar');
+const optionJogando = document.querySelector('.option-jogando');
+const optionZerado = document.querySelector('.option-zerado');
 
 statusBtn.addEventListener('click', (event) => {
     event.stopPropagation();
@@ -482,22 +533,50 @@ document.addEventListener('click', (event) => {
     }
 });
 
-const optionAjogar = document.querySelector('.option-ajogar');
-const optionJogando = document.querySelector('.option-jogando');
-const optionZerado = document.querySelector('.option-zerado');
-
 optionAjogar.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.campaign-status-tag');
+    const campaignText = document.querySelector('.campaign-info-title-text');
+    const campaignSep = document.querySelector('.campaign-sep');
+    const achieSep = document.querySelector('.achie-sep');
+    const campaignDiv = document.querySelector('.game-campaign-div');
+    const ratingDiv = document.querySelector('.game-rating-div');
+    const achieBtns = document.querySelector('.achie-add-minus');
 
-    await updateStatusJSON(game, "ajogar")
-    updateStatus(statusText, "ajogar", "À Jogar")
+    options.style.display = 'none';
+    campaignText.classList.add('ajogar');
+    campaignText.classList.remove('jogando');
+    campaignText.classList.remove('zerado');
+    campaignSep.style.display = 'none';
+    achieSep.style.display = 'none';
+    campaignDiv.style.display = 'none';
+    ratingDiv.style.display = 'none';
+    achieBtns.style.display = 'none';
+    
+    await updateStatusJSON(game, "ajogar");
+    updateStatus(statusText, "ajogar", "À Jogar");
     await loadGames();
 })
 optionJogando.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.campaign-status-tag');
+    const campaignText = document.querySelector('.campaign-info-title-text');
+    const campaignSep = document.querySelector('.campaign-sep');
+    const achieSep = document.querySelector('.achie-sep');
+    const campaignDiv = document.querySelector('.game-campaign-div');
+    const ratingDiv = document.querySelector('.game-rating-div');
+    const achieBtns = document.querySelector('.achie-add-minus');
 
+    options.style.display = 'none';
+    achieBtns.style.display = 'flex';
+    campaignText.classList.remove('ajogar');
+    campaignText.classList.add('jogando');
+    campaignText.classList.remove('zerado');
+    campaignSep.style.display = 'none';
+    achieSep.style.display = 'none';
+    campaignDiv.style.display = 'none';
+    ratingDiv.style.display = 'none';
+    
     await updateStatusJSON(game, "jogando")
     updateStatus(statusText, "jogando", "Jogando")
     await loadGames();
@@ -505,11 +584,45 @@ optionJogando.addEventListener('click', async () => {
 optionZerado.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.campaign-status-tag');
+    const campaignText = document.querySelector('.campaign-info-title-text');
+    const campaignSep = document.querySelector('.campaign-sep');
+    const achieSep = document.querySelector('.achie-sep');
+    const campaignDiv = document.querySelector('.game-campaign-div');
+    const ratingDiv = document.querySelector('.game-rating-div');
+    const achieBtns = document.querySelector('.achie-add-minus');
+
+    options.style.display = 'none';
+    campaignText.textContent = "ZERADO";
+    campaignSep.style.display = 'block';
+    achieSep.style.display = 'block';
+    campaignDiv.style.display = 'flex';
+    ratingDiv.style.display = 'flex';
+
+    const stats = await loadStatusAchie();
+    const listStats = Array.isArray(stats) ? stats : (stats.games || []);
+
+    const nomeDoJogoProcurado = game;
+    const gameFoundAchie = listStats.find(jogo => jogo.name === nomeDoJogoProcurado);
+
+    if (gameFoundAchie) {
+        if (gameFoundAchie.achieStatus === "platinando") {
+            achieBtns.style.display = 'flex';
+        } else {
+            achieBtns.style.display = 'none';
+        }
+    }
 
     await updateStatusJSON(game, "zerado")
     updateStatus(statusText, "zerado", "Zerado")
+
+    const completeDateText = document.querySelector('.game-popup-completeDate');
+    if (completeDateText) {
+        completeDateText.textContent = new Date().toLocaleDateString('pt-BR');
+    }
+
     await loadGames();
 })
+
 const optionsAchie = document.querySelector('.achie-status-change');
 const optionAplatinar = document.querySelector('.option-aplatinar');
 const optionPlatinando = document.querySelector('.option-platinando');
@@ -534,8 +647,10 @@ document.addEventListener('click', (event) => {
 optionAplatinar.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.achie-status-tag');
+    const achieBtns = document.querySelector('.achie-add-minus');
 
     optionsAchie.style.display = 'none';
+    achieBtns.style.display = 'none';
     
     await updateAchieJSON(game, "aplatinar")
     updateAchie(statusText, "aplatinar", "À Platinar")
@@ -545,8 +660,10 @@ optionAplatinar.addEventListener('click', async () => {
 optionPlatinando.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.achie-status-tag');
+    const achieBtns = document.querySelector('.achie-add-minus');
 
     optionsAchie.style.display = 'none';
+    achieBtns.style.display = 'flex';
     
     await updateAchieJSON(game, "platinando")
     updateAchie(statusText, "platinando", "Platinando")
@@ -556,8 +673,10 @@ optionPlatinando.addEventListener('click', async () => {
 optionPlatinado.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.achie-status-tag');
+    const achieBtns = document.querySelector('.achie-add-minus');
 
     optionsAchie.style.display = 'none';
+    achieBtns.style.display = 'none';
 
     await updateAchieJSON(game, "platinado")
     updateAchie(statusText, "platinado", "Platinado")
