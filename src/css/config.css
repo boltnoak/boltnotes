@@ -155,8 +155,10 @@
 }
 .path {
     background-color: var(--tab-hover);
-    padding: 1vh .6vw;
-    border-radius: 1vh;
+    padding: 2vh 1vw;
+    border-radius: 1.3vh;
+    margin: .6vh 0;
+    border: solid .5vh var(--btn-color);
 }
 
 .theme-selector-div {

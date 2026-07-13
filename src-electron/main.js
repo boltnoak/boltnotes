@@ -386,13 +386,13 @@ function getConfig() {
     open_on_startup: false,
     minimize_to_tray: false,
     backlog_on_home: false,
-    playing_now_on_home: false,
     notes_on_home: true,
     fortnite_on_home: true,
     show_version: true,
     last_seen_version: null,
     theme: 'dark',
-    featured: 'none'
+    featured: 'none',
+    welcomed: false
   };
   try {
     if (fs.existsSync(configPath)) {
@@ -627,15 +627,22 @@ if (!gotTheLock) {
       if (app.isPackaged) {
         autoUpdater.checkForUpdates();
       }
-      syncAssets()
-        .then(() => {
-          assetsReady = true;
-          win.webContents.send('assets-ready');
-        })
-        .catch(err => {
-          console.error(err);
-          win.webContents.send('assets-error', err.message);
-        });
+
+      if (!configs.welcomed) {
+        win.loadFile(path.join(BUNDLE, 'pages', 'welcome.html'));
+      } else {
+        win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
+
+        syncAssets()
+          .then(() => {
+            assetsReady = true;
+            win.webContents.send('assets-ready');
+          })
+          .catch(err => {
+            console.error(err);
+            win.webContents.send('assets-error', err.message);
+          });
+      }
     });
 
     win.on('maximize', () => {
@@ -654,6 +661,23 @@ win.on('unmaximize', () => {
     });
   });
 }
+
+ipcMain.on('welcome:done', () => {
+  const currentConfig = getConfig();
+  currentConfig.welcomed = true;
+  fs.writeFileSync(path.join(APPDATA, 'config.json'), JSON.stringify(currentConfig, null, 2));
+  win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
+
+  syncAssets()
+    .then(() => {
+      assetsReady = true;
+      win.webContents.send('assets-ready');
+    })
+    .catch(err => {
+      console.error(err);
+      win.webContents.send('assets-error', err.message);
+    });
+});
 
 ipcMain.handle('assets-check-status', () => {
     return assetsReady;
@@ -787,10 +811,10 @@ function getAssetsConfig() {
 ipcMain.handle('assets-config:get', () => getAssetsConfig());
 
 ipcMain.on('assets-config:update', (_, key, value) => {
-    const configPath = path.join(APPDATA, 'assets-config.json');
-    const config = getAssetsConfig();
-    config[key] = value;
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+  const configPath = path.join(APPDATA, 'assets-config.json');
+  const config = getAssetsConfig();
+  config[key] = value;
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 });
 
 
@@ -971,12 +995,13 @@ function makeTray() {
       icon: trayNameIcon,
       enabled: false },
     { type: 'separator' },
-    { label: 'Fortnite', click: () => navigateTo('fortnite.html') },
-    { label: 'Notas', click: () => navigateTo('notes.html') },
     { label: 'Backlog de Jogos', click: () => navigateTo('games.html') },
+    { label: 'Notas', click: () => navigateTo('notes.html') },
+    { label: 'Fortnite', click: () => navigateTo('fortnite.html') },
     { type: 'separator' },
     { label: 'Configurações', click: () => navigateTo('config.html') },
-    { label: 'Fechar app', 
+    { label: 'Welcome test', click: () => navigateTo('welcome.html') },
+    { label: 'Fechar app',
       click: () => {
         isQuitting = true;
         app.quit();

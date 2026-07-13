@@ -904,6 +904,13 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     achiePercentage.textContent = `${percentage}%`;
 
     const hasAchie = achieGame.hasAchievements;
+
+    const campStatus = gameCampaign.status.toLowerCase();
+    const achStatus = achieGame.achieStatus?.toLowerCase();
+    const showAchieBtns = 
+        campStatus === 'jogando' || 
+        achStatus === 'platinando';
+
     if (hasAchie) {
         achieTitle.style.display = 'flex';
         achieInfo.style.display = 'flex';
@@ -920,47 +927,36 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         achieSep.style.display = 'none';
     }
 
+    if (gameCampaign.status.toLowerCase() == 'ajogar') {
+        updateStatus(statusText, 'ajogar', 'À Jogar');
+        campaignSep.style.display = 'none';
+        achieSep.style.display = 'none';
+        campaignDiv.style.display = 'none';
+        ratingDiv.style.display = 'none';
+    }
+    if (gameCampaign.status.toLowerCase() == 'jogando') {
+        updateStatus(statusText, 'jogando', 'Jogando');
+        campaignSep.style.display = 'none';
+        achieSep.style.display = 'none';
+        campaignDiv.style.display = 'none';
+        ratingDiv.style.display = 'none';
+    }
     if (gameCampaign.status.toLowerCase() == 'zerado') {
         updateStatus(statusText, 'zerado', 'Zerado');
         campaignText.textContent = 'ZERADO';
-        campaignText.classList.remove('ajogar');
-        campaignText.classList.remove('jogando');
-        campaignText.classList.add('zerado');
         campaignSep.style.display = 'block';
         campaignDiv.style.display = 'flex';
         ratingDiv.style.display = 'flex';
     }
-    if (gameCampaign.status.toLowerCase() == 'jogando') {
-        updateStatus(statusText, 'jogando', 'Jogando');
-        campaignText.classList.remove('ajogar');
-        campaignText.classList.add('jogando');
-        campaignText.classList.remove('zerado');
-        campaignSep.style.display = 'none';
-        achieSep.style.display = 'none';
-        campaignDiv.style.display = 'none';
-        ratingDiv.style.display = 'none';
-    }
-    if (gameCampaign.status.toLowerCase() == 'ajogar') {
-        updateStatus(statusText, 'ajogar', 'À Jogar');
-        campaignText.classList.add('ajogar');
-        campaignText.classList.remove('jogando');
-        campaignText.classList.remove('zerado');
-        campaignSep.style.display = 'none';
-        achieSep.style.display = 'none';
-        campaignDiv.style.display = 'none';
-        ratingDiv.style.display = 'none';
-    }
-    if (achieGame.achieStatus.toLowerCase() == 'platinado') {
-        updateAchie(achieStatusText, 'platinado', 'Platinado');
-        achieBtns.style.display = 'none';
+
+    if (achieGame.achieStatus.toLowerCase() == 'aplatinar') {
+        updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
     }
     if (achieGame.achieStatus.toLowerCase() == 'platinando') {
         updateAchie(achieStatusText, 'platinando', 'Platinando');
-        achieBtns.style.display = 'flex';
     }
-    if (achieGame.achieStatus.toLowerCase() == 'aplatinar') {
-        updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
-        achieBtns.style.display = 'none';
+    if (achieGame.achieStatus.toLowerCase() == 'platinado') {
+        updateAchie(achieStatusText, 'platinado', 'Platinado');
     }
 
     if (jogoEncontrado && jogoEncontrado.achieStatus) {
@@ -972,6 +968,8 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     } else {
         achieStatusText.style.display = 'none';
     }
+
+    achieBtns.style.display = showAchieBtns ? 'flex' : 'none';
 
     popup.style.display = 'flex';
     const titleDiv = document.querySelector('.game-popup-title');
@@ -986,7 +984,6 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     });
 }
 
-// const gamePopup = document.querySelector('.game-popup');
 const closeGamePopup = document.querySelector('.game-popup-div');
 closeGamePopup.addEventListener('click', (e) => {
     if (e.target === gamePopup) {
@@ -1027,8 +1024,8 @@ async function updateStatusJSON(game, statusClass) {
         jogoEncontrado.status = statusClass;
 
         if (statusClass === "zerado") {
-            const dataAtual = new Date();
-            jogoEncontrado.completeDate = dataAtual.toLocaleDateString('pt-BR');
+            const dateNow = new Date();
+            jogoEncontrado.completeDate = dateNow.toLocaleDateString('pt-BR');
         } else {
             delete jogoEncontrado.completeDate; 
         }
@@ -1098,6 +1095,7 @@ optionAjogar.addEventListener('click', async () => {
     const achieSep = document.querySelector('.achie-sep');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
+    const achieBtns = document.querySelector('.achie-add-minus');
 
     options.style.display = 'none';
     campaignText.classList.add('ajogar');
@@ -1107,6 +1105,7 @@ optionAjogar.addEventListener('click', async () => {
     achieSep.style.display = 'none';
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
+    achieBtns.style.display = 'none';
     
     await updateStatusJSON(game, "ajogar");
     updateStatus(statusText, "ajogar", "À Jogar");
@@ -1120,8 +1119,10 @@ optionJogando.addEventListener('click', async () => {
     const achieSep = document.querySelector('.achie-sep');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
+    const achieBtns = document.querySelector('.achie-add-minus');
 
     options.style.display = 'none';
+    achieBtns.style.display = 'flex';
     campaignText.classList.remove('ajogar');
     campaignText.classList.add('jogando');
     campaignText.classList.remove('zerado');
@@ -1142,18 +1143,24 @@ optionZerado.addEventListener('click', async () => {
     const achieSep = document.querySelector('.achie-sep');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
+    const achieBtns = document.querySelector('.achie-add-minus');
 
     options.style.display = 'none';
-    campaignText.classList.remove('ajogar');
-    campaignText.classList.remove('jogando');
-    campaignText.classList.add('zerado');
+    campaignText.textContent = "ZERADO";
     campaignSep.style.display = 'block';
     achieSep.style.display = 'block';
     campaignDiv.style.display = 'flex';
     ratingDiv.style.display = 'flex';
+    achieBtns.style.display = 'none';
 
     await updateStatusJSON(game, "zerado")
     updateStatus(statusText, "zerado", "Zerado")
+
+    const completeDateText = document.querySelector('.game-popup-completeDate');
+    if (completeDateText) {
+        completeDateText.textContent = new Date().toLocaleDateString('pt-BR');
+    }
+
     await loadGames();
 })
 

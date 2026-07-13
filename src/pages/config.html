@@ -138,9 +138,9 @@
                 <p id="syncAssets-text"></p>
             </div>
             <p class="sep">Desativar/Ativar Recursos</p>
-            <div class="config-item mark-item">
-                <p>Fortnite</p>
-                <a class="mark" data-code="fortnite" data-assets-code onclick="toggleAssetsConfig(this)"></a>
+            <div class="config-item mark-item" onclick="toggleAssetsConfig(this)">
+                <p>Fortnite (Baixa trailers, imagens e eventos)</p>
+                <a class="mark fortnite-mark" data-assets-code="fortnite"></a>
             </div>
         </div>
         <div id="updates" class="tab-configs">
@@ -157,18 +157,10 @@
             <p class="sep">Banner</p>
         </div>
         <div id="about" class="tab-configs">
-            <p class="sep">Pasta de temas</p>
-            <div class="config-item">
-                <p class="path" id="themes-folder"></p>
-            </div>
-            <p class="sep">Notas, Reviews e Jogos</p>
-            <div class="config-item">
-                <p class="path" id="documents"></p>
-            </div>
+            <p class="sep">Notas, Reviews, Jogos e Temas</p>
+            <p class="path" id="documents"></p>
             <p class="sep">Arquivo de configurações</p>
-            <div class="config-item">
-                <p class="path" id="user-config"></p>
-            </div>
+            <p class="path" id="user-config"></p>
         </div>
     </div>
 

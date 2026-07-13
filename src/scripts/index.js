@@ -593,10 +593,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         'notes_on_home': document.getElementById('notes'),
         'backlog_on_home': document.getElementById('games'),
         'fortnite_on_home': document.getElementById('fortnite'),
-        'playing_now_on_home': [
-            document.querySelector('.page-infos'),
-            document.querySelector('.sep-bar')
-        ],
         'show_version': document.querySelector('.app-version')
     };
 
@@ -618,11 +614,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.page-infos').style.display = 'none';
         document.querySelector('.sep-bar').style.visibility = 'hidden';
     } if (currentFeatured === 'fn_fast_edit') {
-        inicializarTitulo();
+        initFeaturedFortnite();
+        document.querySelector('#featured-title').innerHTML = 'Fortnite BR — Edição rápida<i class="fa-solid fa-square-poll-horizontal"></i>';
         document.querySelector('.playingNow-panel').style.display = 'none';
+        document.querySelector('.recentSeason-panel').style.display = 'flex';
     } if (currentFeatured === 'playing_now') {
         document.querySelector('#featured-title').innerHTML = `Jogando no momento<i class="fa-solid fa-gamepad"></i>`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
+        document.querySelector('.playingNow-panel').style.display = 'flex';
     } else {
         for (const [key, value] of Object.entries(featuredPanels)) {
             if (key === 'none') continue;
@@ -701,7 +700,7 @@ async function loadLatestFN() {
     
 }
 
-async function inicializarTitulo() {
+async function initFeaturedFortnite() {
     const seasons = await window.api.fortnite.getSeasons();
     const latest = getLatestSeason(seasons);
 

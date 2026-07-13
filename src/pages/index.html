@@ -153,7 +153,7 @@
             <img class="game-banner">
             <img class="game-logo" alt="WALL E">
         </div>
-        <div class="game-status-div">
+            <div class="game-status-div">
             <div class="game-popup-status">
                 <div class="campaign-status-tag"></div>
                 <div class="campaign-status-change">
@@ -175,14 +175,37 @@
             </div>
         </div>
         <div class="game-content">
-            <div class="achie-info-title"><p class="achie-info-title-text">CONQUISTAS</p><p class="achie-info-title-numbers"></p></div>
-            <div class="achie-info">
-                 <p class="achie-percentage"></p>
-                 <div class="achie-bar"><div class="achie-bar-fill"></div></div>
+            <div class="game-popup-campaign-achie">
+                <div class="game-achievements">
+                    <div>
+                        <div class="achie-info-title"><p class="achie-info-title-text">CONQUISTAS</p><p class="achie-info-title-numbers"></p></div>
+                        <div class="achie-info">
+                            <p class="achie-percentage"></p>
+                            <div class="achie-bar"><div class="achie-bar-fill"></div></div>
+                        </div>
+                    </div>
+                    <div class="achie-add-minus">
+                        <i id="achie-add" onclick="changeAchieProgress(this, true)" class="fa-solid fa-plus"></i>
+                        <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="fa-solid fa-minus"></i>
+                    </div>
+                </div>
+                <div class="game-popup-sep-bar achie-sep"></div>
+                <div class="game-campaign-div">
+                    <div class="campaign-info-title"><p class="campaign-info-title-text"></p><p class="achie-info-title-numbers"></p></div>
+                    <div class="campaign-info">
+                        <p class="game-popup-completeDate"></p>
+                    </div>
+                </div>
+                 <div class="game-popup-sep-bar campaign-sep"></div>
+                    <div class="game-rating-div">
+                    <div class="game-rating-title"><p class="game-rating-title-text">NOTA</p></div>
+                    <div class="rating-info">
+                        <p class="game-popup-rating"></p>
+                    </div>
+                </div>
             </div>
         </div>
-                
-                
+        
     </div>
 </div>
 

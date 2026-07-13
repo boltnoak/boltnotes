@@ -24,6 +24,7 @@
     right: 0;
     height: fit-content;
     width: fit-content;
+    pointer-events: auto;
 }
 #config {
     color: var(--text);
@@ -38,10 +39,11 @@
 }
 header {
     padding: 0;
-    margin: 0 1.5vw;
+    margin: 0 1vw;
     z-index: 97;
     height: 8vh;
     overflow: visible;
+    pointer-events: none;
 }
 
 /* Banner */
@@ -214,8 +216,8 @@ header {
     background-repeat: no-repeat;
     z-index: 99;
     background-color: var(--text);
-    mask: url(assets://fortnite-logo.svg) no-repeat center / contain;
-    -webkit-mask: url(assets://fortnite-logo.svg) no-repeat center / contain;
+    mask: url(../welcome-assets/fortnite-logo.svg) no-repeat center / contain;
+    -webkit-mask: url(../welcome-assets/fortnite-logo.svg) no-repeat center / contain;
     user-select: none;
     opacity: 1;
     background-clip: padding-box;
@@ -230,9 +232,10 @@ header {
     width: 100vw;
 }
 .page-image img {
-    object-fit: cover;
+    object-fit: contain;
     width: 100%;
     z-index: 2;
+    transform: translateX(-.4vw);
 }
 .page-title {
     color: var(--text);
@@ -340,7 +343,7 @@ header {
 .game-cover {
     height: 21.5vh;
     object-fit: cover;
-    margin: 1vh .5vw 0 .5vw;
+    margin: .9vh .5vw 0 .5vw;
     border-radius: .8vh .8vh 0 0;
 }
 .game-info {
@@ -412,6 +415,8 @@ header {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
+    height: 34vh;
 }
 .recent-season {
     display: flex;

@@ -28,6 +28,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   existsAppdata: (filePath) => ipcRenderer.invoke('exists-appdata',filePath),
   devTools: () => ipcRenderer.send('devTools'),
   isDev: isDev,
+  welcomeDone: () => ipcRenderer.send('welcome:done'),
 
   menu: { maximizeApp: () => ipcRenderer.send('menu:maximize-app'),
     minimizeApp: () => ipcRenderer.send('menu:minimize-app'),

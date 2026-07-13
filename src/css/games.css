@@ -33,13 +33,13 @@ header {
     flex-direction: column;
     gap: 0;
 }
-.sep-bar-v {
+.sidebar-sep-bar {
     margin: 0 0 1.5vh .5vw;
     border: solid .4vh rgba(25,25,25,.4);
     border-radius: 1vh;
     justify-content: center;
 }
-.sep-bar-vv {
+.game-popup-sep-bar {
     margin: .5vh 0;
     border: solid .4vh rgba(25,25,25,.4);
     border-radius: 1vh;
@@ -694,9 +694,9 @@ header {
 .add-game-form {
     display: flex;
     flex-direction: column;
-    gap: 1vh;
+    gap: 1.3vh;
     font-family: 'Montserrat';
-    padding: 1vh .8vw 1.8vh .8vw;
+    padding: 1vh 1vw 2vh 1vw;
     margin: 0;
     background-color: var(--bg);
     border-radius: 2vh;
@@ -801,7 +801,7 @@ header {
 }
 #addGameBtn {
     background-color: var(--btn);
-    padding: 1.5vh .5vw;
+    padding: 2vh 0;
     border-radius: 1vh;
     user-select: none;
     color: var(--text);
@@ -811,7 +811,7 @@ header {
     justify-content: center;
     transition: background .1s linear;
     text-decoration: none;
-    margin: 0;
+    margin: .6vh 0 0 0;
     font-weight: 700;
     width: 100%;
 }
@@ -1011,7 +1011,9 @@ header {
     font-size: 6vh;
     color: white;
     max-width: 100%;
-    white-space: nowrap; 
+    white-space: nowrap;
+    transform: translateY(3.8vh);
+    opacity: .8;
 }
 .game-status-div{
     height: fit-content;
@@ -1242,18 +1244,6 @@ header {
     margin: 0;
     font-weight: 900;
     font-size: 3vh;
-    color: var(--text-light-gray);
-}
-.campaign-info-title-text.ajogar {
-    font-size: 5.5vh;
-    display: none;
-}
-.campaign-info-title-text.jogando {
-    font-size: 5.5vh;
-    color: var(--blue);
-    display: none;
-}
-.campaign-info-title-text.zerado {
     color: var(--green);
 }
 .game-achievements {

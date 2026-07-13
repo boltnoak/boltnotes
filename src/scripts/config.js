@@ -9,11 +9,12 @@ function toggleConfig(el) {
 }
 
 function toggleAssetsConfig(el) {
-    const option = el.dataset.code;
+    const mark = document.querySelector('.fortnite-mark');
+    const option = mark.dataset.assetsCode;
 
-    el.classList.toggle('active');
+    mark.classList.toggle('active');
     
-    const isActive = el.classList.contains('active');
+    const isActive = mark.classList.contains('active');
 
     window.api.assetsConfig.update(option, isActive);
 }
@@ -24,8 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const assetsConf = await window.api.assetsConfig.get();
 
     document.querySelectorAll('a[data-assets-code]').forEach(button => {
-        const code = button.dataset.code;
-        if (assetsConf[code] !== false) {
+        const code = button.dataset.assetsCode;
+        if (assetsConf && assetsConf[code] !== false) {
             button.classList.add('active');
         }
     });
@@ -120,6 +121,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
     const currentFeatured = config.featured;
+
+    const assetsConf = await window.api.assetsConfig.get();
+
+    document.querySelectorAll('a[data-assets-code]').forEach(button => {
+        const code = button.dataset.assetsCode;
+        if (assetsConf && assetsConf[code] !== false) {
+            button.classList.add('active');
+        }
+    });
 
     const selectorsContainers = document.querySelectorAll('.featured-selector-div');
 
@@ -238,8 +248,6 @@ async function changeFeatured(selectEl) {
     const selectedFeatured = selectEl.value;
 
     window.electronAPI.config.updateConfig('featured', selectedFeatured);
-
-    await selectNewTheme(selectedFeatured);
 }
 
 loadInfo();
