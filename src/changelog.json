@@ -1,8 +1,9 @@
 [
-    "# Backlog de Jogos",
-    "Agora as opções de ordenar por maior nota e menor nota não aparecem mais quando está na aba de conquistas.",
     "# Correções",
-    "Lista de jogos em backlog de jogos agora mostra a ordem certa.",
-    "Destaque 'Jogando no momento' corrigido.",
-    "Função de teste para a página de boas vindas 'Welcome test' no ícone da bandeja do sistema removida."
+    "Corrigido o bug que causava jogos duplicarem em backlog de jogos.",
+    "# Notas",
+    "Botão de adicionar nota agora cria uma nova nota com um nome padrão e abre ela assim que criada.",
+    "Agora é possivél arrastar notas para deixar na ordem que quiser.",
+    "Texto 'NOTAS' trocado pra 'Selecione uma nota'.",
+    "Agora é possivél adicionar imagens às notas, digitando /img/, salvando, e escolhendo uma imagem."
 ] 

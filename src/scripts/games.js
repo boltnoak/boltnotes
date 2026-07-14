@@ -633,7 +633,6 @@ function toggleViewMode(mode) {
         if (sortRecent) sortRecent.click();
         
         loadGamesAchie();
-        loadGames();
     }
     if (achievementsBtn.classList.contains('active')) {
         viewAchie.classList.remove(isGrid ? 'list' : 'grid');
@@ -647,7 +646,6 @@ function toggleViewMode(mode) {
         if (sortRecent) sortRecent.click();
 
         loadGames();
-        loadGamesAchie();
     }
 }
 function switchMainView(targetView) {

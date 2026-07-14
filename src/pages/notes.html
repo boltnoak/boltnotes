@@ -4,7 +4,7 @@
     <base href="../">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BoltNotes — Notas</title>
+    <title>BoltNotes | Notas</title>
     <link rel="stylesheet" href="css/notes.css">
     <script src="scripts/theme-loader.js"></script>
 </head>
@@ -12,11 +12,12 @@
 <div class="app-container">
     <div class="pageBody">
         <div id="note-list">
-            <div id="tabs"></div>
-            <div class="newNote-input">
-                <input id="newNote-name" placeholder="Nova nota">
+            <div class="note-list-title-div">
+                <p class="note-list-title">Notas</p>
                 <i id="newNote-add" class="fa-solid fa-plus"></i>
             </div>
+            <p class="sep-bar"></p>
+            <div id="tabs"></div>
         </div>
         <p class="sep-bar-v"></p>
         <div class="note-view">
@@ -28,7 +29,7 @@
             <div id="content">
                 <div class="boltnotes-logo-div">
                     <!-- <div class="boltnotes-logo"></div> -->
-                    <p class="notes-logo">NOTAS</p>
+                    <p class="notes-logo">Selecione uma nota</p>
                 </div>
             </div>
         </div>
@@ -43,6 +44,7 @@
     </div>
 </div>
 
+<script src="scripts/sortable.min.js"></script>
 <script src="scripts/global.js"></script>
 <script src="scripts/basics.js"></script>
 <script src="scripts/notes.js"></script>

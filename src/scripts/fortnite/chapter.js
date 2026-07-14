@@ -56,9 +56,9 @@ async function mudarCapitulo(novoCapituloNum) {
     CURRENT_CHAPTER = `c${chapterNum}`;
 
     const titleText = `Capítulo ${chapterNum}`;
-    document.title = `BoltNotes — Fortnite ${titleText}`;
+    document.title = `BoltNotes | Fortnite — ${titleText}`;
     const menuTitle = document.getElementById('menuTitle');
-    menuTitle.textContent = `BoltNotes — Fortnite ${titleText}`;
+    menuTitle.textContent = `BoltNotes | Fortnite — ${titleText}`;
     
     const chapterNameEl = document.getElementById('chapter-name');
     if (chapterNameEl) chapterNameEl.textContent = titleText;

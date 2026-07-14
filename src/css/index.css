@@ -48,7 +48,7 @@ header {
 
 /* Banner */
 .banner {
-    height: 18vh;
+    height: fit-content;
     background-position: center;
     background-size: 300%;
     display: flex;
@@ -57,18 +57,20 @@ header {
     justify-content: center;
     z-index: 1;
     padding: 0; 
-    margin: 1.5vh 0 1.6vh 0;
+    margin: 5.5vh 0 2.5vh 0;
+}
+#notes .page-image {
+    height: 32.9vh;
 }
 .boltnotes-logo-div {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 18vh; 
     width: fit-content;
 }
 .boltnotes-logo {
-    height: 18vh;
-    width: 18vw;
+    height: 14vh;
+    width: 14vw;
     background-color: white;
     mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
     -webkit-mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;

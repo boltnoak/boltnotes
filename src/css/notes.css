@@ -10,6 +10,11 @@
 }
 header {
     box-shadow: none;
+    pointer-events: none;
+    background-color: transparent;
+}
+.back {
+    pointer-events: auto;
 }
 
 /* Básico */
@@ -22,12 +27,10 @@ header {
 }
 
 .notes-logo {
-  font-family: 'Vazirmatn';
-  font-weight: 100;
-  letter-spacing: .1rem;
-  font-size: 20vh;
-  text-transform: uppercase;
-  margin: 0 0 2vh 0;
+  font-weight: 400;
+  font-size: 3vh;
+  margin: 0;
+  color: var(--text-dark-gray);
   user-select: none;
 }
 .boltnotes-logo {
@@ -39,10 +42,10 @@ header {
     user-select: none;
 }
 .sep-bar-v {
-    margin: 0 1vw 7.5vh 1vw;
+    margin: 0 1vw 1.25vh 1vw;
 }
 .note-sep-bar {
-    margin: 0 0 1.8vh 0;
+    margin: 0 .8vw 1.8vh 0;
     border: solid .4vh var(--sep-bar);
     display: none;
 }
@@ -56,13 +59,15 @@ header {
     padding: 0 0 0 1vw;
     position: relative;
     justify-content: space-between;
+    gap: 1vh;
 }
 #tabs {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-    height: 81%;
+    height: 100%;
+    gap: 1vh;
 }
 #tabs::-webkit-scrollbar-thumb {
     display: none;
@@ -73,14 +78,19 @@ header {
     font-weight: 500;
     flex-direction: row;
     background-color: var(--tab);
-    padding: 2vh 1vw;
+    padding: 2vh .5vw;
+    position: relative;
+    gap: .4vw;
     border-radius: 1vh;
     cursor: pointer;
-    margin: .5vh 0;
-    justify-content: space-between;
+    margin: 0;
+    justify-content: start;
     align-items: center;
     transition: background .1s linear;
     user-select: none;
+}
+.tab-name {
+    width: 78.3%;
 }
 .tab.active {
     background-color: var(--tab-active);
@@ -88,9 +98,20 @@ header {
 .tab:hover {
     background-color: var(--tab-hover);
 }
+.sortable-ghost {
+    opacity: .35 !important;
+}
+
+.sortable-drag {
+    display: none !important;
+}
 #delete-note {
+    position: absolute;
     transition: color .1s linear;
     margin-right: .45vh;
+    display: flex;
+    right: .625vw;
+    justify-self: end;
     color: var(--text);
 }
 #delete-note:hover {
@@ -101,7 +122,7 @@ header {
     flex-direction: row;
     left: 0;
     bottom: 0;
-    margin: 1vh 0;
+    margin: 0 0 1vh 0;
     overflow-y: auto;
     align-items: center;
 }
@@ -113,16 +134,38 @@ header {
     border: none;
     color: var(--text);
     flex: 1;
-    padding: 2vh 1vw;
+    padding: 1vh .5vw;
     border-radius: 1.3vh;
     transition: border .1s linear;
     margin-right: .4vw;
     z-index: 98;
 }
+.tab-drag-handle {
+    color: var(--text-gray);
+    padding: 0 .25vw;
+    cursor: grab;
+    opacity: .25;
+}
+.tab.sortable-drag {
+    transform: translateX(0) !important;
+    cursor: grabbing !important;
+}
+body.dragging-tab, 
+body.dragging-tab * {
+  cursor: grabbing !important;
+  pointer-events: none !important;
+}
+#tablist {
+    overflow: hidden;
+    cursor: grab;
+}
+.tab-drag-handle:active {
+    cursor: grabbing;
+}
 #newNote-add {
-    background-color: var(--btn);
-    padding: 2vh 1vw;
-    border-radius: 1.3vh;
+    background-color: transparent;
+    padding: 1vh .5vw;
+    border-radius: 1vh;
     text-align: center;
     transition: background .15s linear;
     color: var(--text);
@@ -130,14 +173,18 @@ header {
     z-index: 98;
 }
 #newNote-add:hover {
-    background-color: var(--btn-hover);
+    background-color: var(--tab-hover);
+}
+#note-list .sep-bar {
+    margin: 0 0 .5vh 0;
 }
 
 /* Visualização de notas */
 .note-view {
     display: flex;
     flex-direction: column;
-    width: 70%;
+    width: 73.5%;
+    height: 98.5%;
 }
 .title-bar {
     display: flex;
@@ -146,19 +193,20 @@ header {
     flex-direction: row;
     align-items: center;
     text-align: center;
+    gap: .7vw;
 }
 #title-note {
     font-weight: 600;
     padding: 0;
-    padding: .5vh;
+    padding: .5vh .5vw;
     border: solid .4vh transparent;
     border-radius: 1vh;
     font-size: 3vh;
     margin: 0;
     caret-color: var(--text);
+    cursor: text;
 }
 #title-note:focus {
-    padding: .5vh;
     border: solid .4vh var(--blue);
     border-radius: 1vh;
     outline: none;
@@ -174,9 +222,14 @@ header {
     white-space: pre-wrap;
     caret-color: var(--text);
     user-select: text;
-    height: 91.8%;
+    cursor: default;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
-/* Texto da visualização de notas */
+#content[contenteditable="true"] {
+    cursor: text;
+}
 #content:focus {
   outline: none;
 }
@@ -199,4 +252,45 @@ header {
 h1, h2, h3 {
     font-weight: 700;
     margin: 0;
+}
+h1 {
+    font-family: 4vh
+}
+.image {
+    height: 50vh;
+    border-radius: 1vh;
+    margin: .7vh 0;
+}
+.note-list-title-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.note-list-title {
+    margin: 0;
+    font-size: 3.5vh;
+    font-weight: 600;
+}
+.image-uploader-placeholder {
+    background-color: var(--btn);
+    color: var(--text-dark-gray);
+    padding: 2vh 6.5vw;
+    margin: .3vh 0;
+    font-weight: 500;
+    border-radius: 1vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1vh;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: fit-content;
+}
+.image-uploader-placeholder:hover {
+    background-color: var(--btn-hover);
+}
+.image-uploader-placeholder i {
+    color: var(--text-gray);
+    font-size: 12vh;
 }

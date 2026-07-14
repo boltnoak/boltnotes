@@ -56,7 +56,7 @@ async function loadFortniteStats() {
   }
 }
 
-updateNoteCount();
+// updateNoteCount();
 loadFortniteStats();
 
 function updateSepBar() {
@@ -131,41 +131,6 @@ async function loadStatus() {
     }
 }
 
-// async function loadGames() {
-//     const data = await loadGamesDB();
-//     const stats = await loadStatus();
-//     const playingNow = document.querySelector(".playingNow-panel");
-
-//     if (!playingNow) return;
-//     playingNow.innerHTML = "";
-
-//     let listaStats = Array.isArray(stats) ? stats : (stats.games || []);
-//     const dbGames = data.games ? [...data.games] : [];
-
-//     let games = listaStats.map(localGame => {
-//         const gameNoDB = dbGames.find(g => 
-//             (localGame.appid && g.appid === localGame.appid) || 
-//             (localGame.name && g.name.toLowerCase() === localGame.name.toLowerCase())
-//         ) || {};
-
-//         return {
-//             ...gameNoDB,
-//             ...localGame
-//         };
-//     });
-
-//     const playing = games.filter(g => (g.status || "").toLowerCase().trim() === "jogando");
-//     for (const game of playing) {
-//         const card = await createGameCard(game);
-//         playingNow.appendChild(card);
-//     }
-//     if (playingNow.childElementCount === 0) {
-//         const noGames = document.createElement("div");
-//         noGames.className = "playingNow-no-games";
-//         noGames.textContent = "Nenhum jogo sendo jogado.";
-//         playingNow.appendChild(noGames);
-//     }
-// }
 async function loadGames() {
     const [data, stats] = await Promise.all([
         window.electronAPI.json.load(FILE),

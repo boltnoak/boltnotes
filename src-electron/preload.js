@@ -87,10 +87,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
 contextBridge.exposeInMainWorld('api', {
   load: (path) => ipcRenderer.invoke('load',path),
 
-  notes: { create: (name) => ipcRenderer.invoke('notes:create',name),
+  notes: {
+    create: (name) => ipcRenderer.invoke('notes:create',name),
     delete: (name) => ipcRenderer.invoke('notes:delete',name),
     save: (name,content) => ipcRenderer.invoke('notes:save',name,content),
-    count: () => ipcRenderer.invoke('notes:count') },
+    count: () => ipcRenderer.invoke('notes:count'),
+    saveOrder: (content) => ipcRenderer.invoke('notes:save-order', content),
+    selectAndImage: () => ipcRenderer.invoke('notes:select-add-image')
+  },
   
   games: { addGame: (gameData) => ipcRenderer.invoke('games:add', gameData),
     ensureCover: (data) => ipcRenderer.invoke('games:ensure-cover',data),

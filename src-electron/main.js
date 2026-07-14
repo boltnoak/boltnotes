@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, Menu, Tray, protocol, net, nativeImage, screen} = require('electron');
+const {app, BrowserWindow, dialog, ipcMain, Menu, Tray, protocol, net, nativeImage, screen} = require('electron');
 const { autoUpdater } = require('electron-updater');
 const { pathToFileURL } = require('url');
 const https = require('https');
@@ -304,6 +304,12 @@ const COVERS = path.join(
     'game-covers'
 );
 
+const MEDIA_DIR = path.join(
+  DOCUMENTS,
+  'Notes',
+  'Media'
+);
+
 const GAMELOGOS = path.join(
     APPDATA,
     'game-logos'
@@ -326,13 +332,20 @@ const BUNDLE = path.join(
     'src'
 );
 
+const NOTES_LIST = path.join(
+    DOCUMENTS,
+    'Notes',
+    '.NotesList'
+);
+
 function startFolders() {
     const foldersToCreate = [
         DOCUMENTS,
         path.join(DOCUMENTS, 'Fortnite'),
         path.join(DOCUMENTS, 'Games'),
         path.join(DOCUMENTS, 'Games', 'Custom Covers'),
-        path.join(DOCUMENTS, 'Notes')
+        path.join(DOCUMENTS, 'Notes'),
+        path.join(DOCUMENTS, 'Notes', 'Media')
     ];
 
     foldersToCreate.forEach(folder => {
@@ -1039,32 +1052,58 @@ ipcMain.handle("json:save", async (_, { filePath, data }) => {
 // Notas
 ipcMain.handle('notes:create', (_, name) => {
   const notesDir = path.join(DOCUMENTS, 'Notes');
-  const pagesPath = path.join(DOCUMENTS, 'notes.data');
+  const pagesList = path.join(notesDir, '.NotesList');
 
-  if (!fs.existsSync(notesDir)) {
-    fs.mkdirSync(notesDir, { recursive: true });
-  }
   const filePath = path.join(notesDir, name + '.txt');
 
   if (!fs.existsSync(filePath)) {
     fs.writeFileSync(filePath, '');
   }
-  if (!fs.existsSync(pagesPath)) {
-    fs.writeFileSync(pagesPath, '');
+  if (!fs.existsSync(pagesList)) {
+    fs.writeFileSync(pagesList, '');
   }
 
-  const newTab = `\n${name}`;
-  const pagesContent = fs.readFileSync(pagesPath, 'utf-8');
+  const pagesContent = fs.readFileSync(pagesList, 'utf-8');
+  const lines = pagesContent.split('\n').filter(l => l.trim() !== '');
 
-  if (!pagesContent.includes(`>${name}<`)) {
-    fs.appendFileSync(pagesPath, newTab);
+  if (!lines.includes(name)) {
+    lines.unshift(name);
+    fs.writeFileSync(pagesList, lines.join('\n'));
   }
 
   return name;
 });
+ipcMain.handle('notes:select-add-image', async (event) => {
+    const result = await dialog.showOpenDialog({
+        title: 'Selecione uma imagem para a sua nota',
+        properties: ['openFile'],
+        filters: [
+            { name: 'Imagens', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'] }
+        ]
+    });
+
+    if (result.canceled || result.filePaths.length === 0) {
+        return null;
+    }
+
+    const originalPath = result.filePaths[0];
+    const fileExtension = path.extname(originalPath);
+    
+    const uniqueFileName = `img_${Date.now()}${fileExtension}`;
+    const destinationPath = path.join(MEDIA_DIR, uniqueFileName);
+
+    try {
+        fs.copyFileSync(originalPath, destinationPath);
+        
+        return `documents://Notes/Media/${uniqueFileName}`;
+    } catch (error) {
+        console.error('Erro ao salvar a imagem:', error);
+        return null;
+    }
+});
 ipcMain.handle('notes:delete', (_, name) => {
   const notesDir = path.join(DOCUMENTS, 'Notes');
-  const pagesPath = path.join(DOCUMENTS, 'notes.data');
+  const pagesPath = path.join(notesDir, '.NotesList');
 
   const filePath = path.join(notesDir, name + '.txt');
 
@@ -1085,6 +1124,9 @@ ipcMain.handle('notes:delete', (_, name) => {
 ipcMain.handle("notes:save", async (event, name, content) => {
   const filePath = path.join(DOCUMENTS, 'Notes', `${name}.txt`);
   fs.writeFileSync(filePath, content);
+});
+ipcMain.handle('notes:save-order', async (_, content) => {
+    fs.writeFileSync(NOTES_LIST, content);
 });
 ipcMain.handle('notes:count', () => {
   const dir = path.join(DOCUMENTS, 'Notes');
@@ -1144,7 +1186,7 @@ ipcMain.handle('notes:rename', async (event, oldName, newName) => {
   console.log("Renomeando nota de:", oldName, "para:", newName);
 
   const notesDir = path.join(DOCUMENTS,'Notes');
-  const pagesPath = path.join(DOCUMENTS,'notes.data');
+  const pagesPath = path.join(notesDir,'.NotesList');
 
   const cleanOldName = oldName.trim();
   const cleanNewName = newName.trim();
