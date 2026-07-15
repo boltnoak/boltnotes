@@ -113,3 +113,17 @@ async function autoSave(code) {
 
 window.autoSave = autoSave;
 initReviews();
+
+document.addEventListener('focusin', (e) => {
+    if (e.target.classList.contains('review-topictext')) {
+        e.target.closest('.reviewTopic-big, .reviewTopic-smaller, .reviewTopic-small, .reviewTopic-mapa')
+            ?.classList.add('focused');
+    }
+});
+
+document.addEventListener('focusout', (e) => {
+    if (e.target.classList.contains('review-topictext')) {
+        e.target.closest('.reviewTopic-big, .reviewTopic-smaller, .reviewTopic-small, .reviewTopic-mapa')
+            ?.classList.remove('focused');
+    }
+});

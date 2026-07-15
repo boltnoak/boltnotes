@@ -16,6 +16,21 @@ async function loadLocalReviews() {
     }
 }
 
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds === Infinity) return "00:00";
+    
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+
+    const pad = (num) => String(num).padStart(2, '0');
+
+    if (hrs > 0) {
+        return `${hrs}:${pad(mins)}:${pad(secs)}`;
+    }
+    return `${pad(mins)}:${pad(secs)}`;
+}
+
 async function loadCloudTrailers() {
     if (cachedTrailers) {
         console.log("Trailers carregados do cache!");
@@ -78,13 +93,11 @@ async function openTrailer(el) {
         if (video) video.volume = .5;
 
         for (const tipo of tipos) {
-            // 1. Defina os formatos que seu app suporta
             const formatosSuportados = ['webm', 'mp4', 'mkv'];
             
             let fileNameValido = null;
             let path = null;
 
-            // 2. Testa qual desses formatos realmente existe no disco
             for (const formato of formatosSuportados) {
                 const fileNameTemp = `${code}_${tipo}.${formato}`;
                 const fileExists = await window.electronAPI.existsAssets(`assets://${fileNameTemp}`);
@@ -92,11 +105,10 @@ async function openTrailer(el) {
                 if (fileExists) {
                     fileNameValido = fileNameTemp;
                     path = `assets://${fileNameValido}`;
-                    break; // Achou o vídeo! Interrompe o loop de formatos
+                    break;
                 }
             }
 
-            // 3. Se fileNameValido não for null, significa que um vídeo foi encontrado
             if (fileNameValido) {
                 if (!firstVideo) {
                     firstVideo = path;
@@ -169,14 +181,29 @@ async function openTrailer(el) {
             const popupVideo = document.getElementById('video');
             const popupJuice = document.getElementById('player-bar-fill');
             const popupPlayBtn = document.getElementById('play-pause');
+            const timeDisplay = document.getElementById('video-time-display');
 
             if (popupVideo) {
+                const updateTimeText = () => {
+                    if (timeDisplay) {
+                        const current = formatTime(popupVideo.currentTime);
+                        const duration = formatTime(popupVideo.duration);
+                        timeDisplay.textContent = `${current}/${duration}`;
+                    }
+                };
+
                 popupVideo.ontimeupdate = () => {
+                    updateTimeText();
+
                     if (!isNaN(popupVideo.duration) && popupVideo.duration > 0) {
                         const perc = (popupVideo.currentTime / popupVideo.duration) * 100;
                         if (popupJuice) popupJuice.style.width = perc + "%";
                     }
                 };
+
+                popupVideo.onloadedmetadata = updateTimeText;
+
+                updateTimeText();
                 
                 if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
             }
@@ -256,15 +283,29 @@ async function openLiveEvent(el, fileCode, eventTitle) {
     const popupVideo = document.getElementById('video');
     const popupJuice = document.getElementById('player-bar-fill');
     const popupPlayBtn = document.getElementById('play-pause');
+    const timeDisplay = document.getElementById('video-time-display');
 
     if (popupVideo) {
+        const updateTimeText = () => {
+            if (timeDisplay) {
+                const current = formatTime(popupVideo.currentTime);
+                const duration = formatTime(popupVideo.duration);
+                timeDisplay.textContent = `${current}/${duration}`;
+            }
+        };
+
         popupVideo.ontimeupdate = () => {
+            updateTimeText();
             if (!isNaN(popupVideo.duration) && popupVideo.duration > 0) {
                 const perc = (popupVideo.currentTime / popupVideo.duration) * 100;
                 if (popupJuice) popupJuice.style.width = perc + "%";
             }
-        }
-            if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
+        };
+
+        popupVideo.onloadedmetadata = updateTimeText;
+
+        updateTimeText();
+        if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
     }
 
     const moreVideos = document.querySelector('.moreVideos-section');

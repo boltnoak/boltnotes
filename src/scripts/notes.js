@@ -96,9 +96,10 @@ async function loadNotes() {
   tablist.innerHTML = lines
     .map(name => `
         <p class="tab" data-name="${name.trim()}">
+            <!-- <i class="fa-solid fa-grip-vertical tab-drag-handle" style="display: none;"></i> -->
             <i class="fa-solid fa-grip-vertical tab-drag-handle"></i>
             <span class="tab-name">${name.trim()}</span>
-            <i id="delete-note" class="fa-solid fa-trash" onclick="deleteNote('${name.trim()}')"></i>
+            <i id="delete-note" class="fa-solid fa-trash" onclick="deleteNote('${name.trim()}')" style="display: none;"></i>
         </p>`)
     .join("");
 
@@ -444,3 +445,23 @@ async function finishTitleExecution() {
     noteTitleElement.textContent = cleanOldTitleName;
   }
 }
+
+// const editSortingBtn = document.getElementById('editSorting');
+// editSortingBtn.addEventListener('click', () => {
+//     const sortingBtns = document.querySelectorAll('.tab-drag-handle');
+//     const isVisible = [...sortingBtns].some(btn => btn.style.display !== 'none');
+
+//     sortingBtns.forEach(btn => {
+//         btn.style.display = isVisible ? 'none' : 'block';
+//     });
+// });
+
+const toggleDeleteBtn = document.getElementById('toggleDeleteBtns');
+toggleDeleteBtn.addEventListener('click', () => {
+    const deleteBtns = document.querySelectorAll('#delete-note');
+    const isVisible = [...deleteBtns].some(btn => btn.style.display !== 'none');
+
+    deleteBtns.forEach(btn => {
+        btn.style.display = isVisible ? 'none' : 'block';
+    });
+});

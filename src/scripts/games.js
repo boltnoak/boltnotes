@@ -257,7 +257,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         rating.style.color = 'var(--yellow)';
         rating.style.textDecorationColor = `color-mix(in srgb, var(--yellow-light) ${ratingUnderlineOpacity})`;
     }
-    if (game.rating <= "") {
+    if (game.rating == "null") {
         rating.textContent = 'Sem nota';
         rating.style.color = 'var(--text-dark-gray)';
         rating.style.textDecoration = 'none';
@@ -788,7 +788,8 @@ document.getElementById('addGameBtn').addEventListener('click', async () => {
 
 
 document.getElementById('reload-btn').addEventListener('click', () => {
-    window.location.reload();
+    loadGames();
+    loadGamesAchie();
 });
 
 const addGamePopup = document.getElementById('addGame-popup');
@@ -879,6 +880,8 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     const campaignSep = document.querySelector('.campaign-sep');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
+    const ratingTitle = document.querySelector('.game-rating-title-text');
+    const campaignChange = document.querySelector('.campaign-status-change');
     
     achieAddBtn.setAttribute('data-id', title);
     achieMinusBtn.setAttribute('data-id', title);
@@ -923,7 +926,17 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     pubText.textContent = fullGamess.publisher || "Erro";
     releaseDateText.textContent = fullGamess.releaseDate || "Erro";
     completeDateText.textContent = gameCampaign.completeDate || "";
-    ratingText.textContent = Number(gameCampaign.rating).toFixed(1);
+
+    if (gameCampaign.rating >= 0.5) {
+        ratingTitle.style.display = 'flex';
+        ratingText.textContent = Number(gameCampaign.rating).toFixed(1);
+        ratingText.classList.remove('no-rating');
+    }
+    if (gameCampaign.rating == "null") {
+        ratingTitle.style.display = 'none';
+        ratingText.textContent = 'Sem nota';
+        ratingText.classList.add('no-rating');
+    }
 
     const total = achieGame.totalAchievements || 0;
     const unlocked = achieGame.unlockedAchievements || 0;
@@ -948,6 +961,7 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         achieBtns.style.display = 'flex';
         achieDiv.style.display = 'flex';
         achieSep.style.display = 'block';
+        campaignChange.classList.remove('noAchie');
     } else {
         achieTitle.style.display = 'none';
         achieInfo.style.display = 'none';
@@ -955,6 +969,7 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         achieBtns.style.display = 'none';
         achieDiv.style.display = 'none';
         achieSep.style.display = 'none';
+        campaignChange.classList.add('noAchie');
     }
 
     if (gameCampaign.status.toLowerCase() == 'ajogar') {
@@ -1279,3 +1294,71 @@ addGamePopup.addEventListener('click', (e) => {
         }, { once: true });
     }
 });
+
+const ratingBtn = document.querySelector('.game-rating-div');
+const optionsRating = document.querySelector('.rating-change');
+ratingBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (optionsRating.style.display === 'none') {
+        optionsRating.style.display = 'flex';
+        options.style.display = 'none';
+        optionsAchie.style.display = 'none';
+    } else {
+        optionsRating.style.display = 'none';
+    }
+});
+
+document.addEventListener('click', (event) => {
+    if (!optionsRating.contains(event.target) && event.target !== ratingBtn) {
+        optionsRating.style.display = 'none';
+    }
+});
+
+async function changeRatingBtn(el) {
+    const game = document.querySelector('.game-popup-div').dataset.name;
+    const rating = el.dataset.value;
+    const text = document.querySelector('.game-popup-rating');
+
+    await changeRatingJSON(game, rating);
+    changeRating(text, Number(rating).toFixed(1));
+    await loadGames();
+    await loadGamesAchie();
+}
+
+async function changeRatingJSON(game, ratingEl) {
+    const [data, stats] = await Promise.all([
+        window.electronAPI.json.load(CAMPAIGNS_FILE),
+        loadStatus()
+    ]);
+
+    const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
+
+    const nomeDoJogoProcurado = game;
+    const selectedRating = ratingEl;
+
+    const jogoEncontrado = listaStats.find(jogo => jogo.name === nomeDoJogoProcurado);
+
+    if (jogoEncontrado) {
+        jogoEncontrado.rating = selectedRating;
+        
+        await window.electronAPI.json.save(CAMPAIGNS_FILE, listaStats);
+        console.log(`Status de ${game} atualizado com sucesso!`);
+        return true;
+    } else {
+        console.warn("Jogo não encontrado na lista.");
+        return false;
+    }
+}
+function changeRating(element, text) {
+    const textTitle = document.querySelector('.game-rating-title-text');
+    if (text <= "null") {
+        textTitle.style.display = 'none';
+        element.textContent = 'Sem nota';
+        element.classList.add('no-rating');
+    }
+    if (text >= 0) {
+        textTitle.style.display = 'flex';
+        element.textContent = text;
+        element.classList.remove('no-rating');
+    }
+}

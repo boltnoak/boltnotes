@@ -78,10 +78,10 @@ header {
     font-weight: 500;
     flex-direction: row;
     background-color: var(--tab);
-    padding: 2vh .5vw;
+    padding: 2vh 1vw;
     position: relative;
     gap: .4vw;
-    border-radius: 1vh;
+    border-radius: 1.25vh;
     cursor: pointer;
     margin: 0;
     justify-content: start;
@@ -90,7 +90,8 @@ header {
     user-select: none;
 }
 .tab-name {
-    width: 78.3%;
+    width: 100%;
+    flex: 1;
 }
 .tab.active {
     background-color: var(--tab-active);
@@ -106,11 +107,9 @@ header {
     display: none !important;
 }
 #delete-note {
-    position: absolute;
     transition: color .1s linear;
     margin-right: .45vh;
     display: flex;
-    right: .625vw;
     justify-self: end;
     color: var(--text);
 }
@@ -142,7 +141,7 @@ header {
 }
 .tab-drag-handle {
     color: var(--text-gray);
-    padding: 0 .25vw;
+    padding: 0 .25vw 0 0;
     cursor: grab;
     opacity: .25;
 }
@@ -161,6 +160,32 @@ body.dragging-tab * {
 }
 .tab-drag-handle:active {
     cursor: grabbing;
+}
+#editSorting {
+    background-color: transparent;
+    padding: 1vh .5vw;
+    border-radius: 1vh;
+    text-align: center;
+    transition: background .15s linear;
+    color: var(--text);
+    cursor: pointer;
+    z-index: 98;
+}
+#editSorting:hover {
+    background-color: var(--tab-hover);
+}
+#toggleDeleteBtns {
+    background-color: transparent;
+    padding: 1vh .5vw;
+    border-radius: 1vh;
+    text-align: center;
+    transition: background .15s linear;
+    color: var(--text);
+    cursor: pointer;
+    z-index: 98;
+}
+#toggleDeleteBtns:hover {
+    background-color: var(--tab-hover);
 }
 #newNote-add {
     background-color: transparent;
@@ -266,6 +291,12 @@ h1 {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+}
+.note-list-title-div div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .5vw;
 }
 .note-list-title {
     margin: 0;

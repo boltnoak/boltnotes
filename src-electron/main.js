@@ -1288,7 +1288,7 @@ ipcMain.handle('games:add', async (_, newGameData) => {
     const statusInfo = {
       name: newGameData.name,
       status: "ajogar",
-      rating: "",
+      rating: "null",
       completeDate: ""
     };
     statusList.push(statusInfo);

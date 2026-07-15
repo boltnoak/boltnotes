@@ -7,12 +7,12 @@ body {
 }
 .pageBody {
     overflow-y: auto;
-    transform: translateY(6.5vh);
+    transform: translateY(6.5vh) translateX(-.6vw);
     height: 86.5vh;
 }
 
 #fnSeason, .fn-season {
-    margin: 0 2vw;
+    margin: 0 1.4vw 0 2vw;
     padding: 0;
 }
 
@@ -57,7 +57,7 @@ body {
 }
 
 .back {
-    margin: 0 0 0 .5vw;
+    margin: 0;
 }
 .home i {
     color: var(--text);
@@ -72,7 +72,7 @@ body {
     font-family: 'Montserrat';
     font-weight: 700;
     position: absolute;
-    margin: 0 0 0 8vw;
+    margin: 0 0 0 10.8vw;
     left: 0;
     justify-content: center;
     text-decoration: none;
@@ -281,7 +281,7 @@ body {
     color: var(--text);
 }
 .sep-bar-season {
-    margin: 1.5vh 0 4.5vh 0;
+    margin: 1.5vh 0 4.25vh 0;
     border: solid 2px var(--sep-bar);
     border-radius: 1vh;
     justify-content: center;
@@ -317,7 +317,7 @@ body {
     gap: .7rem;
     justify-content: space-around;
     background-color: var(--fortnite-season-tags);
-    padding: 2.3vh 2vh;
+    padding: 2vh 1vw;
     border-radius: 1.5vh;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
@@ -432,7 +432,6 @@ body {
     height: 100%;
     width: 100%;
     overflow: hidden;
-    animation: popupIn .15s ease forwards;
     isolation: isolate;
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -442,19 +441,21 @@ body {
     background: var(--bg);
     padding: 1.5vh;width: 74vw;
     height: 80%;
-    width: 45%;
+    width: 55%;
     border-radius: 2.3vh;
+    animation: popupIn .15s ease forwards;
     overflow: hidden;
     position: relative;
 }
 #mapPopup-image {
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
+    background-color: var(--tab);
     height: 100%;
     width: 100%;
     position: relative;
-    transform-origin: 0 0; 
+    transform-origin: 0 0;
     transition: transform 0.05s ease-out;
     cursor: grab;
 }
@@ -474,6 +475,7 @@ body {
     opacity: 0;
     backdrop-filter: blur(0);
     box-shadow: 0 0 0 transparent;
+    transition: opacity .1s linear;
 }
 #map-close:hover {
     backdrop-filter: blur(200vh);

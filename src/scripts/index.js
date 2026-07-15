@@ -59,25 +59,6 @@ async function loadFortniteStats() {
 // updateNoteCount();
 loadFortniteStats();
 
-function updateSepBar() {
-    requestAnimationFrame(() => {
-        const section = document.querySelector('.pages-section');
-        const sepBar = document.querySelector('.sep-bar');
-        const visible = Array.from(document.querySelectorAll('.pages-section .page'))
-            .filter(el => el.offsetParent !== null).length;
-        const total = document.querySelectorAll('.pages-section .page').length;
-
-        if (!sepBar || !section) return;
-
-        const ratio = visible / total;
-        const rect = section.getBoundingClientRect();
-        const vw = window.innerWidth / 100;
-
-        sepBar.style.width = `${(rect.width / vw) * ratio}vw`;
-        sepBar.style.marginLeft = `${(rect.left / vw) + (rect.width / vw) * (1 - ratio) / 2}vw`;
-    });
-}
-
 function parseBRDate(dateStr) {
   if (!dateStr || !dateStr.includes("/")) return 0;
 
@@ -731,7 +712,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-    updateSepBar();
 });
 
 const FILE_STATS = "Fortnite/stats.json";

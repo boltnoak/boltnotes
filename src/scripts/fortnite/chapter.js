@@ -9,7 +9,7 @@ let seasonTemplateHTML = null;
 async function loadHeader() {
     document.body.insertAdjacentHTML('afterbegin', `
         <header>
-            <a class="back">Voltar</a>
+            <a class="back">Capítulos</a>
             <a class="home" href="pages/index.html"></a>
             <div class="chapter-section">
                 <i id="before-chapter"></i>
@@ -35,7 +35,7 @@ async function loadHeader() {
 loadHeader();
 
 const backIcon = document.createElement('i');
-backIcon.className = 'fa-solid fa-caret-left';
+backIcon.className = 'fa-solid fa-book';
 const homeIcon = document.createElement('i');
 homeIcon.className = 'fa-solid fa-home';
 

@@ -1,9 +1,7 @@
 [
-    "# Correções",
-    "Corrigido o bug que causava jogos duplicarem em backlog de jogos.",
     "# Notas",
-    "Botão de adicionar nota agora cria uma nova nota com um nome padrão e abre ela assim que criada.",
-    "Agora é possivél arrastar notas para deixar na ordem que quiser.",
-    "Texto 'NOTAS' trocado pra 'Selecione uma nota'.",
-    "Agora é possivél adicionar imagens às notas, digitando /img/, salvando, e escolhendo uma imagem."
+    "Agora botões de deletar nota não aparecem por padrão.",
+    "Adicionado botão que alterna os botões de deletar nota.",
+    "# Fortnite",
+    "Visual de reviews melhorado."
 ] 

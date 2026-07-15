@@ -219,3 +219,15 @@ function allowVolumeControl() {
         }
     }, { passive: false });
 }
+
+    window.addEventListener('keydown', (e) => {
+        const popup = document.getElementById("video-popup");
+        const wrapper = popup?.querySelector('.video-wrapper');
+        if (e.code === "Space") {
+            e.preventDefault();
+            togglePlay();
+            showControls(wrapper);
+        }
+        return;
+    })
+

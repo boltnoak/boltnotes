@@ -39,7 +39,6 @@
 }
 header {
     padding: 0;
-    margin: 0 1vw;
     z-index: 97;
     height: 8vh;
     overflow: visible;
@@ -110,6 +109,7 @@ header {
     display: flex;
     flex-direction: column;
     cursor: pointer;
+    flex: 1;
     gap: .8vh;
     transition: transform .05s linear;
 }
@@ -156,19 +156,23 @@ header {
     transform: translateX(.15vw) translateY(-.5vh);
 }
 .text {
+    position: absolute;
+    right: 0;
+    margin: 0 1.5vw 0 0;
     display: flex;
     flex-direction: column;
     height: 100%;
     justify-content: end;
-    transform: translateX(-2.5vw);
     width: fit-content;
 }
 .fortnite-text {
+    position: absolute;
+    right: 0;
+    margin: 0 1.5vw 0 0;
     display: flex;
     flex-direction: column;
     height: 100%;
     justify-content: end;
-    transform: translateX(-2.65vw);
     width: fit-content;
     z-index: 1;
 }
@@ -190,7 +194,6 @@ header {
     font-family: 'Gantari';
     font-weight: 900;
     color: var(--text);
-    margin: 0;
     font-size: 5.5vh;
     -webkit-text-stroke: .15vh var(--text);
     height: 5.5vh;
@@ -228,14 +231,12 @@ header {
     margin: 1.5vh 0 0 0;
 }
 .sep-bar {
-    margin: 1.8vh 0 .7vh 0;
+    margin: 1.8vh 10vw .7vh 10vw;
     justify-content: center;
     border: solid .4vh var(--sep-bar);
-    width: 100vw;
 }
 .page-image img {
     object-fit: contain;
-    width: 100%;
     z-index: 2;
     transform: translateX(-.4vw);
 }
