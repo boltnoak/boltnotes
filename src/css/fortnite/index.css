@@ -146,7 +146,7 @@
 }
 .title {
     font-size: 2.8vh;
-    color: var(--text);
+    color: rgba(225,225,225);
     margin: 0;
     font-weight: 700;
     text-decoration: none;

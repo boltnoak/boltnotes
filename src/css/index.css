@@ -18,10 +18,11 @@
     font-weight: 600;
     user-select: none;
     left: 0;
+    margin:  0 .5vw;
 }
 .config {
     position: absolute;
-    right: 0;
+    right: .5vw;
     height: fit-content;
     width: fit-content;
     pointer-events: auto;
@@ -70,7 +71,7 @@ header {
 .boltnotes-logo {
     height: 14vh;
     width: 14vw;
-    background-color: white;
+    background-color: var(--text);
     mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
     -webkit-mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
     user-select: none;

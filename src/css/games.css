@@ -1133,6 +1133,7 @@ header {
     height: 1vh;
     background-color: var(--blue);
     margin: 0;
+    transition: width .1s linear;
 }
 .game-popup-status {
     display: flex;
@@ -1199,7 +1200,7 @@ header {
     background-color: var(--text-gray);
 }
 .game-content {
-    margin: 2vh 1vw 2vh 1vw;
+    margin: 1.25vh 1vw 0 1vw;
     height: fit-content;
 }
 .achie-info-title {
@@ -1514,4 +1515,54 @@ header {
 }
 .rating-change li:hover {
     background-color: var(--btn-hover);
+}
+
+
+.game-note-div {
+    margin: .6vh 1vw 0 1vw;
+    display: flex;
+    flex-direction: column;
+    height: 48%;
+}
+.game-note-title-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .5vw;
+    font-size: 3.25vh;
+    font-weight: 900;
+}
+.game-note-title {
+    margin: 0;
+}
+.game-note-title-div i{
+    background-color: transparent;
+    padding: 1vh .6vw;
+    border-radius: 1vh;
+    text-align: center;
+    transition: background .15s linear;
+    color: var(--text);
+    cursor: pointer;
+    z-index: 98;
+    font-size: 2vh;
+}
+.game-note-title-div i:hover {
+    background-color: var(--tab-hover);
+}
+
+.game-note {
+    margin: 1vh .3vw 0 .3vw;
+    font-weight: 500;
+    user-select: text;
+    height: 100%;
+    border-radius: 1vh;
+    cursor: default;
+}
+.game-note[contenteditable="true"] {
+    background: transparent;
+    outline: none;
+    border: none;
+    color: inherit;
+    cursor: text;
+    caret-color: var(--text);
 }

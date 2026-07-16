@@ -1,7 +1,7 @@
 const FILE = "Games/games.json";
 const CAMPAIGNS_FILE = "Games/campaigns.json";
 const ACHIEVEMENTS_FILE = "Games/achievements.json";
-
+const NOTES_FILE = "Games/notes.json";
 
 const panel = document.querySelector('.playingNow-panel');
 const DISTANCIA_SCROLL = 67; 
@@ -313,6 +313,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 let cachedGamesDB = null;
 let cachedCampaignStatus = null;
 let cachedAchieStatus = null;
+let cachedNotes = null;
 
 async function loadGamesDB() {
     if (cachedGamesDB) {
@@ -320,10 +321,10 @@ async function loadGamesDB() {
     }
     try {
         const content = await window.electronAPI.json.load(FILE);
-        cachedGamesDB = content || {};
+        cachedGamesDB = Array.isArray(content.games) ? content.games : (Array.isArray(content) ? content : []);
         return cachedGamesDB;
     } catch (e) {
-        console.error("Erro ao ler campaigns.json:", e);
+        console.error("Erro ao ler games.json:", e);
         return {};
     }
 }
@@ -582,12 +583,25 @@ async function createGameAchieCard(game, completedIndex = null) {
     return div;
 }
 
+async function loadNotes() {
+    if (cachedNotes) {
+        return cachedNotes;
+    }
+    try {
+        const content = await window.electronAPI.json.load(NOTES_FILE);
+        cachedNotes = (typeof content === 'object' && content !== null) ? content : {};
+        return cachedNotes;
+    } catch (e) {
+        console.error("Erro ao ler notes.json:", e);
+        return {};
+    }
+}
 async function loadStatusAchie() {
     if (cachedAchieStatus) {
         return cachedAchieStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(`Games/achievements.json`);
+        const content = await window.electronAPI.json.load(ACHIEVEMENTS_FILE);
         cachedAchieStatus = Array.isArray(content) ? content : [];
         return cachedAchieStatus;
     } catch (e) {
@@ -826,19 +840,27 @@ async function changeAchieProgress(el, isAdd = true) {
 
     const game = jogoEncontrado;
     const achieCount = document.querySelector('.achie-info-title-numbers');
+    const achieBarFill = document.querySelector('.achie-bar-fill');
+    const achiePercentage = document.querySelector('.achie-percentage');
 
     const total = game.totalAchievements;
-    const unlocked = game.unlockedAchievements;
 
     if (isAdd) {
-        if (game.totalAchievements != game.unlockedAchievements) {
-            game.unlockedAchievements = game.unlockedAchievements + 1;
-            achieCount.textContent = `${unlocked + 1}/${total}`;
+        if (game.unlockedAchievements < total) {
+            game.unlockedAchievements++;
         } else return
     } else {
-        game.unlockedAchievements = game.unlockedAchievements - 1;
-        achieCount.textContent = `${unlocked - 1}/${total}`;
+        if (game.unlockedAchievements > 0) {
+            game.unlockedAchievements--;
+        } else return
     }
+
+    const unlocked = game.unlockedAchievements;
+    const percentage = total > 0 ? Math.round((unlocked / total) * 100) : 0;
+
+    achieCount.textContent = `${unlocked}/${total}`;
+    achieBarFill.style.width = `${percentage}%`;
+    achiePercentage.textContent = `${percentage}%`;
 
     if (jogoEncontrado) {
         await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listaStats);
@@ -850,7 +872,7 @@ async function changeAchieProgress(el, isAdd = true) {
     }
 
 }
-async function openGamePopup(el, status, releaseDate, rating, developer, publisher) {
+async function openGamePopup(el) {
     const title = el.dataset.id;
     const name = el.dataset.id.replace(/[^a-z0-9]/gi, "_").toLowerCase();
 
@@ -862,6 +884,7 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     const devText = document.querySelector('.dev-name');
     const pubText = document.querySelector('.pub-name');
     const releaseDateText = document.querySelector('.game-releaseDate-text');
+
     const statusText = document.querySelector('.campaign-status-tag');
     const achieStatusText = document.querySelector('.achie-status-tag');
     const achieCount = document.querySelector('.achie-info-title-numbers');
@@ -875,14 +898,21 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     const completeDateText = document.querySelector('.game-popup-completeDate');
     const achieDiv = document.querySelector('.game-achievements');
     const campaignText = document.querySelector('.campaign-info-title-text');
-    const ratingText = document.querySelector('.game-popup-rating');
+
     const achieSep = document.querySelector('.achie-sep');
     const campaignSep = document.querySelector('.campaign-sep');
+
     const campaignDiv = document.querySelector('.game-campaign-div');
+    const campaignChange = document.querySelector('.campaign-status-change');
+
+    const ratingText = document.querySelector('.game-popup-rating');
     const ratingDiv = document.querySelector('.game-rating-div');
     const ratingTitle = document.querySelector('.game-rating-title-text');
-    const campaignChange = document.querySelector('.campaign-status-change');
+
+    const noteText = document.querySelector('.game-note');
+    const noteEditBtn = document.getElementById('editNote');
     
+    noteEditBtn.setAttribute('data-id', title);
     achieAddBtn.setAttribute('data-id', title);
     achieMinusBtn.setAttribute('data-id', title);
 
@@ -893,26 +923,31 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     let jogoEncontrado = null;
     let gameStatusFound = null;
     let fullGame = null;
+    let gameNoteFound = null;
 
     try {
         const games = await loadStatusAchie();
-        const fullGamesData = await loadGamesDB();
-        const fullGamesArray = Array.isArray(fullGamesData) ? fullGamesData : (fullGamesData.games || []);
+        const notes = await loadNotes() || {};
+        const gamesDB = await loadGamesDB();
         const gamesCamp = await loadStatus();
+        // const fullGamesArray = Array.isArray(fullGamesData) ? fullGamesData : (fullGamesData.games || []);
 
         jogoEncontrado = games.find(g => g.name === title) || {};
-        fullGame = fullGamesArray.find(g => g.name === title) || {};
+        fullGame = gamesDB.find(g => g.name === title) || {};
         gameStatusFound = gamesCamp.find(g => g.name === title) || {};
+        gameNoteFound = notes[title];
     } catch (erro) {
         console.error("Erro ao carregar o JSON:", erro);
         jogoEncontrado = {};
         fullGame = {};
         gameStatusFound = {};
+        gameNoteFound = {};
     }
 
     const achieGame = jogoEncontrado;
     const gameCampaign = gameStatusFound;
-    const fullGamess = fullGame;
+    const gamesDB = fullGame;
+    const gameNote = gameNoteFound;
 
     banner.src = `appdata:///game-heros/${name}.jpg`;
     const logoExists = await window.electronAPI.existsAppdata(`game-logos/${name}.png`);
@@ -922,10 +957,11 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         logo.src = '';
     }
     logo.alt = el.dataset.id;
-    devText.textContent = fullGamess.developer || "Erro";
-    pubText.textContent = fullGamess.publisher || "Erro";
-    releaseDateText.textContent = fullGamess.releaseDate || "Erro";
+    devText.textContent = gamesDB.developer || "Erro";
+    pubText.textContent = gamesDB.publisher || "Erro";
+    releaseDateText.textContent = gamesDB.releaseDate || "Erro";
     completeDateText.textContent = gameCampaign.completeDate || "";
+    noteText.innerHTML = gameNote?.note || "";
 
     if (gameCampaign.rating >= 0.5) {
         ratingTitle.style.display = 'flex';
@@ -1041,6 +1077,14 @@ const gamePopup = document.querySelector('.game-popup');
 gamePopupDiv.addEventListener('click', (e) => {
     if (e.target === gamePopupDiv) {
         gamePopup.classList.add('is-closing');
+
+        const text = document.querySelector('.game-note');
+        const editBtn = document.getElementById('editNote');
+
+        text.contentEditable = "false";
+        editBtn.className = 'fa-solid fa-pen';
+        loadGames();
+        loadGamesAchie();
         
         gamePopup.addEventListener('animationend', () => {
             gamePopupDiv.style.display = 'none';
@@ -1100,6 +1144,7 @@ async function updateAchieJSON(game, statusClass) {
         if (statusClass === "platinado") {
             const dateNow = new Date();
             gameFoundAchie.completeDate = dateNow.toLocaleDateString('pt-BR');
+            gameFoundAchie.unlockedAchievements = gameFoundAchie.totalAchievements;
         }
         
         await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listStats);
@@ -1273,9 +1318,18 @@ optionPlatinado.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.achie-status-tag');
     const achieBtns = document.querySelector('.achie-add-minus');
+    const fillBar = document.querySelector('.achie-bar-fill');
+    const percentage = document.querySelector('.achie-percentage');
+    const number = document.querySelector('.achie-info-title-numbers');
+    const numberText = number.textContent;
 
     optionsAchie.style.display = 'none';
     achieBtns.style.display = 'none';
+
+    fillBar.style.width = '100%';
+    percentage.textContent = '100%';
+    const total = numberText.split('/')[1];
+    number.textContent = `${total}/${total}`;
 
     await updateAchieJSON(game, "platinado")
     updateAchie(statusText, "platinado", "Platinado")
@@ -1360,5 +1414,53 @@ function changeRating(element, text) {
         textTitle.style.display = 'flex';
         element.textContent = text;
         element.classList.remove('no-rating');
+    }
+}
+
+const noteText = document.querySelector('.game-note');
+noteText.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+    }
+});
+
+async function updateNotesJSON(game) {
+    const notes = await loadNotes();
+    const updatedNote = noteText.innerHTML
+        .replace(/<div><br><\/div>/g, '<br>')
+        .replace(/<div>/g, '<br>')
+        .replace(/<\/div>/g, '');
+
+    if (!notes[game]) {
+        notes[game] = { note: "" };
+    }
+
+    const dataToSave = { ...notes };
+    dataToSave[game].note = updatedNote;
+
+    try {
+        await window.electronAPI.json.save(NOTES_FILE, dataToSave);
+        console.log(`Nota de ${game} atualizada com sucesso!`);
+        return true;
+    } catch (erro) {
+        console.error("Erro ao salvar o arquivo de notas:", erro);
+        return false;
+    }
+}
+
+const noteEditBtn = document.getElementById('editNote');
+
+async function toggleNoteEdit(el) {
+    const name = el.dataset.id;
+    const text = document.querySelector('.game-note');
+    const isEditable = text.contentEditable === "true";
+
+    if (!isEditable) {
+        text.contentEditable = "true";
+        noteEditBtn.className = 'fa-solid fa-floppy-disk';
+    } else {
+        text.contentEditable = "false";
+        noteEditBtn.className = 'fa-solid fa-pen';
+        await updateNotesJSON(name); 
     }
 }

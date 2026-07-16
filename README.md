@@ -21,8 +21,6 @@ Compatível com Windows 10/11 e Linux(via AppImage)
 
 * **Notas:** Criação e edição de notas de forma simples e rápida.
 * **Reviews de Temporadas do Fortnite:** Avalie mapas, loot pools, passes de batalha e registre suas estatísticas de nível e vitórias de cada temporada.
-> [!WARNING]
-> Backlog de Jogos atualmente é um **Work in Progress**. A interface e as funções estão sendo montadas, portanto o recurso ainda não está usável na versão atual.
 * **Backlog de Jogos:** Adcione jogos, defina status: Jogando, Zerado, À Jogar, salvar a data de quando zerou seus jogos e informações sobre os jogos.
 #
 > [!NOTE]
