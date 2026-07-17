@@ -437,11 +437,11 @@ header {
     width: max-content;
     background-color: var(--tab-hover);
     gap: 1vw;
-    width: fit-content;
     border-radius: 1.5vh;
     padding: 1.2vh;
     overflow: hidden;
     height: 30vh;
+    width: 45vw;
 }
 #recent-season-name {
     margin: 0;
@@ -460,6 +460,7 @@ header {
     flex-direction: column;
     width: fit-content;
     height: 97.7%;
+    width: 40%;
     justify-content: space-between;
 }
 
@@ -482,7 +483,7 @@ header {
 }
 .recentSeason-image {
     height: 100%;
-    width: 28vw;
+    width: 27vw;
     overflow: hidden;
     background-size: cover;
     background-position: center;

@@ -844,8 +844,14 @@ async function preencherValores() {
     }
     const levelsSpan = document.querySelector('.status-level');
     const winsSpan = document.querySelector('.status-win');
-    if (levelAdd) levelAdd.onclick = () => updateStat('levels', 1, levelsSpan);
-    if (levelMinus) levelMinus.onclick = () => updateStat('levels', -1, levelsSpan);
+    if (levelAdd) levelAdd.onclick = () => {
+        updateStat('levels', 1, levelsSpan);
+        if (levelsText) levelsText.textContent = `${window._t['progress']} - ${((data.levels / 200) * 100).toFixed(1)}%`
+    }
+    if (levelMinus) levelMinus.onclick = () => {
+        updateStat('levels', -1, levelsSpan);
+        if (levelsText) levelsText.textContent = `${window._t['progress']} - ${((data.levels / 200) * 100).toFixed(1)}%`
+    }
     if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);
     if (winMinus) winMinus.onclick = () => updateStat('wins', -1, winsSpan);
 

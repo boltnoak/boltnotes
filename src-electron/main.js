@@ -1041,7 +1041,7 @@ function buildTrayMenu(trayNameIcon) {
         {
             label: 'BoltNotes',
             icon: trayNameIcon,
-            enabled: false
+            enabled: false,
         },
         { type: 'separator' },
         { label: labels.games, click: () => navigateTo('games.html') },
@@ -1073,6 +1073,13 @@ function makeTray() {
     tray = new Tray(trayIcon);
     tray.setToolTip('BoltNotes');
     tray.setContextMenu(buildTrayMenu(trayNameIcon));
+
+    tray.on('click', () => {
+        if (win) {
+            win.show();
+            win.focus();
+        }
+    });
 }
 
 function refreshTray() {
