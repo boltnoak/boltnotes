@@ -65,8 +65,9 @@ async function openTrailer(el) {
         listContainer.innerHTML = ""; 
 
         const seasonData = cachedReviews[code] || {};
+        const seasonDataInfo = cachedSeasonInfo[code] || {};
         const pageName = document.getElementById(`${code}-name`)?.textContent;
-        const seasonName = seasonData.name || pageName || code;
+        const seasonName = seasonDataInfo.name || pageName || code;
 
         const popup = document.getElementById("video-popup");
         const wrapper = popup?.querySelector('.video-wrapper');
@@ -218,10 +219,10 @@ async function openTrailer(el) {
     }
 }
 
-const EVENT_NAMES = {
-    'c7s2': 'Evento Fragmentado — Intro',
-    'c7s2-ice-king': 'Evento Fragmentado — Time Rei do Gelo',
-    'c7s2-foundation': 'Evento Fragmentado — Time Fundação'
+const EVENT_KEYS = {
+    'c7s2': 'event_c7s2',
+    'c7s2-ice-king': 'event_c7s2-ice-king',
+    'c7s2-foundation': 'event_c7s2-foundation'
 };
 
 let isTeamSelectVisible = false;
@@ -314,10 +315,11 @@ async function openLiveEvent(el, fileCode, eventTitle) {
     video.addEventListener('timeupdate', () => {
     const isIntro = video.src.includes('live-event-c7s2.webm') || video.src.includes('live-event-c7s2.mp4');
     const teamSelect = document.getElementById('team-select-overlay');
-    
+
     if (isIntro) {
-        const key = `${code}`;
-        title.textContent = EVENT_NAMES[key] || key;
+        const key = EVENT_KEYS[code];
+        const titleName = window._t?.[key] || code;
+        title.textContent = titleName || key;
     }
 
     if (!teamSelect) return;
@@ -343,11 +345,13 @@ async function chooseTeam(team) {
 
     const code = 'c7s2';
     const key = `${code}-${team}`;
+    const titleKey = `${EVENT_KEYS[code]}-${team}`;
+    const titleName = window._t?.[titleKey] || code;
     const ext = await window.electronAPI.existsAssets(`assets://live-event-${key}.webm`) ? 'webm' : 'mp4';
     const path = `assets://live-event-${key}.${ext}`;
 
     const title = document.getElementById('video-title');
-    title.textContent = EVENT_NAMES[key] || key;
+    title.textContent = titleName || key;
 
     changeVideo(path);
 }

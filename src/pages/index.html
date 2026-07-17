@@ -7,6 +7,7 @@
     <title>BoltNotes</title>
     <link rel="stylesheet" href="css/index.css">
     <script src="scripts/theme-loader.js"></script>
+    <script src="scripts/apply-locales.js"></script>
 </head>
 <body>
 <div class="app-container">
@@ -23,8 +24,8 @@
                 <img src="assets://games-backlog-characters.png">
                 <div class="text">
                     <i class="games-backlog-icon fa-solid fa-gamepad"></i>
-                    <p class="text-backlog">BACKLOG DE</p>
-                    <p class="text-games">JOGOS</p>
+                    <p class="text-backlog" data-i18n="backlogof">BACKLOG DE</p>
+                    <p class="text-games" data-i18n="games">JOGOS</p>
                 </div>
             </div>
             <div class="info">
@@ -38,7 +39,7 @@
                     <div></div>
                     <div></div>
                 </div>
-                <p class="text-notes">NOTAS</p>
+                <p class="text-notes" data-i18n="notes">NOTAS</p>
             </div>
             <!-- <div class="info">
                 <p id="note-count"></p>
@@ -72,23 +73,23 @@
                         <div class="shine-effect-v-latest-season"></div>
                     </div>
                     <div class="season-status">
-                        <p id="recent-season-name">Nome</p>
+                        <p id="recent-season-name"><span data-i18n="name">Nome</span></p>
                         <div class="season-status-div">
                             <p class="status">
                                 <i class="fa-solid fa-square-caret-up"></i>
-                                Níveis: 
+                                <span data-i18n="levels">Níveis:</span>
                                 <i class="statusLevel-add fa-solid fa-plus"></i> <span class="status-level">~</span>
                                 <i class="statusLevel-minus fa-solid fa-minus"></i>
                             </p>
                             <p class="status">
                                 <i class="fa-solid fa-trophy"></i>
-                                Vitórias: 
+                                <span data-i18n="wins">Vitórias:</span>
                                 <i class="statusWin-add fa-solid fa-plus"></i> <span class="status-win">~</span>
                                 <i class="statusWin-minus fa-solid fa-minus"></i>
                             </p>
                         </div>
                         <div class="level-progress">
-                            <p class="level-progress-text">Progresso</p>
+                            <p class="level-progress-text" data-i18n="progress">Progresso</p>
                             <div class="level-progress-bar">
                                 <p class="level-progress-bar-fill"></p>
                             </div>
@@ -104,7 +105,7 @@
             <span id="app-version"></span>
         </div>
         <a class="config" href="pages/config.html">
-            <i id="config" class="fa-solid fa-gear" data-tooltip="Configurações"></i>
+            <i id="config" class="fa-solid fa-gear" data-i18n-tooltip="settings" data-tooltip="Configurações"></i>
         </a>
     </header>
 
@@ -125,13 +126,13 @@
 
     <div id="starting-screen">
         <div class="loading-content">
-            <h2 id="loading-title">Sincronizando Assets</h2>
+            <h2 id="loading-title" data-i18n="sync-assets-starting">Sincronizando recursos</h2>
 
             <div class="spinner-div">
                 <div class="spinner"></div>
             </div>
             <div class="loading-details-div">
-                <p id="loading-details">Verificando pacotes...</p>
+                <p id="loading-details" data-i18n="sync-assets-verify">Verificando recursos...</p>
                 <p id="loading-progress"></p>
             </div>
             

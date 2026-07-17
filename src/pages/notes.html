@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-i18n-title="notes_page_title">
 <head>
     <base href="../">
     <meta charset="UTF-8">
@@ -7,6 +7,7 @@
     <title>BoltNotes | Notas</title>
     <link rel="stylesheet" href="css/notes.css">
     <script src="scripts/theme-loader.js"></script>
+    <script src="scripts/apply-locales.js"></script>
 </head>
 <body>
 <div class="app-container">
@@ -14,7 +15,7 @@
         <div id="note-list">
             <div class="note-list-title-div">
                 <div>
-                    <p class="note-list-title">Notas</p>
+                    <p class="note-list-title" data-i18n="notes">Notas</p>
                     <!-- <i id="editSorting" class="fa-solid fa-arrow-down-up-across-line"></i> -->
                     <i id="toggleDeleteBtns" class="fa-solid fa-delete-left"></i>
                 </div>
@@ -33,14 +34,14 @@
             <div id="content">
                 <div class="boltnotes-logo-div">
                     <!-- <div class="boltnotes-logo"></div> -->
-                    <p class="notes-logo">Selecione uma nota</p>
+                    <p class="notes-logo" data-i18n="select-note">Selecione uma nota</p>
                 </div>
             </div>
         </div>
     </div>
 
     <header>
-        <a class="back" href="pages/index.html">Início<i class="fa-solid fa-house"></i></a>
+        <a class="back" href="pages/index.html"><span data-i18n="home">Início</span><i class="fa-solid fa-house"></i></a>
     </header>
 
     <div id="loading-screen">

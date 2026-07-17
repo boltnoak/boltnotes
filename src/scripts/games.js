@@ -158,7 +158,7 @@ async function loadGames() {
     if (playingFragment.childElementCount === 0) {
         const noGames = document.createElement("div");
         noGames.className = "playingNow-no-games";
-        noGames.textContent = "Nenhum jogo sendo jogado.";
+        noGames.textContent = `${window._t['playing-now-nogames']}`;
         playingFragment.appendChild(noGames);
     }
 
@@ -225,40 +225,40 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     const ratingUnderlineOpacity = '70%,transparent'
     if (game.rating >= 0) {
-        rating.textContent = 'Horrivél';
+        rating.setAttribute('data-i18n', 'awful');
         rating.style.color = 'var(--red)';
         rating.style.textDecorationColor = `color-mix(in srgb, var(--red-light) ${ratingUnderlineOpacity})`;
     }
     if (game.rating > 2) {
-        rating.textContent = 'Ruim';
+        rating.setAttribute('data-i18n', 'bad');
         rating.style.textDecorationColor = `color-mix(in srgb, var(--red-light) ${ratingUnderlineOpacity})`;
     }
     if (game.rating > 4) {
-        rating.textContent = 'Ok';
+        rating.setAttribute('data-i18n', 'average');
         rating.style.color = 'var(--orange)';
         rating.style.textDecorationColor = `color-mix(in srgb, var(--orange-light) ${ratingUnderlineOpacity})`;
     }
     if (game.rating > 6) {
-        rating.textContent = 'Bom';
+        rating.setAttribute('data-i18n', 'good');
         rating.style.color = 'var(--blue)';
         rating.style.textDecorationColor = `color-mix(in srgb, var(--blue-light) ${ratingUnderlineOpacity})`;
     }
     if (game.rating > 7) {
-        rating.textContent = 'Muito bom';
+        rating.setAttribute('data-i18n', 'very-good');
         rating.style.textDecorationColor = `color-mix(in srgb, var(--blue-light) ${ratingUnderlineOpacity})`;
     }
     if (game.rating >= 8) {
-        rating.textContent = 'Ótimo';
+        rating.setAttribute('data-i18n', 'great');
         rating.style.color = 'var(--green-light)';
         rating.style.textDecorationColor = `color-mix(in srgb, var(--green-light) ${ratingUnderlineOpacity})`;
     }
     if (game.rating == 10) {
-        rating.textContent = 'Excelente';
+        rating.setAttribute('data-i18n', 'excellent');
         rating.style.color = 'var(--yellow)';
         rating.style.textDecorationColor = `color-mix(in srgb, var(--yellow-light) ${ratingUnderlineOpacity})`;
     }
     if (game.rating == "null") {
-        rating.textContent = 'Sem nota';
+        rating.setAttribute('data-i18n', 'no-rating')
         rating.style.color = 'var(--text-dark-gray)';
         rating.style.textDecoration = 'none';
     }
@@ -293,7 +293,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     } else if (status === "ajogar") {
         const statusText = document.createElement("span");
         statusText.className = "status-text";
-        statusText.textContent = `À Jogar`;
+        statusText.setAttribute('data-i18n', 'ajogar');
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
         div.classList.add('ajogar');
@@ -307,6 +307,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     div.addEventListener('click', () => openGamePopup(div));
 
+    applyLocale();
     return div;
 }
 
@@ -396,22 +397,6 @@ async function loadGamesAchie() {
 
     const isGrid = list.classList.contains("grid");
 
-    // if (isGrid) {
-    //     const order = { "aplatinar": 0, "platinado": 1 };
-    //     others.sort((a, b) => {
-    //         const sa = (a.achieStatus || "").toLowerCase().trim();
-    //         const sb = (b.achieStatus || "").toLowerCase().trim();
-    //         return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
-    //     });
-    // } else {
-    //     const order = { "platinado": 0 };
-    //     others.sort((a, b) => {
-    //         const sa = (a.achieStatus || "").toLowerCase().trim();
-    //         const sb = (b.achieStatus || "").toLowerCase().trim();
-    //         return (order[sa] !== undefined ? order[sa] : 99) - (order[sb] !== undefined ? order[sb] : 99);
-    //     });
-    // }
-
     const platinadosOrdenados = others.filter(g => (g.achieStatus || "").toLowerCase().trim() === "platinado");
 
     const platinadoMap = new Map(
@@ -467,7 +452,7 @@ async function loadGamesAchie() {
     if (platinandoFragment.childElementCount === 0) {
         const noGames = document.createElement("div");
         noGames.className = "platinandoNow-no-games";
-        noGames.textContent = "Nenhum jogo sendo platinado.";
+        noGames.textContent = `${window._t['platinum-now-nogames']}`;
         platinandoFragment.appendChild(noGames);
     }
 
@@ -522,6 +507,20 @@ async function createGameAchieCard(game, completedIndex = null) {
     const tag = document.createElement("span");
     tag.className = "status";
 
+    if (status === "aplatinar") {
+        const statusText = document.createElement("span");
+        const statusTitle = document.createElement("span");
+        statusTitle.className = "status-text-title";
+        statusText.className = "status-text";
+        statusTitle.setAttribute('data-i18n', 'aplatinar');
+        statusText.textContent = ` - ${game.unlockedAchievements || 0}/${game.totalAchievements}`;
+        statusDiv.appendChild(statusText);
+        statusText.appendChild(statusTitle);
+        statusDiv.appendChild(tag);
+        div.classList.add('aplatinar');
+        applyLocale();
+    }
+
     const tagFill = document.createElement("span");
     tagFill.className = "status-fill";
     const percentage = game.totalAchievements > 0 
@@ -565,13 +564,6 @@ async function createGameAchieCard(game, completedIndex = null) {
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
         div.classList.add('platinado')
-    } else if (status === "aplatinar") {
-        const statusText = document.createElement("span");
-        statusText.className = "status-text";
-        statusText.textContent = `À Platinar - ${game.unlockedAchievements || 0}/${game.totalAchievements}`;
-        statusDiv.appendChild(statusText);
-        statusDiv.appendChild(tag);
-        div.classList.add('aplatinar')
     }
 
     tag.appendChild(tagFill);
@@ -816,6 +808,7 @@ function updateStatus(element, statusClass, text) {
     element.classList.remove('ajogar', 'jogando', 'zerado');
     if (statusClass) {
         element.classList.add(statusClass);
+        element.setAttribute('data-i18n', statusClass);
     }
 }
 
@@ -824,6 +817,7 @@ function updateAchie(element, statusClass, text) {
     element.classList.remove('platinado', 'platinando', 'aplatinar');
     if (statusClass) {
         element.classList.add(statusClass);
+        element.setAttribute('data-i18n', statusClass);
     }
 }
 async function changeAchieProgress(el, isAdd = true) {
@@ -883,6 +877,7 @@ async function openGamePopup(el) {
     const logo = document.querySelector('.game-logo');
     const devText = document.querySelector('.dev-name');
     const pubText = document.querySelector('.pub-name');
+    const releaseDateTitle = document.querySelector('.game-releaseDate-title');
     const releaseDateText = document.querySelector('.game-releaseDate-text');
 
     const statusText = document.querySelector('.campaign-status-tag');
@@ -915,6 +910,8 @@ async function openGamePopup(el) {
     noteEditBtn.setAttribute('data-id', title);
     achieAddBtn.setAttribute('data-id', title);
     achieMinusBtn.setAttribute('data-id', title);
+
+    ratingTitle.setAttribute('data-i18n', 'rating');
 
     pubText.style.animation = '';
     devText.style.animation = '';
@@ -960,18 +957,44 @@ async function openGamePopup(el) {
     devText.textContent = gamesDB.developer || "Erro";
     pubText.textContent = gamesDB.publisher || "Erro";
     releaseDateText.textContent = gamesDB.releaseDate || "Erro";
+
+    if (releaseDateTitle) {
+        const observer = new MutationObserver(() => {
+            if (/:\s*$/.test(releaseDateTitle.textContent)) {
+                releaseDateTitle.textContent = releaseDateTitle.textContent.replace(/:\s*$/, '');
+            }
+        });
+        observer.observe(releaseDateTitle, { childList: true, characterData: true, subtree: true });
+        if (/:\s*$/.test(releaseDateTitle.textContent)) {
+            releaseDateTitle.textContent = releaseDateTitle.textContent.replace(/:\s*$/, '');
+        }
+    }
+    if (ratingTitle) {
+        const observer = new MutationObserver(() => {
+            if (/:\s*$/.test(ratingTitle.textContent)) {
+                ratingTitle.textContent = ratingTitle.textContent.replace(/:\s*$/, '');
+            }
+        });
+        observer.observe(ratingTitle, { childList: true, characterData: true, subtree: true });
+        if (/:\s*$/.test(ratingTitle.textContent)) {
+            ratingTitle.textContent = ratingTitle.textContent.replace(/:\s*$/, '');
+        }
+    }
+
     completeDateText.textContent = gameCampaign.completeDate || "";
     noteText.innerHTML = gameNote?.note || "";
 
-    if (gameCampaign.rating >= 0.5) {
+    if (gameCampaign.rating >= 0) {
         ratingTitle.style.display = 'flex';
+        ratingText.removeAttribute('data-i18n', 'no-rating');
         ratingText.textContent = Number(gameCampaign.rating).toFixed(1);
         ratingText.classList.remove('no-rating');
     }
     if (gameCampaign.rating == "null") {
         ratingTitle.style.display = 'none';
-        ratingText.textContent = 'Sem nota';
+        ratingText.setAttribute('data-i18n', 'no-rating');
         ratingText.classList.add('no-rating');
+        applyLocale();
     }
 
     const total = achieGame.totalAchievements || 0;
@@ -1024,10 +1047,11 @@ async function openGamePopup(el) {
     }
     if (gameCampaign.status.toLowerCase() == 'zerado') {
         updateStatus(statusText, 'zerado', 'Zerado');
-        campaignText.textContent = 'ZERADO';
+        campaignText.setAttribute('data-i18n', 'zerado');
         campaignSep.style.display = 'block';
         campaignDiv.style.display = 'flex';
         ratingDiv.style.display = 'flex';
+        applyLocale();
     }
 
     if (achieGame.achieStatus.toLowerCase() == 'aplatinar') {
@@ -1083,8 +1107,6 @@ gamePopupDiv.addEventListener('click', (e) => {
 
         text.contentEditable = "false";
         editBtn.className = 'fa-solid fa-pen';
-        loadGames();
-        loadGamesAchie();
         
         gamePopup.addEventListener('animationend', () => {
             gamePopupDiv.style.display = 'none';
@@ -1236,7 +1258,7 @@ optionZerado.addEventListener('click', async () => {
     const achieBtns = document.querySelector('.achie-add-minus');
 
     options.style.display = 'none';
-    campaignText.textContent = "ZERADO";
+    campaignText.setAttribute('data-i18n', 'zerado')
     campaignSep.style.display = 'block';
     achieSep.style.display = 'block';
     campaignDiv.style.display = 'flex';
@@ -1407,12 +1429,13 @@ function changeRating(element, text) {
     const textTitle = document.querySelector('.game-rating-title-text');
     if (text <= "null") {
         textTitle.style.display = 'none';
-        element.textContent = 'Sem nota';
+        element.setAttribute('data-i18n', 'no-rating');
         element.classList.add('no-rating');
     }
     if (text >= 0) {
         textTitle.style.display = 'flex';
         element.textContent = text;
+        element.removeAttribute('data-i18n', 'no-rating');
         element.classList.remove('no-rating');
     }
 }

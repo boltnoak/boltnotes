@@ -19,8 +19,42 @@ function toggleAssetsConfig(el) {
     window.api.assetsConfig.update(option, isActive);
 }
 
+const changeLangBtn = document.querySelector('.change-lang-btn');
+const changeLangSelect = document.querySelector('.change-lang-drop-select');
+changeLangBtn.addEventListener('click', () => {
+    if (changeLangSelect.style.display === 'none' || changeLangSelect.style.display === '') {
+        changeLangSelect.style.display = 'flex';
+    } else {
+        changeLangSelect.style.display = 'none';
+    }
+})
+
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
+
+    const langBtn = document.getElementById('lang-btn');
+    const langSelect = document.getElementById('lang-select');
+    const langSpan = langBtn.querySelector('span');
+
+    const currentLang = config.language || 'pt-BR';
+    const langNames = { 'pt-BR': 'Português Brasil', 'en': 'English' };
+    langSpan.textContent = langNames[currentLang] || 'Português Brasil';
+
+    langBtn.addEventListener('click', () => {
+        langSelect.classList.toggle('active');
+    });
+
+    langSelect.querySelectorAll('li').forEach(li => {
+        li.addEventListener('click', async () => {
+            const lang = li.dataset.value;
+            langSpan.textContent = li.querySelector('span').textContent;
+            langSelect.classList.remove('active');
+            await window.electronAPI.config.updateConfig('language', lang);
+            window.electronAPI.notifyLanguageChanged();
+            applyLocale();
+            changeLangSelect.style.display = 'none';
+        });
+    });
 
     const assetsConf = await window.api.assetsConfig.get();
 
@@ -66,9 +100,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const colorCircle = document.createElement('span');
                     colorCircle.className = 'theme-color-preview';
                     colorCircle.style.backgroundColor = themeBg;
-                    
+
                     const textSpan = document.createElement('span');
                     textSpan.textContent = formattedName;
+                    
+                    if (themeName == 'dark') {
+                        textSpan.setAttribute('data-i18n', 'theme-dark');
+                        applyLocale();
+                    }
+                    if (themeName == 'light') {
+                        textSpan.setAttribute('data-i18n', 'theme-light');
+                        applyLocale();
+                    }
+                    if (themeName == 'example') {
+                        textSpan.setAttribute('data-i18n', 'theme-example');
+                        applyLocale();
+                    }
 
                     li.appendChild(colorCircle);
                     li.appendChild(textSpan);
@@ -161,6 +208,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 li.appendChild(textSpan);
                 li.dataset.value = featuredName;
+
+                if (featuredName == 'none') {
+                    textSpan.setAttribute('data-i18n', 'featured-none');
+                    applyLocale();
+                }
+                if (featuredName == 'playing_now') {
+                    textSpan.setAttribute('data-i18n', 'playing-now');
+                    applyLocale();
+                }
+                if (featuredName == 'fn_fast_edit') {
+                    textSpan.setAttribute('data-i18n', 'fn-quick-edit');
+                    applyLocale();
+                }
                 
                 if (featuredName === currentFeatured) {
                     li.classList.add('active-config');
@@ -221,13 +281,13 @@ function tabSwitch(el) {
 }
 
 async function loadInfo() {
-  const userData = await window.info.getUserData();
-  const documents = await window.info.getDocuments();
+    const userData = await window.info.getUserData();
+    const documents = await window.info.getDocuments();
 
-  document.getElementById('user-config').textContent = userData + '/config.json';
-  document.getElementById('documents').textContent = documents;
-//   document.getElementById('assets-folder').textContent = userData + '/assets';
-  document.getElementById('themes-folder').textContent = documents + '/Themes';
+    document.getElementById('documents').textContent = documents;
+    //document.getElementById('user-config').textContent = userData + '/config.json';
+    //document.getElementById('assets-folder').textContent = userData + '/assets';
+    //document.getElementById('themes-folder').textContent = documents + '/Themes';
 }
 
 async function selectNewTheme(themeName) {
@@ -259,15 +319,15 @@ async function checkUpdates() {
 
     let downloadIniciado = false;
 
-    showMessage(text, 'Verificando atualizações...', 'var(--text-light-gray)');
+    showMessage(text, `${window._t['check-updates-verify']}`, 'var(--text-light-gray)');
 
     window.electronAPI.onUpdateProgress((percent) => {
         downloadIniciado = true;
-        showMessage(text, `Baixando atualização... ${Math.round(percent)}%`, 'var(--text)');
+        showMessage(text, `${window._t['downloading']}... ${Math.round(percent)}%`, 'var(--text)');
     });
 
     window.electronAPI.onUpdateReady(() => {
-        showMessage(text, 'Atualização baixada!', 'var(--blue)');
+        showMessage(text, `${window._t['check-updates-done']}`, 'var(--blue)');
         if (btn) btn.style.display = 'block';
     });
 
@@ -276,10 +336,10 @@ async function checkUpdates() {
 
         if (result.status === 'available') {
             if (!downloadIniciado) {
-                showMessage(text, `Nova versão v${result.version}! Baixando...`, 'var(--text)');
+                showMessage(text, `${window._t['new-version']} v${result.version}! ${window._t['downloading']}...`, 'var(--text)');
             }
         } else {
-            showMessage(text, 'Aplicativo já está na versão mais recente.', 'var(--blue)');
+            showMessage(text, `${window._t['check-updates-finished']}`, 'var(--blue)');
         }
     } catch (err) {
         console.error('Erro ao buscar atualizações:', err);
@@ -294,7 +354,7 @@ async function syncAssets() {
   const text = document.querySelectorAll('#syncAssets-text');
   if (!text) return;
 
-  showMessage(text, 'Iniciando...', 'var(--text-light-gray)');
+  showMessage(text, `${window._t['sync-assets-verify']}`, 'var(--text-light-gray)');
 
   if (!listenersRegistrados) {
     window.electronAPI.onAssetsProgress((() => {
@@ -307,13 +367,13 @@ async function syncAssets() {
             const mb = (data.downloaded / 1024 / 1024).toFixed(1);
             const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
 
-            showMessage(text, `Baixando ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`);
+            showMessage(text, `${window._t['downloading']} ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`);
       };
     })());
 
     window.electronAPI.onAssetsReady(() => {
       setTimeout(() => {
-          showMessage(text, 'Assets sincronizados!', 'var(--blue)')
+          showMessage(text, `${window._t['sync-assets-done']}`, 'var(--blue)')
       }, 400);
     });
 
@@ -323,7 +383,7 @@ async function syncAssets() {
   try {
     const result = await window.electronAPI.syncAssets();
     if (result && result.success) {
-      showMessage(text, 'Assets sincronizados!', 'var(--blue)');
+      showMessage(text, `${window._t['sync-assets-done']}`, 'var(--blue)');
     } else {
       const erroMsg = result && result.error ? result.error : 'Erro ao sincronizar.';
       showMessage(text, erroMsg, 'var(--red)');
@@ -333,7 +393,7 @@ async function syncAssets() {
   }
 }
 
-function showMessage(element,msg,color) {
+function showMessage(element, msg, color) {
     const elementList = element instanceof NodeList || Array.isArray(element) 
         ? element 
         : [element];
@@ -341,7 +401,8 @@ function showMessage(element,msg,color) {
     elementList.forEach(element => {
         if (!element) return;
 
-        element.textContent = msg;
+        element.textContent = `${msg}`;
+        applyLocale();
         element.style.color = color;
         element.style.opacity = 1;
         

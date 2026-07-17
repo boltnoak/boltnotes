@@ -7,6 +7,7 @@
     <title>BoltNotes</title>
     <link rel="stylesheet" href="css/welcome.css">
     <script src="scripts/theme-loader.js"></script>
+    <script src="scripts/apply-locales.js"></script>
 </head>
 <body>
 <div class="app-container">
@@ -14,41 +15,50 @@
         <div id="start">
 
         <header>
-            <a class="next-btn">Começar configuração</a>
+            <a class="next-btn" data-i18n="welcome-next">Começar configuração</a>
         </header>
             <div class="logo">
-                <img src="welcome-assets/boltnotes-logo.svg" alt="">
+                <img src="welcome-assets/boltnotes-logo.svg">
             </div>
-            <p class="start-text">Seja bem vindo(a) ao BoltNotes!</p>
+            <p class="start-text" data-i18n="welcome-message">Seja bem vindo(a) ao BoltNotes!</p>
+            <div class="config-item config-item-lang">
+                <p data-i18n="language_select"></p>
+                <div class="custom-select">
+                    <div class="change-lang-btn" id="lang-btn">
+                        <span>Português</span>
+                    </div>
+                    <ul class="change-lang-drop-select" id="lang-select">
+                        <li data-value="pt-BR"><span>Português Brasil</span></li>
+                        <li data-value="en"><span>English</span></li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <div id="step1">
             <div class="pages-section">
-                <a class="page" id="games" href="pages/games.html" style="display: none;">
+                <a class="page" id="games" style="display: none;">
                     <div class="page-image">
                         <img src="welcome-assets/games-backlog-characters.png">
                         <div class="text">
                             <i class="games-backlog-icon fa-solid fa-gamepad"></i>
-                            <p class="text-backlog">BACKLOG DE</p>
-                            <p class="text-games">JOGOS</p>
+                            <p class="text-backlog" data-i18n="backlogof">BACKLOG DE</p>
+                            <p class="text-games" data-i18n="games">JOGOS</p>
                         </div>
                     </div>
                     <div class="info">
-                        <p>Campanhas e Conquistas</p>
+                        <p><span data-i18n="campaigns">Campanhas</span> <span data-i18n="and">e</span> <span data-i18n="achievements">Conquistas</span></p>
                     </div>
                 </a>
-                <a class="page" id="notes" href="pages/notes.html" style="display: none;">
+                <a class="page" id="notes" style="display: none;">
                     <div class="page-image">
                         <div class="page-image-sidebar">
                             <div></div>
                             <div></div>
                         </div>
-                        <p class="text-notes">NOTAS</p>
+                        <p class="text-notes" data-i18n="notes">NOTAS</p>
                     </div>
-                    <!-- <div class="info">
-                        <p id="note-count"></p>
-                    </div> -->
                 </a>
-                <a class="page" id="fortnite" href="pages/fortnite.html" style="display: none;">
+                <a class="page" id="fortnite" style="display: none;">
                     <div class="page-image">
                         <img src="welcome-assets/fortnite-character.png">
                         <div class="fortnite-text">
@@ -83,23 +93,23 @@
                             <div class="recentSeason-image" id="recentSeason-image" style="background-image: url(welcome-assets/fortnite-season.png)">
                             </div>
                             <div class="season-status">
-                                <p id="recent-season-name">Temporada</p>
+                                <p id="recent-season-name" data-i18n="fn-season">Temporada</p>
                                 <div class="season-status-div">
                                     <p class="status">
                                         <i class="fa-solid fa-square-caret-up"></i>
-                                        Níveis: 
+                                        <span data-i18n="levels">Níveis:</span>
                                         <i class="statusLevel-add fa-solid fa-plus"></i> <span class="status-level">160</span>
                                         <i class="statusLevel-minus fa-solid fa-minus"></i>
                                     </p>
                                     <p class="status">
                                         <i class="fa-solid fa-trophy"></i>
-                                        Vitórias: 
+                                        <span data-i18n="wins">Vitórias:</span>
                                         <i class="statusWin-add fa-solid fa-plus"></i> <span class="status-win">20</span>
                                         <i class="statusWin-minus fa-solid fa-minus"></i>
                                     </p>
                                 </div>
                                 <div class="level-progress">
-                                    <p class="level-progress-text">Progresso - 80%</p>
+                                    <p class="level-progress-text"><span data-i18n="progress">Progresso</span> - 80%</p>
                                     <div class="level-progress-bar">
                                         <p class="level-progress-bar-fill" style="width: 80%;"></p>
                                     </div>
@@ -110,13 +120,13 @@
                 </div>
 
                 <div class="pages-change">
-                    <p class="sep">Páginas</p>
+                    <p class="sep" data-i18n="pages">Páginas</p>
                     <div class="config-item">
-                        <p>Backlog de Jogos</p>
+                        <p><span data-i18n="backlogof">Backlog de</span> <span data-i18n="games">Jogos</span></p>
                         <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
                     </div>
                     <div class="config-item">
-                        <p>Notas</p>
+                        <p data-i18n="notes">Notas</p>
                         <a class="toggle" data-code="notes_on_home" onclick="toggleConfig(this)"></a>
                     </div>
                     <div class="config-item">
@@ -126,13 +136,13 @@
                 </div>
                 
                 <div class="featured-change">
-                    <p class="sep">Destaque</p>
+                    <p class="sep" data-i18n="featured">Destaque</p>
                     <div class="config-item featured">
                         <div class="featured-selector-div">
                             <select id="featured-selector">
-                                <option value="none" data-code="none">Nada</option>
-                                <option value="playing_now" data-code="playing_now">Jogando no momento</option>
-                                <option value="fn_fast_edit" data-code="fn_fast_edit">Fortnite BR: Edição rápida</option>
+                                <option value="none" data-code="none" data-i18n="featured-none">Nada</option>
+                                <option value="playing_now" data-code="playing_now" data-i18n="playing-now">Jogando no momento</option>
+                                <option value="fn_fast_edit" data-code="fn_fast_edit">Fortnite BR: <span data-i18n="fn-quick-edit">Edição rápida</span></option>
                             </select>
                             <div class="featuredSelector-btn">
                                 <span id="featuredSelector-btn-name"></span>
@@ -142,22 +152,22 @@
                     </div>
             </div>
             <header class="next2-btn">
-                <a class="next-btn">Próximo</a>
+                <a class="next-btn" data-i18n="next">Próximo</a>
             </header>
         </div>
 
         <div id="step2">
             <div class="assets-list-div">
-                <p class="sep-list">Desativar/Ativar Recursos</p>
+                <p class="sep-list" data-i18n="toggle-assets">Desativar/Ativar Recursos</p>
                 <div class="assets-list">
                     <div class="config-item mark-item" onclick="toggleAssetsConfig(this)">
-                        <p>Fortnite (Baixará trailers, imagens e eventos)</p>
+                        <p>Fortnite <span data-i18n="fortnite-assets-info">(Trailers, Imagens e Eventos)</span></p>
                         <a class="mark fortnite-mark" data-code="fortnite" data-assets-code></a>
                     </div>
                 </div>
             </div>
             <header class="next2-btn">
-                <a class="next-btn" onclick="finish()">Terminar</a>
+                <a class="next-btn" onclick="finish()" data-i18n="finish">Terminar</a>
             </header>
         </div>
     </div>

@@ -11,7 +11,7 @@
     display: flex;
     align-items: center;
     height: 3.5vh;
-    gap: 1vh;
+    gap: 1.25vh;
     margin: .6vh 0 0 0;
     font-family: 'Montserrat';
     color: var(--text);
@@ -80,7 +80,7 @@
     color: var(--text);
     font-weight: 800;
     font-size: 4vh;
-    margin: 0;
+    margin: .5vh 0 0 0;
 }
 .toggle {
     display: inline-block;
@@ -143,6 +143,9 @@
     user-select: none;
     left: 1.5vw;
 }
+.version {
+    margin: 0;
+}
 .toggle.active::after {
     transform: translateX(1.65vw);
     border: solid .5vh var(--btn-hover-color);
@@ -159,6 +162,7 @@
     border-radius: 1.3vh;
     margin: .6vh 0;
     border: solid .5vh var(--btn-color);
+    font-weight: 500;
 }
 
 .theme-selector-div {
@@ -357,4 +361,71 @@
     transition: opacity .1s linear, color .15s linear;
     width: fit-content;
     user-select: text;
+}
+
+.change-lang-btn {
+    background-color: var(--btn);
+    padding: 1vh 0;
+    width: 20vw;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s linear;
+}
+.change-lang-btn:hover {
+    background-color: var(--btn-hover);
+}
+.change-lang-drop-select {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    gap: 1vh;
+    transform: translateY(3.35vh);
+    background-color: var(--tab);
+    width: 19vw;
+    padding: 1vh;
+    border-radius: 1.5vh;
+}
+.config-item p {
+    margin: 0;
+}
+.custom-select {
+    margin: 0;
+    padding: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 0;
+    background-color: var(--btn);
+    width: fit-content;
+    border-radius: 1vh;
+    overflow: hidden;
+}
+.custom-select li:hover {
+    background-color: var(--btn-hover);
+    border-radius: 1vh;
+}
+.custom-select .active-config {
+    color: var(--btn-text-color);
+    background-color: var(--btn-color);
+    border-radius: 1vh;
+}
+.custom-select .active-config:hover {
+    background-color: var(--btn-hover-color);
+    border-radius: 1vh;
+}
+.custom-select li {
+    display: flex;
+    align-items: center;
+    padding: 1vh 1.25vw;
+    object-fit: cover;
+    cursor: pointer;
+    transition: border 0.2s;
+    font-weight: 600;
+    background-color: var(--btn);
+    flex-direction: column;
+    transition: background .1s linear, border-radius .1s linear;
+    border-radius: 1vh;
 }

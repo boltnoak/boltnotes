@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-i18n-title="games_page_title">
 <head>
     <base href="../">
     <meta charset="UTF-8">
@@ -7,6 +7,7 @@
     <title>BoltNotes | Backlog de Jogos</title>
     <link rel="stylesheet" href="css/games.css">
     <script src="scripts/theme-loader.js"></script>
+    <script src="scripts/apply-locales.js"></script>
 </head>
 <body>
 <div class="app-container">
@@ -14,26 +15,26 @@
         <div class="sidebar">
             <div>
                 <div class="playingNowSection">
-                    <div id="playingNowSection-title"><p><i class="fa-solid fa-gamepad"></i>Jogando no momento</p></div>
+                    <div id="playingNowSection-title"><p><i class="fa-solid fa-gamepad"></i><span data-i18n="playing-now">Jogando no momento</span></p></div>
                     <div class="playingNow-panel">
                         <div id="playingNow-games"></div>
                     </div>
                 </div>
                 <div class="sep-bar-sidebar"></div>
                 <div class="platinandoNowSection">
-                    <div id="platinandoNowSection-title"><p><i class="fa-solid fa-trophy"></i>Platinando no momento</p></div>
+                    <div id="platinandoNowSection-title"><p><i class="fa-solid fa-trophy"></i><span data-i18n="platining-now">Platinando no momento</span></p></div>
                     <div class="platinandoNow-panel">
                         <div id="platinandoNow-games"></div>
                     </div>
                 </div>
             </div>
-            <p class="addGameOpen"><i class="fa-solid fa-plus"></i>Adicionar novo jogo</p>
+            <p class="addGameOpen"><i class="fa-solid fa-plus"></i><span data-i18n="add-new-game">Adicionar novo jogo</span></p>
         </div>
         <p class="sidebar-sep-bar"></p>
         <div class="page-content">
             <div class="modes">
-                <p class="mode-btn campaign active">Campanhas</p>
-                <p class="mode-btn achievements">Conquistas</p>
+                <p class="mode-btn campaign active" data-i18n="campaigns">Campanhas</p>
+                <p class="mode-btn achievements" data-i18n="achievements">Conquistas</p>
             </div>
             <div class="view-bar">
                 <div class="view-options">
@@ -44,20 +45,20 @@
                 <i id="reload-btn" class="fa-solid fa-rotate"></i>
                     <div class="sorting-options">
                         <select id="realSorting-options">
-                            <option value="date-recent">Mais recente</option>
-                            <option value="date-old">Mais antigo</option>
-                            <option value="rating-high">Maior nota</option>
-                            <option value="rating-low">Menor nota</option>
+                            <option value="date-recent" data-i18n="date-recent">Mais recente</option>
+                            <option value="date-old" data-i18n="date-old">Mais antigo</option>
+                            <option value="rating-high" data-i18n="rating-high">Maior nota</option>
+                            <option value="rating-low" data-i18n="rating-low">Menor nota</option>
                         </select>
                         <div class="sortingOptions-trigger">
-                            <span>Mais recente</span>
+                            <span data-i18n="date-recent">Mais recente</span>
                             <i class="fa-solid fa-angle-down"></i>
                         </div>
                         <ul class="sortingOptions-select">
-                            <li data-value="date-recent" class="selected">Mais recente</li>
-                            <li data-value="date-old">Mais antigo</li>
-                            <li data-value="rating-high">Maior nota</li>
-                            <li data-value="rating-low">Menor nota</li>
+                            <li data-value="date-recent" class="selected" data-i18n="date-recent">Mais recente</li>
+                            <li data-value="date-old" data-i18n="date-old">Mais antigo</li>
+                            <li data-value="rating-high" data-i18n="rating-high">Maior nota</li>
+                            <li data-value="rating-low" data-i18n="rating-low">Menor nota</li>
                         </ul>
                     </div>
                 </div>
@@ -71,25 +72,25 @@
         <div class="game-popup">
             <div class="game-banner-div">
                 <img class="game-banner">
-                <img class="game-logo" alt="WALL E">
+                <img class="game-logo">
             </div>
                 <div class="game-status-div">
                 <div class="game-popup-status">
                     <div class="campaign-status-tag"></div>
                     <div class="campaign-status-change">
-                        <li class="option-ajogar" data-value="ajogar">À Jogar</li>
-                        <li class="option-jogando" data-value="jogando">Jogando</li>
-                        <li class="option-zerado" data-value="zerado">Zerado</li>
+                        <li class="option-ajogar" data-value="ajogar" data-i18n="ajogar">À Jogar</li>
+                        <li class="option-jogando" data-value="jogando" data-i18n="jogando">Jogando</li>
+                        <li class="option-zerado" data-value="zerado" data-i18n="zerado">Zerado</li>
                     </div>
                     <div class="achie-status-tag"></div>
                     <div class="achie-status-change">
-                        <li class="option-aplatinar" data-value="aplatinar">À Platinar</li>
-                        <li class="option-platinando" data-value="platinando">Platinando</li>
-                        <li class="option-platinado" data-value="platinado">Platinado</li>
+                        <li class="option-aplatinar" data-value="aplatinar" data-i18n="aplatinar">À Platinar</li>
+                        <li class="option-platinando" data-value="platinando" data-i18n="platinando">Platinando</li>
+                        <li class="option-platinado" data-value="platinado" data-i18n="platinado">Platinado</li>
                     </div>
                 </div>
                 <div class="game-popup-info">
-                    <div class="game-releaseDate">LANÇADO EM<p class="game-releaseDate-text"></p></div>
+                    <div class="game-releaseDate"><span class="game-releaseDate-title" data-i18n="release-date">LANÇADO EM</span><p class="game-releaseDate-text"></p></div>
                     <div class="dev-pub">DEVELOPER<div class="game-popup-title"><p class="dev-name"></p></div></div>
                     <div class="dev-pub">PUBLISHER<div class="game-popup-title"><p class="pub-name"></p></div></div>
                 </div>
@@ -98,7 +99,7 @@
                 <div class="game-popup-campaign-achie">
                     <div class="game-achievements">
                         <div>
-                            <div class="achie-info-title"><p class="achie-info-title-text">CONQUISTAS</p><p class="achie-info-title-numbers"></p></div>
+                            <div class="achie-info-title"><p class="achie-info-title-text" data-i18n="achievements">CONQUISTAS</p><p class="achie-info-title-numbers"></p></div>
                             <div class="achie-info">
                                 <p class="achie-percentage"></p>
                                 <div class="achie-bar"><div class="achie-bar-fill"></div></div>
@@ -161,7 +162,7 @@
     </div>
 
     <header>
-        <a class="back" href="pages/index.html">Início<i class="fa-solid fa-house"></i></a>
+        <a class="back" href="pages/index.html"><span data-i18n="home">Início</span><i class="fa-solid fa-house"></i></a>
     </header>
 
     <div id="loading-screen">
@@ -171,8 +172,8 @@
 
 <div id="addGame-popup">
     <div class="add-game-form">
-        <div class="add-game-form-title"><p>Adicionar novo jogo</p></div>
-        <input type="text" id="gameName" placeholder="Nome">
+        <div class="add-game-form-title"><p data-i18n="add-new-game">Adicionar novo jogo</p></div>
+        <input type="text" id="gameName" data-i18n-placeholder="name" placeholder="Nome">
         <div class="appid-div">
             <input type="text" id="gameAppId" placeholder="AppID">
             <!-- <a class="steamdb-btn" id="steamdb-btn" onclick="searchAppID()" target="_blank">
@@ -180,7 +181,7 @@
             <i class="steamdb-btn fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
         </div>
         <div class="add-game-form-options">
-            <a id="addGameBtn"><i class="fa-solid fa-plus"></i>Adicionar</a>
+            <a id="addGameBtn"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
         </div>
     </div>
 </div>

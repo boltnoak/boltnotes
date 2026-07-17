@@ -326,12 +326,12 @@ body {
     cursor: pointer;
 }
 .rating-options {
-    position: relative;
+    position: absolute;
     justify-content: center;
     flex-wrap: wrap;
-    top: 31vh;
+    bottom: 0;
     width: 100%;
-    background-color: var(--tab);
+    background-color: var(--btn);
     font-family: 'Montserrat';
     z-index: 10;
     overflow: hidden;
@@ -354,7 +354,7 @@ body {
     transition: background 0.1s linear;
 }
 .rating-option:hover {
-    background: var(--tab-hover);
+    background: var(--btn-hover);
 }
 .status-rating {
     width: 3.1vw;

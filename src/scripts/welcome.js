@@ -129,7 +129,7 @@ async function changeFeatured(selectEl) {
     if (selectedFeatured == 'fn_fast_edit') {
         document.querySelector('.page-infos').style.display = 'flex';
 
-        document.querySelector('#featured-title').innerHTML = 'Fortnite BR — Edição rápida<i class="fa-solid fa-square-poll-horizontal"></i>';
+        document.querySelector('#featured-title').innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
         document.querySelector('#featured-title').style.display = 'flex';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
         
@@ -138,7 +138,7 @@ async function changeFeatured(selectEl) {
     if (selectedFeatured == 'playing_now') {
         document.querySelector('.page-infos').style.display = 'flex';
 
-        document.querySelector('#featured-title').innerHTML = 'Jogando no momento<i class="fa-solid fa-gamepad"></i>';
+        document.querySelector('#featured-title').innerHTML = `${window._t['playing-now']}<i class="fa-solid fa-gamepad"></i>`;
         document.querySelector('#featured-title').style.display = 'flex';
         document.querySelector('.playingNow-panel').style.display = 'flex';
 
@@ -175,8 +175,42 @@ function toggleConfig(el) {
     }
 }
 
+const changeLangBtn = document.querySelector('.change-lang-btn');
+const changeLangSelect = document.querySelector('.change-lang-drop-select');
+changeLangBtn.addEventListener('click', () => {
+    if (changeLangSelect.style.display === 'none' || changeLangSelect.style.display === '') {
+        changeLangSelect.style.display = 'flex';
+    } else {
+        changeLangSelect.style.display = 'none';
+    }
+})
+
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
+
+    const langBtn = document.getElementById('lang-btn');
+    const langSelect = document.getElementById('lang-select');
+    const langSpan = langBtn.querySelector('span');
+
+    const currentLang = config.language || 'pt-BR';
+    const langNames = { 'pt-BR': 'Português Brasil', 'en': 'English' };
+    langSpan.textContent = langNames[currentLang] || 'Português Brasil';
+
+    langBtn.addEventListener('click', () => {
+        langSelect.classList.toggle('active');
+    });
+
+    langSelect.querySelectorAll('li').forEach(li => {
+        li.addEventListener('click', async () => {
+            const lang = li.dataset.value;
+            langSpan.textContent = li.querySelector('span').textContent;
+            langSelect.classList.remove('active');
+            await window.electronAPI.config.updateConfig('language', lang);
+            window.electronAPI.notifyLanguageChanged();
+            applyLocale();
+            changeLangSelect.style.display = 'none';
+        });
+    });
 
     const assetsConf = await window.api.assetsConfig.get();
 
@@ -382,8 +416,8 @@ async function loadFortniteStats() {
     const totalSeasons = keys.length;
     const totalChapters = chapters.size;
 
-    document.getElementById("season-count").textContent = `${totalSeasons + 20} Temporadas`;
-    document.getElementById("chapter-count").textContent = `${totalChapters + 2} Capítulos`;
+    document.getElementById("season-count").textContent = `${totalSeasons + 20} ${window._t['fn-seasons']}`;
+    document.getElementById("chapter-count").textContent = `${totalChapters + 2} ${window._t['fn-chapters']}`;
 
   } catch (error) {
     console.error("Erro ao calcular o progresso do Fortnite:", error);
@@ -518,11 +552,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('#featured-title').style.display = 'none';
         document.querySelector('.page-infos').style.display = 'none';
     } if (currentFeatured === 'fn_fast_edit') {
-        document.querySelector('#featured-title').innerHTML = 'Fortnite BR — Edição rápida<i class="fa-solid fa-square-poll-horizontal"></i>';
+        document.querySelector('#featured-title').innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
         document.querySelector('.playingNow-panel').style.display = 'none';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
     } if (currentFeatured === 'playing_now') {
-        document.querySelector('#featured-title').innerHTML = `Jogando no momento<i class="fa-solid fa-gamepad"></i>`;
+        document.querySelector('#featured-title').innerHTML = `${window._t['playing-now']}<i class="fa-solid fa-gamepad"></i>`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
         document.querySelector('.playingNow-panel').style.display = 'flex';
     } else {

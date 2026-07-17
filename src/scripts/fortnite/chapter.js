@@ -9,7 +9,7 @@ let seasonTemplateHTML = null;
 async function loadHeader() {
     document.body.insertAdjacentHTML('afterbegin', `
         <header>
-            <a class="back">Capítulos</a>
+            <a class="back"><span data-i18n="fn-chapters">Capítulos</span></a>
             <a class="home" href="pages/index.html"></a>
             <div class="chapter-section">
                 <i id="before-chapter"></i>
@@ -55,7 +55,7 @@ async function mudarCapitulo(novoCapituloNum) {
     chapterNum = novoCapituloNum;
     CURRENT_CHAPTER = `c${chapterNum}`;
 
-    const titleText = `Capítulo ${chapterNum}`;
+    const titleText = `${window._t['fn-chapter']} ${chapterNum}`;
     document.title = `BoltNotes | Fortnite — ${titleText}`;
     const menuTitle = document.getElementById('menuTitle');
     menuTitle.textContent = `BoltNotes | Fortnite — ${titleText}`;
@@ -75,8 +75,9 @@ async function mudarCapitulo(novoCapituloNum) {
     });
 
     const chaptersMax = Math.max(...chaptersCount);
+    const chaptersMin = Math.min(...chaptersCount);
 
-    if (before) before.style.visibility = (chapterNum - 1) >= 1 ? "visible" : "hidden";
+    if (before) before.style.visibility = (chapterNum - 1) >= chaptersMin ? "visible" : "hidden";
     if (next) next.style.visibility = (chapterNum + 1) <= chaptersMax ? "visible" : "hidden";
 
     if (cachedSeasonInfo) {
@@ -131,12 +132,14 @@ async function inicializarDados() {
         });
 
         const chaptersMax = Math.max(...chaptersCount);
+        const chaptersMin = Math.min(...chaptersCount);
+        console.log(chaptersMin)
 
         const beforeBtn = document.getElementById('before-chapter');
         const nextBtn = document.getElementById('next-chapter');
         
         if (beforeBtn) {
-            beforeBtn.onclick = () => { if (chapterNum - 1 >= 1) mudarCapitulo(chapterNum - 1); };
+            beforeBtn.onclick = () => { if (chapterNum - 1 >= chaptersMin) mudarCapitulo(chapterNum - 1); };
         }
         if (nextBtn) {
             nextBtn.onclick = () => { if (chapterNum + 1 <= chaptersMax) mudarCapitulo(chapterNum + 1); };
@@ -323,7 +326,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (levelsSpan) levelsSpan.id = `${code}-levels`;
         if (winsSpan) winsSpan.id = `${code}-wins`;
 
-        const releaseDateSpan = clone.querySelector('.status i.fa-calendar-day')?.nextElementSibling;
+        const releaseDateSpan = clone.querySelector('.releaseDate');
         if (releaseDateSpan) releaseDateSpan.id = `${code}-releaseDate`;
 
         if (!isLocked) {
@@ -343,10 +346,13 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (listEventsMap) {
             if (listaDeEventos && listaDeEventos.length == 1) {
                 listEventsMap.textContent = 'Mapa e Evento';
+                listEventsMap.setAttribute('data-i18n', 'map-event');
             } else if (listaDeEventos && listaDeEventos.length > 1) {
                 listEventsMap.textContent = 'Mapa e Eventos';
+                listEventsMap.setAttribute('data-i18n', 'map-events');
             } else {
                 listEventsMap.textContent = 'Mapa';
+                listEventsMap.setAttribute('data-i18n', 'map');
             }
         }
 
@@ -382,7 +388,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (titleEl) {
             titleEl.id = `${code}-name`;
             const m = code.match(/^c\d+s(\d+)$/);
-            titleEl.textContent = m ? `Temporada ${m[1]} - ${info.name || ""}` : `Temporada ${info.name || ""}`;
+            titleEl.textContent = m ? `${window._t['fn-season']} ${m[1]} - ${info.name || ""}` : `${window._t['fn-season']} ${info.name || ""}`;
         }
 
         container.appendChild(clone);
@@ -410,12 +416,13 @@ function preencherValores() {
         if (rating) rating.textContent = statsData.rating || "N/A";
         if (levels) levels.textContent = statsData.levels || "0";
         if (wins) wins.textContent = statsData.wins || "0";
-        if (releaseDate) releaseDate.textContent = info.releaseDate || "Sem data";
+        if (releaseDate) releaseDate.textContent = ` ${info.releaseDate}` || "Sem data";
     });
 
     if (typeof initReviews === "function") {
         initReviews();
     }
+    applyLocale();
 }
 
 addEventListener('click', (e) => {

@@ -48,8 +48,8 @@ async function loadFortniteStats() {
     const totalSeasons = keys.length;
     const totalChapters = chapters.size;
 
-    document.getElementById("season-count").textContent = `${totalSeasons + 20} Temporadas`;
-    document.getElementById("chapter-count").textContent = `${totalChapters + 2} Capítulos`;
+    document.getElementById("season-count").textContent = `${totalSeasons + 20} ${window._t['fn-seasons']}`;
+    document.getElementById("chapter-count").textContent = `${totalChapters + 2} ${window._t['fn-chapters']}`;
 
   } catch (error) {
     console.error("Erro ao calcular o progresso do Fortnite:", error);
@@ -170,7 +170,7 @@ async function loadGames() {
     if (playingFragment.childElementCount === 0) {
         const noGames = document.createElement("div");
         noGames.className = "playingNow-no-games";
-        noGames.textContent = "Nenhum jogo sendo jogado.";
+        noGames.textContent = `${window._t['playing-now-nogames']}`;
         playingFragment.appendChild(noGames);
     }
 
@@ -653,6 +653,7 @@ const playingNowTitle = document.getElementById('featured-title');
 
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
+    const configAssets = await window.api.assetsConfig.get();
 
     const toggles = {
         'notes_on_home': document.getElementById('notes'),
@@ -671,6 +672,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const currentFeatured = config.featured;
+    const fortniteAssets = configAssets.fortnite;
 
     if (currentFeatured === 'none') {
         document.querySelector('.recentSeason-panel').style.display = 'none';
@@ -678,13 +680,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('#featured-title').style.display = 'none';
         document.querySelector('.page-infos').style.display = 'none';
         document.querySelector('.sep-bar').style.visibility = 'hidden';
-    } if (currentFeatured === 'fn_fast_edit') {
+    } else if (currentFeatured === 'fn_fast_edit') {
         initFeaturedFortnite();
-        document.querySelector('#featured-title').innerHTML = 'Fortnite BR — Edição rápida<i class="fa-solid fa-square-poll-horizontal"></i>';
+        document.querySelector('#featured-title').innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
         document.querySelector('.playingNow-panel').style.display = 'none';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
-    } if (currentFeatured === 'playing_now') {
-        document.querySelector('#featured-title').innerHTML = `Jogando no momento<i class="fa-solid fa-gamepad"></i>`;
+    } else if (currentFeatured === 'playing_now') {
+        document.querySelector('#featured-title').innerHTML = `${window._t['playing-now']}<i class="fa-solid fa-gamepad"></i>`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
         document.querySelector('.playingNow-panel').style.display = 'flex';
     } else {
@@ -712,6 +714,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    document.getElementById('fortnite').style.display = fortniteAssets === false ? 'none' : 'flex';
 });
 
 const FILE_STATS = "Fortnite/stats.json";
@@ -784,7 +788,7 @@ async function initFeaturedFortnite() {
 
     if (titleEl && img) {
         img.style.backgroundImage = `url(assets://${code}.jpg)`;
-        titleEl.innerHTML = `Fortnite BR — Edição rápida<i class="fa-solid fa-square-poll-horizontal"></i>`;
+        titleEl.innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
         document.querySelector('.shine-effect-v-latest-season').style.display = 'none'
     }
 
@@ -821,7 +825,7 @@ async function preencherValores() {
     
     if (levels) levels.textContent = data.levels || "0";
     if (levelsBar) levelsBar.style.width = `${(data.levels / 200) * 100}%`;
-    if (levelsText) levelsText.textContent = `Progresso - ${((data.levels / 200) * 100).toFixed(1)}%`
+    if (levelsText) levelsText.textContent = `${window._t['progress']} - ${((data.levels / 200) * 100).toFixed(1)}%`
     if (wins) wins.textContent = data.wins || "0";
 
     const levelAdd = document.querySelector('.statusLevel-add');
@@ -878,8 +882,8 @@ async function loadGamesTags() {
     const finished = document.getElementById('games-zerados');
     const achie = document.getElementById('games-platinados');
 
-    finished.textContent = `${finishedCount} Zerados`;
-    achie.textContent = `${achieCount} Platinados`;
+    finished.textContent = `${finishedCount} ${window._t['games-completed']}`;
+    achie.textContent = `${achieCount} ${window._t['games-platinums']}`;
 }
 
 loadGamesTags()

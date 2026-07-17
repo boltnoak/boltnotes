@@ -1,7 +1,7 @@
 <div id="menu" class="drag">
     <p id="menuTitle"></p>
     <a id="update-btn">
-        Atualizar
+        <span data-i18n="update">Atualizar</span>
     </a>
     <div class="menuButtons">
         <i id="menuMin" class="fa-solid fa-window-minimize" onclick="minimizeApp()"></i>

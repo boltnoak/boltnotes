@@ -1,6 +1,15 @@
 @import url(index.css);
 @import url(config.css);
 
+.config-item-lang {
+    justify-content: center;
+    text-align: center;
+    align-self: center;
+    transform: translateY(20vh);
+}
+.change-lang-drop-select {
+    transform: translateY(-15.35vh);
+}
 .next-btn {
     position: absolute;
     background-color: var(--btn-color);

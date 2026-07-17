@@ -29,6 +29,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   devTools: () => ipcRenderer.send('devTools'),
   isDev: isDev,
   welcomeDone: () => ipcRenderer.send('welcome:done'),
+  notifyLanguageChanged: () => ipcRenderer.send('language:changed'),
+
+  i18n: {
+    get: () => ipcRenderer.invoke('i18n:get')
+  },
 
   menu: { maximizeApp: () => ipcRenderer.send('menu:maximize-app'),
     minimizeApp: () => ipcRenderer.send('menu:minimize-app'),

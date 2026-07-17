@@ -10,6 +10,14 @@ const extract = require('extract-zip');
 const AdmZip = require('adm-zip');
 const { XMLParser } = require('fast-xml-parser');
 
+process.on('uncaughtException', (err) => {
+    if (err.message?.includes('ReadableStream is already closed')) {
+        console.warn('[Ignorado] ReadableStream já fechado:', err.message);
+        return;
+    }
+    console.error('Uncaught Exception:', err);
+});
+
 const ASSETS_DIR = path.join(
   app.getPath('userData'),
   'assets'
@@ -25,7 +33,34 @@ const MANIFEST_URL =
 
 function downloadFile(url, destination, onProgress, retries = 3) {
   return new Promise((resolve, reject) => {
+    let settled = false;
+
+    const safeResolve = () => {
+        if (settled) return;
+        settled = true;
+        resolve();
+    };
+
+    const safeReject = (err) => {
+        if (settled) return;
+        settled = true;
+        reject(err);
+    };
+
     const attempt = (currentUrl, triesLeft) => {
+      let retried = false;
+
+      const retryOrFail = (err) => {
+          if (retried) return;
+          retried = true;
+
+          if (triesLeft > 0) {
+              setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
+          } else {
+              safeReject(err);
+          }
+      };
+
       const req = https.get(currentUrl, {
         headers: {
           'accept-encoding': 'identity',
@@ -34,12 +69,13 @@ function downloadFile(url, destination, onProgress, retries = 3) {
       }, response => {
         if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
           response.resume();
+          retried = true; // não conta como retry, é redirect
           return attempt(response.headers.location, triesLeft);
         }
 
         if (response.statusCode !== 200) {
           response.resume();
-          return reject(new Error(`Download falhou: ${response.statusCode}`));
+          return safeReject(new Error(`Download falhou: ${response.statusCode}`));
         }
 
         const total = Number(response.headers['content-length']) || null;
@@ -48,8 +84,10 @@ function downloadFile(url, destination, onProgress, retries = 3) {
         const file = fs.createWriteStream(destination);
 
         file.on('error', (err) => {
-          fs.unlink(destination, () => {});
-          reject(err);
+          file.close(() => {
+            fs.unlink(destination, () => {});
+            retryOrFail(err);
+          });
         });
 
         response.on('data', chunk => {
@@ -60,51 +98,33 @@ function downloadFile(url, destination, onProgress, retries = 3) {
         response.pipe(file);
 
         file.on('finish', () => {
-          if (total && downloaded !== total) {
-            fs.unlink(destination, () => {});
-            if (triesLeft > 0) {
-              console.warn(`Download - Incompleto (${downloaded}/${total} bytes). A tentar novamente...`);
-              setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
+          file.close(() => {
+            if (total && downloaded !== total) {
+                fs.unlink(destination, () => {});
+                console.warn(`Download - Incompleto (${downloaded}/${total} bytes).`);
+                retryOrFail(new Error(`Download incompleto: ${downloaded}/${total} bytes.`));
             } else {
-              reject(new Error(`Download incompleto e corrompido: obtidos ${downloaded} de ${total} bytes.`));
+                if (onProgress && total) onProgress(total, total);
+                safeResolve();
             }
-          } else {
-            if (onProgress && total) onProgress(total, total);
-              
-            const fileName = path.basename(destination);
-
-            resolve();
-          }
+          });
         });
 
         response.on('error', (err) => {
-          file.destroy();
-          fs.unlink(destination, () => {});
-          if (triesLeft > 0) {
-            setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
-          } else {
-            reject(err);
-          }
+          file.close(() => {
+            fs.unlink(destination, () => {});
+            retryOrFail(err);
+          });
         });
       });
 
       req.setTimeout(60000, () => {
-        req.destroy();
-        fs.unlink(destination, () => {});
-        if (triesLeft > 0) {
-          setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
-        } else {
-          reject(new Error('Timeout após todas as tentativas'));
-        }
+        req.destroy(new Error('Timeout'));
       });
 
       req.on('error', (err) => {
         fs.unlink(destination, () => {});
-        if (triesLeft > 0) {
-          setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
-        } else {
-          reject(err);
-        }
+        retryOrFail(err);
       });
     };
 
@@ -388,6 +408,8 @@ protocol.registerSchemesAsPrivileged([
 
 let win;
 let tray = null;
+let trayIcon;
+let trayNameIcon;
 let isQuitting = false;
 let assetsReady = false;
 let updateReady = false;
@@ -395,6 +417,7 @@ let updateReady = false;
 function getConfig() {
   const configPath = path.join(app.getPath('userData'),'config.json');
   const configDefault = {
+    language: 'en',
     maximize_on_start: false,
     open_on_startup: false,
     minimize_to_tray: false,
@@ -714,7 +737,7 @@ autoUpdater.on('update-downloaded', (info) => {
     const { Notification } = require('electron');
     new Notification({
         title: 'Atualização baixada!',
-        body: `Nova versão ${info.version}.`,
+        body: `Nova versão: ${info.version}`,
         icon: path.join(__dirname, 'icon.png')
     }).show();
 });
@@ -832,16 +855,18 @@ ipcMain.on('assets-config:update', (_, key, value) => {
 
 
 ipcMain.handle('fortnite:fetch-trailers', async () => {
-    return await fetchWithCache(
-        'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers.json',
-        'fn-trailers.json'
-    );
+  const language = getConfig().language;
+  return await fetchWithCache(
+    `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers-${language}.json`,
+    `fn-trailers-${language}.json`
+  );
 });
 ipcMain.handle('fortnite:fetch-seasons', async () => {
-    return await fetchWithCache(
-        'https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons.json',
-        'fn-seasons.json'
-    );
+  const language = getConfig().language;
+  return await fetchWithCache(
+    `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`,
+    `fn-seasons-${language}.json`
+  );
 });
 ipcMain.handle('fortnite:list-trailers', () => {
     return fs.readdirSync(
@@ -980,56 +1005,84 @@ X-GNOME-Autostart-enabled=true
   }
 }
 
+function getTrayLabels() {
+    const config = getConfig();
+    const locale = config.language || 'pt-BR';
+    const localePath = path.join(BUNDLE, 'locales', `${locale}.json`);
+    
+    let t = {};
+    try {
+        t = JSON.parse(fs.readFileSync(localePath, 'utf-8'));
+    } catch (err) {
+        console.error('Erro ao carregar idioma para tray:', err);
+    }
+
+    return {
+        games: t['games-backlog'] || 'Backlog de Jogos',
+        notes: t['notes'] || 'Notas',
+        settings: t['settings'] || 'Configurações',
+        close: t['close'] || 'Fechar app'
+    };
+}
+
+function navigateTo(htmlFile) {
+    if (!win) return;
+
+    win.loadFile(path.join(BUNDLE, 'pages', htmlFile));
+    win.webContents.once('did-finish-load', () => {
+        win.show();
+        win.focus();
+    });
+}
+function buildTrayMenu(trayNameIcon) {
+    const labels = getTrayLabels();
+
+    return Menu.buildFromTemplate([
+        {
+            label: 'BoltNotes',
+            icon: trayNameIcon,
+            enabled: false
+        },
+        { type: 'separator' },
+        { label: labels.games, click: () => navigateTo('games.html') },
+        { label: labels.notes, click: () => navigateTo('notes.html') },
+        { label: 'Fortnite', click: () => navigateTo('fortnite.html') },
+        { type: 'separator' },
+        { label: labels.settings, click: () => navigateTo('config.html') },
+        {
+            label: labels.close,
+            click: () => {
+                isQuitting = true;
+                app.quit();
+            }
+        }
+    ]);
+}
 function makeTray() {
-  if (tray !== null) return;
+    if (tray) return;
 
   const isPackaged = app.isPackaged;
 
   const iconPath = isPackaged
-    ? path.join(process.resourcesPath, 'tray-icon.png')
-    : path.join('build', 'icon.png');
+      ? path.join(process.resourcesPath, 'tray-icon.png')
+      : path.join('build', 'icon.png');
 
-  const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
-  const trayNameIcon = nativeImage.createFromPath(iconPath).resize({ width: 14, height: 14 });
+    trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
+    trayNameIcon = nativeImage.createFromPath(iconPath).resize({ width: 14, height: 14 });
 
-  tray = new Tray(trayIcon);
-
-  const navigateTo = (htmlFile) => {
-    if (!win) return;
-    win.loadFile(path.join(BUNDLE, 'pages', htmlFile));
-    win.webContents.once('did-finish-load', () => {
-      win.show();
-      win.focus();
-    });
-  };
-
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'BoltNotes',
-      icon: trayNameIcon,
-      enabled: false },
-    { type: 'separator' },
-    { label: 'Backlog de Jogos', click: () => navigateTo('games.html') },
-    { label: 'Notas', click: () => navigateTo('notes.html') },
-    { label: 'Fortnite', click: () => navigateTo('fortnite.html') },
-    { type: 'separator' },
-    { label: 'Configurações', click: () => navigateTo('config.html') },
-    { label: 'Fechar app',
-      click: () => {
-        isQuitting = true;
-        app.quit();
-      } }
-  ]);
-
-  tray.setToolTip('BoltNotes');
-  tray.setContextMenu(contextMenu);
-
-  tray.on('click', () => {
-    if (win) {
-      win.show();
-      win.focus();
-    }
-  });
+    tray = new Tray(trayIcon);
+    tray.setToolTip('BoltNotes');
+    tray.setContextMenu(buildTrayMenu(trayNameIcon));
 }
+
+function refreshTray() {
+    if (!tray) return;
+    tray.setContextMenu(buildTrayMenu(trayNameIcon));
+}
+ipcMain.on('language:changed', () => {
+    console.log('[Tray] Recebeu evento de mudança de idioma');
+    refreshTray();
+});
 
 // Carrgar/Salvar .JSON
 ipcMain.handle("json:load", async (_, filePath) => {
@@ -1553,4 +1606,11 @@ ipcMain.handle('changelog:get', async () => {
     console.error("Erro ao ler changelog:", error);
     return null;
   }
+});
+ipcMain.handle('i18n:get', () => {
+    const config = getConfig();
+    const locale = config.language || 'en';
+    const localePath = path.join(BUNDLE, 'locales', `${locale}.json`);
+    if (!fs.existsSync(localePath)) return {};
+    return JSON.parse(fs.readFileSync(localePath, 'utf-8'));
 });

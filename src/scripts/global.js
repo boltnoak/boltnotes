@@ -183,25 +183,25 @@ async function initMenu() {
     applyWindowState(sessionStorage.getItem('windowState') || 'normal');
 
     const updateBtn = document.getElementById('update-btn');
-      if (updateBtn) {
-      console.log('AutoUpdater - Verificando status...');
+        if (updateBtn) {
+        console.log('AutoUpdater - Verificando status...');
       
-      const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
-      console.log('AutoUpdater - Tem update?', jaTemUpdate);
+        const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
+        console.log('AutoUpdater - Tem update?', jaTemUpdate);
       
-      if (jaTemUpdate) updateBtn.style.display = 'block';
+        if (jaTemUpdate) updateBtn.style.display = 'block';
 
-      window.electronAPI.onUpdateReady(() => {
-          console.log('AutoUpdater - Evento recebido!');
-          updateBtn.style.display = 'block';
-      });
+        window.electronAPI.onUpdateReady(() => {
+            console.log('AutoUpdater - Evento recebido!');
+            updateBtn.style.display = 'block';
+        });
 
-      updateBtn.addEventListener('click', () => {
-          window.electronAPI.restartAndInstall();
-      });
-  }
+        updateBtn.addEventListener('click', () => {
+            window.electronAPI.restartAndInstall();
+        });
+    }
+    applyLocale();
 }
-
 initMenu();
 
 const isIndexPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
@@ -280,7 +280,7 @@ window.addEventListener('load', async () => {
                 const mb = (data.downloaded / 1024 / 1024).toFixed(1);
                 const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
 
-                loadingDetails.textContent = `Baixando ${data.package} (${data.percent ?? '...'}%)`;
+                loadingDetails.textContent = `${window._t['downloading']} ${data.package} (${data.percent ?? '...'}%)`;
                 loadingProgress.textContent = `${mb} MB / ${totalMb} MB`;
 
                 if (data.percent !== null) {
@@ -292,7 +292,11 @@ window.addEventListener('load', async () => {
         window.electronAPI.onAssetsReady(() => {
             const loadingTitle = document.getElementById('loading-title');
             const shineEffect = document.querySelector('.shine-effect');
-            if (loadingTitle) loadingTitle.textContent = "Tudo pronto!";
+            if (loadingTitle) {
+                loadingTitle.setAttribute('data-i18n', 'sync-assets-finished');
+                loadingDetails.style.display = 'none';
+                applyLocale();
+            }
             if (loadingDetails) loadingDetails.textContent = "";
             if (loadingProgress) loadingProgress.textContent = "";
             if (progressBarFill) progressBarFill.style.width = "100%";
