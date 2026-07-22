@@ -17,7 +17,7 @@ async function applyLocale() {
     const titleKey = document.documentElement.dataset.i18nTitle;
     const menuTitle = document.getElementById('menuTitle');
     if (titleKey && t[titleKey]) document.title = t[titleKey];
-    if (titleKey && t[titleKey]) menuTitle.textContent = t[titleKey];
+    if (titleKey && t[titleKey] && menuTitle) menuTitle.textContent = t[titleKey];
     const gamePopupReleaseDate = document.querySelector('.game-releaseDate-title');
     if (gamePopupReleaseDate) {
         gamePopupReleaseDate.textContent.replace(/:$/, '');

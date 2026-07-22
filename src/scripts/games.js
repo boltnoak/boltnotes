@@ -148,33 +148,36 @@ async function loadGames() {
         return 0;
     });
 
-    const playingCards = await Promise.all(
-        playing.map(game => createGameCard(game, true))
-    );
+    async function renderInBatches(items, container, isPlaying) {
+        if (items.length === 0 && isPlaying) {
+            const noGames = document.createElement("div");
+            noGames.className = "playingNow-no-games";
+            noGames.textContent = window._t['playing-now-nogames'];
+            container.appendChild(noGames);
+            return;
+        }
 
-    const playingFragment = document.createDocumentFragment();
-    for (const card of playingCards) playingFragment.appendChild(card);
+        const BATCH_SIZE = 10;
 
-    if (playingFragment.childElementCount === 0) {
-        const noGames = document.createElement("div");
-        noGames.className = "playingNow-no-games";
-        noGames.textContent = `${window._t['playing-now-nogames']}`;
-        playingFragment.appendChild(noGames);
+        for (let i = 0; i < items.length; i += BATCH_SIZE) {
+            const batch = items.slice(i, i + BATCH_SIZE);
+            
+            const cards = await Promise.all(
+                batch.map(game => createGameCard(game, isPlaying, game._completedIndex || null))
+            );
+
+            const fragment = document.createDocumentFragment();
+            for (const card of cards) fragment.appendChild(card);
+            
+            container.appendChild(fragment);
+
+            if (i + BATCH_SIZE < items.length) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+        }
     }
-
-    playingNow.appendChild(playingFragment);
-
-    const otherCards = await Promise.all(
-        others.map(game => {
-            const index = completedMap.get(game.appid || game.name) || null;
-            return createGameCard(game, false, index);
-        })
-    );
-
-    const listFragment = document.createDocumentFragment();
-    for (const card of otherCards) listFragment.appendChild(card);
-
-    list.appendChild(listFragment);
+    await renderInBatches(playing, playingNow, true);
+    await renderInBatches(others, list, false);
 }
 async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
@@ -442,33 +445,37 @@ async function loadGamesAchie() {
         return 0;
     });
 
-    const platinandoCards = await Promise.all(
-        platinando.map(game => createGameAchieCard(game))
-    );
+    async function renderInBatches(items, container, isPlatinando) {
+        if (items.length === 0 && isPlatinando) {
+            const noGames = document.createElement("div");
+            noGames.className = "platinandoNow-no-games";
+            noGames.textContent = window._t['platinum-now-nogames'];
+            container.appendChild(noGames);
+            return;
+        }
 
-    const platinandoFragment = document.createDocumentFragment();
-    for (const card of platinandoCards) platinandoFragment.appendChild(card);
+        const BATCH_SIZE = 10;
 
-    if (platinandoFragment.childElementCount === 0) {
-        const noGames = document.createElement("div");
-        noGames.className = "platinandoNow-no-games";
-        noGames.textContent = `${window._t['platinum-now-nogames']}`;
-        platinandoFragment.appendChild(noGames);
+        for (let i = 0; i < items.length; i += BATCH_SIZE) {
+            const batch = items.slice(i, i + BATCH_SIZE);
+            
+            const cards = await Promise.all(
+                batch.map(game => createGameAchieCard(game, isPlatinando ? undefined : game.completedIndex))
+            );
+
+            const fragment = document.createDocumentFragment();
+            for (const card of cards) fragment.appendChild(card);
+            
+            container.appendChild(fragment);
+
+            if (i + BATCH_SIZE < items.length) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+        }
     }
 
-    platinandoNow.appendChild(platinandoFragment);
-
-    const otherCards = await Promise.all(
-        others.map(game => {
-            const index = platinadoMap.get(game.appid || game.name) || null;
-            return createGameAchieCard(game, index);
-        })
-    );
-
-    const listFragment = document.createDocumentFragment();
-    for (const card of otherCards) listFragment.appendChild(card);
-
-    list.appendChild(listFragment);
+    await renderInBatches(platinando, platinandoNow, true);
+    await renderInBatches(others, list, false);
 }
 async function createGameAchieCard(game, completedIndex = null) {
     const div = document.createElement("div");
