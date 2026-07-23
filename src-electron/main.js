@@ -1238,10 +1238,10 @@ ipcMain.handle('games:stats-zerados', async () => {
         let proc;
         
         if (app.isPackaged) {
-            const binPath = getPythonBinaryPath('stats_zerados');
+            const binPath = getPythonBinaryPath('games-finished');
             proc = spawn(binPath, [campaignsPath]);
         } else {
-            const scriptPath = path.join(BUNDLE, 'scripts', 'stats_zerados.py');
+            const scriptPath = path.join(BUNDLE, 'scripts', 'games-finished.py');
             const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
             proc = spawn(pythonCmd, [scriptPath, campaignsPath]);
         }

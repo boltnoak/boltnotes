@@ -43,8 +43,8 @@
       "icon": "build/icons",
       "extraResources": [
         {
-          "from": "scripts/dist/linux/stats_zerados",
-          "to": "python-bin/stats_zerados"
+          "from": "scripts/dist/linux/games-finished",
+          "to": "python-bin/games-finished"
         }
       ],
       "artifactName": "${name}-linux-${arch}.${ext}"
@@ -54,8 +54,8 @@
       "icon": "build/icons/icon.ico",
       "extraResources": [
         {
-          "from": "scripts/dist/win/stats_zerados.exe",
-          "to": "python-bin/stats_zerados.exe"
+          "from": "scripts/dist/win/games-finished.exe",
+          "to": "python-bin/games-finished.exe"
         }
       ],
       "artifactName": "${name}-windows-${arch}-setup.${ext}"
