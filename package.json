@@ -13,6 +13,11 @@
       {
         "from": "build/icons/512x512.png",
         "to": "tray-icon.png"
+      },
+      {
+        "from": "scripts/dist/${os}",
+        "to": "python-bin",
+        "filter": ["**/*"]
       }
     ],
     "files": [
@@ -34,11 +39,17 @@
       "target": "AppImage",
       "category": "Utility",
       "icon": "build/icons",
+      "extraResources": [
+        { "from": "scripts/dist/linux/stats_zerados", "to": "python-bin/stats_zerados" }
+      ],
       "artifactName": "${name}-linux-${arch}.${ext}"
     },
     "win": {
       "target": "nsis",
       "icon": "build/icons/icon.ico",
+      "extraResources": [
+        { "from": "scripts/dist/win/stats_zerados.exe", "to": "python-bin/stats_zerados.exe" }
+      ],
       "artifactName": "${name}-windows-${arch}-setup.${ext}"
     },
     "publish": [

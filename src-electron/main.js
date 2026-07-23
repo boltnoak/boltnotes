@@ -1221,27 +1221,51 @@ ipcMain.handle('games:finished-count', async () => {
 
   return count;
 });
+function getPythonBinaryPath(scriptName) {
+    const ext = process.platform === 'win32' ? '.exe' : '';
+    
+    if (app.isPackaged) {
+        return path.join(process.resourcesPath, 'python-bin', `${scriptName}${ext}`);
+    }
+
+    return null;
+}
+
 ipcMain.handle('games:stats-zerados', async () => {
     const campaignsPath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
     
     return new Promise((resolve, reject) => {
-        const py = spawn('python3', [path.join(BUNDLE, 'scripts', 'games-finished.py'), campaignsPath]);
+        let proc;
+        
+        if (app.isPackaged) {
+            const binPath = getPythonBinaryPath('stats_zerados');
+            proc = spawn(binPath, [campaignsPath]);
+        } else {
+            const scriptPath = path.join(BUNDLE, 'scripts', 'stats_zerados.py');
+            const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+            proc = spawn(pythonCmd, [scriptPath, campaignsPath]);
+        }
+        
         let output = '';
         let errorOutput = '';
         
-        py.stdout.on('data', d => output += d.toString());
-        py.stderr.on('data', d => errorOutput += d.toString());
+        proc.stdout.on('data', d => output += d.toString());
+        proc.stderr.on('data', d => errorOutput += d.toString());
         
-        py.on('close', (code) => {
+        proc.on('close', (code) => {
             if (code === 0) {
                 try {
                     resolve(JSON.parse(output));
                 } catch (e) {
-                    reject(new Error('Resposta inválida do Python'));
+                    reject(new Error('Resposta inválida'));
                 }
             } else {
                 reject(new Error(errorOutput || 'Script falhou'));
             }
+        });
+
+        proc.on('error', (err) => {
+            reject(new Error(`Falha ao executar: ${err.message}`));
         });
     });
 });
