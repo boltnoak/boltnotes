@@ -29,7 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
           # pip install -r requirements.txt # Descomente se tiver dependências
-          pyinstaller --onefile scripts/stats_zerados.py --distpath scripts/dist/linux
+          pyinstaller --onefile src/scripts/stats_zerados.py --distpath scripts/dist/linux
 
       - run: npm ci
 
@@ -61,7 +61,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
           # pip install -r requirements.txt # Descomente se tiver dependências
-          pyinstaller --onefile scripts/stats_zerados.py --distpath scripts/dist/win
+          pyinstaller --onefile src/scripts/stats_zerados.py --distpath scripts/dist/win
 
       - run: npm ci
 
