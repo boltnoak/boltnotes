@@ -13,13 +13,6 @@
       {
         "from": "build/icons/512x512.png",
         "to": "tray-icon.png"
-      },
-      {
-        "from": "scripts/dist/${os}",
-        "to": "python-bin",
-        "filter": [
-          "**/*"
-        ]
       }
     ],
     "files": [
