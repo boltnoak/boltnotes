@@ -65,6 +65,12 @@ jobs:
 
       - run: npm ci
 
+      - name: Clean build artifacts and kill locked processes
+        shell: powershell
+        run: |
+          Get-Process -Name "games-finished" -ErrorAction SilentlyContinue | Stop-Process -Force
+          if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
+
       - name: Build Windows
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
