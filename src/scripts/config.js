@@ -315,7 +315,7 @@ loadInfo();
 async function checkUpdates() {
     const text = document.querySelectorAll('#checkUpdates-text');
     const btn = document.getElementById('update-btn');
-    if (!text) return;
+    if (!text || text.length === 0) return;
 
     let downloadIniciado = false;
 
@@ -343,9 +343,7 @@ async function checkUpdates() {
         }
     } catch (err) {
         console.error('Erro ao buscar atualizações:', err);
-
-        text.textContent = 'Erro ao buscar atualizações.';
-        text.style.color = 'var(--red)';
+        showMessage(text, 'Erro ao buscar atualizações.', 'var(--red)');
     }
 }
 let listenersRegistrados = false;
@@ -367,7 +365,7 @@ async function syncAssets() {
             const mb = (data.downloaded / 1024 / 1024).toFixed(1);
             const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
 
-            showMessage(text, `${window._t['downloading']} ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`);
+            showMessage(text, `${window._t['downloading']} ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`), 'var(--text)';
       };
     })());
 

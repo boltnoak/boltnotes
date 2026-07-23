@@ -41,7 +41,7 @@ async function loadGames() {
     ]);
 
     const playingNow = document.querySelector(".playingNow-panel");
-    const list = document.getElementById("view-games");
+    const list = document.getElementById("view-campaigns");
     if (!playingNow || !list) return;
 
     playingNow.innerHTML = "";
@@ -71,6 +71,7 @@ async function loadGames() {
         combinedGame.isPreOrder = false;
         combinedGame._status = status;
         combinedGame._completeMs = parseBRDate(combinedGame.completeDate)?.getTime?.() ?? NaN;
+        combinedGame._completedIndex = null;
 
         if (status !== "zerado" && status !== "jogando" && !hasProgress && combinedGame.releaseDate?.includes("/")) {
             const parts = combinedGame.releaseDate.split("/");
@@ -94,50 +95,21 @@ async function loadGames() {
     const sort = document.getElementById("realSorting-options")?.value || "date-recent";
 
     const playing = [];
-    const others = [];
+    const backlog = [];
+    const completed = [];
 
     for (const g of games) {
         if (g._status === "jogando") playing.push(g);
-        else others.push(g);
+        else if (g._status === "zerado") completed.push(g);
+        else backlog.push(g);
     }
 
-    if (list.classList.contains("grid")) {
-        const order = { ajogar: 0, zerado: 1 };
-        others.sort((a, b) => {
-            const sa = a._status || "";
-            const sb = b._status || "";
-            return (order[sa] ?? 99) - (order[sb] ?? 99);
-        });
-    }
-
-    const completedMap = new Map(
-        games
-            .filter(g => g._status.toLowerCase() === "zerado")
-            .map((g, i) => [g.appid || g.name, i + 1])
-    );
-
-    others.sort((a, b) => {
-        const sa = (a.status || "").toLowerCase().trim();
-        const sb = (b.status || "").toLowerCase().trim();
-
-        if (sa === "ajogar" && sb === "zerado") return -1;
-        if (sa === "zerado" && sb === "ajogar") return 1;
-
+    completed.sort((a, b) => {
         if (sort === "date-recent") {
-            const diff = (b._completeMs || 0) - (a._completeMs || 0);
-            if (diff !== 0) return diff;
-            
-            const idxA = completedMap.get(a.appid || a.name) || 0;
-            const idxB = completedMap.get(b.appid || b.name) || 0;
-            return idxB - idxA; 
+            return (b._completeMs || 0) - (a._completeMs || 0);
         }
         if (sort === "date-old") {
-            const diff = (a._completeMs || 0) - (b._completeMs || 0);
-            if (diff !== 0) return diff;
-            
-            const idxA = completedMap.get(a.appid || a.name) || 0;
-            const idxB = completedMap.get(b.appid || b.name) || 0;
-            return idxA - idxB;
+            return (a._completeMs || 0) - (b._completeMs || 0);
         }
         if (sort === "rating-high") {
             return (b.rating || 0) - (a.rating || 0);
@@ -148,22 +120,40 @@ async function loadGames() {
         return 0;
     });
 
+    const totalCompleted = completed.length;
+
+    completed.forEach((game, idx) => {
+        if (sort === "date-recent") {
+            game._completedIndex = totalCompleted - idx;
+        } else {
+            game._completedIndex = idx + 1;
+        }
+    });
+
+    backlog.sort((a, b) => {
+        if (sort === "rating-high") return (b.rating || 0) - (a.rating || 0);
+        if (sort === "rating-low") return (a.rating || 0) - (b.rating || 0);
+        return 0;
+    });
+
+    const others = [...backlog, ...completed];
+
     async function renderInBatches(items, container, isPlaying) {
         if (items.length === 0 && isPlaying) {
             const noGames = document.createElement("div");
             noGames.className = "playingNow-no-games";
-            noGames.textContent = window._t['playing-now-nogames'];
+            noGames.textContent = window._t?.['playing-now-nogames'] || "Nenhum jogo em andamento";
             container.appendChild(noGames);
             return;
         }
 
-        const BATCH_SIZE = 10;
+        const BATCH_SIZE = 5;
 
         for (let i = 0; i < items.length; i += BATCH_SIZE) {
             const batch = items.slice(i, i + BATCH_SIZE);
             
             const cards = await Promise.all(
-                batch.map(game => createGameCard(game, isPlaying, game._completedIndex || null))
+                batch.map(game => createGameCard(game, isPlaying, game._completedIndex))
             );
 
             const fragment = document.createDocumentFragment();
@@ -171,11 +161,20 @@ async function loadGames() {
             
             container.appendChild(fragment);
 
+            requestAnimationFrame(() => {
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add("fade-in");
+                    }, index * 40); 
+                });
+            });
+
             if (i + BATCH_SIZE < items.length) {
                 await new Promise(resolve => setTimeout(resolve, 0));
             }
         }
     }
+
     await renderInBatches(playing, playingNow, true);
     await renderInBatches(others, list, false);
 }
@@ -276,7 +275,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     title.textContent = game.name;
     div.dataset.id = game.name;
 
-    const listElement = document.getElementById("view-games");
+    const listElement = document.getElementById("view-campaigns");
     const isListView = listElement ? listElement.classList.contains("list") : false;
 
     if (completedIndex !== null && isListView) {
@@ -355,7 +354,7 @@ async function loadGamesAchie() {
     ]);
 
     const platinandoNow = document.querySelector(".platinandoNow-panel");
-    const list = document.getElementById("view-achie");
+    const list = document.getElementById("view-achievements");
     if (!platinandoNow || !list) return;
 
     platinandoNow.innerHTML = "";
@@ -391,50 +390,22 @@ async function loadGamesAchie() {
     const sort = document.getElementById("realSorting-options")?.value || "date-recent";
 
     const platinando = [];
-    const others = [];
+    const backlog = [];
+    const completed = [];
 
     for (const g of games) {
         if (g._achieStatus === "platinando") platinando.push(g);
-        else others.push(g);
+        else if (g._achieStatus === "platinado") completed.push(g);
+        else backlog.push(g);
     }
 
-    const isGrid = list.classList.contains("grid");
-
-    const platinadosOrdenados = others.filter(g => (g.achieStatus || "").toLowerCase().trim() === "platinado");
-
-    const platinadoMap = new Map(
-        games
-            .filter(g => (g.status || "").toLowerCase() === "platinando")
-            .sort((a, b) => parseBRDate(a.completeDate) - parseBRDate(b.completeDate))
-            .map((g, i) => [g.appid || g.name, i + 1])
-    );
-
-    platinadosOrdenados.forEach((g, i) => {
-        platinadoMap.set(g.appid || g.name, platinadosOrdenados.length - i);
-    });
-    
-    others.sort((a, b) => {
-        const sa = (a.achieStatus || "").toLowerCase().trim();
-        const sb = (b.achieStatus || "").toLowerCase().trim();
-
-        if (sa === "aplatinar" && sb === "platinado") return -1;
-        if (sa === "platinado" && sb === "aplatinar") return 1;
-
+    // 2. Ordenação dos PLATINADOS
+    completed.sort((a, b) => {
         if (sort === "date-recent") {
-            const diff = (b._completeMs || 0) - (a._completeMs || 0);
-            if (diff !== 0) return diff;
-            
-            const idxA = platinadoMap.get(a.appid || a.name) || 0;
-            const idxB = platinadoMap.get(b.appid || b.name) || 0;
-            return idxB - idxA; 
+            return (b._completeMs || 0) - (a._completeMs || 0);
         }
         if (sort === "date-old") {
-            const diff = (a._completeMs || 0) - (b._completeMs || 0);
-            if (diff !== 0) return diff;
-            
-            const idxA = platinadoMap.get(a.appid || a.name) || 0;
-            const idxB = platinadoMap.get(b.appid || b.name) || 0;
-            return idxA - idxB;
+            return (a._completeMs || 0) - (b._completeMs || 0);
         }
         if (sort === "rating-high") {
             return (b.rating || 0) - (a.rating || 0);
@@ -445,28 +416,56 @@ async function loadGamesAchie() {
         return 0;
     });
 
+    // 3. Atribuição dos Índices (#44, #43... ou #1, #2...)
+    const totalCompleted = completed.length;
+    completed.forEach((game, idx) => {
+        if (sort === "date-recent") {
+            game._completedIndex = totalCompleted - idx;
+        } else {
+            game._completedIndex = idx + 1;
+        }
+    });
+
+    // 4. Ordenação do Backlog (A platinar)
+    backlog.sort((a, b) => {
+        if (sort === "rating-high") return (b.rating || 0) - (a.rating || 0);
+        if (sort === "rating-low") return (a.rating || 0) - (b.rating || 0);
+        return 0;
+    });
+
+    // 5. Junta a platinar + platinados
+    const others = [...backlog, ...completed];
+
     async function renderInBatches(items, container, isPlatinando) {
         if (items.length === 0 && isPlatinando) {
             const noGames = document.createElement("div");
             noGames.className = "platinandoNow-no-games";
-            noGames.textContent = window._t['platinum-now-nogames'];
+            noGames.textContent = window._t?.['platinum-now-nogames'] || "Nenhum jogo em andamento";
             container.appendChild(noGames);
             return;
         }
 
-        const BATCH_SIZE = 10;
+        const BATCH_SIZE = 5;
 
         for (let i = 0; i < items.length; i += BATCH_SIZE) {
             const batch = items.slice(i, i + BATCH_SIZE);
             
             const cards = await Promise.all(
-                batch.map(game => createGameAchieCard(game, isPlatinando ? undefined : game.completedIndex))
+                batch.map(game => createGameAchieCard(game, game._completedIndex))
             );
 
             const fragment = document.createDocumentFragment();
             for (const card of cards) fragment.appendChild(card);
             
             container.appendChild(fragment);
+
+            requestAnimationFrame(() => {
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add("fade-in");
+                    }, index * 40); 
+                });
+            });
 
             if (i + BATCH_SIZE < items.length) {
                 await new Promise(resolve => setTimeout(resolve, 0));
@@ -554,7 +553,7 @@ async function createGameAchieCard(game, completedIndex = null) {
 
     title.textContent = game.name;
 
-    const listElement = document.getElementById("view-achie");
+    const listElement = document.getElementById("view-achievements");
     const isListView = listElement ? listElement.classList.contains("list") : false;
 
     if (completedIndex !== null && isListView) {
@@ -620,70 +619,83 @@ steamDbBtn.addEventListener("click", (e) => {
 
 const viewGridBtn = document.getElementById("view-grid");
 const viewListBtn = document.getElementById("view-list");
-const achievementsBtn = document.querySelector(".mode-btn.achievements");
-const campaignBtn = document.querySelector(".mode-btn.campaign");
-const viewGames = document.getElementById("view-games");
-const viewAchie = document.getElementById("view-achie");
+const achievementsBtn = document.querySelector('.mode-btn[data-mode="achievements"]');
+const campaignBtn = document.querySelector('.mode-btn[data-mode="campaigns"]');
+const chartsBtn = document.querySelector('.mode-btn[data-mode="charts"]');
+const viewGames = document.getElementById("view-campaigns");
+const viewAchie = document.getElementById("view-achievements");
+const viewChartsBtn = document.getElementById("view-charts");
 
 const sortRatingHigh = document.querySelector('.sortingOptions-select li[data-value="rating-high"]');
 const sortRatingLow = document.querySelector('.sortingOptions-select li[data-value="rating-low"]');
 const sortRecent = document.querySelector('.sortingOptions-select li[data-value="date-recent"]');
 const sortOld = document.querySelector('.sortingOptions-select li[data-value="date-old"]');
 
+let currentViewMode = 'grid';
+
 function toggleViewMode(mode) {
+    currentViewMode = mode;
     const isGrid = mode === 'grid';
 
-    viewGridBtn.classList.toggle('active', isGrid);
-    viewListBtn.classList.toggle('active', !isGrid);
+    viewGridBtn?.classList.toggle('active', isGrid);
+    viewListBtn?.classList.toggle('active', !isGrid);
 
-    if (campaignBtn.classList.contains('active')) {
-        viewGames.classList.remove(isGrid ? 'list' : 'grid');
-        viewGames.classList.add(mode);
+    const activeBtn = document.querySelector('.mode-btn.active');
+    if (!activeBtn) return;
 
+    const currentMode = activeBtn.dataset.mode;
+    const activeView = document.getElementById(`view-${currentMode}`);
+
+    if (activeView) {
+        activeView.classList.remove('grid', 'list');
+        activeView.classList.add(mode);
+    }
+
+    if (currentMode === 'campaigns') {
         if (sortRatingHigh) sortRatingHigh.style.display = 'block';
         if (sortRatingLow) sortRatingLow.style.display = 'block';
-
-        if (sortRecent) sortRecent.click();
-        
-        loadGamesAchie();
-    }
-    if (achievementsBtn.classList.contains('active')) {
-        viewAchie.classList.remove(isGrid ? 'list' : 'grid');
-        viewAchie.classList.add(mode);
-
+        loadGames();
+    } else if (currentMode === 'achievements') {
         if (sortRatingHigh) sortRatingHigh.style.display = 'none';
         if (sortRatingLow) sortRatingLow.style.display = 'none';
         if (sortRecent) sortRecent.style.display = 'block';
         if (sortOld) sortOld.style.display = 'block';
-
-        if (sortRecent) sortRecent.click();
-
-        loadGames();
+        loadGamesAchie();
     }
 }
 function switchMainView(targetView) {
-    const isCampaign = targetView === 'campaign';
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === targetView);
+    });
+    document.querySelectorAll('.main-view').forEach(view => {
+        const isActive = view.id === `view-${targetView}`;
 
-    viewGames.classList.toggle('active', isCampaign);
-    viewAchie.classList.toggle('active', !isCampaign);
+        view.classList.toggle('active', isActive);
 
-    campaignBtn.classList.toggle('active', isCampaign);
-    achievementsBtn.classList.toggle('active', !isCampaign);
+        const defaultDisplay = view.id === 'view-charts' ? 'flex' : 'grid';
 
-    const currentMode = viewGridBtn.classList.contains('active') ? 'grid' : 'list';
-    toggleViewMode(currentMode);
+        view.style.display = isActive ? defaultDisplay : 'none';
+        view.style.visibility = isActive ? 'visible' : 'hidden';
+        view.style.height = isActive ? 'fit-content' : '0';
+    });
+
+    toggleViewMode(currentViewMode);
 }
 
 viewGridBtn.addEventListener("click", () => toggleViewMode('grid'));
 viewListBtn.addEventListener("click", () => toggleViewMode('list'));
-campaignBtn.addEventListener("click", () => switchMainView('campaign'));
-achievementsBtn.addEventListener("click", () => switchMainView('achievements'));
+viewChartsBtn.addEventListener("click", () => toggleViewMode('list'));
+
+function switchMode(el) {
+    const mode = el.dataset.mode;
+    switchMainView(mode)
+}
 
 loadGames();
 loadGamesAchie();
 
 document.getElementById("realSorting-options").addEventListener("change", () => {
-    const campaignBtn = document.querySelector(".mode-btn.campaign");
+    const campaignBtn = document.querySelector('.mode-btn[data-mode="campaigns"]');
     if (campaignBtn.classList.contains('active')) {
         loadGames();
     } else {
@@ -911,6 +923,7 @@ async function openGamePopup(el) {
     const ratingDiv = document.querySelector('.game-rating-div');
     const ratingTitle = document.querySelector('.game-rating-title-text');
 
+    const noteDiv = document.querySelector('.game-note-div');
     const noteText = document.querySelector('.game-note');
     const noteEditBtn = document.getElementById('editNote');
     
@@ -1044,6 +1057,7 @@ async function openGamePopup(el) {
         achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
+        noteDiv.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'jogando') {
         updateStatus(statusText, 'jogando', 'Jogando');
@@ -1051,6 +1065,7 @@ async function openGamePopup(el) {
         achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
+        noteDiv.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'zerado') {
         updateStatus(statusText, 'zerado', 'Zerado');
@@ -1058,6 +1073,7 @@ async function openGamePopup(el) {
         campaignSep.style.display = 'block';
         campaignDiv.style.display = 'flex';
         ratingDiv.style.display = 'flex';
+        noteDiv.style.display = 'flex';
         applyLocale();
     }
 
@@ -1215,6 +1231,7 @@ optionAjogar.addEventListener('click', async () => {
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
+    const noteDiv = document.querySelector('.game-note-div');
 
     options.style.display = 'none';
     campaignText.classList.add('ajogar');
@@ -1225,6 +1242,7 @@ optionAjogar.addEventListener('click', async () => {
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
     achieBtns.style.display = 'none';
+    noteDiv.style.display = 'none';
     
     await updateStatusJSON(game, "ajogar");
     updateStatus(statusText, "ajogar", "À Jogar");
@@ -1239,6 +1257,7 @@ optionJogando.addEventListener('click', async () => {
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
+    const noteDiv = document.querySelector('.game-note-div');
 
     options.style.display = 'none';
     achieBtns.style.display = 'flex';
@@ -1249,6 +1268,7 @@ optionJogando.addEventListener('click', async () => {
     achieSep.style.display = 'none';
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
+    noteDiv.style.display = 'none';
     
     await updateStatusJSON(game, "jogando")
     updateStatus(statusText, "jogando", "Jogando")
@@ -1263,6 +1283,7 @@ optionZerado.addEventListener('click', async () => {
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
+    const noteDiv = document.querySelector('.game-note-div');
 
     options.style.display = 'none';
     campaignText.setAttribute('data-i18n', 'zerado')
@@ -1270,6 +1291,7 @@ optionZerado.addEventListener('click', async () => {
     achieSep.style.display = 'block';
     campaignDiv.style.display = 'flex';
     ratingDiv.style.display = 'flex';
+    noteDiv.style.display = 'flex';
 
     const stats = await loadStatusAchie();
     const listStats = Array.isArray(stats) ? stats : (stats.games || []);
@@ -1494,3 +1516,138 @@ async function toggleNoteEdit(el) {
         await updateNotesJSON(name); 
     }
 }
+
+
+
+function gerarCoresInterpoladas(corInicial, corFinal, passos) {
+    if (passos <= 1) return [corInicial];
+
+    const extrairRGB = (str) => str.match(/\d+/g).map(Number);
+    const rgb1 = extrairRGB(corInicial);
+    const rgb2 = extrairRGB(corFinal);
+
+    const resultado = [];
+    for (let i = 0; i < passos; i++) {
+        const fator = i / (passos - 1);
+        const r = Math.round(rgb1[0] + fator * (rgb2[0] - rgb1[0]));
+        const g = Math.round(rgb1[1] + fator * (rgb2[1] - rgb1[1]));
+        const b = Math.round(rgb1[2] + fator * (rgb2[2] - rgb1[2]));
+        resultado.push(`rgb(${r}, ${g}, ${b})`);
+    }
+    return resultado;
+}
+async function renderChart() {
+    const stats = await window.api.games.statsZerados();
+    const anos = Object.keys(stats);
+    const valores = Object.values(stats);
+    const total = valores.reduce((a, b) => a + b, 0);
+
+    const t = window._t || {}; 
+
+    const labelZerados = t['completed-text'] || 'Zer';
+    const labelJogo = t['game-text'] || 'jogo';
+    const labelJogos = t['game-text'] + 's' || 'jogos';
+
+    const getCssVar = (varName) => 
+        getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+
+    const bgApp = getCssVar('--bg') || '#050505';
+    const bgTooltip = getCssVar('--tab-active') || 'rgba(25, 25, 25, 0.75)';
+    const textColor = getCssVar('--text') || '#ffffff';
+    const textGray = getCssVar('--text-gray') || '#969696';
+    const textDarkGray = getCssVar('--text-dark-gray') || '#505050';
+    const borderColor = getCssVar('--bg') || '#050505';
+
+    const cores = anos.map((_, index) => {
+    const varCor = getCssVar(`--chart-${index + 1}`);
+        return varCor || getCssVar('--text'); 
+    });
+
+    const ctx = document.getElementById('zerados-chart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: anos,
+            datasets: [{
+                data: valores,
+                backgroundColor: cores,
+                borderColor: 'transparent',
+                borderWidth: 0,
+                hoverOffset: 20,
+                radius: '80%',
+                spanGaps: true
+            }]
+        },
+        options: {
+            cutout: '88%',
+            responsive: true,
+            maintainAspectRatio: true,
+            animation: {
+                animateRotate: true,
+                animateScale: true,
+                duration: 400,
+                easing: 'easeOutQuart'
+            },
+            plugins: {
+                legend: { 
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        color: textColor,
+                        font: {
+                            family: 'Montserrat',
+                            size: 13,
+                            weight: '600'
+                        },
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    caretSize: 0,
+                    caretPadding: 10,
+                    backgroundColor: bgTooltip,
+                    titleColor: textColor,
+                    titleFont: { family: 'Montserrat', size: 18, weight: '800' },
+                    bodyColor: textGray,
+                    bodyFont: { family: 'Montserrat', size: 13, weight: '600' },
+                    padding: 10,
+                    cornerRadius: 8,
+                    displayColors: true,
+                    boxPadding: 2,
+                    callbacks: {
+                        label: (ctx) => {
+                            const percent = ((ctx.raw / total) * 100).toFixed(1);
+                            const palavraJogo = ctx.raw > 1 ? labelJogos : labelJogo;
+                            return ` ${ctx.raw} ${palavraJogo}`;
+                            // return ` ${ctx.raw} ${palavraJogo} (${percent}%)`;
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'centerText',
+            beforeDraw(chart) {
+                const { ctx, chartArea: { width, height, top, left } } = chart;
+                ctx.save();
+                
+                ctx.font = '800 7vh Montserrat';
+                ctx.fillStyle = textColor;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(total, left + width / 2, top + height / 2 - 8);
+
+                ctx.font = '600 2.6vh Montserrat';
+                ctx.fillStyle = textGray;
+                ctx.fillText(labelZerados, left + width / 2, top + height / 2 + 18);
+
+                ctx.restore();
+            }
+        }]
+    });
+}
+
+renderChart();

@@ -9,6 +9,7 @@ const log = require('electron-log');
 const extract = require('extract-zip');
 const AdmZip = require('adm-zip');
 const { XMLParser } = require('fast-xml-parser');
+const { spawn } = require('child_process');
 
 process.on('uncaughtException', (err) => {
     if (err.message?.includes('ReadableStream is already closed')) {
@@ -1219,6 +1220,30 @@ ipcMain.handle('games:finished-count', async () => {
   }
 
   return count;
+});
+ipcMain.handle('games:stats-zerados', async () => {
+    const campaignsPath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
+    
+    return new Promise((resolve, reject) => {
+        const py = spawn('python3', [path.join(BUNDLE, 'scripts', 'games-finished.py'), campaignsPath]);
+        let output = '';
+        let errorOutput = '';
+        
+        py.stdout.on('data', d => output += d.toString());
+        py.stderr.on('data', d => errorOutput += d.toString());
+        
+        py.on('close', (code) => {
+            if (code === 0) {
+                try {
+                    resolve(JSON.parse(output));
+                } catch (e) {
+                    reject(new Error('Resposta inválida do Python'));
+                }
+            } else {
+                reject(new Error(errorOutput || 'Script falhou'));
+            }
+        });
+    });
 });
 ipcMain.handle('games:achie-count', async () => {
   const filePath = path.join(DOCUMENTS, 'Games', 'achievements.json');

@@ -13,6 +13,13 @@
     --yellow: rgba(250, 190, 0);
     --orange: rgba(250, 125, 50);
     --red: rgba(255, 70, 70);
+    
+    --chart-1: rgba(0, 150, 70);
+    --chart-2: rgba(20, 150, 255);
+    --chart-3: rgb(0, 50, 170);
+    --chart-4: rgba(250, 190, 0);
+    --chart-5: rgba(250, 130, 50);
+    --chart-6: rgba(255, 70, 70);
 
     --green-light: rgba(0, 200, 90);
     --blue-light: rgba(20, 180, 255);

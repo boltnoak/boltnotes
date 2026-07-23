@@ -28,13 +28,16 @@
                     </div>
                 </div>
             </div>
-            <p class="addGameOpen"><i class="fa-solid fa-plus"></i><span data-i18n="add-new-game">Adicionar novo jogo</span></p>
+            <p class="addGameOpen"><span data-i18n="add-new-game">Adicionar novo jogo</span></p>
         </div>
         <p class="sidebar-sep-bar"></p>
         <div class="page-content">
             <div class="modes">
-                <p class="mode-btn campaign active" data-i18n="campaigns">Campanhas</p>
-                <p class="mode-btn achievements" data-i18n="achievements">Conquistas</p>
+                <div>
+                    <p class="mode-btn active" data-mode="campaigns" onclick="switchMode(this)"><i class="fa-solid fa-circle-check"></i><span data-i18n="campaigns">Campanhas</span></p>
+                    <p class="mode-btn" data-mode="achievements" onclick="switchMode(this)"><i class="fa-solid fa-trophy"></i><span data-i18n="achievements">Conquistas</span></p>
+                </div>
+                <i class="mode-btn fa-solid fa-chart-pie" data-mode="charts" onclick="switchMode(this)"></i>
             </div>
             <div class="view-bar">
                 <div class="view-options">
@@ -42,7 +45,7 @@
                     <i id="view-list" class="fa-solid fa-bars"></i>
                 </div>
                 <div class="sorting-addGame">
-                <i id="reload-btn" class="fa-solid fa-rotate"></i>
+                <i id="reload-btn" class="fa-solid fa-rotate" data-i18n-tooltip="reload" data-tooltip="Recarregar"></i>
                     <div class="sorting-options">
                         <select id="realSorting-options">
                             <option value="date-recent" data-i18n="date-recent">Mais recente</option>
@@ -63,8 +66,11 @@
                     </div>
                 </div>
             </div>
-            <div id="view-games" class="grid active"></div>
-            <div id="view-achie" class="grid"></div>
+            <div id="view-campaigns" class="main-view grid active"></div>
+            <div id="view-achievements" class="main-view grid"></div>
+            <div id="view-charts" class="main-view">
+                <canvas id="zerados-chart" width="200" height="200"></canvas>
+            </div>
         </div>
     </div>
 
@@ -189,5 +195,6 @@
 <script src="scripts/global.js"></script>
 <script src="scripts/basics.js"></script>
 <script src="scripts/games.js"></script>
+<script src="scripts/chart.min.js"></script>
 </body>
 </html>

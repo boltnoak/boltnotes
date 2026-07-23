@@ -106,7 +106,9 @@ contextBridge.exposeInMainWorld('api', {
     finishedCount: () => ipcRenderer.invoke('games:finished-count'),
     achieCount: () => ipcRenderer.invoke('games:achie-count'),
     getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
-    addGame: (gameData) => ipcRenderer.invoke('games:add', gameData) },
+    addGame: (gameData) => ipcRenderer.invoke('games:add', gameData),
+    statsZerados: () => ipcRenderer.invoke('games:stats-zerados')
+  },
 
   openLink: (url) => ipcRenderer.invoke('open-external-link', url),
   getAppVersion: () => ipcRenderer.invoke('app-version'),
