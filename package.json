@@ -1,7 +1,7 @@
 {
   "name": "boltnotes",
   "productName": "BoltNotes",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Backlog de jogos, Notas e Fortnite",
   "main": "src-electron/main.js",
   "private": true,
@@ -17,7 +17,9 @@
       {
         "from": "scripts/dist/${os}",
         "to": "python-bin",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "files": [
@@ -40,7 +42,10 @@
       "category": "Utility",
       "icon": "build/icons",
       "extraResources": [
-        { "from": "scripts/dist/linux/stats_zerados", "to": "python-bin/stats_zerados" }
+        {
+          "from": "scripts/dist/linux/stats_zerados",
+          "to": "python-bin/stats_zerados"
+        }
       ],
       "artifactName": "${name}-linux-${arch}.${ext}"
     },
@@ -48,7 +53,10 @@
       "target": "nsis",
       "icon": "build/icons/icon.ico",
       "extraResources": [
-        { "from": "scripts/dist/win/stats_zerados.exe", "to": "python-bin/stats_zerados.exe" }
+        {
+          "from": "scripts/dist/win/stats_zerados.exe",
+          "to": "python-bin/stats_zerados.exe"
+        }
       ],
       "artifactName": "${name}-windows-${arch}-setup.${ext}"
     },
