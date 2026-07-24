@@ -205,10 +205,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             const lang = li.dataset.value;
             langSpan.textContent = li.querySelector('span').textContent;
             langSelect.classList.remove('active');
+            
             await window.electronAPI.config.updateConfig('language', lang);
-            window.electronAPI.notifyLanguageChanged();
-            applyLocale();
+            await window.electronAPI.notifyLanguageChanged();
+            
+            await applyLocale(); 
             changeLangSelect.style.display = 'none';
+
+            const featuredSelect = document.querySelector('.featured-selector-div select');
+            if (featuredSelect) {
+                changeFeatured(featuredSelect);
+
+                const customSpan = document.querySelector('#featuredSelector-btn-name');
+                const activeOption = Array.from(featuredSelect.options).find(opt => opt.value === featuredSelect.value);
+                if (customSpan && activeOption) {
+                    customSpan.textContent = activeOption.textContent;
+                }
+
+                const customUl = document.querySelector('.featuredSelector-select');
+                if (customUl) {
+                    Array.from(featuredSelect.options).forEach(option => {
+                        const matchingSpan = customUl.querySelector(`li[data-value="${option.value}"] span`);
+                        if (matchingSpan) {
+                            matchingSpan.textContent = option.textContent; 
+                        }
+                    });
+                }
+            }
+
+            updateNoteCount();
+            loadFortniteStats();
         });
     });
 

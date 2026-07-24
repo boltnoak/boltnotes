@@ -7,6 +7,11 @@
     --text-dark-gray: rgba(7,7,7);
     --text-gray: rgba(50, 50, 50);
     --text-light-gray: rgba(110, 110, 110);
+    --text-green: rgba(0, 70, 30);
+    --text-blue: rgb(0, 90, 150);
+    --text-yellow: rgba(250, 110, 50);
+    --text-orange: rgb(160, 70, 0);
+    --text-red: rgba(255, 70, 70);
 
     --green: rgba(0, 150, 70);
     --blue: rgba(20, 150, 255);
@@ -27,7 +32,7 @@
     --orange-light: rgba(250, 140, 90);
     --red-light: rgba(255, 90, 90);
 
-    --btn: rgba(220,220,220);
+    --btn: rgba(200,200,200);
     --btn-hover: rgba(227,227,227);
     --btn-color: rgba(20, 150, 255);
     --btn-hover-color: rgba(20, 170, 255);

@@ -34,11 +34,64 @@ function parseBRDate(dateStr) {
     return new Date(year, month, day);
 }
 
+let renderIdGames = 0;
+let renderIdAchie = 0;
+
+const gameCardObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(async (entry) => {
+        if (entry.isIntersecting) {
+            const card = entry.target;
+            const game = card.gameData;
+
+            if (!game._cachedCover) {
+                const result = await window.api.games.ensureCover({
+                    appid: game.appid,
+                    name: game.name,
+                    cover: game.cover,
+                    hero: game.hero,
+                    logo: game.logo
+                });
+                game._cachedCover = result.cover;
+                game._cachedHero = result.hero;
+                game._cachedLogo = result.logo;
+            }
+
+            const img = card.querySelector('.game-cover'); 
+            
+            if (img && game._cachedCover) {
+                const preloader = new Image();
+                preloader.src = `file://${game._cachedCover}`;
+
+                preloader.onload = () => {
+                    img.src = preloader.src;
+
+                    img.animate([
+                        { opacity: 0 },
+                        { opacity: 1 }
+                    ], {
+                        duration: 400,
+                        easing: 'ease-in-out'
+                    });
+                };
+            }
+
+            observer.unobserve(card);
+        }
+    });
+}, {
+    rootMargin: "200px" 
+});
+
 async function loadGames() {
+    renderIdGames++;
+    const myRenderId = renderIdGames;
+
     const [data, stats] = await Promise.all([
         window.electronAPI.json.load(FILE),
         loadStatus()
     ]);
+
+    if (myRenderId !== renderIdGames) return;
 
     const playingNow = document.querySelector(".playingNow-panel");
     const list = document.getElementById("view-campaigns");
@@ -150,11 +203,12 @@ async function loadGames() {
         const BATCH_SIZE = 5;
 
         for (let i = 0; i < items.length; i += BATCH_SIZE) {
+            if (myRenderId !== renderIdGames) return;
             const batch = items.slice(i, i + BATCH_SIZE);
             
-            const cards = await Promise.all(
-                batch.map(game => createGameCard(game, isPlaying, game._completedIndex))
-            );
+            const cards = batch.map(game => createGameCard(game, isPlaying, game._completedIndex));
+
+            if (myRenderId !== renderIdGames) return;
 
             const fragment = document.createDocumentFragment();
             for (const card of cards) fragment.appendChild(card);
@@ -164,7 +218,9 @@ async function loadGames() {
             requestAnimationFrame(() => {
                 cards.forEach((card, index) => {
                     setTimeout(() => {
-                        card.classList.add("fade-in");
+                        if (myRenderId === renderIdGames) {
+                            card.classList.add("fade-in");
+                        }
                     }, index * 40); 
                 });
             });
@@ -175,27 +231,25 @@ async function loadGames() {
         }
     }
 
+    
     await renderInBatches(playing, playingNow, true);
-    await renderInBatches(others, list, false);
+
+    if (myRenderId === renderIdGames) {
+        await renderInBatches(others, list, false);
+    }
 }
-async function createGameCard(game, isPlaying = false, completedIndex = null) {
+function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
     div.className = "game";
 
     const img = document.createElement("img");
     img.className = "game-cover";
 
-    const { cover: localPath } = await window.api.games.ensureCover({
-        appid: game.appid,
-        name: game.name,
-        cover: game.cover
-    });
-
     if (game.isPreOrder === true) {
         div.classList.add("pre-order");
     }
 
-    img.src = localPath ? `file://${localPath}` : 'assets://placeholder.png';
+    img.src = 'assets://placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -310,6 +364,10 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     div.addEventListener('click', () => openGamePopup(div));
 
     applyLocale();
+
+    div.gameData = game;
+    gameCardObserver.observe(div);
+
     return div;
 }
 
@@ -347,11 +405,16 @@ async function loadStatus() {
 }
 
 async function loadGamesAchie() {
+    renderIdAchie++;
+    const myRenderId = renderIdAchie;
+
     const [data, stats, cStatus] = await Promise.all([
         window.electronAPI.json.load(FILE),
         loadStatusAchie(),
         window.electronAPI.json.load(CAMPAIGNS_FILE)
     ]);
+
+    if (myRenderId !== renderIdAchie) return;
 
     const platinandoNow = document.querySelector(".platinandoNow-panel");
     const list = document.getElementById("view-achievements");
@@ -399,7 +462,6 @@ async function loadGamesAchie() {
         else backlog.push(g);
     }
 
-    // 2. Ordenação dos PLATINADOS
     completed.sort((a, b) => {
         if (sort === "date-recent") {
             return (b._completeMs || 0) - (a._completeMs || 0);
@@ -416,7 +478,6 @@ async function loadGamesAchie() {
         return 0;
     });
 
-    // 3. Atribuição dos Índices (#44, #43... ou #1, #2...)
     const totalCompleted = completed.length;
     completed.forEach((game, idx) => {
         if (sort === "date-recent") {
@@ -426,14 +487,12 @@ async function loadGamesAchie() {
         }
     });
 
-    // 4. Ordenação do Backlog (A platinar)
     backlog.sort((a, b) => {
         if (sort === "rating-high") return (b.rating || 0) - (a.rating || 0);
         if (sort === "rating-low") return (a.rating || 0) - (b.rating || 0);
         return 0;
     });
 
-    // 5. Junta a platinar + platinados
     const others = [...backlog, ...completed];
 
     async function renderInBatches(items, container, isPlatinando) {
@@ -448,11 +507,12 @@ async function loadGamesAchie() {
         const BATCH_SIZE = 5;
 
         for (let i = 0; i < items.length; i += BATCH_SIZE) {
+            if (myRenderId !== renderIdAchie) return;
             const batch = items.slice(i, i + BATCH_SIZE);
             
-            const cards = await Promise.all(
-                batch.map(game => createGameAchieCard(game, game._completedIndex))
-            );
+            const cards = batch.map(game => createGameAchieCard(game, game._completedIndex));
+
+            if (myRenderId !== renderIdAchie) return;
 
             const fragment = document.createDocumentFragment();
             for (const card of cards) fragment.appendChild(card);
@@ -462,7 +522,9 @@ async function loadGamesAchie() {
             requestAnimationFrame(() => {
                 cards.forEach((card, index) => {
                     setTimeout(() => {
-                        card.classList.add("fade-in");
+                        if (myRenderId === renderIdAchie) {
+                            card.classList.add("fade-in");
+                        }
                     }, index * 40); 
                 });
             });
@@ -474,21 +536,18 @@ async function loadGamesAchie() {
     }
 
     await renderInBatches(platinando, platinandoNow, true);
-    await renderInBatches(others, list, false);
+
+    if (myRenderId === renderIdAchie) {
+        await renderInBatches(others, list, false);
+    }
 }
-async function createGameAchieCard(game, completedIndex = null) {
+function createGameAchieCard(game, completedIndex = null) {
     const div = document.createElement("div");
     div.className = "game";
     div.dataset.id = game.name;
 
     const img = document.createElement("img");
     img.className = "game-cover";
-
-    const { cover: localPath } = await window.api.games.ensureCover({
-        appid: game.appid,
-        name: game.name,
-        cover: game.cover
-    });
 
     if (game.isPreOrder === true) {
         div.classList.add("pre-order");
@@ -497,7 +556,7 @@ async function createGameAchieCard(game, completedIndex = null) {
         div.classList.add("no-achie");
     }
 
-    img.src = localPath ? `file://${localPath}` : 'assets://placeholder.png';
+    img.src = 'assets://placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -577,6 +636,9 @@ async function createGameAchieCard(game, completedIndex = null) {
     div.appendChild(gameInfo);
 
     div.addEventListener('click', () => openGamePopup(div));
+
+    div.gameData = game;
+    gameCardObserver.observe(div);
 
     return div;
 }
@@ -712,39 +774,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const realSelect = document.getElementById('realSorting-options');
 
     trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
         container.classList.toggle('open');
 
-      if (triggerIcon.className == "fa-solid fa-angle-down") {
-        triggerIcon.className = 'fa-solid fa-angle-up';
-      } else {
-        triggerIcon.className = 'fa-solid fa-angle-down';
-      }
-
-        e.stopPropagation();
+        // Jeito mais seguro: verifica só a classe que importa, ignorando as outras
+        if (triggerIcon.classList.contains("fa-angle-down")) {
+            triggerIcon.classList.replace("fa-angle-down", "fa-angle-up");
+        } else {
+            triggerIcon.classList.replace("fa-angle-up", "fa-angle-down");
+        }
     });
 
     options.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation(); 
+            
             const val = this.getAttribute('data-value');
             const text = this.textContent;
 
+            const i18nKey = this.getAttribute('data-i18n'); 
             triggerText.textContent = text;
+            if (i18nKey) {
+                triggerText.setAttribute('data-i18n', i18nKey);
+            }
 
             realSelect.value = val;
-
             realSelect.dispatchEvent(new Event('change'));
 
             options.forEach(li => li.classList.remove('selected'));
             this.classList.add('selected');
 
             container.classList.remove('open');
-            triggerIcon.className = 'fa-solid fa-angle-up';
+            triggerIcon.classList.replace("fa-angle-up", "fa-angle-down");
         });
     });
 
     document.addEventListener('click', () => {
-        container.classList.remove('open');
-        triggerIcon.className = 'fa-solid fa-angle-down';
+        if (container.classList.contains('open')) {
+            container.classList.remove('open');
+            triggerIcon.classList.replace("fa-angle-up", "fa-angle-down");
+        }
     });
 });
 
@@ -885,6 +954,51 @@ async function changeAchieProgress(el, isAdd = true) {
     }
 
 }
+
+
+function checkTextOverflow() {
+    const devText = document.querySelector('.dev-name');
+    const devTitleDiv = devText?.closest('.game-popup-title');
+
+    const pubText = document.querySelector('.pub-name');
+    const pubTitleDiv = pubText?.closest('.game-popup-title');
+
+    function calculate() {
+        document.fonts.ready.then(() => {
+            // Processa o Desenvolvedor
+            if (devText && devTitleDiv) {
+                const overflowDistance = devText.scrollWidth - devTitleDiv.clientWidth;
+                if (overflowDistance > 0) {
+                    devText.style.setProperty('--scroll-distance', `-${overflowDistance}px`);
+                    devText.classList.remove('no-scroll');
+                } else {
+                    devText.classList.add('no-scroll');
+                }
+            }
+
+            // Processa a Publicadora
+            if (pubText && pubTitleDiv) {
+                const overflowDistance = pubText.scrollWidth - pubTitleDiv.clientWidth;
+                if (overflowDistance > 0) {
+                    pubText.style.setProperty('--scroll-distance', `-${overflowDistance}px`);
+                    pubText.classList.remove('no-scroll');
+                } else {
+                    pubText.classList.add('no-scroll');
+                }
+            }
+        });
+    }
+
+    // Roda logo após um pequeno delay para dar tempo de qualquer animação de abertura estabilizar
+    setTimeout(calculate, 50);
+
+    // E cria um observador caso o tamanho mude dinamicamente depois
+    if (devTitleDiv) {
+        const observer = new ResizeObserver(() => calculate());
+        observer.observe(devTitleDiv);
+    }
+}
+
 async function openGamePopup(el) {
     const title = el.dataset.id;
     const name = el.dataset.id.replace(/[^a-z0-9]/gi, "_").toLowerCase();
@@ -948,7 +1062,6 @@ async function openGamePopup(el) {
         const gamesDB = await loadGamesDB();
         const gamesCamp = await loadStatus();
         // const fullGamesArray = Array.isArray(fullGamesData) ? fullGamesData : (fullGamesData.games || []);
-
         jogoEncontrado = games.find(g => g.name === title) || {};
         fullGame = gamesDB.find(g => g.name === title) || {};
         gameStatusFound = gamesCamp.find(g => g.name === title) || {};
@@ -966,13 +1079,21 @@ async function openGamePopup(el) {
     const gamesDB = fullGame;
     const gameNote = gameNoteFound;
 
-    banner.src = `appdata:///game-heros/${name}.jpg`;
-    const logoExists = await window.electronAPI.existsAppdata(`game-logos/${name}.png`);
-    if (logoExists) {
-        logo.src = `appdata:///game-logos/${name}.png`;
-    } else {
-        logo.src = '';
-    }
+    const {
+        cover: localCoverPath,
+        hero: localHeroPath,
+        logo: localLogoPath
+    } = await window.api.games.ensureCover({
+        appid: gamesDB.appid,
+        name: gamesDB.name,
+        cover: gamesDB.cover,
+        hero: gamesDB.hero,
+        logo: gamesDB.logo
+    });
+
+    banner.src = localHeroPath ? `file://${localHeroPath}` : 'assets://placeholder.png';
+    logo.src = localLogoPath ? `file://${localLogoPath}` : '';
+
     logo.alt = el.dataset.id;
     devText.textContent = gamesDB.developer || "Erro";
     pubText.textContent = gamesDB.publisher || "Erro";
@@ -1100,16 +1221,7 @@ async function openGamePopup(el) {
     achieBtns.style.display = showAchieBtns ? 'flex' : 'none';
 
     popup.style.display = 'flex';
-    const titleDiv = document.querySelector('.game-popup-title');
-
-    requestAnimationFrame(() => {
-        if (pubText.scrollWidth <= titleDiv.clientWidth) {
-            pubText.style.animation = 'none';
-        }
-        if (devText.scrollWidth <= titleDiv.clientWidth) {
-            devText.style.animation = 'none';
-        }
-    });
+    checkTextOverflow();
 }
 
 const closeGamePopup = document.querySelector('.game-popup-div');
@@ -1286,7 +1398,7 @@ optionZerado.addEventListener('click', async () => {
     const noteDiv = document.querySelector('.game-note-div');
 
     options.style.display = 'none';
-    campaignText.setAttribute('data-i18n', 'zerado')
+    campaignText.setAttribute('data-i18n', 'zerado');
     campaignSep.style.display = 'block';
     achieSep.style.display = 'block';
     campaignDiv.style.display = 'flex';
@@ -1315,6 +1427,7 @@ optionZerado.addEventListener('click', async () => {
         completeDateText.textContent = new Date().toLocaleDateString('pt-BR');
     }
 
+    applyLocale();
     await loadGames();
 })
 
@@ -1460,6 +1573,7 @@ function changeRating(element, text) {
         textTitle.style.display = 'none';
         element.setAttribute('data-i18n', 'no-rating');
         element.classList.add('no-rating');
+        applyLocale();
     }
     if (text >= 0) {
         textTitle.style.display = 'flex';
@@ -1575,7 +1689,7 @@ async function renderChart() {
                 borderColor: 'transparent',
                 borderWidth: 0,
                 hoverOffset: 20,
-                radius: '80%',
+                radius: '65%',
                 spanGaps: true
             }]
         },
@@ -1621,8 +1735,8 @@ async function renderChart() {
                         label: (ctx) => {
                             const percent = ((ctx.raw / total) * 100).toFixed(1);
                             const palavraJogo = ctx.raw > 1 ? labelJogos : labelJogo;
-                            return ` ${ctx.raw} ${palavraJogo}`;
-                            // return ` ${ctx.raw} ${palavraJogo} (${percent}%)`;
+                            // return ` ${ctx.raw} ${palavraJogo}`;
+                            return ` ${ctx.raw} ${palavraJogo} (${percent}%)`;
                         }
                     }
                 }

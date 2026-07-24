@@ -347,6 +347,18 @@ const USER_COVERS = path.join(
     'Custom Covers'
 );
 
+const USER_HEROS = path.join(
+    DOCUMENTS,
+    'Games',
+    'Custom Heros'
+);
+
+const USER_LOGOS = path.join(
+    DOCUMENTS,
+    'Games',
+    'Custom Logos'
+);
+
 const BUNDLE = path.join(
     __dirname,
     '..',
@@ -365,6 +377,8 @@ function startFolders() {
         path.join(DOCUMENTS, 'Fortnite'),
         path.join(DOCUMENTS, 'Games'),
         path.join(DOCUMENTS, 'Games', 'Custom Covers'),
+        path.join(DOCUMENTS, 'Games', 'Custom Heros'),
+        path.join(DOCUMENTS, 'Games', 'Custom Logos'),
         path.join(DOCUMENTS, 'Notes'),
         path.join(DOCUMENTS, 'Notes', 'Media')
     ];
@@ -1473,7 +1487,7 @@ ipcMain.handle('games:get-steam-data', async (_, appid) => {
     }).on('error', () => resolve(null));
   });
 });
-ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
+ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover, hero, logo }) => {
   const https = require('https');
   const fs = require('fs');
   const path = require('path');
@@ -1482,6 +1496,8 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
   const herosDir = path.join(HEROS);
   const logosDir = path.join(GAMELOGOS);
   const userCoverDir = path.join(USER_COVERS);
+  const userHeroDir = path.join(USER_HEROS);
+  const userLogoDir = path.join(USER_LOGOS);
   const placeholderPath = path.join(ASSETS_DIR, 'placeholder.jpg');
 
   if (!fs.existsSync(coversDir)) fs.mkdirSync(coversDir, { recursive: true });
@@ -1497,15 +1513,10 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
     'image/gif': '.gif'
   };
 
-  const coverFilePath = path.join(coversDir, safeName + '.jpg');
-  const heroFilePath = path.join(herosDir, safeName + '.jpg');
-  const logoFilePath = path.join(logosDir, safeName + '.png');
-
   const result = { cover: null, hero: null, logo: null };
 
   const downloadImage = (url, targetDir, baseName, fallbackExt = '.jpg') => {
     return new Promise((resolve) => {
-      // 1. Verifica se já existe QUALQUER arquivo com esse nome base no diretório (evita baixar de novo)
       const files = fs.existsSync(targetDir) ? fs.readdirSync(targetDir) : [];
       const existingFile = files.find(f => f.startsWith(baseName + '.'));
       if (existingFile) {
@@ -1517,9 +1528,8 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
           return resolve(null);
         }
 
-        // 2. Pega o formato real vindo da Steam através do Content-Type
         const contentType = res.headers['content-type'];
-        const ext = mimeToExt[contentType] || fallbackExt; // Usa fallback se não mapeado
+        const ext = mimeToExt[contentType] || fallbackExt;
         const finalPath = path.join(targetDir, baseName + ext);
 
         const file = fs.createWriteStream(finalPath);
@@ -1555,17 +1565,30 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover }) => {
     result.cover = await downloadImage(coverUrl, coversDir, safeName, '.jpg');
   }
 
+  let heroUrl = hero;
+  let logoUrl = logo;
+
+  if (heroUrl && !appid) {
+    const customHero = path.join(userHeroDir, heroUrl.includes('.') ? heroUrl : `${heroUrl}.jpg`);
+    result.hero = fs.existsSync(customHero) ? customHero : null;
+  } 
+
+  if (logoUrl && !appid) {
+    const customLogo = path.join(userLogoDir, logoUrl.includes('.') ? logoUrl : `${logoUrl}.png`);
+    result.logo = fs.existsSync(customLogo) ? customLogo : null;
+  }
+
   if (appid) {
-    const heroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`;
-    result.hero = await downloadImage(heroUrl, herosDir, safeName, '.jpg');
+    const steamHeroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`;
+    result.hero = await downloadImage(steamHeroUrl, herosDir, safeName, '.jpg');
     
     if (!result.hero) {
       const fallbackHeroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/page_bg_generated_v6b.jpg`;
       result.hero = await downloadImage(fallbackHeroUrl, herosDir, safeName, '.jpg');
     }
 
-    const logoUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/logo.png`;
-    result.logo = await downloadImage(logoUrl, logosDir, safeName, '.png');
+    const steamLogoUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/logo.png`;
+    result.logo = await downloadImage(steamLogoUrl, logosDir, safeName, '.png');
   }
 
   if (!result.hero && fs.existsSync(placeholderPath)) result.hero = placeholderPath;

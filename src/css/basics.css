@@ -504,9 +504,9 @@ header {
     cursor: default;
 }
 .sep-bar {
-    margin: 8px 4px;
-    border: solid 2px var(--sep-bar);
-    border-radius: 8px;
+    margin: .4vh 0;
+    border: solid .4vh var(--sep-bar);
+    border-radius: 1vh;
     justify-content: center;
 }
 .close-popup{

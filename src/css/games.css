@@ -40,12 +40,17 @@ header {
     justify-content: center;
 }
 .game-popup-sep-bar {
-    margin: .5vh 0;
+    margin: .5vh 1vw;
     border: solid .4vh rgba(25,25,25,.4);
     border-radius: 1vh;
     justify-content: center;
 }
-
+.game-popup-sep-bar2 {
+    margin: .5vh .6vw .5vh 1vw;
+    border: solid .4vh rgba(25,25,25,.4);
+    border-radius: 1vh;
+    justify-content: center;
+}
 
 .modes {
     display: flex;
@@ -334,7 +339,7 @@ header {
 /* Visualização de Jogos */
 #view-charts {
     padding: 0;
-    margin: 6vh 0 12vh 0;
+    margin: 0 0 12vh 0;
     gap: 1.2vw;
     overflow: hidden;
     overflow-y: auto;
@@ -428,7 +433,7 @@ header {
     background-color: var(--tab-hover);
 }
 #view-campaigns.list .game:hover {
-    transform: none;
+    scale: 1.01;
     background-color: var(--tab-hover);
 }
 #view-campaigns.list .game-info {
@@ -488,6 +493,7 @@ header {
     object-fit: cover;
     margin-bottom: .2vh;
     width: 100%;
+    pointer-events: none;
 }
 .game-info {
     display: flex;
@@ -963,7 +969,7 @@ header {
     display: none;
 }
 #view-achievements.list .game:hover {
-    transform: none;
+    scale: 1.01;
     background-color: var(--tab-hover);
 }
 #view-achievements.list .game-info {
@@ -1033,7 +1039,7 @@ header {
     from { opacity: 1; transform: scale(1) }
     to { opacity: 0; transform: scale(0.95) }}
 
-.game-popup-div{
+.game-popup-div {
     position: absolute;
     inset: 0;
     display: none;
@@ -1061,7 +1067,7 @@ header {
 }
 .game-banner-div {
     overflow: hidden;
-    height: 21vh;
+    height: 33vh;
     width: 100%;
     border-radius: 1.3vh 1.3vh 0 0;
 }
@@ -1069,17 +1075,19 @@ header {
     object-fit: cover;
     width: 100%;
     height: 100%;
+    pointer-events: none;
 }
 .game-logo {
     position: absolute;
     margin: 0;
     max-width: 40%;
-    max-height: 15vh;
-    left: 20vw;
+    max-height: 18vh;
+    left: 21vw;
     align-self: center;
     transform: translateX(-15vw) translateY(-.4vh) scale(1.2);
     font-weight: 900;
     font-size: 6vh;
+    pointer-events: none;
 }
 .game-logo:not([src]), 
 .game-logo[src=""] {
@@ -1111,7 +1119,6 @@ header {
     width: fit-content;
     display: flex;
     flex-direction: row;
-    gap: 1vw;
 }
 .achie-add-minus {
     width: fit-content;
@@ -1132,6 +1139,7 @@ header {
     align-items: center;
     background-color: var(--btn);
     cursor: pointer;
+    color: var(--text);
 }
 #achie-minus {
     font-size: 1.8vh;
@@ -1143,6 +1151,7 @@ header {
     align-items: center;
     background-color: var(--btn);
     cursor: pointer;
+    color: var(--text);
 }
 #achie-minus:hover,
 #achie-add:hover {
@@ -1293,13 +1302,14 @@ header {
     font-weight: 500;
     color: var(--text-gray);
     height: fit-content;
-    display: flex;
-    flex-direction: row;
-    align-items: end;
+    font-size: 4.7vh;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
 }
 .game-popup-rating.no-rating {
     margin: 0;
-    font-size: 5.1vh;
+    font-size: 4.7vh;
     font-weight: 600;
     color: var(--text-dark-gray);
 }
@@ -1308,10 +1318,16 @@ header {
     display: flex;
     flex-direction: row;
     align-items: end;
-    gap: 1vw;
+    gap: .75vw;
+    transition: background .1s linear;
+    padding: 1vh .5vw;
+    border-radius: 1.1vh;
+}
+.game-rating-title:hover {
+    background-color: var(--sep-bar);
 }
 .game-rating-title-text {
-    margin: 0 0 .85vh 0;
+    margin: 0;
     font-weight: 900;
     font-size: 3vh;
     text-transform: uppercase;
@@ -1362,28 +1378,39 @@ header {
     color: var(--text-gray);
 }
 .dev-pub {
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     align-items: center;
     margin: 0;
     font-weight: 500;
     font-size: 1.8vh;
+    max-width: 100%;
     position: relative;
     overflow: hidden;
     color: var(--text-dark-gray);
 }
+.dev-pub span {
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 2vh;
+}
 .game-popup-title {
     overflow: hidden;
     white-space: nowrap;
-    max-width: 5.6vw;
-    padding-left: 0%;
+    width: 0;
+    min-width: 100%;
+    text-align: center;
     color: var(--text);
 }
-.dev-name, .pub-name {
-    font-size: 2vh;
+.dev-name, .pub-name {font-size: 2vh;
     font-weight: 700;
     margin: 0;
-    animation: scroll-text 6s linear infinite;
+    display: inline-block;
+    white-space: nowrap;
+    text-align: left; 
+    transform: translateX(0);
+    animation: scroll-text 7s linear infinite;
 }
 .game-releaseDate {
     display: flex;
@@ -1403,30 +1430,36 @@ header {
     margin: 0;
     color: var(--text);
 }
+.game-releaseDate span {
+    font-weight: 900;
+    margin: 0;
+    font-size: 2vh;
+    white-space: nowrap;
+    width: fit-content;
+}
+.dev-name.no-scroll, .pub-name.no-scroll {
+    animation: none;
+}
 @keyframes scroll-text {
-    0% {
-        transform: translateX(0%);
+    0%, 15% {
+        transform: translateX(0px);
         opacity: 1;
     }
-    10% {
-        transform: translateX(0%);
+    75%, 85% {
+        transform: translateX(var(--scroll-distance, 0px));
         opacity: 1;
     }
-    85% {
-        transform: translateX(-130%);
-        opacity: 1;
-    }
-    90% {
-        transform: translateX(-130%);
+    88% {
         opacity: 0;
+        transform: translateX(var(--scroll-distance, 0px));
     }
-    93% {
-        transform: translateX(0%);
+    91% {
         opacity: 0;
+        transform: translateX(0px);
     }
     100% {
-        transform: translateX(0%);
         opacity: 1;
+        transform: translateX(0px);
     }
 }
 .achie-status-tag {
@@ -1569,7 +1602,7 @@ header {
 
 .rating-change {
     position: absolute;
-    transform: translateY(7.25vh) translateX(1.55vw);
+    transform: translateY(7.85vh) translateX(1.55vw);
     z-index: 99;
     margin: 0;
     display: none;
@@ -1577,7 +1610,7 @@ header {
     list-style-type: none;
     right: .7vw;
     gap: 1vh;
-    border-radius: 1.2vh;
+    border-radius: 1vh;
     background-color: var(--tab-hover);
     padding: .6vh;
 }
@@ -1603,7 +1636,7 @@ header {
     margin: .6vh 1vw 0 1vw;
     display: flex;
     flex-direction: column;
-    height: 48%;
+    height: 32%;
 }
 .game-note-title-div {
     display: flex;
@@ -1631,11 +1664,16 @@ header {
     background-color: var(--tab-hover);
 }
 
+.sep-bar {
+    margin: .4vh .15vw .6vh 0;
+}
 .game-note {
-    margin: 1vh .3vw 0 .3vw;
+    overflow: hidden;
+    overflow-y: auto;
+    margin: 1vh 0 0 .3vw;
     font-weight: 500;
     user-select: text;
-    height: 100%;
+    height: 80%;
     border-radius: 1vh;
     cursor: default;
 }

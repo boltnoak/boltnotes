@@ -1,6 +1,6 @@
 [
+    "Several bug fixes.",
     "# Games backlog",
-    "Added fade-in animation when loading games.",
-    "Added Charts tab.",
-    "Added completed games chart."
+    "Game covers now load after the game appears.",
+    "Improved visuals."
 ]

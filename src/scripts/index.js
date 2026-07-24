@@ -1,6 +1,7 @@
 const FILE = "Games/games.json";
 const CAMPAIGNS_FILE = "Games/campaigns.json";
 const ACHIEVEMENTS_FILE = "Games/achievements.json";
+const NOTES_FILE = "Games/notes.json";
 
 async function updateNoteCount() {
   const count = await window.api.notes.count();
@@ -69,19 +70,18 @@ function parseBRDate(dateStr) {
 let cachedGamesDB = null;
 let cachedCampaignStatus = null;
 let cachedAchieStatus = null;
-
+let cachedNotes = null;
 
 async function loadGamesDB() {
     if (cachedGamesDB) {
-        console.log("Reviews carregados do cache!");
         return cachedGamesDB;
     }
     try {
-        const achievements = await window.electronAPI.json.load(`Games/games.json`);
-        cachedGamesDB = achievements || {};
+        const content = await window.electronAPI.json.load(FILE);
+        cachedGamesDB = Array.isArray(content.games) ? content.games : (Array.isArray(content) ? content : []);
         return cachedGamesDB;
     } catch (e) {
-        console.error("Erro ao ler meus_reviews.json:", e);
+        console.error("Erro ao ler games.json:", e);
         return {};
     }
 }
@@ -90,7 +90,7 @@ async function loadStatusAchie() {
         return cachedAchieStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(`Games/achievements.json`);
+        const content = await window.electronAPI.json.load(ACHIEVEMENTS_FILE);
         cachedAchieStatus = Array.isArray(content) ? content : [];
         return cachedAchieStatus;
     } catch (e) {
@@ -212,7 +212,128 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     return div;
 }
 
-async function openGamePopup(el, status, releaseDate, rating, developer, publisher) {
+async function loadNotes() {
+    if (cachedNotes) {
+        return cachedNotes;
+    }
+    try {
+        const content = await window.electronAPI.json.load(NOTES_FILE);
+        cachedNotes = (typeof content === 'object' && content !== null) ? content : {};
+        return cachedNotes;
+    } catch (e) {
+        console.error("Erro ao ler notes.json:", e);
+        return {};
+    }
+}
+
+function updateStatus(element, statusClass, text) {
+    element.textContent = text;
+    element.classList.remove('ajogar', 'jogando', 'zerado');
+    if (statusClass) {
+        element.classList.add(statusClass);
+        element.setAttribute('data-i18n', statusClass);
+    }
+}
+
+function updateAchie(element, statusClass, text) {
+    element.textContent = text;
+    element.classList.remove('platinado', 'platinando', 'aplatinar');
+    if (statusClass) {
+        element.classList.add(statusClass);
+        element.setAttribute('data-i18n', statusClass);
+    }
+}
+async function changeAchieProgress(el, isAdd = true) {
+    const title = el.dataset.id;
+    const [data, stats] = await Promise.all([
+        window.electronAPI.json.load(ACHIEVEMENTS_FILE),
+        loadStatusAchie()
+    ]);
+
+    const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
+
+    const nomeDoJogoProcurado = title;
+    const jogoEncontrado = listaStats.find(jogo => jogo.name === nomeDoJogoProcurado);
+
+    const game = jogoEncontrado;
+    const achieCount = document.querySelector('.achie-info-title-numbers');
+    const achieBarFill = document.querySelector('.achie-bar-fill');
+    const achiePercentage = document.querySelector('.achie-percentage');
+
+    const total = game.totalAchievements;
+
+    if (isAdd) {
+        if (game.unlockedAchievements < total) {
+            game.unlockedAchievements++;
+        } else return
+    } else {
+        if (game.unlockedAchievements > 0) {
+            game.unlockedAchievements--;
+        } else return
+    }
+
+    const unlocked = game.unlockedAchievements;
+    const percentage = total > 0 ? Math.round((unlocked / total) * 100) : 0;
+
+    achieCount.textContent = `${unlocked}/${total}`;
+    achieBarFill.style.width = `${percentage}%`;
+    achiePercentage.textContent = `${percentage}%`;
+
+    if (jogoEncontrado) {
+        await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listaStats);
+        console.log(`Status de ${game} atualizado com sucesso!`);
+        return true;
+    } else {
+        console.warn("Jogo não encontrado na lista.");
+        return false;
+    }
+
+}
+
+function checkTextOverflow() {
+    const devText = document.querySelector('.dev-name');
+    const devTitleDiv = devText?.closest('.game-popup-title');
+
+    const pubText = document.querySelector('.pub-name');
+    const pubTitleDiv = pubText?.closest('.game-popup-title');
+
+    function calculate() {
+        document.fonts.ready.then(() => {
+            // Processa o Desenvolvedor
+            if (devText && devTitleDiv) {
+                const overflowDistance = devText.scrollWidth - devTitleDiv.clientWidth;
+                if (overflowDistance > 0) {
+                    devText.style.setProperty('--scroll-distance', `-${overflowDistance}px`);
+                    devText.classList.remove('no-scroll');
+                } else {
+                    devText.classList.add('no-scroll');
+                }
+            }
+
+            // Processa a Publicadora
+            if (pubText && pubTitleDiv) {
+                const overflowDistance = pubText.scrollWidth - pubTitleDiv.clientWidth;
+                if (overflowDistance > 0) {
+                    pubText.style.setProperty('--scroll-distance', `-${overflowDistance}px`);
+                    pubText.classList.remove('no-scroll');
+                } else {
+                    pubText.classList.add('no-scroll');
+                }
+            }
+        });
+    }
+
+    // Roda logo após um pequeno delay para dar tempo de qualquer animação de abertura estabilizar
+    setTimeout(calculate, 50);
+
+    // E cria um observador caso o tamanho mude dinamicamente depois
+    if (devTitleDiv) {
+        const observer = new ResizeObserver(() => calculate());
+        observer.observe(devTitleDiv);
+    }
+}
+
+async function openGamePopup(el) {
     const title = el.dataset.id;
     const name = el.dataset.id.replace(/[^a-z0-9]/gi, "_").toLowerCase();
 
@@ -223,7 +344,9 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     const logo = document.querySelector('.game-logo');
     const devText = document.querySelector('.dev-name');
     const pubText = document.querySelector('.pub-name');
+    const releaseDateTitle = document.querySelector('.game-releaseDate-title');
     const releaseDateText = document.querySelector('.game-releaseDate-text');
+
     const statusText = document.querySelector('.campaign-status-tag');
     const achieStatusText = document.querySelector('.achie-status-tag');
     const achieCount = document.querySelector('.achie-info-title-numbers');
@@ -237,14 +360,26 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     const completeDateText = document.querySelector('.game-popup-completeDate');
     const achieDiv = document.querySelector('.game-achievements');
     const campaignText = document.querySelector('.campaign-info-title-text');
-    const ratingText = document.querySelector('.game-popup-rating');
+
     const achieSep = document.querySelector('.achie-sep');
     const campaignSep = document.querySelector('.campaign-sep');
+
     const campaignDiv = document.querySelector('.game-campaign-div');
+    const campaignChange = document.querySelector('.campaign-status-change');
+
+    const ratingText = document.querySelector('.game-popup-rating');
     const ratingDiv = document.querySelector('.game-rating-div');
+    const ratingTitle = document.querySelector('.game-rating-title-text');
+
+    const noteDiv = document.querySelector('.game-note-div');
+    const noteText = document.querySelector('.game-note');
+    const noteEditBtn = document.getElementById('editNote');
     
+    noteEditBtn.setAttribute('data-id', title);
     achieAddBtn.setAttribute('data-id', title);
     achieMinusBtn.setAttribute('data-id', title);
+
+    ratingTitle.setAttribute('data-i18n', 'rating');
 
     pubText.style.animation = '';
     devText.style.animation = '';
@@ -253,40 +388,89 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     let jogoEncontrado = null;
     let gameStatusFound = null;
     let fullGame = null;
+    let gameNoteFound = null;
 
     try {
         const games = await loadStatusAchie();
-        const fullGamesData = await loadGamesDB();
-        const fullGamesArray = Array.isArray(fullGamesData) ? fullGamesData : (fullGamesData.games || []);
+        const notes = await loadNotes() || {};
+        const gamesDB = await loadGamesDB();
         const gamesCamp = await loadStatus();
-
+        // const fullGamesArray = Array.isArray(fullGamesData) ? fullGamesData : (fullGamesData.games || []);
         jogoEncontrado = games.find(g => g.name === title) || {};
-        fullGame = fullGamesArray.find(g => g.name === title) || {};
+        fullGame = gamesDB.find(g => g.name === title) || {};
         gameStatusFound = gamesCamp.find(g => g.name === title) || {};
+        gameNoteFound = notes[title];
     } catch (erro) {
         console.error("Erro ao carregar o JSON:", erro);
         jogoEncontrado = {};
         fullGame = {};
         gameStatusFound = {};
+        gameNoteFound = {};
     }
 
     const achieGame = jogoEncontrado;
     const gameCampaign = gameStatusFound;
-    const fullGamess = fullGame;
+    const gamesDB = fullGame;
+    const gameNote = gameNoteFound;
 
-    banner.src = `appdata:///game-heros/${name}.jpg`;
-    const logoExists = await window.electronAPI.existsAppdata(`game-logos/${name}.png`);
-    if (logoExists) {
-        logo.src = `appdata:///game-logos/${name}.png`;
-    } else {
-        logo.src = '';
-    }
+    const {
+        cover: localCoverPath,
+        hero: localHeroPath,
+        logo: localLogoPath
+    } = await window.api.games.ensureCover({
+        appid: gamesDB.appid,
+        name: gamesDB.name,
+        cover: gamesDB.cover,
+        hero: gamesDB.hero,
+        logo: gamesDB.logo
+    });
+
+    banner.src = localHeroPath ? `file://${localHeroPath}` : 'assets://placeholder.png';
+    logo.src = localLogoPath ? `file://${localLogoPath}` : '';
+
     logo.alt = el.dataset.id;
-    devText.textContent = fullGamess.developer || "Erro";
-    pubText.textContent = fullGamess.publisher || "Erro";
-    releaseDateText.textContent = fullGamess.releaseDate || "Erro";
+    devText.textContent = gamesDB.developer || "Erro";
+    pubText.textContent = gamesDB.publisher || "Erro";
+    releaseDateText.textContent = gamesDB.releaseDate || "Erro";
+
+    if (releaseDateTitle) {
+        const observer = new MutationObserver(() => {
+            if (/:\s*$/.test(releaseDateTitle.textContent)) {
+                releaseDateTitle.textContent = releaseDateTitle.textContent.replace(/:\s*$/, '');
+            }
+        });
+        observer.observe(releaseDateTitle, { childList: true, characterData: true, subtree: true });
+        if (/:\s*$/.test(releaseDateTitle.textContent)) {
+            releaseDateTitle.textContent = releaseDateTitle.textContent.replace(/:\s*$/, '');
+        }
+    }
+    if (ratingTitle) {
+        const observer = new MutationObserver(() => {
+            if (/:\s*$/.test(ratingTitle.textContent)) {
+                ratingTitle.textContent = ratingTitle.textContent.replace(/:\s*$/, '');
+            }
+        });
+        observer.observe(ratingTitle, { childList: true, characterData: true, subtree: true });
+        if (/:\s*$/.test(ratingTitle.textContent)) {
+            ratingTitle.textContent = ratingTitle.textContent.replace(/:\s*$/, '');
+        }
+    }
+
     completeDateText.textContent = gameCampaign.completeDate || "";
-    ratingText.textContent = Number(gameCampaign.rating).toFixed(1);
+    noteText.innerHTML = gameNote?.note || "";
+
+    if (gameCampaign.rating >= 0) {
+        ratingTitle.style.display = 'flex';
+        ratingText.removeAttribute('data-i18n', 'no-rating');
+        ratingText.textContent = Number(gameCampaign.rating).toFixed(1);
+        ratingText.classList.remove('no-rating');
+    }
+    if (gameCampaign.rating == "null") {
+        ratingTitle.style.display = 'none';
+        ratingText.setAttribute('data-i18n', 'no-rating');
+        ratingText.classList.add('no-rating');
+        applyLocale();
+    }
 
     const total = achieGame.totalAchievements || 0;
     const unlocked = achieGame.unlockedAchievements || 0;
@@ -311,6 +495,7 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         achieBtns.style.display = 'flex';
         achieDiv.style.display = 'flex';
         achieSep.style.display = 'block';
+        campaignChange.classList.remove('noAchie');
     } else {
         achieTitle.style.display = 'none';
         achieInfo.style.display = 'none';
@@ -318,6 +503,7 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         achieBtns.style.display = 'none';
         achieDiv.style.display = 'none';
         achieSep.style.display = 'none';
+        campaignChange.classList.add('noAchie');
     }
 
     if (gameCampaign.status.toLowerCase() == 'ajogar') {
@@ -326,6 +512,7 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
+        noteDiv.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'jogando') {
         updateStatus(statusText, 'jogando', 'Jogando');
@@ -333,13 +520,16 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
         achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
+        noteDiv.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'zerado') {
         updateStatus(statusText, 'zerado', 'Zerado');
-        campaignText.textContent = 'ZERADO';
+        campaignText.setAttribute('data-i18n', 'zerado');
         campaignSep.style.display = 'block';
         campaignDiv.style.display = 'flex';
         ratingDiv.style.display = 'flex';
+        noteDiv.style.display = 'flex';
+        applyLocale();
     }
 
     if (achieGame.achieStatus.toLowerCase() == 'aplatinar') {
@@ -365,30 +555,20 @@ async function openGamePopup(el, status, releaseDate, rating, developer, publish
     achieBtns.style.display = showAchieBtns ? 'flex' : 'none';
 
     popup.style.display = 'flex';
-    const titleDiv = document.querySelector('.game-popup-title');
-
-    requestAnimationFrame(() => {
-        if (pubText.scrollWidth <= titleDiv.clientWidth) {
-            pubText.style.animation = 'none';
-        }
-        if (devText.scrollWidth <= titleDiv.clientWidth) {
-            devText.style.animation = 'none';
-        }
-    });
+    checkTextOverflow();
 }
-
-const closeGamePopup = document.querySelector('.game-popup-div');
-closeGamePopup.addEventListener('click', (e) => {
-    if (e.target === gamePopup) {
-        
-    }
-});
 
 const gamePopupDiv = document.querySelector('.game-popup-div');
 const gamePopup = document.querySelector('.game-popup');
 gamePopupDiv.addEventListener('click', (e) => {
     if (e.target === gamePopupDiv) {
         gamePopup.classList.add('is-closing');
+
+        const text = document.querySelector('.game-note');
+        const editBtn = document.getElementById('editNote');
+
+        text.contentEditable = "false";
+        editBtn.className = 'fa-solid fa-pen';
         
         gamePopup.addEventListener('animationend', () => {
             gamePopupDiv.style.display = 'none';
@@ -417,8 +597,8 @@ async function updateStatusJSON(game, statusClass) {
         jogoEncontrado.status = statusClass;
 
         if (statusClass === "zerado") {
-            const dataAtual = new Date();
-            jogoEncontrado.completeDate = dataAtual.toLocaleDateString('pt-BR');
+            const dateNow = new Date();
+            jogoEncontrado.completeDate = dateNow.toLocaleDateString('pt-BR');
         } else {
             delete jogoEncontrado.completeDate; 
         }
@@ -431,6 +611,7 @@ async function updateStatusJSON(game, statusClass) {
         return false;
     }
 }
+
 async function updateAchieJSON(game, statusClass) {
     const stats = await loadStatusAchie();
 
@@ -447,6 +628,7 @@ async function updateAchieJSON(game, statusClass) {
         if (statusClass === "platinado") {
             const dateNow = new Date();
             gameFoundAchie.completeDate = dateNow.toLocaleDateString('pt-BR');
+            gameFoundAchie.unlockedAchievements = gameFoundAchie.totalAchievements;
         }
         
         await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listStats);
@@ -488,6 +670,7 @@ optionAjogar.addEventListener('click', async () => {
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
+    const noteDiv = document.querySelector('.game-note-div');
 
     options.style.display = 'none';
     campaignText.classList.add('ajogar');
@@ -498,6 +681,7 @@ optionAjogar.addEventListener('click', async () => {
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
     achieBtns.style.display = 'none';
+    noteDiv.style.display = 'none';
     
     await updateStatusJSON(game, "ajogar");
     updateStatus(statusText, "ajogar", "À Jogar");
@@ -512,6 +696,7 @@ optionJogando.addEventListener('click', async () => {
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
+    const noteDiv = document.querySelector('.game-note-div');
 
     options.style.display = 'none';
     achieBtns.style.display = 'flex';
@@ -522,6 +707,7 @@ optionJogando.addEventListener('click', async () => {
     achieSep.style.display = 'none';
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
+    noteDiv.style.display = 'none';
     
     await updateStatusJSON(game, "jogando")
     updateStatus(statusText, "jogando", "Jogando")
@@ -536,13 +722,15 @@ optionZerado.addEventListener('click', async () => {
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
+    const noteDiv = document.querySelector('.game-note-div');
 
     options.style.display = 'none';
-    campaignText.textContent = "ZERADO";
+    campaignText.setAttribute('data-i18n', 'zerado');
     campaignSep.style.display = 'block';
     achieSep.style.display = 'block';
     campaignDiv.style.display = 'flex';
     ratingDiv.style.display = 'flex';
+    noteDiv.style.display = 'flex';
 
     const stats = await loadStatusAchie();
     const listStats = Array.isArray(stats) ? stats : (stats.games || []);
@@ -566,6 +754,7 @@ optionZerado.addEventListener('click', async () => {
         completeDateText.textContent = new Date().toLocaleDateString('pt-BR');
     }
 
+    applyLocale();
     await loadGames();
 })
 
@@ -601,7 +790,6 @@ optionAplatinar.addEventListener('click', async () => {
     await updateAchieJSON(game, "aplatinar")
     updateAchie(statusText, "aplatinar", "À Platinar")
     await loadGames();
-    await loadGamesAchie();
 })
 optionPlatinando.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
@@ -614,35 +802,143 @@ optionPlatinando.addEventListener('click', async () => {
     await updateAchieJSON(game, "platinando")
     updateAchie(statusText, "platinando", "Platinando")
     await loadGames();
-    await loadGamesAchie();
 })
 optionPlatinado.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.achie-status-tag');
     const achieBtns = document.querySelector('.achie-add-minus');
+    const fillBar = document.querySelector('.achie-bar-fill');
+    const percentage = document.querySelector('.achie-percentage');
+    const number = document.querySelector('.achie-info-title-numbers');
+    const numberText = number.textContent;
 
     optionsAchie.style.display = 'none';
     achieBtns.style.display = 'none';
 
+    fillBar.style.width = '100%';
+    percentage.textContent = '100%';
+    const total = numberText.split('/')[1];
+    number.textContent = `${total}/${total}`;
+
     await updateAchieJSON(game, "platinado")
     updateAchie(statusText, "platinado", "Platinado")
     await loadGames();
-    await loadGamesAchie();
 })
 
-function updateStatus(element, statusClass, text) {
-    element.textContent = text;
-    element.classList.remove('ajogar', 'jogando', 'zerado');
-    if (statusClass) {
-        element.classList.add(statusClass);
+const ratingBtn = document.querySelector('.game-rating-div');
+const optionsRating = document.querySelector('.rating-change');
+ratingBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (optionsRating.style.display === 'none') {
+        optionsRating.style.display = 'flex';
+        options.style.display = 'none';
+        optionsAchie.style.display = 'none';
+    } else {
+        optionsRating.style.display = 'none';
+    }
+});
+
+document.addEventListener('click', (event) => {
+    if (!optionsRating.contains(event.target) && event.target !== ratingBtn) {
+        optionsRating.style.display = 'none';
+    }
+});
+
+async function changeRatingBtn(el) {
+    const game = document.querySelector('.game-popup-div').dataset.name;
+    const rating = el.dataset.value;
+    const text = document.querySelector('.game-popup-rating');
+
+    await changeRatingJSON(game, rating);
+    changeRating(text, Number(rating).toFixed(1));
+    await loadGames();
+}
+
+async function changeRatingJSON(game, ratingEl) {
+    const [data, stats] = await Promise.all([
+        window.electronAPI.json.load(CAMPAIGNS_FILE),
+        loadStatus()
+    ]);
+
+    const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
+
+    const nomeDoJogoProcurado = game;
+    const selectedRating = ratingEl;
+
+    const jogoEncontrado = listaStats.find(jogo => jogo.name === nomeDoJogoProcurado);
+
+    if (jogoEncontrado) {
+        jogoEncontrado.rating = selectedRating;
+        
+        await window.electronAPI.json.save(CAMPAIGNS_FILE, listaStats);
+        console.log(`Status de ${game} atualizado com sucesso!`);
+        return true;
+    } else {
+        console.warn("Jogo não encontrado na lista.");
+        return false;
+    }
+}
+function changeRating(element, text) {
+    const textTitle = document.querySelector('.game-rating-title-text');
+    if (text <= "null") {
+        textTitle.style.display = 'none';
+        element.setAttribute('data-i18n', 'no-rating');
+        element.classList.add('no-rating');
+        applyLocale();
+    }
+    if (text >= 0) {
+        textTitle.style.display = 'flex';
+        element.textContent = text;
+        element.removeAttribute('data-i18n', 'no-rating');
+        element.classList.remove('no-rating');
     }
 }
 
-function updateAchie(element, statusClass, text) {
-    element.textContent = text;
-    element.classList.remove('platinado', 'platinando', 'aplatinar');
-    if (statusClass) {
-        element.classList.add(statusClass);
+const noteText = document.querySelector('.game-note');
+noteText.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+    }
+});
+
+async function updateNotesJSON(game) {
+    const notes = await loadNotes();
+    const updatedNote = noteText.innerHTML
+        .replace(/<div><br><\/div>/g, '<br>')
+        .replace(/<div>/g, '<br>')
+        .replace(/<\/div>/g, '');
+
+    if (!notes[game]) {
+        notes[game] = { note: "" };
+    }
+
+    const dataToSave = { ...notes };
+    dataToSave[game].note = updatedNote;
+
+    try {
+        await window.electronAPI.json.save(NOTES_FILE, dataToSave);
+        console.log(`Nota de ${game} atualizada com sucesso!`);
+        return true;
+    } catch (erro) {
+        console.error("Erro ao salvar o arquivo de notas:", erro);
+        return false;
+    }
+}
+
+const noteEditBtn = document.getElementById('editNote');
+
+async function toggleNoteEdit(el) {
+    const name = el.dataset.id;
+    const text = document.querySelector('.game-note');
+    const isEditable = text.contentEditable === "true";
+
+    if (!isEditable) {
+        text.contentEditable = "true";
+        noteEditBtn.className = 'fa-solid fa-floppy-disk';
+    } else {
+        text.contentEditable = "false";
+        noteEditBtn.className = 'fa-solid fa-pen';
+        await updateNotesJSON(name); 
     }
 }
 
@@ -665,7 +961,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const featuredPanels = {
         'none': [
             document.querySelector('.page-infos'),
-            document.querySelector('.sep-bar')
+            document.querySelector('.index-sep-bar')
         ],
         'playing_now': document.querySelector('.playingNow-panel'),
         'fn_fast_edit': document.querySelector('.recentSeason-panel')
@@ -679,7 +975,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.playingNow-panel').style.display = 'none';
         document.querySelector('#featured-title').style.display = 'none';
         document.querySelector('.page-infos').style.display = 'none';
-        document.querySelector('.sep-bar').style.visibility = 'hidden';
+        document.querySelector('.index-sep-bar').style.visibility = 'hidden';
     } else if (currentFeatured === 'fn_fast_edit') {
         initFeaturedFortnite();
         document.querySelector('#featured-title').innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
