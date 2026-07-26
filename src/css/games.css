@@ -10,6 +10,11 @@ body {
     transform: translateY(6.5vh);
     height: 92.8vh;
     margin-top: .5vh;
+}.game-note[contenteditable]:empty::before {
+    content: attr(placeholder);
+    color: var(--text-dark-gray);
+    pointer-events: none;
+    display: block;
 }
 header {
     background-color: transparent;

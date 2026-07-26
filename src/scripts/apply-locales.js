@@ -12,7 +12,7 @@ async function applyLocale() {
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.dataset.i18nPlaceholder;
-        if (t[key]) el.placeholder = t[key];
+        if (t[key]) el.setAttribute('placeholder', t[key]);
     });
     const titleKey = document.documentElement.dataset.i18nTitle;
     const menuTitle = document.getElementById('menuTitle');

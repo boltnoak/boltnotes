@@ -33,6 +33,10 @@ async function initReviews() {
 
         content.innerHTML = renderReviewsTemplate(reviewsHTML, { code, data, editableAttr });
     });
+
+    if (typeof applyLocale === 'function') {
+        applyLocale();
+    }
 }
 
 function debouncedSave(code) {
