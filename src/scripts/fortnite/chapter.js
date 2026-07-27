@@ -248,9 +248,11 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                 if (rContainer) {
                     if (currentStats.locked) {
                         rContainer.classList.add('disabled');
-                        if (rOptions) rOptions.classList.remove('active'); 
+                        rContainer.classList.remove('enabled');
+                        if (rOptions) rOptions.classList.remove('active');
                     } else {
                         rContainer.classList.remove('disabled');
+                        rContainer.classList.add('enabled');
                     }
                 }
 
@@ -268,6 +270,10 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
         if (isLocked && ratingContainer) {
             ratingContainer.classList.add('disabled');
+        }
+
+        else if (!isLocked && ratingContainer) {
+            ratingContainer.classList.add('enabled');
         }
 
         if (ratingOptionsContainer) {

@@ -176,7 +176,9 @@ body {
     flex-direction: row;
     gap: .2vw;
     align-items: center;
+    justify-content: center;
     user-select: none;
+    padding: 1vh;
 }
 .fa-square-caret-up, .fa-trophy, .fa-calendar-day, .fa-star {
     font-size: 3vh;
@@ -195,10 +197,14 @@ body {
     cursor: pointer;
 }
 .status-level {
-    padding: 0 .2vw;
+    margin: 0 0 0 .3vw;
 }
 .status-win {
-    padding: 0 .2vw;
+    margin: 0 0 0 .3vw;
+}
+
+.releaseDate {
+    margin: 0 0 0 .3vw;
 }
 
 /* Personagem */
@@ -317,27 +323,41 @@ body {
     gap: .7rem;
     justify-content: space-around;
     background-color: var(--fortnite-season-tags);
-    padding: 2vh 1vw;
+    padding: 1.2vh 0 1vh 0;
     border-radius: 1.5vh;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
 .rating-container {
+    background-color: transparent;
+    transition: background .1s linear;
+    padding: 1vh;
+    border-radius: 1vh;
+}
+.rating-container.enabled {
     cursor: pointer;
+}
+.rating-container span {
+    margin: 0 .3vw 0 0;
+}
+.rating-container.enabled:hover {
+    background-color: var(--btn);
 }
 .rating-options {
     position: absolute;
     justify-content: center;
     flex-wrap: wrap;
     bottom: 0;
-    width: 100%;
-    background-color: var(--btn);
+    width: 98.65%;
+    background-color: var(--tab-hover);
     font-family: 'Montserrat';
     z-index: 10;
     overflow: hidden;
     display: none;
     user-select: none;
     cursor: pointer;
+    border-radius: 8vh;
+    margin: 0 .65vw 1.25vh .65vw;
 }
 .rating-options::before {
     display: none;
@@ -346,18 +366,23 @@ body {
     display: flex;
 }
 .rating-option {
-    padding: 2vh 1vw;
+    padding: 1vh 1vw;
     text-align: center;
-    color: var(--text-light-gray);
+    color: var(--text);
     font-size: 2.3vh;
     font-weight: 600;
     transition: background 0.1s linear;
+    margin: 1vh 0;
+    border-radius: 1vh;
 }
 .rating-option:hover {
-    background: var(--btn-hover);
+    background: var(--btn);
 }
 .status-rating {
-    width: 3.1vw;
+    width: fit-content;
+    display: flex;
+    text-align: center;
+    margin: 0 !important;
 }
 .body-top {
     margin-top: 1vh;

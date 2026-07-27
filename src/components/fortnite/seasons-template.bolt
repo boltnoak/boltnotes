@@ -29,6 +29,7 @@
             <div class="rating-option" data-value="9.0">9.0</div>
             <div class="rating-option" data-value="9.5">9.5</div>
             <div class="rating-option" data-value="10">10</div>
+            <div class="rating-option" data-value="N/A">N/A</div>
         </div>
     </div>
     <div class="season-tags">
