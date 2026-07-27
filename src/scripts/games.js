@@ -249,7 +249,7 @@ function createGameCard(game, isPlaying = false, completedIndex = null) {
         div.classList.add("pre-order");
     }
 
-    img.src = 'assets://placeholder.png';
+    img.src = 'assets://basics/placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -556,7 +556,7 @@ function createGameAchieCard(game, completedIndex = null) {
         div.classList.add("no-achie");
     }
 
-    img.src = 'assets://placeholder.png';
+    img.src = 'assets://basics/placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -1091,7 +1091,7 @@ async function openGamePopup(el) {
         logo: gamesDB.logo
     });
 
-    banner.src = localHeroPath ? `file://${localHeroPath}` : 'assets://placeholder.png';
+    banner.src = localHeroPath ? `file://${localHeroPath}` : 'assets://basics/placeholder.png';
     logo.src = localLogoPath ? `file://${localLogoPath}` : '';
 
     logo.alt = el.dataset.id;

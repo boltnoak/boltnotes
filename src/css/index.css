@@ -73,8 +73,8 @@ header {
     height: 14vh;
     width: 14vw;
     background-color: var(--text);
-    mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
-    -webkit-mask: url(assets://boltnotes-logo.svg) no-repeat center / contain;
+    mask: url(assets://basics/boltnotes-logo.svg) no-repeat center / contain;
+    -webkit-mask: url(assets://basics/boltnotes-logo.svg) no-repeat center / contain;
     user-select: none;
 }
 .fortnite-icon {

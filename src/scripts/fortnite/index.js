@@ -12,7 +12,7 @@ chapters.forEach((capituloAtual) => {
         
         const imagemCapitulo = capituloAtual.querySelector('.chapter-image');
         if (imagemCapitulo) {
-            imagemCapitulo.src = `assets://${nomeArquivo}-cover.jpg`;
+            imagemCapitulo.src = `assets://fortnite-chapter-covers/${nomeArquivo}-cover.jpg`;
         }
 
         capituloAtual.addEventListener('click', () => {
@@ -68,8 +68,7 @@ async function loadLatestFN() {
 
         if (!latest) return;
 
-        const latestPathLobby = `assets://${latest.key}-lobby.jpg`;
-        const latestPath = `assets://${latest.key}.jpg`;
+        const latestPath = `assets://fortnite-${latest.key}-assets/${latest.key}.jpg`;
 
         console.log(`Temporada mais recente do Fortnite: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
 

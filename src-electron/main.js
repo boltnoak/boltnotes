@@ -138,6 +138,8 @@ async function downloadPackage(name) {
   const zipName = name.endsWith('.zip') ? name : `${name}.zip`;
 
   const zipPath = path.join(app.getPath('userData'), zipName);
+  const folderName = name.replace('.zip', '');
+  const extractPath = path.join(ASSETS_DIR, folderName);
 
   let lastLog = '';
 
@@ -164,7 +166,7 @@ async function downloadPackage(name) {
   const zip = new AdmZip(zipPath);
 
   await new Promise((resolve, reject) => {
-    zip.extractAllToAsync(ASSETS_DIR, true, false, (error) => {
+    zip.extractAllToAsync(extractPath, true, false, (error) => {
       if (error) reject(error);
       else resolve();
     });

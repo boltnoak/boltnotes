@@ -206,13 +206,13 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (card) card.dataset.code = code;
 
         const bg = clone.querySelector('.banner');
-        if (bg) bg.style.backgroundImage = `url('assets://${code}.jpg')`;
+        if (bg) bg.style.backgroundImage = `url('assets://fortnite-${code}-assets/${code}.jpg')`;
 
         const character = clone.querySelector('.season-character');
-        if (character) character.src = `assets://${code}-character.png`;
+        if (character) character.src = `assets://fortnite-${code}-assets/${code}-character.png`;
 
         const seasonMap = clone.querySelector('.season-map');
-        if (seasonMap) seasonMap.src = `assets://${code}-map.jpg`;
+        if (seasonMap) seasonMap.src = `assets://fortnite-${code}-assets/${code}-map.jpg`;
 
         const seasonDiv = clone.querySelector('.season');
         const isLocked = currentStats.locked ?? false;
@@ -373,7 +373,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                     const newEvent = templateEvent.cloneNode(true);
                     newEvent.style.display = 'flex';
                     
-                    newEvent.querySelector('.event-img').src = evt.img || '';
+                    newEvent.querySelector('.event-img').src = `assets://fortnite-${code}-assets/${evt.img}` || '';
                     newEvent.querySelector('.event-title').textContent = evt.title || '';
                     newEvent.querySelector('.event-type').textContent = evt.type || '';
                     newEvent.querySelector('.event-date').textContent = evt.date || '';

@@ -101,11 +101,11 @@ async function openTrailer(el) {
 
             for (const formato of formatosSuportados) {
                 const fileNameTemp = `${code}_${tipo}.${formato}`;
-                const fileExists = await window.electronAPI.existsAssets(`assets://${fileNameTemp}`);
+                const fileExists = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/${fileNameTemp}`);
 
                 if (fileExists) {
                     fileNameValido = fileNameTemp;
-                    path = `assets://${fileNameValido}`;
+                    path = `assets://fortnite-${code}-assets/${fileNameValido}`;
                     break;
                 }
             }
@@ -255,8 +255,8 @@ async function openLiveEvent(el, fileCode, eventTitle) {
     document.getElementById("video-popup").style.display = "flex";
     document.querySelector('html').style.overflow = "hidden";
 
-    const ext = await window.electronAPI.existsAssets(`${fileCode}.webm`) ? 'webm' : 'mp4';
-    const path = `${fileCode}.${ext}`;
+    const ext = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/${fileCode}.webm`) ? 'webm' : 'mp4';
+    const path = `assets://fortnite-${code}-assets/${fileCode}.${ext}`;
     const video = document.getElementById('video');
     const wrapper = document.querySelector('.video-wrapper');
             
@@ -347,8 +347,8 @@ async function chooseTeam(team) {
     const key = `${code}-${team}`;
     const titleKey = `${EVENT_KEYS[code]}-${team}`;
     const titleName = window._t?.[titleKey] || code;
-    const ext = await window.electronAPI.existsAssets(`assets://live-event-${key}.webm`) ? 'webm' : 'mp4';
-    const path = `assets://live-event-${key}.${ext}`;
+    const ext = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/live-event-${key}.webm`) ? 'webm' : 'mp4';
+    const path = `assets://fortnite-${code}-assets/live-event-${key}.${ext}`;
 
     const title = document.getElementById('video-title');
     title.textContent = titleName || key;
