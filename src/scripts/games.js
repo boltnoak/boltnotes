@@ -1198,13 +1198,13 @@ async function openGamePopup(el) {
         applyLocale();
     }
 
-    if (achieGame.achieStatus.toLowerCase() == 'aplatinar') {
+    if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'aplatinar') {
         updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
     }
-    if (achieGame.achieStatus.toLowerCase() == 'platinando') {
+    if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'platinando') {
         updateAchie(achieStatusText, 'platinando', 'Platinando');
     }
-    if (achieGame.achieStatus.toLowerCase() == 'platinado') {
+    if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'platinado') {
         updateAchie(achieStatusText, 'platinado', 'Platinado');
     }
 

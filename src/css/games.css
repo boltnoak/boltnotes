@@ -853,6 +853,9 @@ header {
     border: solid .3vh transparent;
     transition: border .15s linear;
 }
+.add-game-form input:hover {
+    border: solid .3vh var(--btn);
+}
 .add-game-form input:focus {
     border: solid .3vh var(--btn);
 }

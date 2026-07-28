@@ -445,7 +445,8 @@ function getConfig() {
     last_seen_version: null,
     theme: 'dark',
     featured: 'none',
-    welcomed: false
+    welcomed: false,
+    show_featured_changer: false
   };
   try {
     if (fs.existsSync(configPath)) {

@@ -951,6 +951,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
     const configAssets = await window.api.assetsConfig.get();
 
+    if (config.show_featured_changer === false) {
+        document.querySelector('.featured-change-div').style.display = 'none';
+        document.getElementById('featured-title').style.display = 'flex';
+    }
+    else if (config.show_featured_changer === true) {
+        document.querySelector('.featured-change-div').style.display = 'flex';
+        document.getElementById('featured-title').style.display = 'none';
+        initFeaturedFortnite();
+    }
+
     const toggles = {
         'notes_on_home': document.getElementById('notes'),
         'backlog_on_home': document.getElementById('games'),
@@ -978,10 +988,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.index-sep-bar').style.visibility = 'hidden';
     } else if (currentFeatured === 'fn_fast_edit') {
         initFeaturedFortnite();
+        document.querySelector('.featured-option[data-value="playing-now"]').classList.remove('active');
+        document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.add('active');
         document.querySelector('#featured-title').innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
         document.querySelector('.playingNow-panel').style.display = 'none';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
     } else if (currentFeatured === 'playing_now') {
+        document.querySelector('.featured-option[data-value="playing-now"]').classList.add('active');
+        document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.remove('active');
         document.querySelector('#featured-title').innerHTML = `${window._t['playing-now']}<i class="fa-solid fa-gamepad"></i>`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
         document.querySelector('.playingNow-panel').style.display = 'flex';
@@ -1083,7 +1097,7 @@ async function initFeaturedFortnite() {
     const img = document.getElementById('recentSeason-image');
 
     if (titleEl && img) {
-        img.style.backgroundImage = `url(assets://${code}.jpg)`;
+        img.style.backgroundImage = `url(assets://fortnite-${code}-assets/${code}.jpg)`;
         titleEl.innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
         document.querySelector('.shine-effect-v-latest-season').style.display = 'none'
     }
@@ -1245,3 +1259,38 @@ async function loadLatestFN() {
 }
 
 loadLatestFN();
+
+function changeFeatured(el) {
+    const code = el.dataset.value;
+
+    const playingNow = document.querySelector('.playingNow-panel');
+    const fnQuickEdit = document.querySelector('.recentSeason-panel');
+
+    if (code == 'playing-now') {
+        loadGames();
+        playingNow.style.display = 'flex';
+        fnQuickEdit.style.display = 'none';
+    }
+    else if (code == 'fn-quick-edit') {
+        playingNow.style.display = 'none';
+        initFeaturedFortnite();
+        fnQuickEdit.style.display = 'flex';
+    }
+    changeFeaturedView(code);
+}
+
+function changeFeaturedView(el) {
+    const code = el;
+
+    const playingNow = document.querySelector('.featured-option[data-value="playing-now"]');
+    const fnQuickEdit = document.querySelector('.featured-option[data-value="fn-quick-edit"]');
+
+    if (code == 'playing-now') {
+        playingNow.classList.add('active');
+        fnQuickEdit.classList.remove('active');
+    }
+    else if (code == 'fn-quick-edit') {
+        playingNow.classList.remove('active');
+        fnQuickEdit.classList.add('active');
+    }
+}
