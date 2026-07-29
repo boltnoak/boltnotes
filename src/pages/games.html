@@ -28,7 +28,10 @@
                     </div>
                 </div>
             </div>
-            <p class="addGameOpen"><span data-i18n="add-new-game">Adicionar novo jogo</span></p>
+            <div class="manage-games">
+                <p class="addGameOpen"><span data-i18n="add-new-game">Adicionar novo jogo</span></p>
+                <i id="delete-games" class="fa-solid fa-trash tooltip" data-tooltip="Remover jogo"></i>
+            </div>
         </div>
         <p class="sidebar-sep-bar"></p>
         <div class="page-content">
@@ -188,6 +191,22 @@
         </div>
         <div class="add-game-form-options">
             <a id="addGameBtn"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
+        </div>
+    </div>
+</div>
+
+<div id="delete-confirm-popup" class="confirm-popup">
+    <div class="confirm-popup-content">
+        <i class="fa-solid fa-triangle-exclamation confirm-icon"></i>
+        <div class="delete-confirm-title-div">
+            <span class="delete-confirm-remove" data-i18n="delete-confirm-title">Remover</span>
+            <p class="confirm-game-name" id="delete-confirm-name"></p>
+            <span>?</span>
+        </div>
+        <p class="confirm-warning" data-i18n="delete-confirm-warning">Essa ação não pode ser desfeita.</p>
+        <div class="confirm-buttons">
+            <button id="delete-confirm-cancel" data-i18n="cancel">Cancelar</button>
+            <button id="delete-confirm-yes" class="danger" data-i18n="delete-confirm-title">Remover</button>
         </div>
     </div>
 </div>

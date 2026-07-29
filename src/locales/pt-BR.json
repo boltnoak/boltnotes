@@ -117,5 +117,8 @@
   "welcome-next": "Começar configuração",
   "next": "Próximo",
   "finish": "Terminar",
-  "and": "e"
+  "and": "e",
+  "delete-confirm-title": "Remover",
+  "cancel": "Cancelar",
+  "delete-confirm-warning": "Essa ação não pode ser desfeita."
 }

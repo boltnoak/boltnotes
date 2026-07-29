@@ -614,6 +614,7 @@ header {
     padding: 0;
     height: 1vh;
     flex: none;
+    background-color: var(--tab);
 }
 .game.platinado .status-text {
     color: var(--yellow);
@@ -737,7 +738,7 @@ header {
     flex: none;
 }
 .status-div {
-    background-color: var(--tab-active);
+    background-color: var(--tag);
     object-fit: cover;
     margin: 0 .5vw 1vh .5vw;
     padding: .45vh .5vw 1.15vh .5vw;
@@ -809,21 +810,26 @@ header {
     overflow: hidden;
 }
 .addGameOpen {
-    margin: 0 .5vw .2vh .8vw;
-    padding: 2vh;
+    margin: 0;
+    padding: 1.5vh 0;
     font-weight: 700;
     border-radius: 1.25vh;
     transition: all .1s linear;
-    background-color: var(--btn);
+    background-color: var(--btn-color);
+    color: var(--btn-text-color);
     cursor: pointer;
     text-decoration: underline .21vh;
     text-underline-offset: .3vh;
     text-decoration-color: transparent;
     transition: all .15s linear;
     text-align: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .addGameOpen:hover {
-    background-color: var(--btn-hover);
+    background-color: var(--btn-hover-color);
 }
 #addGame-popup {
     position: absolute;
@@ -1749,7 +1755,209 @@ header {
     background-color: var(--tab-hover);
     padding: 1vh .6vw;
     transition: opacity .2s ease, transform .1s ease;
+    color: var(--text);
 }
 #reload-btn[data-tooltip]:hover::after {
     transform: translate(-50%, -180%);
+}
+.tooltip[data-tooltip]::after {
+    transform: translate(-50%, -180%);
+    background-color: var(--tab-hover);
+    padding: 1vh .6vw;
+    transition: opacity .2s ease, transform .1s ease;
+    z-index: 99;
+    color: var(--text);
+}
+.tooltip[data-tooltip]:hover::after {
+    transform: translate(-50%, -180%);
+}
+#delete-games.tooltip[data-tooltip]::after {
+    transform: translate(-52.5%, -200%);
+    background-color: var(--tab-hover);
+    padding: 1vh .6vw;
+    transition: opacity .2s ease, transform .1s ease;
+    z-index: 99;
+    color: var(--text);
+}
+#delete-games.tooltip[data-tooltip]:hover::after {
+    transform: translate(-52.5%, -200%);
+}
+
+.manage-games {
+    display: flex;
+    flex-direction: row;
+    width: 96.5%;
+    margin: 0 .5vw .2vh 0;
+    margin: 0 .5vw .2vh .8vw;
+    gap: .5vw;
+}
+#delete-games {
+    padding: 2.15vh 1.5vw;
+    margin: 0;
+    font-weight: 700;
+    border-radius: 1.25vh;
+    transition: all .1s linear;
+    background-color: var(--btn);
+    cursor: pointer;
+    text-decoration: underline .21vh;
+    text-underline-offset: .3vh;
+    text-decoration-color: transparent;
+    transition: all .1s linear;
+    text-align: center;
+    width: fit-content;
+    height: fit-content;
+}
+#delete-games:hover {
+    background-color: var(--btn-hover);
+}
+#delete-games.active {
+    background-color: var(--red);
+    color: var(--text-red);
+}
+
+
+body.delete-mode-active .game {
+    cursor: pointer;
+    position: relative;
+}
+
+body.delete-mode-active .game::after {
+    content: '\f1f8';
+    font-family: 'Font Awesome 7 Free';
+    font-weight: 900;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(220, 40, 40, 0);
+    color: transparent;
+    font-size: 7vh;
+    transition: all 0.15s ease;
+    pointer-events: none;
+    border-radius: 1vh;
+}
+
+body.delete-mode-active .game:hover::after {
+    color: var(--red-light);
+    background-color: var(--red);
+}
+body.delete-mode-active .game.jogando::after {
+    font-size: 4vh;
+}
+body.delete-mode-active .game.jogando:hover::after {
+    color: var(--red-light);
+    background-color: var(--red);
+}
+body.delete-mode-active .game.platinando::after {
+    font-size: 5.5vh;
+}
+body.delete-mode-active .game.platinando:hover::after {
+    color: var(--red-light);
+    background-color: var(--red);
+}
+body.delete-mode-active .game:hover::after {
+    color: var(--red-light);
+    background-color: var(--red);
+}
+
+#delete-mode-btn.active {
+    background-color: var(--red);
+    color: var(--text);
+}
+
+.confirm-popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+}
+
+.confirm-popup-content {
+    background: var(--bg);
+    border-radius: 2vh;
+    padding: 3vh 1.5vw;
+    max-width: 26vw;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vh;
+}
+
+.confirm-popup-content i, .confirm-popup-content p {
+    margin: 0;
+}
+
+.confirm-icon {
+    font-size: 5vh;
+    color: var(--red);
+    margin-bottom: 1vh;
+}
+
+.confirm-game-name {
+    font-size: 2.5vh;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.confirm-warning {
+    font-size: 1.8vh;
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 1vw;
+    margin-top: 1vh;
+    width: 100%;
+}
+
+.delete-confirm-title-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5vh;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.delete-confirm-remove {
+    margin: 0 .45vw 0 0;
+}
+
+.confirm-buttons button {
+    font-family: 'Montserrat';
+    flex: 1;
+    padding: 1.2vh 0;
+    border-radius: 1vh;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    font-size: 2vh;
+    transition: background .1s linear;
+}
+
+#delete-confirm-cancel {
+    background: var(--btn);
+    color: var(--text);
+}
+
+#delete-confirm-cancel:hover {
+    background: var(--btn-hover);
+}
+
+#delete-confirm-yes.danger {
+    background: var(--red);
+    color: var(--text-red);
+}
+
+#delete-confirm-yes.danger:hover {
+    background: var(--red-light);
 }

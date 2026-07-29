@@ -3,6 +3,9 @@ const CAMPAIGNS_FILE = "Games/campaigns.json";
 const ACHIEVEMENTS_FILE = "Games/achievements.json";
 const NOTES_FILE = "Games/notes.json";
 
+let deleteMode = false;
+let gameToDelete = null;
+
 const panel = document.querySelector('.playingNow-panel');
 const DISTANCIA_SCROLL = 67; 
 panel.addEventListener('wheel', (e) => {
@@ -361,7 +364,13 @@ function createGameCard(game, isPlaying = false, completedIndex = null) {
     }
     div.appendChild(gameInfo);
 
-    div.addEventListener('click', () => openGamePopup(div));
+    div.addEventListener('click', () => {
+        if (deleteMode) {
+            askDeleteConfirmation(game, div);
+            return;
+        }
+        openGamePopup(div);
+    });
 
     applyLocale();
 
@@ -1765,3 +1774,65 @@ async function renderChart() {
 }
 
 renderChart();
+
+const deleteModeBtn = document.getElementById('delete-games');
+const gamesGrid = document.getElementById('view-campaigns');
+
+deleteModeBtn.addEventListener('click', () => {
+    deleteMode = !deleteMode;
+    deleteModeBtn.classList.toggle('active', deleteMode);
+    document.body.classList.toggle('delete-mode-active', deleteMode);
+});
+function askDeleteConfirmation(game, cardEl) {
+    gameToDelete = game;
+    
+    const confirmPopup = document.getElementById('delete-confirm-popup');
+    const gameNameEl = document.getElementById('delete-confirm-name');
+    
+    gameNameEl.textContent = game.name;
+    confirmPopup.style.display = 'flex';
+}
+
+document.getElementById('delete-confirm-yes').addEventListener('click', async () => {
+    if (!gameToDelete) return;
+    
+    await window.api.games.deleteGame(gameToDelete.name);
+    
+    document.getElementById('delete-confirm-popup').style.display = 'none';
+    gameToDelete = null;
+    deleteMode = false;
+    deleteModeBtn.classList.remove('active');
+    document.body.classList.remove('delete-mode-active');
+    
+    cachedCampaignStatus = null;
+    cachedAchieStatus = null;
+    cachedNotes = null;
+    await loadGames();
+    await loadGamesAchie();
+});
+
+document.getElementById('delete-confirm-cancel').addEventListener('click', () => {
+    const deletePopupDiv = document.getElementById('delete-confirm-popup');
+    const deletePopup = document.querySelector('.confirm-popup-content');
+    gameToDelete = null;
+
+    if (deletePopupDiv) {
+        deletePopup.classList.add('is-closing');
+        
+        deletePopup.addEventListener('animationend', () => {
+            deletePopupDiv.style.display = 'none';
+            deletePopup.classList.remove('is-closing');
+        }, { once: true });
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && deleteMode) {
+        deleteMode = false;
+        deleteModeBtn.classList.remove('active');
+        document.body.classList.remove('delete-mode-active');
+    }
+});
+
+gamePopupDiv.addEventListener('click', (e) => {
+});

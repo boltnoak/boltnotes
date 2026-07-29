@@ -1696,3 +1696,41 @@ ipcMain.handle('i18n:get', () => {
     if (!fs.existsSync(localePath)) return {};
     return JSON.parse(fs.readFileSync(localePath, 'utf-8'));
 });
+
+ipcMain.handle('games:delete', async (_, gameName) => {
+    const gamesPath = path.join(DOCUMENTS, 'Games', 'games.json');
+    const statusPath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
+    const achievementsPath = path.join(DOCUMENTS, 'Games', 'achievements.json');
+    const notesPath = path.join(DOCUMENTS, 'Games', 'notes.json');
+
+    try {
+        if (fs.existsSync(gamesPath)) {
+            const gamesData = JSON.parse(fs.readFileSync(gamesPath, 'utf-8'));
+            gamesData.games = (gamesData.games || []).filter(g => g.name !== gameName);
+            fs.writeFileSync(gamesPath, JSON.stringify(gamesData, null, 2));
+        }
+
+        if (fs.existsSync(statusPath)) {
+            let statusList = JSON.parse(fs.readFileSync(statusPath, 'utf-8'));
+            statusList = statusList.filter(g => g.name !== gameName);
+            fs.writeFileSync(statusPath, JSON.stringify(statusList, null, 2));
+        }
+
+        if (fs.existsSync(achievementsPath)) {
+            let achievementsList = JSON.parse(fs.readFileSync(achievementsPath, 'utf-8'));
+            achievementsList = achievementsList.filter(g => g.name !== gameName);
+            fs.writeFileSync(achievementsPath, JSON.stringify(achievementsList, null, 2));
+        }
+
+        if (fs.existsSync(notesPath)) {
+            const notes = JSON.parse(fs.readFileSync(notesPath, 'utf-8'));
+            delete notes[gameName];
+            fs.writeFileSync(notesPath, JSON.stringify(notes, null, 2));
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao deletar jogo:', error);
+        return { success: false, error: error.message };
+    }
+});

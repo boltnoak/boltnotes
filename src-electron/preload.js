@@ -107,7 +107,8 @@ contextBridge.exposeInMainWorld('api', {
     achieCount: () => ipcRenderer.invoke('games:achie-count'),
     getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
     addGame: (gameData) => ipcRenderer.invoke('games:add', gameData),
-    statsZerados: () => ipcRenderer.invoke('games:stats-zerados')
+    statsZerados: () => ipcRenderer.invoke('games:stats-zerados'),
+    deleteGame: (name) => ipcRenderer.invoke('games:delete', name)
   },
 
   openLink: (url) => ipcRenderer.invoke('open-external-link', url),

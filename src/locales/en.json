@@ -117,5 +117,8 @@
   "welcome-next": "Get Started",
   "next": "Next",
   "finish": "Finish",
-  "and": "and"
+  "and": "and",
+  "delete-confirm-title": "Delete",
+  "cancel": "Cancel",
+  "delete-confirm-warning": "This action cannot be undone."
 }

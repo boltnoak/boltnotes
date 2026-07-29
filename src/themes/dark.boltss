@@ -11,7 +11,7 @@
     --text-blue: rgb(0, 90, 150);
     --text-yellow: rgba(250, 110, 50);
     --text-orange: rgb(160, 70, 0);
-    --text-red: rgba(255, 70, 70);
+    --text-red: rgb(155, 35, 35);
 
     --green: rgba(0, 150, 70);
     --blue: rgba(20, 150, 255);
