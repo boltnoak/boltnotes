@@ -69,29 +69,11 @@ async function openTrailer(el) {
         const pageName = document.getElementById(`${code}-name`)?.textContent;
         const seasonName = seasonDataInfo.name || pageName || code;
 
-        const popup = document.getElementById("video-popup");
-        const wrapper = popup?.querySelector('.video-wrapper');
-
-        if (popup) popup.style.display = "flex";
-        document.querySelector('html').style.overflow = "hidden";
+        await openVideoPlayer(el);
 
         const tipos = ["game", "cine", "game2", "cine2", "game3", "cine3", "game4", "cine4", "extra"];
         let firstVideo = null;
         let firstTipo = null;
-
-        if (wrapper) {
-            const triggerControls = () => window.showControls(wrapper);
-
-            wrapper.onmousemove = () => window.showControls(wrapper);
-            wrapper.onmousedown = () => window.showControls(wrapper);
-            wrapper.ontouchstart = () => window.showControls(wrapper);
-            wrapper.addEventListener('wheel', triggerControls, { passive: true });
-        }
-
-        allowVolumeControl();
-
-        const video = document.getElementById('video');
-        if (video) video.volume = .5;
 
         for (const tipo of tipos) {
             const formatosSuportados = ['webm', 'mp4', 'mkv'];
@@ -192,7 +174,6 @@ async function openTrailer(el) {
                         timeDisplay.textContent = `${current}/${duration}`;
                     }
                 };
-
                 popupVideo.ontimeupdate = () => {
                     updateTimeText();
 
@@ -201,19 +182,13 @@ async function openTrailer(el) {
                         if (popupJuice) popupJuice.style.width = perc + "%";
                     }
                 };
-
                 popupVideo.onloadedmetadata = updateTimeText;
-
                 updateTimeText();
-                
+
                 if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
             }
         }
-
         document.querySelector('.moreVideos-section').style.display = 'flex';
-        
-        if (wrapper) window.showControls(wrapper);
-
     } finally {
         isOpening = false;
     }
@@ -238,16 +213,14 @@ async function loadCloudSeasonInfo() {
     }
 }
 async function openLiveEvent(el, fileCode, eventTitle) {
+    await openVideoPlayer(el);
+
     const container = el.closest('.fn-season');
     const code = container?.dataset.code;
-    const listContainer = document.getElementById("more-videos");
-
-    if (!code || !listContainer) return;
 
     const title = document.getElementById('video-title');
     title.textContent = eventTitle;
 
-    listContainer.innerHTML = "";
     const controls = document.getElementById('player-controls');
     const videoTitle = document.getElementById('video-title');
     const closeBtn = document.querySelector('#video-close');
@@ -255,24 +228,25 @@ async function openLiveEvent(el, fileCode, eventTitle) {
     document.getElementById("video-popup").style.display = "flex";
     document.querySelector('html').style.overflow = "hidden";
 
-    const ext = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/${fileCode}.webm`) ? 'webm' : 'mp4';
-    const path = `assets://fortnite-${code}-assets/${fileCode}.${ext}`;
-    const video = document.getElementById('video');
-    const wrapper = document.querySelector('.video-wrapper');
-            
-    if (wrapper) {
-        const triggerControls = () => window.showControls(wrapper);
-        wrapper.onmousemove = () => window.showControls(wrapper);
-        wrapper.onmousedown = () => window.showControls(wrapper);
-        wrapper.ontouchstart = () => window.showControls(wrapper);
-        wrapper.addEventListener('wheel', triggerControls, { passive: true });
+    const basePath = `assets://fortnite-${code}-assets/${fileCode}`;
+    const hasWebm = await window.electronAPI.existsAssets(`${basePath}.webm`);
+    let ext = null;
+    if (hasWebm) {
+        ext = 'webm';
+    } else {
+        const hasMp4 = await window.electronAPI.existsAssets(`${basePath}.mp4`);
+        if (hasMp4) {
+            ext = 'mp4';
+        }
     }
+    if (!ext) {
+        closeVideo();
+        return; 
+    }
+    const path = `${basePath}.${ext}`;
+    const video = document.getElementById('video');
 
-    allowVolumeControl();
     changeVideo(path);
-
-    video.volume = .5;
-    console.log('Volume inicial do video: ' + Math.round(video.volume * 100) + "%")
 
     const playPromise = video.play();
         if (playPromise !== undefined) {
@@ -308,9 +282,6 @@ async function openLiveEvent(el, fileCode, eventTitle) {
         updateTimeText();
         if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
     }
-
-    const moreVideos = document.querySelector('.moreVideos-section');
-    moreVideos.style.display = 'none';
 
     video.addEventListener('timeupdate', () => {
     const isIntro = video.src.includes('live-event-c7s2.webm') || video.src.includes('live-event-c7s2.mp4');

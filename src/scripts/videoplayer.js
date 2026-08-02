@@ -220,14 +220,40 @@ function allowVolumeControl() {
     }, { passive: false });
 }
 
-    window.addEventListener('keydown', (e) => {
-        const popup = document.getElementById("video-popup");
-        const wrapper = popup?.querySelector('.video-wrapper');
+window.addEventListener('keydown', (e) => {
+    const popup = document.getElementById("video-popup");
+    if (popup && popup.style.display === 'flex') {
         if (e.code === "Space") {
             e.preventDefault();
-            togglePlay();
-            showControls(wrapper);
-        }
-        return;
-    })
 
+            const wrapper = popup?.querySelector('.video-wrapper');
+
+            if (typeof togglePlay === 'function') togglePlay();
+            if (typeof showControls === 'function') showControls(wrapper);
+        }
+    }
+});
+
+async function openVideoPlayer(el) {
+        const popup = document.getElementById("video-popup");
+        const wrapper = popup?.querySelector('.video-wrapper');
+
+        if (popup) popup.style.display = "flex";
+        document.querySelector('html').style.overflow = "hidden";
+
+        if (wrapper) {
+            const triggerControls = () => window.showControls(wrapper);
+
+            wrapper.onmousemove = () => window.showControls(wrapper);
+            wrapper.onmousedown = () => window.showControls(wrapper);
+            wrapper.ontouchstart = () => window.showControls(wrapper);
+            wrapper.addEventListener('wheel', triggerControls, { passive: true });
+        }
+
+        allowVolumeControl();
+
+        const video = document.getElementById('video');
+        if (video) video.volume = .5;
+        
+        if (wrapper) window.showControls(wrapper);
+}

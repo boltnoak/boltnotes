@@ -115,8 +115,8 @@ contextBridge.exposeInMainWorld('api', {
   getAppVersion: () => ipcRenderer.invoke('app-version'),
 
   fortnite: { getTrailers: () => ipcRenderer.invoke('fortnite:fetch-trailers'),
-    getSeasons: () => ipcRenderer.invoke('fortnite:fetch-seasons'),
-    listTrailers: () => ipcRenderer.invoke('fortnite:list-trailers') },
+    getSeasons: () => ipcRenderer.invoke('fortnite:fetch-seasons')
+  },
 
   assetsConfig: {
     get: () => ipcRenderer.invoke('assets-config:get'),

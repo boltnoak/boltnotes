@@ -49,8 +49,8 @@ async function loadFortniteStats() {
     const totalSeasons = keys.length;
     const totalChapters = chapters.size;
 
-    document.getElementById("season-count").textContent = `${totalSeasons + 20} ${window._t['fn-seasons']}`;
-    document.getElementById("chapter-count").textContent = `${totalChapters + 2} ${window._t['fn-chapters']}`;
+    document.getElementById("season-count").textContent = `${totalSeasons + 17} ${window._t['fn-seasons']}`;
+    document.getElementById("chapter-count").textContent = `${totalChapters + 1} ${window._t['fn-chapters']}`;
 
   } catch (error) {
     console.error("Erro ao calcular o progresso do Fortnite:", error);

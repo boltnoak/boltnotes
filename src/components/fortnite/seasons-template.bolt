@@ -6,53 +6,73 @@
         <i id="lock-unlock"></i>
         <i class="season-trailers fa-solid fa-circle-play" data-tooltip="Ver trailers"></i>
     </div>
-    <div class="banner">
-        <div class="rating-options">
-            <div class="rating-option" data-value="0">0</div>
-            <div class="rating-option" data-value="0.5">0.5</div>
-            <div class="rating-option" data-value="1.0">1.0</div>
-            <div class="rating-option" data-value="1.5">1.5</div>
-            <div class="rating-option" data-value="2.0">2.0</div>
-            <div class="rating-option" data-value="2.5">2.5</div>
-            <div class="rating-option" data-value="3.0">3.0</div>
-            <div class="rating-option" data-value="3.5">3.5</div>
-            <div class="rating-option" data-value="4.0">4.0</div>
-            <div class="rating-option" data-value="4.5">4.5</div>
-            <div class="rating-option" data-value="5.0">5.0</div>
-            <div class="rating-option" data-value="5.5">5.5</div>
-            <div class="rating-option" data-value="6.0">6.0</div>
-            <div class="rating-option" data-value="6.5">6.5</div>
-            <div class="rating-option" data-value="7.0">7.0</div>
-            <div class="rating-option" data-value="7.5">7.5</div>
-            <div class="rating-option" data-value="8.0">8.0</div>
-            <div class="rating-option" data-value="8.5">8.5</div>
-            <div class="rating-option" data-value="9.0">9.0</div>
-            <div class="rating-option" data-value="9.5">9.5</div>
-            <div class="rating-option" data-value="10">10</div>
-            <div class="rating-option" data-value="N/A">N/A</div>
+    <div class="banner-div">
+        <div class="banner">
+            <div class="rating-options">
+                <div class="rating-option" data-value="0">0</div>
+                <div class="rating-option" data-value="0.5">0.5</div>
+                <div class="rating-option" data-value="1.0">1.0</div>
+                <div class="rating-option" data-value="1.5">1.5</div>
+                <div class="rating-option" data-value="2.0">2.0</div>
+                <div class="rating-option" data-value="2.5">2.5</div>
+                <div class="rating-option" data-value="3.0">3.0</div>
+                <div class="rating-option" data-value="3.5">3.5</div>
+                <div class="rating-option" data-value="4.0">4.0</div>
+                <div class="rating-option" data-value="4.5">4.5</div>
+                <div class="rating-option" data-value="5.0">5.0</div>
+                <div class="rating-option" data-value="5.5">5.5</div>
+                <div class="rating-option" data-value="6.0">6.0</div>
+                <div class="rating-option" data-value="6.5">6.5</div>
+                <div class="rating-option" data-value="7.0">7.0</div>
+                <div class="rating-option" data-value="7.5">7.5</div>
+                <div class="rating-option" data-value="8.0">8.0</div>
+                <div class="rating-option" data-value="8.5">8.5</div>
+                <div class="rating-option" data-value="9.0">9.0</div>
+                <div class="rating-option" data-value="9.5">9.5</div>
+                <div class="rating-option" data-value="10">10</div>
+                <div class="rating-option" data-value="N/A">N/A</div>
+            </div>
+        </div>
+        <div class="season-tags">
+            <div class="status rating-container">
+                <div>
+                    <i class="fa-solid fa-star"></i>
+                    <span data-i18n="rating">Nota:</span>
+                </div>
+                <span class="status-rating"></span>
+            </div>
+            <div class="sep-bar-status"></div>
+            <div class="status">
+                <div>
+                    <i class="fa-solid fa-square-caret-up"></i>
+                    <span data-i18n="levels">Níveis:</span>
+                </div>
+                <div>
+                    <i class="statusLevel-add fa-solid fa-plus"></i> <span class="status-level"></span>
+                    <i class="statusLevel-minus fa-solid fa-minus"></i>
+                </div>
+            </div>
+            <div class="sep-bar-status"></div>
+            <div class="status">
+                <div>
+                    <i class="fa-solid fa-trophy"></i>
+                    <span data-i18n="wins">Vitórias:</span>
+                </div>
+                <div>
+                    <i class="statusWin-add fa-solid fa-plus"></i> <span class="status-win"></span>
+                    <i class="statusWin-minus fa-solid fa-minus"></i>
+                </div>
+            </div>
+            <div class="sep-bar-status"></div>
+            <div class="status">
+                <div>
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <span data-i18n="release-date">Lançado em:</span>
+                </div>
+                <span class="releaseDate"></span>
+            </div>
         </div>
     </div>
-    <div class="season-tags">
-            <div class="status rating-container">
-                <i class="fa-solid fa-star"></i>
-                <span data-i18n="rating">Nota:</span>
-                <span class="status-rating"></span>
-                
-            </div>
-            <p class="status">
-                <i class="fa-solid fa-square-caret-up"></i>
-                <span data-i18n="levels">Níveis:</span>
-                <i class="statusLevel-add fa-solid fa-plus"></i> <span class="status-level"></span>
-                <i class="statusLevel-minus fa-solid fa-minus"></i>
-            </p>
-            <p class="status">
-                <i class="fa-solid fa-trophy"></i>
-                <span data-i18n="wins">Vitórias:</span>
-                <i class="statusWin-add fa-solid fa-plus"></i> <span class="status-win"></span>
-                <i class="statusWin-minus fa-solid fa-minus"></i>
-            </p>
-            <p class="status"><i class="fa-solid fa-calendar-day"></i><span data-i18n="release-date">Lançado em:</span> <span class="releaseDate"></span></p>
-        </div>
     <div class="season" data-locked="true">
         <div class="seasonStatus-title-div">
             <i class="fa-solid fa-note-sticky"></i>

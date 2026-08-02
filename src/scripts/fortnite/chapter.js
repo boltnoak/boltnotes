@@ -133,7 +133,6 @@ async function inicializarDados() {
 
         const chaptersMax = Math.max(...chaptersCount);
         const chaptersMin = Math.min(...chaptersCount);
-        console.log(chaptersMin)
 
         const beforeBtn = document.getElementById('before-chapter');
         const nextBtn = document.getElementById('next-chapter');
@@ -445,7 +444,7 @@ function openMap(el) {
     if (mapPopup && mapImage && code) {
         mapPopup.style.display = "flex";
         
-        mapImage.style.backgroundImage = `url('assets://${code}-map.jpg')`;
+        mapImage.style.backgroundImage = `url('assets://fortnite-${code}-assets/${code}-map.jpg')`;
         
         configurarZoomMapa(); 
         resetarZoomMapa();    
@@ -716,3 +715,11 @@ async function loadLatestFN() {
 }
 
 loadLatestFN();
+
+
+window.electronAPI.onCacheUpdated?.((info) => {
+    if (info.fileName.startsWith('fn-seasons')) {
+        cachedSeasonInfo = info.data;
+        // re-renderiza se estiver na página certa
+    }
+});

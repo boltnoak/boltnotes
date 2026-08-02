@@ -49,6 +49,12 @@ function parseMarkdown(text) {
     .replace(/^ # (.*)$/gm, " # $1");
 }
 
+function parseHidden(text) {
+  return text
+    .replace(/\n^\/\/ (.*)$/gm, "")
+    .replace(/^ \/\/ (.*)$/gm, "");
+}
+
 function getTextFromEditor() {
   return content.innerHTML
     .replace(/<br\s*\/?>/gi, "\n")
@@ -266,7 +272,8 @@ function renderContent() {
   } else {
     let html = parseMarkdown(rawContent);
     html = parseLinks(html);
-    html = parseIMG(html)
+    html = parseHidden(html);
+    html = parseIMG(html);
     html = html.replace(/<\/h([1-3])>\n/g, "</h$1>");
     html = html.replace(/\n/g, "<br>");
     content.innerHTML = html;

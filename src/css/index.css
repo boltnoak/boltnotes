@@ -76,8 +76,10 @@ header {
     justify-content: center;
     background-color: var(--tab);
     padding: .8vh .4vw;
-    border-radius: 1.5vh;
-    gap: .6vw;
+    margin: 0 0 .5vh 0;
+    border-radius: 4vh;
+    gap: .35vw;
+    width: fit-content;
 }
 .featured-option {
     display: flex;
@@ -86,7 +88,7 @@ header {
     align-items: center;
     background-color: var(--btn);
     padding: 1vh .75vw;
-    border-radius: 1vh;
+    border-radius: 3vh;
     gap: .5vw;
     font-weight: 600;
     cursor: pointer;

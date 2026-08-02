@@ -107,10 +107,16 @@
     height: fit-content;
 }
 .reviewTopic-smaller {
-    width: 90%;
+    width: 98%;
 }
 .reviewTopic-small {
     width: 75%;
+}
+.review-topictext[contenteditable="false"] {
+    cursor: default;
+}
+.review-topictext[contenteditable="true"] {
+    cursor: text;
 }
 .review-topictext[contenteditable="true"]:empty {
     cursor: text;

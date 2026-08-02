@@ -670,7 +670,7 @@ if (!gotTheLock) {
 
     manageStartup(configs.open_on_startup);
 
-    win.once('ready-to-show', () => {
+    win.once('ready-to-show', async () => {
       if (configs.maximize_on_start) {
         win.maximize();
       }
@@ -687,7 +687,7 @@ if (!gotTheLock) {
       } else {
         win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
 
-        syncAssets()
+        await syncAssets()
           .then(() => {
             assetsReady = true;
             win.webContents.send('assets-ready');
@@ -716,13 +716,13 @@ win.on('unmaximize', () => {
   });
 }
 
-ipcMain.on('welcome:done', () => {
+ipcMain.on('welcome:done', async () => {
   const currentConfig = getConfig();
   currentConfig.welcomed = true;
   fs.writeFileSync(path.join(APPDATA, 'config.json'), JSON.stringify(currentConfig, null, 2));
   win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
 
-  syncAssets()
+  await syncAssets()
     .then(() => {
       assetsReady = true;
       win.webContents.send('assets-ready');
@@ -798,27 +798,58 @@ ipcMain.handle('menu:is-maximized', () => { return win.isMaximized() });
 ipcMain.on('menu:is-maximized-sync', (event) => {
     event.returnValue = win ? win.isMaximized() : false;
 });
+
 async function fetchWithCache(url, cacheFileName) {
-  const cachePath = path.join(APPDATA, 'cache', cacheFileName);
-  
-  fs.mkdirSync(path.join(APPDATA, 'cache'), { recursive: true });
+  const cacheDir = path.join(APPDATA, 'cache');
+  const cachePath = path.join(cacheDir, cacheFileName);
+
+  if (!fs.existsSync(cacheDir)) {
+    fs.mkdirSync(cacheDir, { recursive: true });
+  }
+
+  if (fs.existsSync(cachePath)) {
+    try {
+      const cacheData = fs.readFileSync(cachePath, 'utf-8');
+      const cached = JSON.parse(cacheData);
+
+      updateCacheInBackground(url, cachePath).catch(() => {});
+
+      return cached;
+    } catch (error) {
+      console.warn(`Cache corrompido ou quebrado, buscando novo: ${cacheFileName}`);
+    }
+  }
 
   try {
     const response = await fetchWithRetry(url, {}, 2, 1000);
     const data = await response.json();
     
-    // Salva o cache
     fs.writeFileSync(cachePath, JSON.stringify(data), 'utf-8');
     return data;
   } catch (error) {
-    console.warn(`Falha ao buscar online. Usando cache: ${cacheFileName}`);
-    
-    if (fs.existsSync(cachePath)) {
-      return JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
-    }
-    
+    console.warn(`Falha ao buscar online e sem cache disponível: ${cacheFileName}`);
     return null;
   }
+}
+async function updateCacheInBackground(url, cachePath) {
+  try {
+    const response = await fetchWithRetry(url, {}, 1, 500);
+    const newData = await response.json();
+    const newDataStr = JSON.stringify(newData);
+    let oldDataStr = null;
+    
+    if (fs.existsSync(cachePath)) {
+      try {
+        oldDataStr = fs.readFileSync(cachePath, 'utf-8');
+      } catch (error) {}
+    }
+    if (newDataStr !== oldDataStr) {
+      fs.writeFileSync(cachePath, newDataStr, 'utf-8');
+      console.log(`Cache atualizado: ${path.basename(cachePath)}`);
+
+      win?.webContents.send('cache-updated', { fileName: path.basename(cachePath), data: newData });
+    }
+  } catch (error) {}
 }
 
 ipcMain.handle('updates:check-update', async () => {
@@ -871,7 +902,6 @@ ipcMain.on('assets-config:update', (_, key, value) => {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 });
 
-
 ipcMain.handle('fortnite:fetch-trailers', async () => {
   const language = getConfig().language;
   return await fetchWithCache(
@@ -886,11 +916,7 @@ ipcMain.handle('fortnite:fetch-seasons', async () => {
     `fn-seasons-${language}.json`
   );
 });
-ipcMain.handle('fortnite:list-trailers', () => {
-    return fs.readdirSync(
-        path.join(ASSETS_DIR, 'fortnite/trailers')
-    );
-});
+
 ipcMain.on('devTools', () => {
   if (!app.isPackaged && win && !win.isDestroyed()) {
     win.webContents.toggleDevTools();
