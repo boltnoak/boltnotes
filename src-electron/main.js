@@ -477,7 +477,7 @@ function createWindow() {
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
 
-    const larguraProporcional = Math.round(screenWidth * 0.9);
+    const larguraProporcional = Math.round(screenWidth * 0.86);
     const alturaProporcional = Math.round(screenHeight * 0.85);
 
     win = new BrowserWindow({

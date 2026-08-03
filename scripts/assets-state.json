@@ -1,8 +1,8 @@
 {
   "basics": {
-    "folderHash": "01c75b7b8b9a3ecc36bc0affc09ac8124c8ef3f060223d4d7569a62dd79e5658",
-    "zipHash": "e9afc8fd5abe2af888bcc0e694b4f7b34bef09ff87064c4d89fe9bc0ac01c881",
-    "zipSize": 2830034
+    "folderHash": "1a609044aeff952dcd67b5b7da7f04d8bed710ef7dac09a793f5e6db004c9670",
+    "zipHash": "57b8864857cc7c8af2068afe474a0a93c6ed4321485472c0a4127d15d2834eda",
+    "zipSize": 3087727
   },
   "fortnite-c3s3-assets": {
     "folderHash": "fdcfd546682eb101d7325955db92720dfb246f9ec0f536442b981a55af82d85c",
@@ -45,19 +45,19 @@
     "zipSize": 253145358
   },
   "fortnite-c5s1-assets": {
-    "folderHash": "9889dea81dd1fded9f566e2226773d84a57aaf55561b4f91cb6b469b53a01d90",
-    "zipHash": "1b38425dab9c2aa5481005293064805da44fe404b12fd5c39583e99a27b1d170",
-    "zipSize": 38940996
+    "folderHash": "17faf66525bffc069d1e8038c7516470bd31d3839bb2dbdf36804926bf4bc674",
+    "zipHash": "6bb69eb1a9808316e0e5eeddf90d3eaec397fb465254fefac0254c04c6b989ef",
+    "zipSize": 39020576
   },
   "fortnite-c5s2-assets": {
-    "folderHash": "4af3a666b68c66cfe8e9c54926ac8eefff6c22b797e3a55a669eb4a3669353eb",
-    "zipHash": "5931166a8e9168518aac31a9a0bf31c29b604d77a579c32516f99f5b6703a5c5",
-    "zipSize": 69283063
+    "folderHash": "d1a760806a6f9b9bbd5f4ab1402eb188dddf4750a578684642cdd066fc6d8e5b",
+    "zipHash": "0c3735f1fd38668d4fc032b509a0a455c5d7cc28375eb538d990c4310a3c86ec",
+    "zipSize": 69300906
   },
   "fortnite-c5s3-assets": {
-    "folderHash": "643429242aaef658432eb905de1f1333c37a0e0637e453a2eb54ebc40a575a20",
-    "zipHash": "276bed343dbddd9f18f2e6e9aa5f7fb89d1d547a56934880c3e1a827e2de40f3",
-    "zipSize": 41641216
+    "folderHash": "5df758472d4593fa70026dc2bc72a120bcb52b8dac63012c7787e4e57df2df0c",
+    "zipHash": "48959ddb7fbd604773d3c7408d6281836178a3d1560984241aaa312d0db5baf4",
+    "zipSize": 41657499
   },
   "fortnite-c5s4-assets": {
     "folderHash": "3f64e67d5c02ab5838fa331c4c053e1fdd8f93783fce59ea63e16f23a8e2e3d2",
@@ -75,9 +75,9 @@
     "zipSize": 314924988
   },
   "fortnite-c6s1-assets": {
-    "folderHash": "e28a854dd28a9feb59572aef80ff3307ba523f3a008f7194ce6bfe70460243f1",
-    "zipHash": "cdd72883bfc78bc847c6d61ac5c10d53c6328b135e11e0ebbd4a31ee7c788f76",
-    "zipSize": 150573344
+    "folderHash": "ed8d6337d15bad2a4c33f5344492c8b9955caac3b40a3a114be0951f65b46c1e",
+    "zipHash": "a42e819f66488557659ce9b5d582dcbab9917196100b85ebd924dc989255de53",
+    "zipSize": 150647307
   },
   "fortnite-c6s2-assets": {
     "folderHash": "6db385cc7f71c2aa247b027edb1b6f0b474e8248746c7bc83948c328885a6752",
@@ -109,24 +109,24 @@
     "zipHash": "cc88775781fbe646281d1fc4c5e8c0a1a353925f7522c14727d32a4fb0956420",
     "zipSize": 58374529
   },
-  "fortnite-chapter-covers": {
-    "folderHash": "0805d680578b510f4e34dd1cc131b81d41cab2fbd36e265b6ace88f0024727e7",
-    "zipHash": "aa453ac3c5d54809025820c679f92307e10578208e346e3755c3a7354782e0a5",
-    "zipSize": 2295278
-  },
   "fortnite-c3s2-assets": {
-    "folderHash": "2727350403c5c40194c88735ae1cdc8f68c5410f4f502537c2e885d32dde46c1",
-    "zipHash": "689f3399b19c92019888ab136198d9bc2ab5ae45715e5b76109988f1e991f9c6",
-    "zipSize": 30090516
+    "folderHash": "c0dd81d3873b9801f65850c13a1738442630030e3f742e2b841dc9aac78e5e53",
+    "zipHash": "0d5c82f22006570e44347b792d5a461676c2bbc5aa52bc2689006a6ee76c29c0",
+    "zipSize": 30329455
   },
   "fortnite-c3s1-assets": {
-    "folderHash": "f1d4fc9fddc66d8607a4167ebdfe1b0fa2770cec5a96f33c8d311981b08fc92f",
-    "zipHash": "bcb97d1aabc5974e76fe6e29f3a9097b2f2cca53ba0eb9146952fc8530cc2cff",
-    "zipSize": 35527635
+    "folderHash": "06df9cfa481f80b7e9f169bc9473c1ba875f12ef14ba7c59151ddca2f220be51",
+    "zipHash": "9592f3957d810560b986233da3a231b0f7bc01c348c2202e5e6e2a1f8fccb07c",
+    "zipSize": 35382361
   },
   "fortnite-c2s8-assets": {
     "folderHash": "7f92a01c7cf31585bf91c6a93e1a36032f4f80c628e5a9ac7fc708b10278e869",
     "zipHash": "dcf99ce9eec08c7c6f3aca9f6e4da6bcc35985cca6f5eac98d8c5c00cff56e90",
     "zipSize": 296686856
+  },
+  "fn-chapter-covers": {
+    "folderHash": "96d221dfdd23faef05eea4275cd1d14f4e73af4e67009f7e4d67364ecc01a5f6",
+    "zipHash": "35cbda3e64567751107de7ab07701f5d27d710fb65d8aacba8c08f314d41c805",
+    "zipSize": 2179156
   }
 }
