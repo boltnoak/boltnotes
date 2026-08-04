@@ -250,8 +250,10 @@ body {
     font-family: 'Montserrat';
 }
 .pageBody {
-    width: 100%;
+    width: 100vw;
     height: 100%;
+    height: 87.85vh;
+    transform: translateY(5.15vh);
     overflow: hidden;
     background: transparent !important;
 }
@@ -285,8 +287,8 @@ html.window-normal .app-container {
 }
 
 #menu {
-    padding: .9vh 0 1vh 1vw;
-    height: 4.5vh;
+    padding: 1.225vh 0 1.225vh .75vw;
+    height: 2.6vh;
     width: 100%;
     display: flex;
     z-index: 99;
@@ -299,7 +301,6 @@ html.window-normal .app-container {
 }
 #menuTitle {
     margin: 0;
-    margin-left: 1vh;
     color: var(--text);
     font-family: 'Montserrat';
     font-size: 2.4vh;
@@ -307,6 +308,8 @@ html.window-normal .app-container {
     display: flex;
     align-items: center;
     align-self: center;
+    width: 100%;
+    justify-content: center;
 }
 #update-btn {
     -webkit-app-region: no-drag;
@@ -325,7 +328,8 @@ html.window-normal .app-container {
 }
 .menuButtons {
     -webkit-app-region: no-drag;
-    margin: 0 1.9vh 0 0;
+    margin: 0;
+    padding: 0 .822vw 0 0;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -333,19 +337,18 @@ html.window-normal .app-container {
 #menuMin, #menuMax, #menuClose {
     color: var(--text);
     object-fit: cover;
-    padding: 2vh;
+    padding: 2vh .8vw;
+    font-size: 2vh;
+    font-weight: 700;
     cursor: pointer;
     -webkit-app-region: no-drag;
 }
 #menuMin:hover, #menuMax:hover {
-    background-color: rgba(255, 255, 255, .1);
+    background-color: var(--btn);
 }
 #menuClose:hover {
     background-color: var(--red);
     color: white;
-}
-#menu {
-  -webkit-app-region: drag;
 }
 
 #menuMin,
@@ -390,24 +393,25 @@ html.window-normal .app-container {
     -webkit-app-region: no-drag;
 }
 .back {
+    /* border-radius: 6vh; */
     border-radius: 4vh;
     border: solid .6vh transparent;
     transition: border 0.25s ease-in-out;
     padding: 0 .5vw;
     font-size: 3vh;
     color: var(--text);
-    font-family: 'Montserrat';
     font-weight: 700;
-    position: absolute;
     margin: 0;
-    left: 0;
     justify-content: center;
     text-decoration: none;
     user-select: none;
     align-items: center;
     display: flex;
-    gap: .25vw;
+    gap: .4vw;
     flex-direction: row-reverse;
+    /* background-color: var(--btn); */
+    /* transition: background .1s linear; */
+    /* padding: .2vh .85vw; */
 }
 .back i {
     color: var(--text);
@@ -417,7 +421,43 @@ html.window-normal .app-container {
 }
 .back:hover {
     border: solid .6vh var(--text);
+    /* background-color: var(--btn-hover); */
 }
+
+header div {
+    display: flex;
+    flex-direction: row;
+    gap: .225vw;
+}
+
+.home i {
+    color: var(--text);
+}
+.home {
+    border-radius: 4vh;
+    border: solid .6vh transparent;
+    transition: border 0.25s ease-in-out;
+    padding: .5vh .4vw;
+    font-size: 2.7vh;
+    color: var(--text);
+    font-family: 'Montserrat';
+    font-weight: 700;
+    justify-content: center;
+    text-decoration: none;
+    user-select: none;
+    align-items: center;
+    display: flex;
+    flex-direction: row-reverse;
+    cursor: pointer;
+    /* /* background-color: var(--btn); */
+    /* transition: background .1s linear; */
+    /* padding: .2vh .85vw; */
+}
+.home:hover {
+    border: solid .6vh var(--text);
+    /* background-color: var(--btn-hover); */
+}
+
 button:focus,
 a:focus,
 input:focus,
@@ -461,27 +501,11 @@ header {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     display: flex;
     gap: 1vh;
     overflow: hidden;
     text-align: center;
-}
-.home {
-    color: white;
-    border-radius: 2vh;
-    padding: 0 4px 2px 5px;
-    border: solid 4px transparent;
-    transition: all 0.25s ease-in-out;
-    font-size: 20px;
-    color: white;
-    text-decoration: none;
-    font-family: 'Montserrat';
-    font-weight: 700;
-    position: absolute;
-    left: 0;
-    margin-left: 28px;
-    user-select: none;
 }
 .title {
     font-size: 20px;
@@ -489,8 +513,12 @@ header {
     font-weight: 800;
     color: white;
 }
+/* * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--btn) transparent;
+} */
 ::-webkit-scrollbar {
-    width: .5vw;
+    width: 1.5vw;
     cursor: default;
 }
 ::-webkit-scrollbar-track {
@@ -498,11 +526,14 @@ header {
 }
 ::-webkit-scrollbar-thumb {
     background: var(--btn);
-    border-radius: 1vh;
+    border-radius: 6vh;
+    border: .5vw solid transparent;
+    background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
     background: var(--btn-hover);
     cursor: default;
+    background-clip: padding-box;
 }
 .sep-bar {
     margin: .4vh 0;
@@ -525,9 +556,9 @@ header {
     transition: all 0.1s linear;
     transform: translateY(60px);
 }
-footer {
-    margin-top: 2vh;
-}
+/* footer {
+    margin-top: .5vh;
+} */
 [contenteditable="true"] {
     background: transparent;
     outline: none;

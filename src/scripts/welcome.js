@@ -129,7 +129,7 @@ async function changeFeatured(selectEl) {
     if (selectedFeatured == 'fn_fast_edit') {
         document.querySelector('.page-infos').style.display = 'flex';
 
-        document.querySelector('#featured-title').innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
+        document.querySelector('#featured-title').innerHTML = `<i class="fa-solid fa-square-poll-horizontal"></i>Fortnite BR — ${window._t['fn-quick-edit']}`;
         document.querySelector('#featured-title').style.display = 'flex';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
         
@@ -138,7 +138,7 @@ async function changeFeatured(selectEl) {
     if (selectedFeatured == 'playing_now') {
         document.querySelector('.page-infos').style.display = 'flex';
 
-        document.querySelector('#featured-title').innerHTML = `${window._t['playing-now']}<i class="fa-solid fa-gamepad"></i>`;
+        document.querySelector('#featured-title').innerHTML = `<i class="fa-solid fa-gamepad"></i>${window._t['playing-now']}`;
         document.querySelector('#featured-title').style.display = 'flex';
         document.querySelector('.playingNow-panel').style.display = 'flex';
 
@@ -578,11 +578,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('#featured-title').style.display = 'none';
         document.querySelector('.page-infos').style.display = 'none';
     } if (currentFeatured === 'fn_fast_edit') {
-        document.querySelector('#featured-title').innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
+        document.querySelector('#featured-title').innerHTML = `<i class="fa-solid fa-square-poll-horizontal"></i>Fortnite BR — ${window._t['fn-quick-edit']}`;
         document.querySelector('.playingNow-panel').style.display = 'none';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
     } if (currentFeatured === 'playing_now') {
-        document.querySelector('#featured-title').innerHTML = `${window._t['playing-now']}<i class="fa-solid fa-gamepad"></i>`;
+        document.querySelector('#featured-title').innerHTML = `<i class="fa-solid fa-gamepad"></i>${window._t['playing-now']}`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
         document.querySelector('.playingNow-panel').style.display = 'flex';
     } else {

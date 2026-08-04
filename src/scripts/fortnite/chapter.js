@@ -9,14 +9,15 @@ let seasonTemplateHTML = null;
 async function loadHeader() {
     document.body.insertAdjacentHTML('afterbegin', `
         <header>
-            <a class="back"><span data-i18n="fn-chapters">Capítulos</span></a>
-            <a class="home" href="pages/index.html"></a>
+            <div>
+                <a class="back"><span data-i18n="fn-chapters">Capítulos</span></a>
+                <a class="home" href="pages/index.html"></a>
+            </div>
             <div class="chapter-section">
                 <i id="before-chapter"></i>
                 <p id="chapter-name"></p>
                 <i id="next-chapter"></i>
             </div>
-            <!--<a class="chapters"></a>-->
         </header>`);
     
     const chapterBtn = document.querySelector('.chapters');
@@ -382,7 +383,9 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                         openLiveEvent(
                             this,
                             evt.img.replace('-cover.png', ''),
-                            evt.title || 'Evento'
+                            evt.title || 'Evento',
+                            evt.author || null,
+                            evt.authorId || null
                         )
                     }
                 });

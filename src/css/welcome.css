@@ -35,7 +35,8 @@ header {
 
 .pageBody {
     width: 100%;
-    height: 100%;
+    height: 94.65vh;
+    transform: translateY(5.15vh);
     overflow: hidden;
     padding-top: 7vh;
     background: transparent !important;

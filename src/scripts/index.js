@@ -988,15 +988,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.index-sep-bar').style.visibility = 'hidden';
     } else if (currentFeatured === 'fn_fast_edit') {
         initFeaturedFortnite();
-        document.querySelector('.featured-option[data-value="playing-now"]').classList.remove('active');
         document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.add('active');
-        document.querySelector('#featured-title').innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
+        document.querySelector('.featured-option[data-value="playing-now"]').classList.remove('active');
+        document.querySelector('#featured-title i').classList.remove('fa-gamepad');
+        document.querySelector('#featured-title i').classList.add('fa-square-poll-horizontal');
+        document.querySelector('.featured-title-text').textContent = `Fortnite BR — ${window._t['fn-quick-edit']}`;
         document.querySelector('.playingNow-panel').style.display = 'none';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
     } else if (currentFeatured === 'playing_now') {
         document.querySelector('.featured-option[data-value="playing-now"]').classList.add('active');
         document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.remove('active');
-        document.querySelector('#featured-title').innerHTML = `${window._t['playing-now']}<i class="fa-solid fa-gamepad"></i>`;
+        document.querySelector('#featured-title i').classList.remove('fa-square-poll-horizontal');
+        document.querySelector('#featured-title i').classList.add('fa-gamepad');
+        document.querySelector('.featured-title-text').textContent = `${window._t['playing-now']}`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
         document.querySelector('.playingNow-panel').style.display = 'flex';
     } else {
@@ -1098,7 +1102,6 @@ async function initFeaturedFortnite() {
 
     if (titleEl && img) {
         img.style.backgroundImage = `url(assets://fortnite-${code}-assets/${code}.jpg)`;
-        titleEl.innerHTML = `Fortnite BR — ${window._t['fn-quick-edit']}<i class="fa-solid fa-square-poll-horizontal"></i>`;
         document.querySelector('.shine-effect-v-latest-season').style.display = 'none'
     }
 

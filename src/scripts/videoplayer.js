@@ -222,15 +222,47 @@ function allowVolumeControl() {
 
 window.addEventListener('keydown', (e) => {
     const popup = document.getElementById("video-popup");
-    if (popup && popup.style.display === 'flex') {
-        if (e.code === "Space") {
-            e.preventDefault();
 
-            const wrapper = popup?.querySelector('.video-wrapper');
+    if (!popup || popup.style.display !== 'flex') return;
 
-            if (typeof togglePlay === 'function') togglePlay();
-            if (typeof showControls === 'function') showControls(wrapper);
+    const wrapper = popup.querySelector('.video-wrapper');
+    const currentVideo = video || popup.querySelector('video');
+
+    if (e.code === "Space") {
+        e.preventDefault();
+
+        if (typeof togglePlay === 'function') togglePlay();
+        if (typeof showControls === 'function') showControls(wrapper);
+    }
+
+    if (e.code === "ArrowLeft" || e.code === "ArrowRight") {
+        e.preventDefault();
+
+        const step = e.code === "ArrowRight" ? 5 : -5;
+
+        if (currentVideo) {
+            currentVideo.currentTime += step;
         }
+
+        if (typeof showControls === 'function') showControls(wrapper);
+    }
+
+    if (e.code === "KeyM") {
+        e.preventDefault();
+
+        if (currentVideo) {
+            muteVideo();
+        }
+
+        if (typeof showControls === 'function') showControls(wrapper);
+    }
+
+    if (e.code === "KeyF") {
+        e.preventDefault();
+
+        toggleFullscreen();
+
+        if (typeof showControls === 'function') showControls(wrapper);
     }
 });
 

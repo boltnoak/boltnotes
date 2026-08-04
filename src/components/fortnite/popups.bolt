@@ -32,9 +32,6 @@
                 </div>
             </div>
         </div>
-        <div class="moreVideos-section">
-            <div class="more-videos" id="more-videos"></div>
-        </div>
     </div>
 </div>
 <div class="map-popup" id="map-popup" style="display:none;">

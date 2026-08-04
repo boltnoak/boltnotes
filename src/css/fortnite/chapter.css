@@ -7,8 +7,6 @@ body {
 }
 .pageBody {
     overflow-y: auto;
-    transform: translateY(6.5vh) translateX(-.6vw);
-    height: 86.5vh;
 }
 
 #fnSeason, .fn-season {
@@ -21,11 +19,15 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
+    position: absolute;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     text-align: center;
-    gap: 1vh .5vw;
+    justify-self: center;
+    width: 100%;
+    gap: .5vw;
+    pointer-events: none;
 }
 #chapter-name {
     margin: 0;
@@ -51,38 +53,9 @@ body {
     cursor: pointer;
     width: fit-content;
     color: var(--text);
+    pointer-events: auto;
 }
 #before-chapter:hover, #next-chapter:hover {
-    border: solid .6vh var(--text);
-}
-
-.back {
-    margin: 0;
-}
-.home i {
-    color: var(--text);
-}
-.home {
-    border-radius: 4vh;
-    border: solid .6vh transparent;
-    transition: border 0.25s ease-in-out;
-    padding: .5vh .4vw;
-    font-size: 2.7vh;
-    color: var(--text);
-    font-family: 'Montserrat';
-    font-weight: 700;
-    position: absolute;
-    margin: 0 0 0 10.8vw;
-    left: 0;
-    justify-content: center;
-    text-decoration: none;
-    user-select: none;
-    align-items: center;
-    display: flex;
-    flex-direction: row-reverse;
-    cursor: pointer;
-}
-.home:hover {
     border: solid .6vh var(--text);
 }
 
@@ -472,8 +445,8 @@ body {
     background: rgba(0,0,0,.6);
     display: flex;
     align-items: center;
-    transform: translateY(6.4vh);
-    height: 86.7vh;
+    transform: translateY(5.2vh);
+    height: 87.85vh;
     justify-content: center;
     backdrop-filter: blur(4px);
 }
@@ -579,7 +552,7 @@ body {
     display: flex;
     flex-direction: row;
     margin: 1vh 0 0 0;
-    gap: .3vw;
+    gap: .425vw;
     justify-content: center;
 }
 .event-data {
@@ -740,9 +713,9 @@ body {
     font-weight: 500;
     white-space: nowrap;
     background-color: var(--tag);
-    padding: .4rem .7rem;
-    border-radius: .35rem;
-    font-size: .95vw;
+    padding: 1vh .65vw;
+    border-radius: .8vh;
+    font-size: 1.75vh;
     margin: 0;
     color: var(--text);
     display: inline-block;

@@ -3,8 +3,8 @@
 .pageBody {
     display: flex;
     flex-direction: row;
-    transform: translateY(6.5vh);
-    height: 86.5vh;
+    height: 94.65vh;
+    transform: translateY(5.15vh);
 }
 
 .config-item {

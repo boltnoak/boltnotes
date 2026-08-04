@@ -5,8 +5,8 @@
     color: var(--text);
     display: flex;
     flex-direction: row;
-    transform: translateY(6.5vh);
-    height: 93.3vh;
+    height: 94.65vh;
+    transform: translateY(5.15vh);
 }
 header {
     box-shadow: none;

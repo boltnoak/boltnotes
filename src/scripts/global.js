@@ -239,7 +239,6 @@ async function checkChangelog() {
 }
 
 window.addEventListener('load', async () => {
-    const loadingScreen = document.getElementById('loading-screen');
     const startingScreen = document.getElementById('starting-screen');
     const loadingDetails = document.getElementById('loading-details');
     const loadingProgress = document.getElementById('loading-progress');
@@ -249,11 +248,9 @@ window.addEventListener('load', async () => {
         const isReady = await window.electronAPI.checkAssetsStatus();
         
         if (isReady) {
-            if (loadingScreen) loadingScreen.classList.add('hidden');
             if (startingScreen) startingScreen.style.display = 'none';
 
             setTimeout(() => {
-                if (loadingScreen) loadingScreen.remove();
                 if (startingScreen) startingScreen.remove();
                 checkChangelog();
             }, 400);
@@ -261,10 +258,6 @@ window.addEventListener('load', async () => {
             if (startingScreen) {
                 startingScreen.style.display = 'flex';
                 startingScreen.classList.remove('hidden');
-            }
-            if (loadingScreen) {
-                loadingScreen.classList.add('hidden');
-                setTimeout(() => loadingScreen.remove(), 400);
             }
         }
 
@@ -339,10 +332,6 @@ window.addEventListener('load', async () => {
             }
         });
     } else {
-        loadingScreen.classList.add('hidden');
-        setTimeout(() => {
-            loadingScreen.remove();
-        }, 400);
         return;
     }
 });

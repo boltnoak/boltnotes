@@ -1,5 +1,52 @@
 const chapters = document.querySelectorAll('#chapter');
 
+async function renderizarCapitulos() {
+    const fortniteData = await window.api.fortnite.getSeasons();
+
+    if (!fortniteData) {
+        console.error("Nenhum dado retornado.");
+        return;
+    }
+
+    const listaCapitulos = [...new Set(
+        Object.keys(fortniteData)
+            .map(key => key.match(/^c\d+/i)?.[0].toLowerCase())
+            .filter(Boolean)
+    )];
+
+    const section = document.querySelector('.chapter-section');
+    if (!section) return;
+
+    section.innerHTML = listaCapitulos.map((capitulo, index) => {
+        const numero = capitulo.replace('c', '');
+    
+        const delay = index * 0.1;
+
+        return `
+            <a id="chapter" href="${pageBase}/pages/fortnite-chapter.html?num=${numero}">
+                <div class="chapter-image-div">
+                    <img class="chapter-image" src="assets://fn-chapter-covers/chapter${numero}-cover.jpg">
+                </div>
+                <p class="title"><span data-i18n="fn-chapter">Capítulo</span> ${numero}</p>
+            </a>
+        `;
+    }).join('');
+
+    applyLocale();
+    adicionarEventosDeClique();
+}
+function adicionarEventosDeClique() {
+    const botoes = document.querySelectorAll('.chapter-button');
+    
+    botoes.forEach(botao => {
+        botao.addEventListener('click', (e) => {
+            const capituloSelecionado = botao.dataset.capitulo;
+            console.log(`Você clicou no capítulo: ${capituloSelecionado}`);
+        });
+    });
+}
+renderizarCapitulos();
+
 chapters.forEach((capituloAtual) => {
     const titleElement = capituloAtual.querySelector('.title');
 

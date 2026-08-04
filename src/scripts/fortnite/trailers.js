@@ -58,11 +58,26 @@ async function openTrailer(el) {
 
         const container = el.closest('.fn-season');
         const code = container?.dataset.code;
-        const listContainer = document.getElementById("more-videos");
+
+        if (document.querySelector('.author-div')) {
+            document.querySelector('.author-div').remove();
+        }
+
+        const isListContainerDiv = document.querySelector('.moreVideos-section');
+        if (!isListContainerDiv) {
+            const listContainerDiv = document.createElement("div");
+            listContainerDiv.className = "moreVideos-section";
+            const listContainer = document.createElement("div");
+            listContainer.className = "more-videos";
+            listContainer.id = "more-videos";
+            listContainerDiv.appendChild(listContainer)
+            document.getElementById('video-player').appendChild(listContainerDiv)
+        }
+        const listContainer = document.getElementById('more-videos');
 
         if (!code || !listContainer) return;
 
-        listContainer.innerHTML = ""; 
+        listContainer.innerHTML = "";
 
         const seasonData = cachedReviews[code] || {};
         const seasonDataInfo = cachedSeasonInfo[code] || {};
@@ -212,14 +227,35 @@ async function loadCloudSeasonInfo() {
         return {};
     }
 }
-async function openLiveEvent(el, fileCode, eventTitle) {
+async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
     await openVideoPlayer(el);
 
     const container = el.closest('.fn-season');
     const code = container?.dataset.code;
 
+    const listContainer = document.querySelector('.moreVideos-section');
+    if (listContainer) listContainer.remove();
+
     const title = document.getElementById('video-title');
     title.textContent = eventTitle;
+
+    if (author != null) {
+        const authorDiv = document.createElement('div');
+        authorDiv.className = 'author-div';
+
+        const authorText = document.createElement('div');
+        authorText.className = 'author';
+
+        authorText.innerHTML = `<span data-i18n="by">By</span> 
+        <a onclick="openLinkOnBrowser('https://www.youtube.com/@${authorId}')">${author}</a>`;
+        document.getElementById('video-player').appendChild(authorDiv);
+        authorDiv.appendChild(authorText);
+        applyLocale();
+    } else {
+        if (document.querySelector('.author-div')) {
+            document.querySelector('.author-div').remove();
+        }
+    }
 
     const controls = document.getElementById('player-controls');
     const videoTitle = document.getElementById('video-title');
@@ -392,4 +428,8 @@ function closeVideo() {
         teamSelect.classList.remove('active');
     }
     isTeamSelectVisible = false;
+}
+
+function openLinkOnBrowser(link) {
+    window.api.openLink(link)
 }

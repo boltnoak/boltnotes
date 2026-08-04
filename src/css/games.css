@@ -7,10 +7,11 @@ body {
 .pageBody {
     display: flex;
     flex-direction: row;
-    transform: translateY(6.5vh);
-    height: 92.8vh;
+    height: 94.2vh;
+    transform: translateY(5.15vh);
     margin-top: .5vh;
-}.game-note[contenteditable]:empty::before {
+}
+.game-note[contenteditable]:empty::before {
     content: attr(placeholder);
     color: var(--text-dark-gray);
     pointer-events: none;

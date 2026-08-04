@@ -65,7 +65,7 @@
     font-size: 2.5vh;
 }
 .review-topic-div {
-    padding:.8vh .5vw .5vh .5vw;
+    padding: 0;
     margin: 0;
     border: solid .5vh var(--tab);
     border-radius: 0 0 1.3vh 1.3vh;
@@ -74,10 +74,10 @@
 }
 .review-topictext {
     font-family: 'Montserrat';
-    margin: 0;
+    margin: .75vh 0 0 .5vw;
     flex: 1;
-    height: 14vh;
-    padding: 0 0 .4vh 0;
+    height: 13vh;
+    padding: 0 .5vw .4vh 0;
     font-size: 2.6vh;
     overflow-y: auto;
     caret-color: var(--text);

@@ -4,7 +4,6 @@
     <base href="../">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BoltNotes</title>
     <link rel="stylesheet" href="css/index.css">
     <script src="scripts/theme-loader.js"></script>
     <script src="scripts/apply-locales.js"></script>
@@ -59,10 +58,13 @@
     </div>
     <div class="index-sep-bar"></div>
     <div class="page-infos">
-            <div id="featured-title">Destaque</div>
+            <div id="featured-title">
+                <i class="fa-solid fa-eye"></i>
+                <span class="featured-title-text">Destaque</span>
+            </div>
             <div class="featured-change-div">
                 <div class="featured-change">
-                    <div class="featured-option active" data-value="playing-now" onclick="changeFeatured(this)">
+                    <div class="featured-option" data-value="playing-now" onclick="changeFeatured(this)">
                         <i class="fa-solid fa-gamepad"></i>
                         <span data-i18n="playing-now">Jogando no momento</span>
                     </div>
