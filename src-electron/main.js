@@ -1760,3 +1760,23 @@ ipcMain.handle('games:delete', async (_, gameName) => {
         return { success: false, error: error.message };
     }
 });
+ipcMain.handle('video:download-on-demand', async (event, { url, fileName, folderCode }) => {
+  const targetFolder = path.join(ASSETS_DIR, `fortnite-${folderCode}-assets`);
+  const finalPath = path.join(targetFolder, fileName);
+
+  if (!fs.existsSync(targetFolder)) {
+    fs.mkdirSync(targetFolder, { recursive: true });
+  }
+
+  try {
+    await downloadFile(url, finalPath, (downloaded, total) => {
+      const percent = total ? Math.round((downloaded * 100) / total) : 0;
+      event.sender.send('video:download-progress', { fileName, percent });
+    });
+    
+    return { success: true, path: finalPath };
+  } catch (error) {
+    console.error(`Erro ao baixar ${fileName}:`, error);
+    return { success: false, error: error.message };
+  }
+});

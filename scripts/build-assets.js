@@ -16,6 +16,10 @@ function loadState() {
 }
 
 function saveState(state) {
+    const scriptsDir = path.dirname(STATE_FILE);
+    if (!fs.existsSync(scriptsDir)) {
+        fs.mkdirSync(scriptsDir, { recursive: true });
+    }
     fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
 }
 
@@ -64,17 +68,33 @@ async function main() {
     const manifest = { version: Date.now(), packages: [] };
     const changed = [];
 
-    for (const folder of fs.readdirSync(ASSETS_DIR)) {
-        const source = path.join(ASSETS_DIR, folder);
-        if (!fs.statSync(source).isDirectory()) continue;
+    for (const item of fs.readdirSync(ASSETS_DIR)) {
+        const source = path.join(ASSETS_DIR, item);
 
+        if (fs.statSync(source).isFile()) {
+            const isVideo = item.endsWith('.webm') || item.endsWith('.mkv') || item.endsWith('.mp4');
+            if (isVideo) {
+                const fileHash = await sha256(source);
+                const fileSize = fs.statSync(source).size;
+
+                if (state[item] && state[item].fileHash === fileHash) {
+                    console.log(`= ${item} — Sem mudanças, pulando upload do vídeo`);
+                } else {
+                    console.log(`↑ ${item} — Vídeo novo/modificado, vai fazer upload`);
+                    changed.push({ zipName: item, zipPath: source });
+                    state[item] = { fileHash, fileSize };
+                }
+            }
+            continue;
+        }
+
+        const folder = item;
         const folderHash = await hashFolder(source);
         const zipName = `${folder}.zip`;
         const zipPath = path.join(OUTPUT_DIR, zipName);
 
         if (state[folder] && state[folder].folderHash === folderHash) {
             console.log(`= ${zipName} — Sem mudanças, pulando upload`);
-            // Usa o hash do zip salvo anteriormente, sem rezipar
             manifest.packages.push({
                 name: zipName,
                 size: state[folder].zipSize,
@@ -96,9 +116,9 @@ async function main() {
     for (const [folder, data] of Object.entries(state)) {
         const source = path.join(ASSETS_DIR, folder);
         if (fs.existsSync(source)) continue;
+        if (folder.endsWith('.webm') || folder.endsWith('.mkv') || folder.endsWith('.mp4')) continue;
 
         const zipName = `${folder}.zip`;
-        // console.log(`~ ${zipName} — Não está na pasta, mantendo no state.`);
         manifest.packages.push({
             name: zipName,
             size: data.zipSize,
@@ -111,7 +131,6 @@ async function main() {
         JSON.stringify(manifest, null, 2)
     );
 
-    // upload só dos que mudaram + manifest
     if (changed.length === 0) {
         console.log('Nenhuma mudança. Atualizando apenas o manifest...');
         execSync(`gh release upload assets ${OUTPUT_DIR}/manifest.json --repo boltnoak/boltnotes-assets --clobber`, { stdio: 'inherit' });

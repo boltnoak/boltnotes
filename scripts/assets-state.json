@@ -5,128 +5,476 @@
     "zipSize": 3087727
   },
   "fortnite-c3s3-assets": {
-    "folderHash": "fdcfd546682eb101d7325955db92720dfb246f9ec0f536442b981a55af82d85c",
-    "zipHash": "44db7d05516e9f63569ade144167e13f16aa174d305a597bb0b73486ae4ef461",
-    "zipSize": 60297126
+    "folderHash": "398ce7c0324f3f7f63073df432c471a659788a0540e74293842f0b0cb410bfed",
+    "zipHash": "9071205b93bf8f0d6fa01e4e1252919a138244bebfefb453a155a995b9f637c2",
+    "zipSize": 1811868
   },
   "fortnite-c3s4-assets": {
-    "folderHash": "eb1b0ba25803ed9db2500215b565f407ce446fd8b56916897abfa99cd2f6f6cd",
-    "zipHash": "90a5767e88e0858ab0702bb80e793639c1a80800c025714bcaf24df074521d07",
-    "zipSize": 40761061
+    "folderHash": "98a269016be456d9e3a3e78cfae3815c5b252c4f7d4c68225acacff96a767ee4",
+    "zipHash": "18465581d0877e6516bfdfa16768d238312ede45b07ed960327f6ace57f334c0",
+    "zipSize": 2118370
   },
   "fortnite-c4og-assets": {
-    "folderHash": "82aebb65f1c66a8529dce2b68ab6a03b846e57f3588d8108507f3bc382f87a77",
-    "zipHash": "77ad52a27b2695cfb9115ae7220ec4cdeb11c3f631bf11e2068419df782a53be",
-    "zipSize": 196544984
+    "folderHash": "b755ec91dcdb4cec3b20c7a42d47829ff41e975002559013b4369e94fbbae01b",
+    "zipHash": "3ef1be7fee27a73fba8f9755cfcbe9955071bca72f2a67cab40c35b3d0ca9dd0",
+    "zipSize": 2886983
   },
   "fortnite-c4s1-assets": {
-    "folderHash": "ae265b5a8a4ab0caac63de227ce39c97be5e75771a7a9780563c963856e6e7ac",
-    "zipHash": "dff834b558d49d08c18278e228378d4b38cd89f30b9a52f2766fd2a32fe7384b",
-    "zipSize": 86659021
+    "folderHash": "677801d17d0ff36a9c79aca47ea6f76fbb2a8d0515b6f77ba81a753206f4b97b",
+    "zipHash": "dca65c102cae99cb70a0f0140c2bc35e18cbd79a1c31ea352a717bc7d7c3d0c5",
+    "zipSize": 1063522
   },
   "fortnite-c4s2-assets": {
-    "folderHash": "918564977f9f6afe346055eaa98cdeef9e503374ea9ab39157785f9a65f7249f",
-    "zipHash": "9871f0465908b01802c29713fe5f272a43f3f232ea35c07391a8c44312c3495b",
-    "zipSize": 77815800
+    "folderHash": "e86384bc09c66fe7e9f95fd5fbbef61ce9ed22890d1332f1ba0f829ac3c1736e",
+    "zipHash": "0b73b36c3c1fa1e049c9fe1527b1f4613f0f58f948c89a0e8e0aa13ec6ee9c28",
+    "zipSize": 579878
   },
   "fortnite-c4s3-assets": {
-    "folderHash": "2f82e6f0de2ec44d86f204b8fdf71337a74f8ed117464247b74b50ec116b3b97",
-    "zipHash": "c2204965b587e7529c09691f83147991db31489364def31733d5f6d224c79862",
-    "zipSize": 59809133
+    "folderHash": "f3d0adf8ee411ce1dd9b7d3cecf32e3cfacbd5c9b2a77e16231ec3ab17a7387e",
+    "zipHash": "a755d77d48288d8f7a811f7b0a72a6840f5b125104cc102a64a453101928b837",
+    "zipSize": 1851890
   },
   "fortnite-c4s4-assets": {
-    "folderHash": "335ee429c3c662550123cbd0b58c853202f5a37dd319d18ebddedc3d07737a1c",
-    "zipHash": "479bafed9372945150b9ed2e0014e414a794c259ab46d214fbcbd0653ffde3fe",
-    "zipSize": 41022145
+    "folderHash": "edd217214a034048f311f46b6b850e81f8f6b78e9bfc62f3b2e22ce13e714034",
+    "zipHash": "155c44c7c208466227d5f0dfffcc9aa43149c5dac044bcd8e2ddf796c3a18ad6",
+    "zipSize": 1363778
   },
   "fortnite-c5remix-assets": {
-    "folderHash": "bb2621d24eb39fc1460e685ae89ad0e58ab4768592c1fcd575405d53453c067c",
-    "zipHash": "958afdc9086281fb65fc3a21b278d96bbcca7179dc00fc9df8103eb269c2621d",
-    "zipSize": 253145358
+    "folderHash": "099b6a8d53a9f69576f3bb2c02d74df071a88c65cf65cd5dd642bfb81cd40573",
+    "zipHash": "80bfe2f02c1be4c43581d0e9a1b199bac6c1e5f544b2e7603e049560a191342b",
+    "zipSize": 5869081
   },
   "fortnite-c5s1-assets": {
-    "folderHash": "17faf66525bffc069d1e8038c7516470bd31d3839bb2dbdf36804926bf4bc674",
-    "zipHash": "6bb69eb1a9808316e0e5eeddf90d3eaec397fb465254fefac0254c04c6b989ef",
-    "zipSize": 39020576
+    "folderHash": "8bc693b7866e422846b4c86bcdeead269ec8c4aa80185ea0e0574629d2f03d28",
+    "zipHash": "9d7ca92a3e68333965a29c3a5608fa8de440cbbe9a22bfc34e7233b55cf28336",
+    "zipSize": 1539730
   },
   "fortnite-c5s2-assets": {
-    "folderHash": "d1a760806a6f9b9bbd5f4ab1402eb188dddf4750a578684642cdd066fc6d8e5b",
-    "zipHash": "0c3735f1fd38668d4fc032b509a0a455c5d7cc28375eb538d990c4310a3c86ec",
-    "zipSize": 69300906
+    "folderHash": "fbea088b17e6244c2b4cf3f027a48339b72a4e3dfaab8ae0cc5b1caedefe2310",
+    "zipHash": "c2c616ec995261d9c6bfc2450948a2254ed151755e78266a3e022b468b3b861e",
+    "zipSize": 1199258
   },
   "fortnite-c5s3-assets": {
-    "folderHash": "5df758472d4593fa70026dc2bc72a120bcb52b8dac63012c7787e4e57df2df0c",
-    "zipHash": "48959ddb7fbd604773d3c7408d6281836178a3d1560984241aaa312d0db5baf4",
-    "zipSize": 41657499
+    "folderHash": "a8db824463ec90dcc1bff876ef97e8360ca7d48adf2cfdd910a5508dd49fd923",
+    "zipHash": "cc1c3e9fd5f504ef82f8d88a60b5e52015ab4f82ffc83623b469234594527df3",
+    "zipSize": 5755470
   },
   "fortnite-c5s4-assets": {
-    "folderHash": "3f64e67d5c02ab5838fa331c4c053e1fdd8f93783fce59ea63e16f23a8e2e3d2",
-    "zipHash": "c955d6423d5a2402efe4890982456b6035155d98d162f6f87e98a6a6b20d52da",
-    "zipSize": 41910913
+    "folderHash": "42e7366fef69c8ff89ee1debcb78bda4bb719219612fe179cde0934a5c8ec7be",
+    "zipHash": "562fd15cecece8a5ca8301a375cb93d86d1c6a1118b9c28060adccad7539cde2",
+    "zipSize": 1304362
   },
   "fortnite-c6ms1-assets": {
-    "folderHash": "d707131f6e844f867ea12f830e079f7988fa135be3e7b592199f7472b69c5138",
-    "zipHash": "99af7d72a0381065b2de37cdc317e6fb761f96e89f511e8220c9052ce9f3d339",
-    "zipSize": 218117688
+    "folderHash": "65a81f63473297174f0b834d69376afec39eb96f397211e57460abfbc8e5d499",
+    "zipHash": "89dac3eedfe61bb185280cc3605ab88b9c0bf197ff45cb1d292487d5d4a11c20",
+    "zipSize": 2815815
   },
   "fortnite-c6ms2-assets": {
-    "folderHash": "0ef74a01320cf7b38a0cdc033f0b6275ddcfb7d8a88e33af58ef937967ff973e",
-    "zipHash": "693acdcf061d90c95ed13d7e286bc9376211a36f4f5a18b7143bcb099182868d",
-    "zipSize": 314924988
+    "folderHash": "2344cda27d3fb459bb32427514545b46e0cf50df5a9e6fc7eccf75a091648ebd",
+    "zipHash": "3b3b82a3f0876dde1487b3c02b8b3aae7fa0137b2beb5ec754c1878eea045296",
+    "zipSize": 2175642
   },
   "fortnite-c6s1-assets": {
-    "folderHash": "ed8d6337d15bad2a4c33f5344492c8b9955caac3b40a3a114be0951f65b46c1e",
-    "zipHash": "a42e819f66488557659ce9b5d582dcbab9917196100b85ebd924dc989255de53",
-    "zipSize": 150647307
+    "folderHash": "5daaf6ce47b6d366a72ae1590d24218ecc75a50f705e963a219fa5953ffd9bfa",
+    "zipHash": "8edecbae3f7821aa887b61b0b64eb8a45315d88ee742e632ed75df862c19fde2",
+    "zipSize": 4803869
   },
   "fortnite-c6s2-assets": {
-    "folderHash": "6db385cc7f71c2aa247b027edb1b6f0b474e8248746c7bc83948c328885a6752",
-    "zipHash": "ab368d164950aa14ff953426ce74ffe02976ff216e133e9fb4b6f78aa485dfd5",
-    "zipSize": 61389010
+    "folderHash": "702b0fc1ce6be15df0721d63de2d3965d507bc7b7495f1794218c5786fe91eb8",
+    "zipHash": "09fb04796ea69b4b38021025a54c909c16fe36016e59d7b15cc0f4266b246c3f",
+    "zipSize": 2469382
   },
   "fortnite-c6s3-assets": {
-    "folderHash": "c644a5e32a03072cdbf44fc9e3fb9125e26b2cbd31248667e26f6d7270e18aaf",
-    "zipHash": "ba2a0311f535a4ae1279a8f0a6dceb4b0fbdccf665377ab5f1381d663b141c1c",
-    "zipSize": 131821591
+    "folderHash": "4ad00245f210672a12859b39fa9f174d24f4f801b2483eb7087aa8f57f791e86",
+    "zipHash": "ff2519bc7934c041c687b1d16835071942b54b55c9dce5ef9e82a9a50d8dbb31",
+    "zipSize": 6528172
   },
   "fortnite-c6s4-assets": {
-    "folderHash": "cdd45a5bcb1efaad37f83daa4fca7b750081deca9dbde42a12f269ac9aa2d096",
-    "zipHash": "b94effcf652337b256be951dda3710bf6c95116f340ccfb7128ad744aabef5f2",
-    "zipSize": 146229428
+    "folderHash": "94efb5f0966d88d1ad663aba058284568550e6f62e6436102d437625a1542320",
+    "zipHash": "bb007213611efb3c0838bf8e30cd1f8daff22d9fb15214c14066590f1ef3c4da",
+    "zipSize": 2081643
   },
   "fortnite-c7s1-assets": {
-    "folderHash": "aeabf9eca0fd041fd8a6dfaf3ce2b71b89ceb6880515cbd8ceb295dbec2ec5db",
-    "zipHash": "7981b6d4b0003afdcae7ec8f0d86e17390e8faa80d7d8ffb628eb2ce4da6dac2",
-    "zipSize": 96294468
+    "folderHash": "bd8bfcee91de377b8c2f9bdea28b68966c547f902f9d7a26fcd08bfbf55f32f4",
+    "zipHash": "5f3dd8ae6f39f918d8e6f6ea93f0747ba83e00757cacc7a1044fc2d739599a8b",
+    "zipSize": 2628636
   },
   "fortnite-c7s2-assets": {
-    "folderHash": "9268ad0b4f39227b4a318b4cdc8119ce25d16080b06397353d6b5df7c7b4571c",
-    "zipHash": "b655c3f4af2450fe39d644391f197a711c59a4d21c9b6fbaeb67baede5a6e7fa",
-    "zipSize": 671086156
+    "folderHash": "c5209577f819a15112d8feda3e674d2966b67e7d0215e939b31779840bed05d2",
+    "zipHash": "fa5949b69d2e7c431d469ca6ec59b47a497c2255de8fe859b18b5634985cf1fb",
+    "zipSize": 2426727
   },
   "fortnite-c7s3-assets": {
-    "folderHash": "b6ee8c004774c87da8be5cc865168dd46548b2ea22bd7ff729ca0ebf6f5001c1",
-    "zipHash": "cc88775781fbe646281d1fc4c5e8c0a1a353925f7522c14727d32a4fb0956420",
-    "zipSize": 58374529
+    "folderHash": "4f7239d27396a2ee2853178ca6863a3f20ff87bd1011a230e73eb15f578766b0",
+    "zipHash": "42fb1d117d212b271c775d080a9f3b0ea45131a65d7df45160d6865de313e573",
+    "zipSize": 1697982
   },
   "fortnite-c3s2-assets": {
-    "folderHash": "c0dd81d3873b9801f65850c13a1738442630030e3f742e2b841dc9aac78e5e53",
-    "zipHash": "0d5c82f22006570e44347b792d5a461676c2bbc5aa52bc2689006a6ee76c29c0",
-    "zipSize": 30329455
+    "folderHash": "72c07ae4a8f785eee9a911afbf23e1d561e830eb1274d6e445f96640fb68cc07",
+    "zipHash": "29f4812e1342acab5bcf6b4566d516771cff641bcb8973b47abe4c8720dc6cc6",
+    "zipSize": 996898
   },
   "fortnite-c3s1-assets": {
-    "folderHash": "06df9cfa481f80b7e9f169bc9473c1ba875f12ef14ba7c59151ddca2f220be51",
-    "zipHash": "9592f3957d810560b986233da3a231b0f7bc01c348c2202e5e6e2a1f8fccb07c",
-    "zipSize": 35382361
+    "folderHash": "fe906a8d9653859e72e7d7bb5130030c9b139bc5d488aa4e710491365a60961b",
+    "zipHash": "fbd693c51e366ac622e3be184987594121f5a408238c570ca661442f52bb7da1",
+    "zipSize": 2790731
   },
   "fortnite-c2s8-assets": {
-    "folderHash": "7f92a01c7cf31585bf91c6a93e1a36032f4f80c628e5a9ac7fc708b10278e869",
-    "zipHash": "dcf99ce9eec08c7c6f3aca9f6e4da6bcc35985cca6f5eac98d8c5c00cff56e90",
-    "zipSize": 296686856
+    "folderHash": "21464a04b0f60e8e4dc6a908801ca93bbb3f422186d2ec0108efaf9daba6719f",
+    "zipHash": "2c375b75514ad1307edb9d2dcd4512e930467d4fe168c671a0464f18073bb210",
+    "zipSize": 3325940
   },
   "fn-chapter-covers": {
     "folderHash": "96d221dfdd23faef05eea4275cd1d14f4e73af4e67009f7e4d67364ecc01a5f6",
     "zipHash": "35cbda3e64567751107de7ab07701f5d27d710fb65d8aacba8c08f314d41c805",
     "zipSize": 2179156
+  },
+  "c4s1_cine.mkv": {
+    "fileHash": "42f4b2d93f6e9e91df581ee3bd996b014977616b21f7918c5f34598268b12eef",
+    "fileSize": 12873392
+  },
+  "c4s1_game.webm": {
+    "fileHash": "f2ea190cb779917f5b3cace9d6bb550444339f43a6c7c0e2fa8c152ec0292b58",
+    "fileSize": 44683741
+  },
+  "c4s1_game2.mkv": {
+    "fileHash": "5dca4d556c9c8c7dc68dd8ffa3a61903a990cb9fc36b7adb4cd3515b077d402c",
+    "fileSize": 28028477
+  },
+  "c4s1_cine_pt-BR.mkv": {
+    "fileHash": "42f4b2d93f6e9e91df581ee3bd996b014977616b21f7918c5f34598268b12eef",
+    "fileSize": 12873392
+  },
+  "c4s1_game2_pt-BR.mkv": {
+    "fileHash": "5dca4d556c9c8c7dc68dd8ffa3a61903a990cb9fc36b7adb4cd3515b077d402c",
+    "fileSize": 28028477
+  },
+  "c4s1_game_pt-BR.webm": {
+    "fileHash": "f2ea190cb779917f5b3cace9d6bb550444339f43a6c7c0e2fa8c152ec0292b58",
+    "fileSize": 44683741
+  },
+  "c4s1_cine_en.webm": {
+    "fileHash": "abd487913bdab9091c9845aa48d03995d1f4b07064d93cff36206fe49f1637aa",
+    "fileSize": 7687935
+  },
+  "c4s1_game_en.mkv": {
+    "fileHash": "d7d57f20fb4a26adbe4a1485fceb819dd6ded4b2affb9793812a53f03eaf4786",
+    "fileSize": 24641975
+  },
+  "c4s1_cine_en.mkv": {
+    "fileHash": "a6eb45c7689008d7dea3ccafe33a45440e9e417c7d86b5a783bd015b1934076c",
+    "fileSize": 12754447
+  },
+  "c4s1_game2_en.mkv": {
+    "fileHash": "fb54d245c37e162faa0f50e3aa39a5d4dbc73d11a59bcee29995637e51d5de72",
+    "fileSize": 28074369
+  },
+  "c2s8_cine_en.mp4": {
+    "fileHash": "e622e800fa6f4a9232d9a30c7429c202e8384526a344f6089d4f608dcb43f7d6",
+    "fileSize": 7212860
+  },
+  "c2s8_cine_pt-BR.mkv": {
+    "fileHash": "454f960abb92961e053c8e52562baba4f7e69ab113be6dcd6928613309ceb24c",
+    "fileSize": 10922910
+  },
+  "c2s8_game_en.mp4": {
+    "fileHash": "cacba664491d21ff97ad63902737129ac0f2d57a111ca121790b4f2946828377",
+    "fileSize": 11063696
+  },
+  "c2s8_game_pt-BR.mkv": {
+    "fileHash": "7aabb90c64ec383f387d8ec2f39f0e8ff435f94a36fc93685511ed1b129bac7e",
+    "fileSize": 35891516
+  },
+  "c3s1_cine_pt-BR.webm": {
+    "fileHash": "4b3169f10bc08d4e2199473a9eb9dd45a967ca4bafb3a5eeb6620bf91a634f5b",
+    "fileSize": 4594988
+  },
+  "c3s1_game_pt-BR.webm": {
+    "fileHash": "d4884aaa0c0118fbeccb8fe1bc876f426d01872374ff99a180dc9036ebc98b48",
+    "fileSize": 27995325
+  },
+  "c3s2_cine_pt-BR.webm": {
+    "fileHash": "b2b102684bf52e41f3873ba49773830085d18263b4b3ca6f279a46b9ed294834",
+    "fileSize": 13549376
+  },
+  "c3s2_game_pt-BR.webm": {
+    "fileHash": "354cc864fa5e211f7ca0184fb804afba9f21f44df8d0fe338e61940b0f144c1a",
+    "fileSize": 15777314
+  },
+  "c3s3_cine_pt-BR.mkv": {
+    "fileHash": "5e7e15b44c64847021cf65f7541edaaee42f8da48a41fd94b2c3e363970452d2",
+    "fileSize": 21185913
+  },
+  "c3s3_game_pt-BR.mkv": {
+    "fileHash": "d11c68b0ceb64109540993de4a511611bdfa4f864b67a5cae8adfcc1b5472693",
+    "fileSize": 36559478
+  },
+  "c3s4_cine_pt-BR.mkv": {
+    "fileHash": "ed50870ec34987f01b7d767143ef1d153fec8b12bb66e02684f010fb49002b67",
+    "fileSize": 15451687
+  },
+  "c3s4_game_pt-BR.mkv": {
+    "fileHash": "36213f9fea749409cd33ab6240d7231cf0a15bed00970dc68f6db3fb61d7339a",
+    "fileSize": 23206988
+  },
+  "c4og_game2_pt-BR.mkv": {
+    "fileHash": "76575852b2a054be65b4103a9baafa2e39703544855fcda00112b03526df3544",
+    "fileSize": 7729603
+  },
+  "c4og_game3_pt-BR.mkv": {
+    "fileHash": "2a5e5441c87e093da70bb4957b45549e9e72bb317fb738124879e0274d027dd5",
+    "fileSize": 10860113
+  },
+  "c4og_game_pt-BR.mkv": {
+    "fileHash": "087b610d8a64ac699d55368dc6a2e166e9dbc83671e64eb29b368d7558bba7ca",
+    "fileSize": 40126531
+  },
+  "c4s1_cine_en_pt-BR.mkv": {
+    "fileHash": "a6eb45c7689008d7dea3ccafe33a45440e9e417c7d86b5a783bd015b1934076c",
+    "fileSize": 12754447
+  },
+  "c4s2_cine2_pt-BR.mkv": {
+    "fileHash": "4857e88075fd37a4ef19615033839e4bbb0330970eb2438e3ea65f22a7f07743",
+    "fileSize": 13951846
+  },
+  "c4s2_cine_pt-BR.mkv": {
+    "fileHash": "325133a1324a8194f93c9d61b6315a67b1dce68e9e35c2b9d67fc64b45c6491e",
+    "fileSize": 13622948
+  },
+  "c4s2_game_pt-BR.mkv": {
+    "fileHash": "99eb146723c4f892d53316445cc5da20e794c2a0d8e79cfd248cfb2a6eb6ed00",
+    "fileSize": 49651180
+  },
+  "c4s3_cine_pt-BR.mkv": {
+    "fileHash": "b34aaa1122490f38f0b2b7110d3e9b1b91173d91887ff8415522d901630f83e8",
+    "fileSize": 18940852
+  },
+  "c4s3_game_pt-BR.mkv": {
+    "fileHash": "0a206026e1ddbeaad0ae813da631128a52cc526668031a926968aeea5b359c68",
+    "fileSize": 39019297
+  },
+  "c4s4_cine_pt-BR.mkv": {
+    "fileHash": "403d10a0339cb0e544080eabddd0ef7f51e8f2a08f2760162cf7b71bf083a0c5",
+    "fileSize": 12461853
+  },
+  "c4s4_game_pt-BR.mkv": {
+    "fileHash": "efaf3028484f549773affb99f2b04f3126ef08658957a7a8bc4afca0a335f4a8",
+    "fileSize": 27197876
+  },
+  "c5remix_game_pt-BR.mkv": {
+    "fileHash": "3e95dcfeefafa02a9f063ee0584c3a7642c637edd3b0ea112f303b20ac203294",
+    "fileSize": 43896917
+  },
+  "c5s1_game_pt-BR.mkv": {
+    "fileHash": "7c818176a58dd8074d125e59e26aeaf452a4f54c9ed9c96a6a4296d200b83388",
+    "fileSize": 37483214
+  },
+  "c5s2_game2_pt-BR.mkv": {
+    "fileHash": "c1419593cb3f241ac7e8d3b46bfdddb3c8f95e5ac2a83263e0162cbfcf37568f",
+    "fileSize": 25776256
+  },
+  "c5s2_game_pt-BR.mkv": {
+    "fileHash": "227fa2d08780e1e635cd049933e08943ac0758a8f64ef31d141ab879ae7ecff8",
+    "fileSize": 42324362
+  },
+  "c5s3_game_pt-BR.mkv": {
+    "fileHash": "7e06ad4cfe269b362a6d9e05b8bd1091d87cb358bfc84767150365aafe1fffa7",
+    "fileSize": 35904043
+  },
+  "c5s4_game_pt-BR.mkv": {
+    "fileHash": "81d9ddfbb638e3058bf30d4ff959cf4a8acaf5f90ed3d63898d6ee5663d9a9e8",
+    "fileSize": 40605193
+  },
+  "c6ms1_cine_pt-BR.mkv": {
+    "fileHash": "ba75e3795306c89b68c04cf89bab9d8855809460e21db1625fb85db095a1dabb",
+    "fileSize": 10691162
+  },
+  "c6ms1_game2_pt-BR.mkv": {
+    "fileHash": "b74fd27d83b99ac69a8b424ef72ad9298f1887f545117c5f940c3f43b98ff0f7",
+    "fileSize": 10025205
+  },
+  "c6ms1_game3_pt-BR.mkv": {
+    "fileHash": "3aeb4d566f5ecf7697692e703906d7a0487564bb649da2816828c106e5b1dced",
+    "fileSize": 8901678
+  },
+  "c6ms1_game4_pt-BR.mkv": {
+    "fileHash": "99ecf78c4cd3756e36f83cde8755af63921299b7e7e8b086fbd2b3e2f8a7f7ca",
+    "fileSize": 7738047
+  },
+  "c6ms1_game_pt-BR.mkv": {
+    "fileHash": "9705a4dbcfc6307a57420c1e8ba0a3884847bc06b23978c68057354eba285b89",
+    "fileSize": 12139666
+  },
+  "c6ms2_cine2_pt-BR.mkv": {
+    "fileHash": "38898ce3522815178f602e2586d87d35143f239151b79d4d3546a9e6ed4e0512",
+    "fileSize": 35474200
+  },
+  "c6ms2_cine3_pt-BR.mkv": {
+    "fileHash": "c144c091b9bafe8368ef8bcb6f00e0b64bcebf20e2c7a6220dd3108a1592f033",
+    "fileSize": 26353819
+  },
+  "c6ms2_cine_pt-BR.mkv": {
+    "fileHash": "e7fab85cab7ab3ebf2508aebcb8abf2a818181b2b1dc06547379256a35bf23c1",
+    "fileSize": 41503888
+  },
+  "c6ms2_game_pt-BR.mkv": {
+    "fileHash": "322a9798017fe38aaa94b9df028b5165ef8c61b23f74bf1f75d45588ac2199c8",
+    "fileSize": 58431196
+  },
+  "c6s1_cine2_pt-BR.mkv": {
+    "fileHash": "c09775d3c38df867723df7caa7ff1cd4b6843dfd04256e50e5104fdd2371dc93",
+    "fileSize": 49972825
+  },
+  "c6s1_cine_pt-BR.mkv": {
+    "fileHash": "37aeb056ff28345260fbe73bba23dae7bc0cf2ec8421fda88b37250c0ddd0f2c",
+    "fileSize": 15199909
+  },
+  "c6s1_game_pt-BR.mkv": {
+    "fileHash": "2dbe4e8f511ff0d0e5575e3189a3a6d0dafeec3fb97a5adbe53806ed5eda36aa",
+    "fileSize": 37416379
+  },
+  "c6s2_game2_pt-BR.mkv": {
+    "fileHash": "653faf66e9062eb3a9b77bc7a6790beec2d2094df1ffce4090e5c618c1c399ee",
+    "fileSize": 15448923
+  },
+  "c6s2_game_pt-BR.mkv": {
+    "fileHash": "7997e9e143a828eb55c0b5b0fdaabc5cc63869d44a571d6d67c4a9d98a430cdd",
+    "fileSize": 43469946
+  },
+  "c6s3_cine_pt-BR.mkv": {
+    "fileHash": "6bb7334dc4c2ea4dd904b00bf3ae2f22ab56fae452a2966edff57b70cb34a84f",
+    "fileSize": 6122080
+  },
+  "c6s3_game_pt-BR.mkv": {
+    "fileHash": "dbab9c1bb4ea52276c970c8189dbf8d59288b2d1c007017163debc16a9132bb0",
+    "fileSize": 23441545
+  },
+  "c6s4_cine_pt-BR.mkv": {
+    "fileHash": "b27f9447d8c4ea128cc4c99a8a15c559319adb4ad249bde83af2923c2f8bd855",
+    "fileSize": 16166949
+  },
+  "c6s4_game_pt-BR.mkv": {
+    "fileHash": "db34056057762b98edbfe21914d81629c2b66f2a244d0e67366606aa5e472ef7",
+    "fileSize": 42145277
+  },
+  "c7s1_cine_pt-BR.mkv": {
+    "fileHash": "98ddd5da8cbe7e5a8ebade63cc617be17ed09cde652b0ded601a3f956a421220",
+    "fileSize": 24191606
+  },
+  "c7s1_extra_pt-BR.mkv": {
+    "fileHash": "740089c2ba42e37e4ba3001daa2cf57daf321cc98ef919811cfa699ddd9d8e49",
+    "fileSize": 10487204
+  },
+  "c7s1_game_pt-BR.mkv": {
+    "fileHash": "820adb516da918c09a4b0a584028efdb26e5b02f6799e65c214164a21ae3bb96",
+    "fileSize": 42284672
+  },
+  "c7s2_cine2_pt-BR.mkv": {
+    "fileHash": "23a36c29a813423dfc9ba82e65eefbec0ea5cc1acadd7add5497486de7d79e60",
+    "fileSize": 14042660
+  },
+  "c7s2_cine3_pt-BR.mkv": {
+    "fileHash": "0eb1b96f77be65a85cf5f32411eebbabc7f810690ac2a99640b017c071d43e87",
+    "fileSize": 6840875
+  },
+  "c7s2_cine_pt-BR.mkv": {
+    "fileHash": "b48471d7264399c4754e5628acdab0dc3e5aac821f71402948e94f0882cecd94",
+    "fileSize": 3508009
+  },
+  "c7s2_game_pt-BR.mkv": {
+    "fileHash": "28cf7487c431cd2c41cba28a9f0455295338190e8432195eccf258516f223a99",
+    "fileSize": 46163812
+  },
+  "c7s3_cine_pt-BR.webm": {
+    "fileHash": "cea230343a564a840f9e0e4f1167ec9ccb25f56691dd5409e1c70d6c431d773c",
+    "fileSize": 15961809
+  },
+  "c7s3_game_pt-BR.webm": {
+    "fileHash": "11a846468ded1206363c53bed961742dc07dc79b182d6b40a192927fe0116c50",
+    "fileSize": 40709331
+  },
+  "big-bang.webm": {
+    "fileHash": "2ddb1cb46493ab905e3361143d7ff4812a4dd928f7f2e566bf5a765a076da5c0",
+    "fileSize": 134932636
+  },
+  "live-event-c6ms1.webm": {
+    "fileHash": "c5a9fe40e075a17d6d0c2bfa52ecc6f8e23f5e6fe1e67e57510db083f76a5481",
+    "fileSize": 165842591
+  },
+  "live-event-c6s1.mp4": {
+    "fileHash": "22897815f733efc4fcca1ab78e142cbf8d0e9b08ec94240bb34e5aafbacb6800",
+    "fileSize": 43311467
+  },
+  "live-event-c6s3.webm": {
+    "fileHash": "5e6729324f7fe746b88056d95711acdd072888af303e593ec8a45d88ad383723",
+    "fileSize": 95711514
+  },
+  "live-event-c6s4.mp4": {
+    "fileHash": "9ec51ac8f6b6e7d5bc61e144723e9b0830fac3797e19fa2a7f53346dadc91b19",
+    "fileSize": 85978094
+  },
+  "live-event-c7s1.webm": {
+    "fileHash": "8a58d744f6788318bc877b1dd43340d522bfb6b30a26613e6338e6fc55d353ed",
+    "fileSize": 14157216
+  },
+  "live-event-c7s2-foundation.webm": {
+    "fileHash": "4c122024dc0c6052d2c9e1b649f252bb9c821bfa7f19c9327e72dd078756358c",
+    "fileSize": 265767779
+  },
+  "live-event-c7s2-ice-king.webm": {
+    "fileHash": "b4eb770f2f05f31a45149de4bfd35eef2231f9b6908bf2e37a69d3e172e88c39",
+    "fileSize": 251534500
+  },
+  "live-event-c7s2.webm": {
+    "fileHash": "d0f15e4161b247b9631583cd2a9be3a041bd16355d60d2b47509389ceb22d008",
+    "fileSize": 83570124
+  },
+  "remix-finale.mp4": {
+    "fileHash": "56ba2558c89cfcfa38711fe10418b796fb98a0964c9329a2ba036b2e2013a271",
+    "fileSize": 203665391
+  },
+  "the-end-c2.mp4": {
+    "fileHash": "7fee2363dea9ac56a97d04e9b0938e2a5ae8ba5ebd0f55bca6cb343e7eb01688",
+    "fileSize": 275835993
+  },
+  "zero-hour.webm": {
+    "fileHash": "befcc14fcff52b843cceff4609d7e7a6f6812442811ab8d60eb5d22193fd8d39",
+    "fileSize": 138049083
+  },
+  "c7s1_cine_en.mkv": {
+    "fileHash": "52e215c5b896424457a104064a6c7b3493530b29df19f710c28a58741ae1c610",
+    "fileSize": 21643560
+  },
+  "c7s1_extra_en.mkv": {
+    "fileHash": "bdbb4191ecd678c610d36e37406a20296b55518d9967febe5d56d07d196ee7bd",
+    "fileSize": 13034280
+  },
+  "c7s1_game_en.mkv": {
+    "fileHash": "70c73c37d459fa62fdb45fd7d71ef5d5c4e8b9521b6bb117d792216517b8f6af",
+    "fileSize": 32597596
+  },
+  "c7s2_cine2_en.mkv": {
+    "fileHash": "266140749b304a4e6ade31015a9f0f45a02ae15921092fc9b13ed14bc093a059",
+    "fileSize": 15363342
+  },
+  "c7s2_cine3_en.mkv": {
+    "fileHash": "b9d2b7031bddeb20aa0b561b06481724a487376a14f2911946f1195cdeb82eae",
+    "fileSize": 6735634
+  },
+  "c7s2_cine_en.mkv": {
+    "fileHash": "3fc8d203710d93f3535acfc3b7199d3172e4194fd80f194d977a84e1f29b84a3",
+    "fileSize": 3888653
+  },
+  "c7s2_game_en.webm": {
+    "fileHash": "def02ecc19785665519145fd56697aaf14cb2b48be8da2c9b28b7f236fd137ac",
+    "fileSize": 44462884
+  },
+  "c7s3_cine_en.mkv": {
+    "fileHash": "11b651206c40d003df29c761d5bae063a5db110cc1a4ed9f77288ba31b504c98",
+    "fileSize": 11989787
+  },
+  "c7s3_game_en.mkv": {
+    "fileHash": "655971ec262c4eed352e172b6a5f5458283b4a255c8766dd2af0e47c21e923ea",
+    "fileSize": 40477603
   }
 }

@@ -209,7 +209,7 @@ async function loadGames() {
             if (myRenderId !== renderIdGames) return;
             const batch = items.slice(i, i + BATCH_SIZE);
             
-            const cards = batch.map(game => createGameCard(game, isPlaying, game._completedIndex));
+            const cards = await Promise.all(batch.map(game => createGameCard(game, isPlaying, game._completedIndex)));
 
             if (myRenderId !== renderIdGames) return;
 
@@ -241,7 +241,7 @@ async function loadGames() {
         await renderInBatches(others, list, false);
     }
 }
-function createGameCard(game, isPlaying = false, completedIndex = null) {
+async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
     div.className = "game";
 
@@ -342,10 +342,11 @@ function createGameCard(game, isPlaying = false, completedIndex = null) {
         title.prepend(index);
     }
 
+    const completedDateFormated = await formatDate(game.completeDate, 'default');
     if (status === "zerado") {
         const statusText = document.createElement("span");
         statusText.className = "status-text";
-        statusText.textContent = game.completeDate || "";
+        statusText.textContent = completedDateFormated || "";
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
         div.classList.add('zerado');
@@ -519,7 +520,7 @@ async function loadGamesAchie() {
             if (myRenderId !== renderIdAchie) return;
             const batch = items.slice(i, i + BATCH_SIZE);
             
-            const cards = batch.map(game => createGameAchieCard(game, game._completedIndex));
+            const cards = await Promise.all(batch.map(game => createGameAchieCard(game, game._completedIndex)));
 
             if (myRenderId !== renderIdAchie) return;
 
@@ -550,7 +551,7 @@ async function loadGamesAchie() {
         await renderInBatches(others, list, false);
     }
 }
-function createGameAchieCard(game, completedIndex = null) {
+async function createGameAchieCard(game, completedIndex = null) {
     const div = document.createElement("div");
     div.className = "game";
     div.dataset.id = game.name;
@@ -631,10 +632,11 @@ function createGameAchieCard(game, completedIndex = null) {
         title.prepend(index);
     }
 
+    const completedDateFormated = await formatDate(game.completeDate, 'default');
     if (status === "platinado") {
         const statusText = document.createElement("span");
         statusText.className = "status-text";
-        statusText.textContent = game.completeDate || "";
+        statusText.textContent = completedDateFormated || "";
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
         div.classList.add('platinado')

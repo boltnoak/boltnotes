@@ -335,3 +335,81 @@ window.addEventListener('load', async () => {
         return;
     }
 });
+
+async function viewDownloadPackage(packageName) {
+    const name = document.querySelector('.download-status-name');
+    name.textContent = packageName;
+}
+
+function getOrdinalSuffix(day) {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+    }
+}
+
+async function formatDate(dataStr, style = 'default') {
+    if (!dataStr) return '';
+
+    const [day, month, year] = dataStr.split('/');
+    const dataObj = new Date(`${year}-${month}-${day}`);
+    if (isNaN(dataObj)) return dataStr;
+
+    const config = await window.electronAPI.config.getConfig();
+    let locale = config?.language || 'pt-BR';
+    if (locale === 'en') locale = 'en-US';
+
+    if (style === 'ordinal' && locale === 'en-US') {
+        const dayNum = parseInt(day, 10);
+        const suffix = getOrdinalSuffix(dayNum);
+        const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(dataObj);
+        return `${monthName} ${dayNum}${suffix}, ${year}`; // Ex: June 5th, 2026
+    }
+
+    switch (style) {
+        case 'ordinal': // Ex: 5 de junho de 2026 / June 5th, 2026
+            if (locale === 'en-US') {
+                const dayNum = parseInt(day, 10);
+                const suffix = getOrdinalSuffix(dayNum);
+                const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(dataObj);
+                return `${monthName} ${dayNum}${suffix}, ${year}`;
+            }
+            return new Intl.DateTimeFormat(locale, { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            }).format(dataObj);
+
+        case 'short-month': // Ex: 5 de jun. de 2026 / Jun 5, 2026
+            return new Intl.DateTimeFormat(locale, { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            }).format(dataObj);
+
+        case 'wide': // Ex: 5 de junho de 2026 / June 5, 2026
+            return new Intl.DateTimeFormat(locale, { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            }).format(dataObj);
+
+        case 'month-year': // Ex: jun. de 2026" / "Jun 2026
+            return new Intl.DateTimeFormat(locale, { 
+                month: 'short', 
+                year: 'numeric' 
+            }).format(dataObj);
+
+        case 'default': // Ex: 05/06/2026
+            return new Intl.DateTimeFormat(locale, { 
+                day: 'numeric', 
+                month: 'numeric', 
+                year: 'numeric' 
+            }).format(dataObj);
+        default:
+            return dataStr;
+    }
+}

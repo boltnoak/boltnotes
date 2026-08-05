@@ -267,25 +267,38 @@ window.addEventListener('keydown', (e) => {
 });
 
 async function openVideoPlayer(el) {
-        const popup = document.getElementById("video-popup");
-        const wrapper = popup?.querySelector('.video-wrapper');
+    await fetchVideoPopup();
 
-        if (popup) popup.style.display = "flex";
-        document.querySelector('html').style.overflow = "hidden";
+    const popup = document.getElementById("video-popup");
+    const wrapper = popup?.querySelector('.video-wrapper');
 
-        if (wrapper) {
-            const triggerControls = () => window.showControls(wrapper);
+    if (popup) popup.style.display = "flex";
+    document.querySelector('html').style.overflow = "hidden";
 
-            wrapper.onmousemove = () => window.showControls(wrapper);
-            wrapper.onmousedown = () => window.showControls(wrapper);
-            wrapper.ontouchstart = () => window.showControls(wrapper);
-            wrapper.addEventListener('wheel', triggerControls, { passive: true });
-        }
+    if (wrapper) {
+        const triggerControls = () => window.showControls(wrapper);
 
-        allowVolumeControl();
+        wrapper.onmousemove = () => window.showControls(wrapper);
+        wrapper.onmousedown = () => window.showControls(wrapper);
+        wrapper.ontouchstart = () => window.showControls(wrapper);
+        wrapper.addEventListener('wheel', triggerControls, { passive: true });
+    }
 
-        const video = document.getElementById('video');
-        if (video) video.volume = .5;
-        
-        if (wrapper) window.showControls(wrapper);
+    allowVolumeControl();
+
+    const video = document.getElementById('video');
+    if (video) video.volume = .5;
+
+    if (wrapper) window.showControls(wrapper);
+}
+
+async function fetchVideoPopup() {
+    const isVideoPopup = document.getElementById('video-popup');
+    if (!isVideoPopup) {
+        try {
+            const res = await fetch('components/popups.bolt');
+            const data = await res.text();
+            document.body.insertAdjacentHTML('afterbegin', data);
+        } catch {}
+    }
 }

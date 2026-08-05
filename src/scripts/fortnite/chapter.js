@@ -113,11 +113,6 @@ async function loadCloudSeasonInfo() {
 
 async function inicializarDados() {
     try {
-        if (!document.getElementById("video-popup")) {
-            const res = await fetch('components/fortnite/popups.bolt');
-            document.body.insertAdjacentHTML('afterbegin', await res.text());
-        }
-
         const cloudData = await loadCloudSeasonInfo();
         const localData = await window.electronAPI.json.load(FILE);
         const statsData = await window.electronAPI.json.load(FILE_STATS);
@@ -175,6 +170,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
     container.innerHTML = '';
 
     await getSeasonTemplate();
+    await applyLocale();
 
     const template = document.getElementById('season-template');
     if (!template) {
@@ -405,16 +401,18 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
     if (localDataUpdated) await window.electronAPI.json.save(FILE, window.reviews);
     if (localStatsUpdated) await window.electronAPI.json.save(FILE_STATS, window.stats);
 
-    preencherValores();
+    await preencherValores();
 }
 
-function preencherValores() {
+async function preencherValores() {
     const allCodes = new Set([...Object.keys(window.reviews), ...Object.keys(window.stats)]);
 
-    allCodes.forEach(code => {
+    for (const code of allCodes) {
         const info = cachedSeasonInfo[code] || {};
         const reviewData = window.reviews[code] || {};
         const statsData = window.stats[code] || {};
+
+        const releaseDateFormated = await formatDate(info.releaseDate, 'ordinal');
 
         const rating = document.getElementById(`${code}-rating`);
         const levels = document.getElementById(`${code}-levels`);
@@ -424,13 +422,14 @@ function preencherValores() {
         if (rating) rating.textContent = statsData.rating || "N/A";
         if (levels) levels.textContent = statsData.levels || "0";
         if (wins) wins.textContent = statsData.wins || "0";
-        if (releaseDate) releaseDate.textContent = ` ${info.releaseDate}` || "Sem data";
-    });
+        if (releaseDate) {
+            releaseDate.textContent = releaseDateFormated ? ` ${releaseDateFormated}` : "Sem data";
+        }
+    };
 
     if (typeof initReviews === "function") {
         initReviews();
     }
-    applyLocale();
 }
 
 addEventListener('click', (e) => {

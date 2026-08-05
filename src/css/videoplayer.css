@@ -199,7 +199,7 @@
     flex-direction: row;
     margin: 0;
     justify-content: center;
-    gap: .66vw;
+    gap: .75vw;
     object-fit: cover;
     width: 100%;
 }
@@ -223,7 +223,7 @@
 .video-item-btn {
     align-items: center;
     justify-content: center;
-    flex: 0 0 auto;
+    /* flex: 0 0 auto; */
     white-space: nowrap;
     scroll-snap-align: start;
     color: var(--text);
@@ -239,12 +239,86 @@
     border-radius: 1vh;
     flex-direction: column;
     gap: 1vh;
+    position: relative;
+    flex: 1 1 0px; 
+    min-width: 0;
 }
 .video-item-btn.active {
     background-color: var(--more-video-active);
 }
 .video-item-btn:hover {
     background-color: var(--more-video-hover);
+}
+.video-item-btn.downloading {
+    align-items: center;
+    justify-content: center;
+    /* flex: 0 0 auto; */
+    white-space: nowrap;
+    scroll-snap-align: start;
+    color: var(--text);
+    padding: 1.5vh 1vw;
+    cursor: pointer;
+    display: flex;
+    transition: background 0.1s;
+    font-family: 'Montserrat';
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.9vh;
+    object-fit: cover;
+    border-radius: 1vh;
+    flex-direction: column;
+    gap: 1vh;
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+}
+.video-item-btn .download-icon {
+    position: absolute;
+    font-size: 8vh;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    color: var(--text-dark-gray);
+    opacity: .15;
+}
+.video-item-btn .progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: var(--text);
+    z-index: 1;
+    transition: width 0.1s linear;
+}
+.video-item-btn .progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--download-progress, 0%);
+    background: var(--btn-hover);
+    z-index: 1;
+    transition: width 0.1s linear;
+}
+.video-item-btn .text-base {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1vh;
+    z-index: 3;
+    width: 100%;
+}
+.percent-text {
+    display: inline-block;
+    width: 3ch;
+    text-align: left;
 }
 .moreVideo-date {
     font-family: 'Montserrat';

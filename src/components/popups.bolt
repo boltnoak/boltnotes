@@ -1,20 +1,10 @@
 <div class="video-popup" id="video-popup" style="display:none;">
     <div id="video-player">
         <div class="video-wrapper">
-        <div id="controls-hover"></div>
+            <div id="controls-hover"></div>
             <p id="video-title"></p>
             <i id="video-close" class="fa-solid fa-xmark" onclick="closeVideo();"></i>
             <p id="volume"></p>
-            <div id="team-select-overlay">
-                <div class="team-options">
-                    <div class="team-option" onclick="chooseTeam('ice-king')">
-                        <img src="assets://fortnite-c7s2-assets/team-ice-king.png">
-                    </div>
-                    <div class="team-option" onclick="chooseTeam('foundation')">
-                        <img src="assets://fortnite-c7s2-assets/team-foundation.png">
-                    </div>
-                </div>
-            </div>
             <video id="video" onclick="togglePlay()" preload="metadata"></video>
             <div id="player-controls">
                 <div id="player-bar" onclick="window.seek(event)">
@@ -31,14 +21,6 @@
                     <i id="toggle-fullscreen" class="fa-solid fa-up-right-and-down-left-from-center" onclick="toggleFullscreen()"></i>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-<div class="map-popup" id="map-popup" style="display:none;">
-    <div class="mapPopup-div">
-        <div class="mapPopup-content">
-            <i id="map-close" class="fa-solid fa-xmark" onclick="closeMap();"></i>
-            <div id="mapPopup-image"></div>
         </div>
     </div>
 </div>
