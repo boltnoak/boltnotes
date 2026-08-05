@@ -114,14 +114,12 @@ async function openTrailer(el) {
 
         for (const tipo of tipos) {
             const info = cachedTrailers?.[code]?.[tipo];
-            
-            // Se o trailer nem existe no JSON do cloud, pula este tipo
+
             if (!info && tipo !== "game" && tipo !== "cine") continue;
 
             const labelText = info?.title || `Trailer ${tipo}`;
             const labelDate = await formatDate(info?.date || 'Sem data');
 
-            // Formato padrão (webm). Se seu JSON indicar o formato do arquivo, use info.ext
             const extension = info?.ext || 'webm';
             const fileName = `${code}_${tipo}_${language}.${extension}`;
             const assetUri = `assets://fortnite-${code}-assets/${fileName}`;
@@ -144,12 +142,10 @@ async function openTrailer(el) {
                 const formattedSeason = code.toUpperCase().replace(/S/g, 'T').replace(/^(?!.*C.*T\d+).*$/, '');
                 document.getElementById('video-title').textContent = `${formattedSeason} ${seasonName.replace(/.*(- =?)/, '')} — ${labelText}`;
 
-                // Lista de extensões que o app aceita
                 const extensoes = ['webm', 'mkv', 'mp4'];
                 let localUriEncontrado = null;
                 let fileNameParaDownload = null;
 
-                // 1. Testa se o arquivo já existe no PC em algum dos formatos
                 for (const ext of extensoes) {
                     const testFileName = `${code}_${tipo}_${language}.${ext}`;
                     const testUri = `assets://fortnite-${code}-assets/${testFileName}`;
@@ -170,38 +166,60 @@ async function openTrailer(el) {
                         <div class="progress-fill"></div>
                         <i class="download-icon fa-solid fa-circle-down"></i>
                         <div class="text-base">
-                            <span>Baixando</span>... <span class="percent-text">0%</span>
+                            <span data-i18n="downloading">Baixando</span>... <span class="percent-text">0%</span>
                         </div>
                     `;
+                    applyLocale();
                     btn.classList.add('downloading');
 
-                    const removeProgressListener = window.electronAPI.video.onProgress(({ percent }) => {
+                    const extensoesParaTentar = ['mkv', 'mp4', 'webm'];
+                    let arquivoSendoBaixadoAtual = `${code}_${tipo}_${language}.${extensoesParaTentar[0]}`;
+
+                    const removeProgressListener = window.electronAPI.video.onProgress(({ fileName: eventFileName, percent }) => {
+                        if (eventFileName !== arquivoSendoBaixadoAtual) return;
+
                         btn.style.setProperty('--download-progress', `${percent}%`);
                         
-                        const conteudoAtualizado = `<span>Baixando</span>... <span class="percent-text">${percent}%</span>`;
-                        btn.querySelector('.text-base').innerHTML = conteudoAtualizado;
-                        btn.querySelector('.text-overlay').innerHTML = conteudoAtualizado;
+                        const textBase = btn.querySelector('.text-base');
+                        const textOverlay = btn.querySelector('.text-overlay');
+
+                        const updateProgressContent = (container) => {
+                            if (!container) return;
+
+                            let percentEl = container.querySelector('.percent-text');
+
+                            if (!percentEl) {
+                                container.innerHTML = `<span data-i18n="downloading">Baixando</span>... <span class="percent-text">${percent}%</span>`;
+                                applyLocale();
+                            } else {
+                                percentEl.textContent = `${percent}%`;
+                            }
+                        };
+
+                        updateProgressContent(textBase);
+                        updateProgressContent(textOverlay);
                     });
 
                     try {
-                        const extensoesParaTentar = ['mkv', 'mp4', 'webm'];
                         let result;
                         let assetUriFinal;
 
                         for (const ext of extensoesParaTentar) {
-                            const fileName = `${code}_${tipo}_${language}.${ext}`;
-                            const cloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${fileName}`;
-                            assetUriFinal = `assets://fortnite-${code}-assets/${fileName}`;
+                            const currentFileName = `${code}_${tipo}_${language}.${ext}`;
+                            arquivoSendoBaixadoAtual = currentFileName;
+                            
+                            const cloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${currentFileName}`;
+                            assetUriFinal = `assets://fortnite-${code}-assets/${currentFileName}`;
 
                             result = await window.electronAPI.video.downloadOnDemand({
                                 url: cloudUrl,
-                                fileName: fileName,
+                                fileName: currentFileName,
                                 folderCode: code
                             });
 
                             if (result.success) {
                                 btn.classList.remove('downloading');
-                                break;
+                                break; 
                             } 
                         }
 
@@ -350,7 +368,6 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
         if (!hasFoundation || !hasIceKing) forceDownloadExtras = true;
     }
 
-    // Se não tem o vídeo principal (!ext) OU se faltam os extras (forceDownloadExtras)
     if (!ext || forceDownloadExtras) {
         const downloadPopup = document.querySelector('.download-status-div');
         const nameEl = document.querySelector('.download-status-name');
@@ -359,9 +376,14 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
 
         if (downloadPopup) {
             if (nameEl) nameEl.textContent = eventTitle;
+            if (nameEl && code === 'c7s2') nameEl.textContent = `${window._t['event_c7s2']}`;
             if (percentageEl) percentageEl.textContent = '0%';
             if (progressBarFill) progressBarFill.style.width = '0%';
             downloadPopup.classList.add('show');
+            document.querySelector('.season-trailers').classList.add('disabled');
+            document.querySelector('.season-events').classList.add('disabled');
+            document.getElementById('before-chapter').classList.add('disabled');
+            document.getElementById('next-chapter').classList.add('disabled');
         }
 
         const removeProgressListener = window.electronAPI.video.onProgress(({ percent }) => {
@@ -372,7 +394,6 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
         try {
             let downloadSucesso = false;
 
-            // --- NOVA LÓGICA 2: Só busca o principal se não tiver achado ele localmente ---
             if (!ext) {
                 const extensoesParaTentar = ['mkv', 'mp4', 'webm'];
                 for (const testExt of extensoesParaTentar) {
@@ -388,11 +409,12 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                     if (result.success) {
                         ext = testExt;
                         downloadSucesso = true;
+                        videoTimeDisplay();
                         break;
                     }
                 }
             } else {
-                downloadSucesso = true; // Se ext já existe, o arquivo principal já está aí
+                downloadSucesso = true;
             }
 
             if (!downloadSucesso) {
@@ -401,7 +423,6 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                 return;
             }
 
-            // --- NOVA LÓGICA 3: Baixa os arquivos extras do c7s2 mostrados na image_43201b.png ---
             if (code === 'c7s2') {
                 const teams = ['foundation', 'ice-king'];
                 
@@ -409,8 +430,8 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                     const extraName = `${fileCode}-${team}.${ext}`;
                     const hasExtraLocal = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/${extraName}`);
                     
-                    if (!hasExtraLocal) { // Só baixa se realmente não existir
-                        if (nameEl) nameEl.textContent = `Baixando escolha: ${team}...`;
+                    if (!hasExtraLocal) {
+                        if (nameEl) nameEl.textContent = `${window._t[`event_c7s2-${team || ""}`]}`;
                         
                         const extraCloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${extraName}`;
                         await window.electronAPI.video.downloadOnDemand({
@@ -419,6 +440,7 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                             folderCode: code
                         });
                     }
+                    videoTimeDisplay();
                 }
             }
 
@@ -429,54 +451,24 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
         } finally {
             removeProgressListener();
             if (downloadPopup) downloadPopup.classList.remove('show');
+            document.querySelector('.season-trailers').classList.remove('disabled');
+            document.querySelector('.season-events').classList.remove('disabled');
+            document.getElementById('before-chapter').classList.remove('disabled');
+            document.getElementById('next-chapter').classList.remove('disabled');
         }
     }
 
     const path = `${basePath}.${ext}`;
     const video = document.getElementById('video');
 
+    removeCreatedEspecialDivs();
     await openVideoPlayer(el);
     changeVideo(path);
 
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-        playPromise.catch(error => {
-            console.warn("Reprodução automática impedida pelo navegador. Clique no Play.");
-        });
-    }
-            
-    const popupVideo = document.getElementById('video');
-    const popupJuice = document.getElementById('player-bar-fill');
-    const popupPlayBtn = document.getElementById('play-pause');
-    const timeDisplay = document.getElementById('video-time-display');
-
-    if (popupVideo) {
-        const updateTimeText = () => {
-            if (timeDisplay) {
-                const current = formatTime(popupVideo.currentTime);
-                const duration = formatTime(popupVideo.duration);
-                timeDisplay.textContent = `${current}/${duration}`;
-            }
-        };
-
-        popupVideo.ontimeupdate = () => {
-            updateTimeText();
-            if (!isNaN(popupVideo.duration) && popupVideo.duration > 0) {
-                const perc = (popupVideo.currentTime / popupVideo.duration) * 100;
-                if (popupJuice) popupJuice.style.width = perc + "%";
-            }
-        };
-
-        popupVideo.onloadedmetadata = updateTimeText;
-
-        updateTimeText();
-        if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
-    }
+    videoTimeDisplay();
 
     video.addEventListener('timeupdate', () => {
         const isIntro = video.src.includes('live-event-c7s2.webm') || video.src.includes('live-event-c7s2.mp4');
-        const teamSelect = document.getElementById('team-select-overlay');
-
         if (isIntro) {
             const key = EVENT_KEYS[code];
             const titleName = window._t?.[key] || code;
@@ -487,14 +479,18 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                 <div class="team-options">
                     <div class="team-option" onclick="chooseTeam('ice-king')">
                         <img src="assets://fortnite-c7s2-assets/team-ice-king.png">
+                        <p class="team-option-text" data-i18n="ice-king"></p>
                     </div>
                     <div class="team-option" onclick="chooseTeam('foundation')">
                         <img src="assets://fortnite-c7s2-assets/team-foundation.png">
+                        <p class="team-option-text" data-i18n="foundation"></p>
                     </div>
                 </div>`;
+            applyLocale();
             document.querySelector('.video-wrapper').appendChild(chooseDiv)
         }
 
+        const teamSelect = document.getElementById('team-select-overlay');
         if (!teamSelect) return;
 
         const mustShow = isIntro && video.currentTime >= 274.5;

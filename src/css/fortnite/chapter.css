@@ -865,20 +865,38 @@ body {
 .team-options {
     display: flex;
     flex-direction: row-reverse;
-    gap: 8vw;
+    gap: 17vw;
     pointer-events: inherit;
 }
 .team-option {
     cursor: pointer;
-    transform: scale(.35);
+    height: fit-content;
     pointer-events: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1vh;
+    /* padding: 0 1vw; */
+    width: 12vw;
 }
 .team-option img {
-    width: 15vw;
+    width: 5vw;
+}
+.team-option-text {
+    width: 100%;
+    font-size: 2vh;
+    font-weight: 900;
+    text-align: center;
+    margin: 0;
+    text-transform: uppercase;
 }
 .video-popup.full .team-options {
-    gap: 19.6vw;
+    gap: 26vw;
 }
-.video-popup.full .team-option {
-    transform: scale(.54);
+.video-popup.full .team-option img {
+    width: 7vw;
+}
+.video-popup.full .team-option-text {
+    font-size: 3vh;
 }

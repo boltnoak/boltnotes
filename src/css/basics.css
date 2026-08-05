@@ -556,9 +556,9 @@ header {
     transition: all 0.1s linear;
     transform: translateY(60px);
 }
-/* footer {
+footer {
     margin-top: .5vh;
-} */
+}
 [contenteditable="true"] {
     background: transparent;
     outline: none;
@@ -580,10 +580,9 @@ header {
 
 .download-status-div {
     position: absolute;
-    padding: .75vh .375vw;
-    height: 17vh;
+    padding: 0;
     width: 22vw;
-    border-radius: 2.25vh;
+    border-radius: 2vh;
     margin: 0;
     left: 1vw;
     bottom: 8.5vh;
@@ -591,7 +590,7 @@ header {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: solid .5vh var(--blue);
+    border: solid .5vh var(--tab-hover);
     background-color: var(--bg);
     z-index: 99;
     transform: translateY(12px);
@@ -604,11 +603,15 @@ header {
     opacity: 1;
     visibility: visible;
 }
+.season-trailers.disabled,
+.season-events.disabled,
+.seasonMap-div.disabled {
+    opacity: .8;
+    pointer-events: none;
+}
 .download-status {
     border-radius: 1.5vh;
     margin: 0;
-    left: 1vw;
-    bottom: 8.5vh;
     display: flex;
     flex-direction: column;
     gap: 1vh;
@@ -622,16 +625,16 @@ header {
 .download-status-progress-div {
     display: flex;
     flex-direction: row;
-    width: calc(100% - 1.05vw);
-    margin: 0 0 .5vh 0;
-    gap: .5vw;
+    width: calc(100% - 1.5vw);
+    margin: 0 0 1vh 0;
+    gap: .6vw;
     align-items: center;
     justify-content: center;
 }
 .download-status-text {
     margin: 0;
-    font-weight: 700;
-    font-size: 3.5vh;
+    font-weight: 800;
+    font-size: 3vh;
     text-align: center;
     background-color: var(--tab-active);
     width: 100%;
@@ -639,15 +642,15 @@ header {
     border-radius: .5vh;
 }
 .download-status-name {
-    margin: 0;
+    margin: 1vh .5vw;
     font-weight: 500;
-    font-size: 2.3vh;
-    color: var(--text-light-gray);
+    font-size: 2.5vh;
+    color: var(--text-gray);
     text-align: center;
 }
 
 .download-status-progress-bar {
-    height: 1vh;
+    height: 100%;
     padding: 0;
     width: calc(100% - .8vw);
     margin: 0;
@@ -656,16 +659,16 @@ header {
     overflow: hidden;
 }
 .download-status-progress-bar-fill {
-    height: 100%;
+    height: 1.25vh;
     margin: 0;
-    width: 0%;
+    width: 50%;
     background-color: var(--blue);
     object-fit: cover;
 }
 .download-status-percentage {
     margin: 0;
     font-weight: 700;
-    font-size: 2.3vh;
+    font-size: 2vh;
     text-align: center;
     color: var(--blue);
     padding: 0;

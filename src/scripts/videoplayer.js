@@ -175,6 +175,9 @@ function allowVolumeControl() {
 
     if (!videoElement) return;
 
+    if (videoElement.dataset.wheelInitialized === 'true') return;
+    videoElement.dataset.wheelInitialized = 'true';
+
     const mudanca = 0.05;
 
     videoElement.addEventListener('wheel', (e) => {
@@ -183,15 +186,12 @@ function allowVolumeControl() {
         let novoVolume =
             videoElement.volume + (e.deltaY < 0 ? mudanca : -mudanca);
 
-        // clamp único
         novoVolume = Math.min(1, Math.max(0, novoVolume));
 
         videoElement.volume = novoVolume;
 
-        // log único
         console.log(`${Math.round(novoVolume * 100)}%`);
 
-        // UI texto
         if (vol) {
             vol.textContent = `${Math.round(novoVolume * 100)}%`;
             vol.style.opacity = 1;
@@ -202,10 +202,8 @@ function allowVolumeControl() {
             }, 800);
         }
 
-        // mute state
         videoElement.muted = novoVolume === 0 ? true : false;
 
-        // icon
         if (mute) {
             if (videoElement.muted || novoVolume === 0) {
                 mute.className = "fa-solid fa-volume-xmark";
@@ -301,4 +299,41 @@ async function fetchVideoPopup() {
             document.body.insertAdjacentHTML('afterbegin', data);
         } catch {}
     }
+}
+
+function videoTimeDisplay() {
+    const popupVideo = document.getElementById('video');
+    const popupJuice = document.getElementById('player-bar-fill');
+    const popupPlayBtn = document.getElementById('play-pause');
+    const timeDisplay = document.getElementById('video-time-display');
+
+    if (!popupVideo) return;
+
+    const updateTimeText = () => {
+        if (timeDisplay) {
+            const current = formatTime(popupVideo.currentTime);
+            const duration = formatTime(popupVideo.duration);
+            timeDisplay.textContent = `${current}/${duration}`;
+        }
+    };
+
+    if (popupVideo._displayTimeHandler) {
+        popupVideo.removeEventListener('timeupdate', popupVideo._displayTimeHandler);
+    }
+
+    popupVideo._displayTimeHandler = () => {
+        updateTimeText();
+
+        if (!isNaN(popupVideo.duration) && popupVideo.duration > 0) {
+            const perc = (popupVideo.currentTime / popupVideo.duration) * 100;
+            if (popupJuice) popupJuice.style.width = perc + "%";
+        }
+    };
+
+    popupVideo.addEventListener('timeupdate', popupVideo._displayTimeHandler);
+    
+    popupVideo.onloadedmetadata = updateTimeText;
+    updateTimeText();
+
+    if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
 }

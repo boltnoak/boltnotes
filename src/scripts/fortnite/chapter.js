@@ -725,3 +725,5 @@ window.electronAPI.onCacheUpdated?.((info) => {
         // re-renderiza se estiver na página certa
     }
 });
+
+fetchVideoPopup();
