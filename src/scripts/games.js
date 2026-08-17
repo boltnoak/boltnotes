@@ -251,8 +251,11 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     if (game.isPreOrder === true) {
         div.classList.add("pre-order");
     }
+    if (game.hasCampaign === false) {
+        div.classList.add("no-campaign");
+    }
 
-    img.src = 'assets://basics/placeholder.png';
+    img.src = 'assets/placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -566,7 +569,7 @@ async function createGameAchieCard(game, completedIndex = null) {
         div.classList.add("no-achie");
     }
 
-    img.src = 'assets://basics/placeholder.png';
+    img.src = 'assets/placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -848,6 +851,8 @@ document.getElementById('steamdb-btn').addEventListener('click', () => {
     window.api.openLink(url);
 });
 
+let addGameHasCampaignTag = true;
+
 document.getElementById('addGameBtn').addEventListener('click', async () => {
     const nameInput = document.getElementById('gameName').value.trim();
     const appIdInput = document.getElementById('gameAppId').value.trim();
@@ -879,7 +884,7 @@ document.getElementById('addGameBtn').addEventListener('click', async () => {
         }
     }
 
-    const response = await window.api.games.addGame(newGame);
+    const response = await window.api.games.addGame(newGame, addGameHasCampaignTag);
 
     if (response.success) {
         window.location.reload();
@@ -954,6 +959,10 @@ async function changeAchieProgress(el, isAdd = true) {
     achieCount.textContent = `${unlocked}/${total}`;
     achieBarFill.style.width = `${percentage}%`;
     achiePercentage.textContent = `${percentage}%`;
+
+    if (percentage === 100) {
+        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--yellow)';
+    }
 
     if (jogoEncontrado) {
         await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listaStats);
@@ -1031,15 +1040,20 @@ async function openGamePopup(el) {
     const achieBarFill = document.querySelector('.achie-bar-fill');
     const achieTitle = document.querySelector('.achie-info-title');
     const achieInfo = document.querySelector('.achie-info');
+    const achieInfoDiv = document.querySelector('.game-status-div');
     const achieBtns = document.querySelector('.achie-add-minus');
     const achieAddBtn = document.getElementById('achie-add');
     const achieMinusBtn = document.getElementById('achie-minus');
     const completeDateText = document.querySelector('.game-popup-completeDate');
     const achieDiv = document.querySelector('.game-achievements');
     const campaignText = document.querySelector('.campaign-info-title-text');
+    const noteTittleDiv = document.querySelector('.game-note-title-div');
+    const note = document.querySelector('.game-note');
 
-    const achieSep = document.querySelector('.achie-sep');
-    const campaignSep = document.querySelector('.campaign-sep');
+    // const achieSep = document.querySelector('.achie-sep');
+    // const campaignSep = document.querySelector('.campaign-sep');
+    const typeCampaignMark = document.querySelector('.type-mark-campaign');
+    const typeAchieMark = document.querySelector('.type-mark-achie');
 
     const campaignDiv = document.querySelector('.game-campaign-div');
     const campaignChange = document.querySelector('.campaign-status-change');
@@ -1102,8 +1116,23 @@ async function openGamePopup(el) {
         logo: gamesDB.logo
     });
 
-    banner.src = localHeroPath ? `file://${localHeroPath}` : 'assets://basics/placeholder.png';
-    logo.src = localLogoPath ? `file://${localLogoPath}` : '';
+    if (achieGame.unlockedAchievements === achieGame.totalAchievements) {
+        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--yellow)';
+        document.querySelector('.achie-percentage').style.color = 'var(--yellow)';
+    } else {
+        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--blue)';
+        document.querySelector('.achie-percentage').style.color = 'var(--blue)';
+    }
+
+    const mainBG = document.querySelector('.game-maincontent');
+    const normalizedPath = localHeroPath ? localHeroPath.replace(/\\/g, '/') : null;
+    const bgValue = normalizedPath 
+        ? `url("file://${normalizedPath}")` 
+        : 'url("assets/placeholder.png")';
+
+    mainBG.style.setProperty('--bg-image', bgValue);
+    banner.src = localCoverPath ? `file://${localCoverPath}` : 'assets/placeholder.png';
+    // logo.src = localLogoPath ? `file://${localLogoPath}` : '';
 
     logo.alt = el.dataset.id;
     devText.textContent = gamesDB.developer || "Erro";
@@ -1133,6 +1162,12 @@ async function openGamePopup(el) {
         }
     }
 
+    if (gameCampaign.hasCampaign === false) {
+        statusText.style.display = 'none';
+    } else {
+        statusText.style.display = 'flex';
+    }
+
     completeDateText.textContent = gameCampaign.completeDate || "";
     noteText.innerHTML = gameNote?.note || "";
 
@@ -1149,6 +1184,40 @@ async function openGamePopup(el) {
         applyLocale();
     }
 
+    const ratingTextDiv = document.querySelector('.game-rating-title')
+    const ratingUnderlineOpacity = '70%,transparent'
+    if (gameCampaign.rating >= 0) {
+        ratingText.style.color = 'var(--red)';
+        ratingTextDiv.style.setProperty('--shadow-color', 'var(--red)');
+        ratingText.style.textDecorationColor = `color-mix(in srgb, var(--red-light) ${ratingUnderlineOpacity})`;
+    }
+    if (gameCampaign.rating > 2) {
+        ratingText.style.textDecorationColor = `color-mix(in srgb, var(--red-light) ${ratingUnderlineOpacity})`;
+    }
+    if (gameCampaign.rating > 4) {
+        ratingText.style.color = 'var(--orange)';
+        ratingTextDiv.style.setProperty('--shadow-color', 'var(--orange)');
+        ratingText.style.textDecorationColor = `color-mix(in srgb, var(--orange-light) ${ratingUnderlineOpacity})`;
+    }
+    if (gameCampaign.rating > 6) {
+        ratingText.style.color = 'var(--blue-light)';
+        ratingTextDiv.style.setProperty('--shadow-color', 'var(--blue)');
+        ratingText.style.textDecorationColor = `color-mix(in srgb, var(--blue-light) ${ratingUnderlineOpacity})`;
+    }
+    if (gameCampaign.rating > 7) {
+        ratingText.style.textDecorationColor = `color-mix(in srgb, var(--blue-light) ${ratingUnderlineOpacity})`;
+    }
+    if (gameCampaign.rating >= 8) {
+        ratingText.style.color = 'var(--green-light)';
+        ratingTextDiv.style.setProperty('--shadow-color', 'var(--green-light)');
+        ratingText.style.textDecorationColor = `color-mix(in srgb, var(--green-light) ${ratingUnderlineOpacity})`;
+    }
+    if (gameCampaign.rating == 10) {
+        ratingText.style.color = 'var(--yellow)';
+        ratingTextDiv.style.setProperty('--shadow-color', 'var(--yellow)');
+        ratingText.style.textDecorationColor = `color-mix(in srgb, var(--yellow-light) ${ratingUnderlineOpacity})`;
+    }
+
     const total = achieGame.totalAchievements || 0;
     const unlocked = achieGame.unlockedAchievements || 0;
     achieCount.textContent = `${unlocked}/${total}`;
@@ -1158,6 +1227,26 @@ async function openGamePopup(el) {
     achiePercentage.textContent = `${percentage}%`;
 
     const hasAchie = achieGame.hasAchievements;
+    const hasCampaign = gameCampaign.hasCampaign;
+    if (hasCampaign) {
+        typeCampaignMark.classList.add('active');
+    } else {
+        typeCampaignMark.classList.remove('active');
+    }
+
+    typeCampaignMark.addEventListener('click', async () => {
+        const isCurrentlyActive = typeCampaignMark.classList.contains('active');
+
+        const newState = !isCurrentlyActive;
+
+        try {
+            await updateCampaignJSON(gameCampaign.name, newState);
+
+            typeCampaignMark.classList.toggle('active', newState);
+        } catch (error) {
+            console.error("Erro ao atualizar o status da campanha:", error);
+        }
+    });
 
     const campStatus = gameCampaign.status.toLowerCase();
     const achStatus = achieGame.achieStatus?.toLowerCase();
@@ -1167,45 +1256,50 @@ async function openGamePopup(el) {
 
     if (hasAchie) {
         achieTitle.style.display = 'flex';
-        achieInfo.style.display = 'flex';
+        achieInfoDiv.style.display = 'flex';
         achieStatusText.style.display = 'flex';
         achieBtns.style.display = 'flex';
         achieDiv.style.display = 'flex';
-        achieSep.style.display = 'block';
+        // achieSep.style.display = 'block';
         campaignChange.classList.remove('noAchie');
+        typeAchieMark.classList.add('active');
     } else {
         achieTitle.style.display = 'none';
-        achieInfo.style.display = 'none';
+        achieInfoDiv.style.display = 'none';
         achieStatusText.style.display = 'none';
         achieBtns.style.display = 'none';
         achieDiv.style.display = 'none';
-        achieSep.style.display = 'none';
+        // achieSep.style.display = 'none';
         campaignChange.classList.add('noAchie');
+        typeAchieMark.classList.remove('active');
     }
 
     if (gameCampaign.status.toLowerCase() == 'ajogar') {
         updateStatus(statusText, 'ajogar', 'À Jogar');
-        campaignSep.style.display = 'none';
-        achieSep.style.display = 'none';
+        // campaignSep.style.display = 'none';
+        // achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
-        noteDiv.style.display = 'none';
+        noteTittleDiv.style.display = 'none';
+        note.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'jogando') {
         updateStatus(statusText, 'jogando', 'Jogando');
-        campaignSep.style.display = 'none';
-        achieSep.style.display = 'none';
+        // campaignSep.style.display = 'none';
+        // achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
-        noteDiv.style.display = 'none';
+        noteTittleDiv.style.display = 'none';
+        note.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'zerado') {
         updateStatus(statusText, 'zerado', 'Zerado');
         campaignText.setAttribute('data-i18n', 'zerado');
-        campaignSep.style.display = 'block';
+        // campaignSep.style.display = 'block';
         campaignDiv.style.display = 'flex';
         ratingDiv.style.display = 'flex';
-        noteDiv.style.display = 'flex';
+        noteTittleDiv.style.display = 'flex';
+        note.style.display = 'flex';
         applyLocale();
     }
 
@@ -1296,6 +1390,27 @@ async function updateStatusJSON(game, statusClass) {
     }
 }
 
+async function updateCampaignJSON(game, statusClass) {
+    const stats = await loadStatus();
+    const listStats = Array.isArray(stats) ? stats : (stats.games || []);
+
+    const gameName = game;
+    const novoStatus = statusClass;
+
+    const gameFound = listStats.find(g => g.name === gameName);
+
+    if (gameFound) {
+        gameFound.hasCampaign = statusClass;
+        
+        await window.electronAPI.json.save(CAMPAIGNS_FILE, listStats);
+        console.log(`Status de ${game} atualizado com sucesso!`);
+        return true;
+    } else {
+        console.warn("Jogo não encontrado na lista.");
+        return false;
+    }
+}
+
 async function updateAchieJSON(game, statusClass) {
     const stats = await loadStatusAchie();
 
@@ -1349,23 +1464,26 @@ optionAjogar.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.campaign-status-tag');
     const campaignText = document.querySelector('.campaign-info-title-text');
-    const campaignSep = document.querySelector('.campaign-sep');
-    const achieSep = document.querySelector('.achie-sep');
+    // const campaignSep = document.querySelector('.campaign-sep');
+    // const achieSep = document.querySelector('.achie-sep');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
     const noteDiv = document.querySelector('.game-note-div');
+    const noteTittleDiv = document.querySelector('.game-note-title-div');
+    const note = document.querySelector('.game-note');
 
     options.style.display = 'none';
     campaignText.classList.add('ajogar');
     campaignText.classList.remove('jogando');
     campaignText.classList.remove('zerado');
-    campaignSep.style.display = 'none';
-    achieSep.style.display = 'none';
+    // campaignSep.style.display = 'none';
+    // achieSep.style.display = 'none';
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
     achieBtns.style.display = 'none';
-    noteDiv.style.display = 'none';
+    noteTittleDiv.style.display = 'none';
+    note.style.display = 'none';
     
     await updateStatusJSON(game, "ajogar");
     updateStatus(statusText, "ajogar", "À Jogar");
@@ -1375,23 +1493,26 @@ optionJogando.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.campaign-status-tag');
     const campaignText = document.querySelector('.campaign-info-title-text');
-    const campaignSep = document.querySelector('.campaign-sep');
-    const achieSep = document.querySelector('.achie-sep');
+    // const campaignSep = document.querySelector('.campaign-sep');
+    // const achieSep = document.querySelector('.achie-sep');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
     const noteDiv = document.querySelector('.game-note-div');
+    const noteTittleDiv = document.querySelector('.game-note-title-div');
+    const note = document.querySelector('.game-note');
 
     options.style.display = 'none';
     achieBtns.style.display = 'flex';
     campaignText.classList.remove('ajogar');
     campaignText.classList.add('jogando');
     campaignText.classList.remove('zerado');
-    campaignSep.style.display = 'none';
-    achieSep.style.display = 'none';
+    // campaignSep.style.display = 'none';
+    // achieSep.style.display = 'none';
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
-    noteDiv.style.display = 'none';
+    noteTittleDiv.style.display = 'none';
+    note.style.display = 'none';
     
     await updateStatusJSON(game, "jogando")
     updateStatus(statusText, "jogando", "Jogando")
@@ -1401,20 +1522,23 @@ optionZerado.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
     const statusText = document.querySelector('.campaign-status-tag');
     const campaignText = document.querySelector('.campaign-info-title-text');
-    const campaignSep = document.querySelector('.campaign-sep');
-    const achieSep = document.querySelector('.achie-sep');
+    // const campaignSep = document.querySelector('.campaign-sep');
+    // const achieSep = document.querySelector('.achie-sep');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
     const achieBtns = document.querySelector('.achie-add-minus');
     const noteDiv = document.querySelector('.game-note-div');
+    const noteTittleDiv = document.querySelector('.game-note-title-div');
+    const note = document.querySelector('.game-note');
 
     options.style.display = 'none';
     campaignText.setAttribute('data-i18n', 'zerado');
-    campaignSep.style.display = 'block';
-    achieSep.style.display = 'block';
+    // campaignSep.style.display = 'block';
+    // achieSep.style.display = 'block';
     campaignDiv.style.display = 'flex';
     ratingDiv.style.display = 'flex';
-    noteDiv.style.display = 'flex';
+    noteTittleDiv.style.display = 'flex';
+    note.style.display = 'flex';
 
     const stats = await loadStatusAchie();
     const listStats = Array.isArray(stats) ? stats : (stats.games || []);
@@ -1836,5 +1960,9 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-gamePopupDiv.addEventListener('click', (e) => {
-});
+const addGameHasCampaignBtn = document.querySelector('.addGame-type.type-mark-campaign');
+
+addGameHasCampaignBtn.addEventListener('click', () => {
+    addGameHasCampaignTag = !addGameHasCampaignTag;
+    addGameHasCampaignBtn.classList.toggle('active');
+})

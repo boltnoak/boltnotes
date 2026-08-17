@@ -12,8 +12,8 @@
     height: 20vh;
     width: 40vw;
     background-color: white;
-    mask: url(assets://basics/fortnite-logo.svg) no-repeat center / contain;
-    -webkit-mask: url(assets://basics/fortnite-logo.svg) no-repeat center / contain;
+    mask: url(../../assets/fortnite-logo.svg) no-repeat center / contain;
+    -webkit-mask: url(../../assets/fortnite-logo.svg) no-repeat center / contain;
     user-select: none;
     opacity: .75;
     mix-blend-mode: overlay;

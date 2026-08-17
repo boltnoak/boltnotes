@@ -11,6 +11,7 @@ const AdmZip = require('adm-zip');
 const { XMLParser } = require('fast-xml-parser');
 const { spawn } = require('child_process');
 const { URL } = require('url');
+const archiver = require('archiver');
 
 process.on('uncaughtException', (err) => {
     if (err.message?.includes('ReadableStream is already closed')) {
@@ -756,7 +757,7 @@ autoUpdater.on('update-downloaded', (info) => {
     const { Notification } = require('electron');
     new Notification({
         title: 'Atualização baixada!',
-        body: `Nova versão: ${info.version}`,
+        body: `Versão: ${info.version}`,
         icon: path.join(__dirname, 'icon.png')
     }).show();
 });
@@ -1145,12 +1146,15 @@ ipcMain.handle("json:load", async (_, filePath) => {
     const content = await fs.promises.readFile(fullPath, 'utf-8');
     return JSON.parse(content);
 });
+let saveQueue = Promise.resolve();
+
 ipcMain.handle("json:save", async (_, { filePath, data }) => {
     const fullPath = path.join(DOCUMENTS, filePath);
-
-    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-    await fs.promises.writeFile(fullPath, JSON.stringify(data, null, 2));
-
+    saveQueue = saveQueue.then(async () => {
+        await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+        await fs.promises.writeFile(fullPath, JSON.stringify(data, null, 2));
+    });
+    await saveQueue;
     return true;
 });
 
@@ -1200,7 +1204,7 @@ ipcMain.handle('notes:select-add-image', async (event) => {
     try {
         fs.copyFileSync(originalPath, destinationPath);
         
-        return `documents://Notes/Media/${uniqueFileName}`;
+        return uniqueFileName;
     } catch (error) {
         console.error('Erro ao salvar a imagem:', error);
         return null;
@@ -1375,7 +1379,7 @@ ipcMain.handle('notes:rename', async (event, oldName, newName) => {
 });
 
 // Jogos
-ipcMain.handle('games:add', async (_, newGameData) => {
+ipcMain.handle('games:add', async (_, newGameData, doHasCampaign) => {
   const gamesPath = path.join(DOCUMENTS, 'Games', 'games.json');
   const statusPath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
   const achievementsPath = path.join(DOCUMENTS, 'Games', 'achievements.json');
@@ -1442,7 +1446,8 @@ ipcMain.handle('games:add', async (_, newGameData) => {
       name: newGameData.name,
       status: "ajogar",
       rating: "null",
-      completeDate: ""
+      completeDate: "",
+      hasCampaign: doHasCampaign
     };
     statusList.push(statusInfo);
     await fs.promises.writeFile(statusPath, JSON.stringify(statusList, null, 2), 'utf-8');
@@ -1528,7 +1533,7 @@ ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover, hero, logo 
   const userCoverDir = path.join(USER_COVERS);
   const userHeroDir = path.join(USER_HEROS);
   const userLogoDir = path.join(USER_LOGOS);
-  const placeholderPath = path.join(ASSETS_DIR, 'placeholder.jpg');
+  const placeholderPath = path.join(BUNDLE, 'assets', 'placeholder.png');
 
   if (!fs.existsSync(coversDir)) fs.mkdirSync(coversDir, { recursive: true });
   if (!fs.existsSync(herosDir)) fs.mkdirSync(herosDir, { recursive: true });
@@ -1828,4 +1833,73 @@ ipcMain.handle('video:download-on-demand', async (event, { url, fileName, folder
 
     return { success: false, error: error.message };
   }
+});
+
+ipcMain.handle('backup:export', async () => {
+    const result = await dialog.showSaveDialog({
+        title: 'Exportar Backup',
+        defaultPath: `BoltNotes-Backup-${new Date().toISOString().split('T')[0]}.zip`,
+        filters: [{ name: 'Backup ZIP', extensions: ['zip'] }]
+    });
+
+    if (result.canceled || !result.filePath) {
+        return { success: false, canceled: true };
+    }
+
+    try {
+        await new Promise((resolve, reject) => {
+            const output = fs.createWriteStream(result.filePath);
+            const archive = archiver('zip', { zlib: { level: 9 } });
+
+            output.on('close', resolve);
+            archive.on('error', reject);
+
+            archive.pipe(output);
+            archive.directory(DOCUMENTS, false);
+            archive.finalize();
+        });
+
+        return { success: true, path: result.filePath };
+    } catch (error) {
+        console.error('Erro ao exportar backup:', error);
+        return { success: false, error: error.message };
+    }
+});
+
+ipcMain.handle('backup:import', async () => {
+    const result = await dialog.showOpenDialog({
+        title: 'Importar Backup',
+        properties: ['openFile'],
+        filters: [{ name: 'Backup ZIP', extensions: ['zip'] }]
+    });
+
+    if (result.canceled || result.filePaths.length === 0) {
+        return { success: false, canceled: true };
+    }
+
+    const zipPath = result.filePaths[0];
+
+    try {
+        const zip = new AdmZip(zipPath);
+        
+        // Extrai para uma pasta temporária primeiro pra validar
+        const tempExtractPath = path.join(app.getPath('temp'), 'boltnotes-import-temp');
+        if (fs.existsSync(tempExtractPath)) {
+            fs.rmSync(tempExtractPath, { recursive: true });
+        }
+        
+        zip.extractAllTo(tempExtractPath, true);
+
+        // Substitui a pasta DOCUMENTS pelo conteúdo importado
+        if (fs.existsSync(DOCUMENTS)) {
+            fs.rmSync(DOCUMENTS, { recursive: true });
+        }
+        fs.renameSync(tempExtractPath, DOCUMENTS);
+
+        // Limpa caches em memória, se houver
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao importar backup:', error);
+        return { success: false, error: error.message };
+    }
 });

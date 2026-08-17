@@ -20,7 +20,6 @@
                         <div id="playingNow-games"></div>
                     </div>
                 </div>
-                <div class="sep-bar-sidebar"></div>
                 <div class="platinandoNowSection">
                     <div id="platinandoNowSection-title"><p><i class="fa-solid fa-trophy"></i><span data-i18n="platining-now">Platinando no momento</span></p></div>
                     <div class="platinandoNow-panel">
@@ -79,11 +78,11 @@
 
     <div class="game-popup-div">
         <div class="game-popup">
-            <div class="game-banner-div">
-                <img class="game-banner">
-                <img class="game-logo">
-            </div>
-                <div class="game-status-div">
+            <div class="game-sidebar">
+                <div class="game-banner-div">
+                    <img class="game-banner">
+                    <img class="game-logo">
+                </div>
                 <div class="game-popup-status">
                     <div class="campaign-status-tag"></div>
                     <div class="campaign-status-change">
@@ -98,16 +97,27 @@
                         <li class="option-platinado" data-value="platinado" data-i18n="platinado">Platinado</li>
                     </div>
                 </div>
+                <div class="sep-bar"></div>
                 <div class="game-popup-info">
                     <div class="game-releaseDate"><span class="game-releaseDate-title" data-i18n="release-date">LANÇADO EM</span><p class="game-releaseDate-text"></p></div>
                     <div class="dev-pub"><span data-i18n="developer">DEVELOPER</span><div class="game-popup-title"><p class="dev-name"></p></div></div>
                     <div class="dev-pub"><span data-i18n="publisher">PUBLISHER</span><div class="game-popup-title"><p class="pub-name"></p></div></div>
                 </div>
+                <div class="game-types">
+                    <div class="game-type type-mark-campaign">
+                        <div class="game-type-mark"></div>
+                        <span data-i18n="campaign">Campanha</span>
+                    </div>
+                    <div class="game-type type-mark-achie">
+                        <div class="game-type-mark"></div>
+                        <span data-i18n="achievements">Conquistas</span>
+                    </div>
+                </div>
             </div>
-            <div class="game-content">
-                <div class="game-popup-campaign-achie">
+            <div class="game-maincontent">
+                <div class="game-status-div">
                     <div class="game-achievements">
-                        <div>
+                        <div class="achie-info-div">
                             <div class="achie-info-title"><p class="achie-info-title-text" data-i18n="achievements">CONQUISTAS</p><p class="achie-info-title-numbers"></p></div>
                             <div class="achie-info">
                                 <p class="achie-percentage"></p>
@@ -119,53 +129,57 @@
                             <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="fa-solid fa-minus"></i>
                         </div>
                     </div>
-                    <div class="game-popup-sep-bar achie-sep"></div>
-                    <div class="game-campaign-div">
-                        <div class="campaign-info-title"><p class="campaign-info-title-text"></p><p class="achie-info-title-numbers"></p></div>
-                        <div class="campaign-info">
-                            <p class="game-popup-completeDate"></p>
+                </div>
+                <div class="game-content">
+                    <div class="game-popup-campaign-achie">
+                        <div class="game-campaign-div">
+                            <div class="campaign-info-title"><p class="campaign-info-title-text"></p><p class="achie-info-title-numbers"></p></div>
+                            <div class="campaign-info">
+                                <p class="game-popup-completeDate"></p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="game-popup-sep-bar2 campaign-sep"></div>
-                    <div class="game-rating-div">
-                        <div class="game-rating-title">
-                            <p class="game-rating-title-text">NOTA</p>
-                            <p class="game-popup-rating"></p>
-                        </div>
-                        <div class="rating-change">
-                            <li onclick="changeRatingBtn(this)" data-value="10">10</li>
-                            <li onclick="changeRatingBtn(this)" data-value="9.5">9.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="9">9</li>
-                            <li onclick="changeRatingBtn(this)" data-value="8.5">8.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="8">8</li>
-                            <li onclick="changeRatingBtn(this)" data-value="7.5">7.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="7">7</li>
-                            <li onclick="changeRatingBtn(this)" data-value="6.5">6.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="6">6</li>
-                            <li onclick="changeRatingBtn(this)" data-value="5.5">5.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="5">5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="4.5">4.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="4">4</li>
-                            <li onclick="changeRatingBtn(this)" data-value="3.5">3.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="3">3</li>
-                            <li onclick="changeRatingBtn(this)" data-value="2.5">2.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="2">2</li>
-                            <li onclick="changeRatingBtn(this)" data-value="1.5">1.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="1">1</li>
-                            <li onclick="changeRatingBtn(this)" data-value="0.5">0.5</li>
-                            <li onclick="changeRatingBtn(this)" data-value="0">0</li>
-                            <li onclick="changeRatingBtn(this)" data-value="null">N/A</li>
+                        <!-- <div class="game-popup-sep-bar2 campaign-sep"></div> -->
+                        <div class="game-rating-div">
+                            <div class="game-rating-title">
+                                <p class="game-rating-title-text">NOTA</p>
+                                <p class="game-popup-rating"></p>
+                            </div>
+                            <div class="rating-change">
+                                <li onclick="changeRatingBtn(this)" data-value="10">10</li>
+                                <li onclick="changeRatingBtn(this)" data-value="9.5">9.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="9">9</li>
+                                <li onclick="changeRatingBtn(this)" data-value="8.5">8.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="8">8</li>
+                                <li onclick="changeRatingBtn(this)" data-value="7.5">7.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="7">7</li>
+                                <li onclick="changeRatingBtn(this)" data-value="6.5">6.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="6">6</li>
+                                <li onclick="changeRatingBtn(this)" data-value="5.5">5.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="5">5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="4.5">4.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="4">4</li>
+                                <li onclick="changeRatingBtn(this)" data-value="3.5">3.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="3">3</li>
+                                <li onclick="changeRatingBtn(this)" data-value="2.5">2.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="2">2</li>
+                                <li onclick="changeRatingBtn(this)" data-value="1.5">1.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="1">1</li>
+                                <li onclick="changeRatingBtn(this)" data-value="0.5">0.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="0">0</li>
+                                <li onclick="changeRatingBtn(this)" data-value="null">N/A</li>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="game-note-div">
-                <div class="sep-bar"></div>
-                <div class="game-note-title-div">
-                    <p class="game-note-title">REVIEW</p>
-                    <i id="editNote" class="fa-solid fa-pen" onclick="toggleNoteEdit(this)"></i>
+                <div class="game-note-div">
+                    <!-- <div class="sep-bar"></div> -->
+                    <div class="game-note-title-div">
+                        <p class="game-note-title">REVIEW</p>
+                        <i id="editNote" class="fa-solid fa-pen" onclick="toggleNoteEdit(this)"></i>
+                        <div class="sep-bar"></div>
+                    </div>
+                    <p class="game-note" data-i18n-placeholder="game-note-placeholder" placeholder="Vazio" contenteditable="false"></p>
                 </div>
-                <p class="game-note" data-i18n-placeholder="game-note-placeholder" placeholder="Vazio" contenteditable="false"></p>
             </div>
         </div>
     </div>
@@ -182,15 +196,26 @@
 <div id="addGame-popup">
     <div class="add-game-form">
         <div class="add-game-form-title"><p data-i18n="add-new-game">Adicionar novo jogo</p></div>
-        <input type="text" id="gameName" data-i18n-placeholder="name" placeholder="Nome">
-        <div class="appid-div">
-            <input type="text" id="gameAppId" placeholder="AppID">
-            <!-- <a class="steamdb-btn" id="steamdb-btn" onclick="searchAppID()" target="_blank">
-                <i class="fa-solid fa-folder-open"></i></a> -->
-            <i class="steamdb-btn fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
-        </div>
-        <div class="add-game-form-options">
-            <a id="addGameBtn"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
+        <div class="add-game-form-div">
+            <div class="add-game-basics">
+                <input type="text" id="gameName" data-i18n-placeholder="name" placeholder="Nome">
+                <div class="appid-div">
+                    <input type="text" id="gameAppId" placeholder="AppID">
+                    <!-- <a class="steamdb-btn" id="steamdb-btn" onclick="searchAppID()" target="_blank">
+                        <i class="fa-solid fa-folder-open"></i></a> -->
+                    <i class="steamdb-btn fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
+                </div>
+                <div class="add-game-form-options">
+                    <a id="addGameBtn"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
+                </div>
+            </div>
+            <div class="add-game-extra">
+                <div class="add-game-form-tags-title"><p data-i18n="">Possui</p></div>
+                <div class="addGame-type type-mark-campaign active">
+                    <div class="addGame-type-mark"></div>
+                    <span data-campaign="true" data-i18n="campaign">Campanha</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

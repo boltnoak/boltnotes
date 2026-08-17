@@ -44,6 +44,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     }
   },
 
+  backup: {
+    export: () => ipcRenderer.invoke('backup:export'),
+    import: () => ipcRenderer.invoke('backup:import')
+  },
+
   menu: { maximizeApp: () => ipcRenderer.send('menu:maximize-app'),
     minimizeApp: () => ipcRenderer.send('menu:minimize-app'),
     closeApp: () => ipcRenderer.send('menu:close-app'),
@@ -110,12 +115,12 @@ contextBridge.exposeInMainWorld('api', {
     selectAndImage: () => ipcRenderer.invoke('notes:select-add-image')
   },
   
-  games: { addGame: (gameData) => ipcRenderer.invoke('games:add', gameData),
+  games: {
     ensureCover: (data) => ipcRenderer.invoke('games:ensure-cover',data),
     finishedCount: () => ipcRenderer.invoke('games:finished-count'),
     achieCount: () => ipcRenderer.invoke('games:achie-count'),
     getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
-    addGame: (gameData) => ipcRenderer.invoke('games:add', gameData),
+    addGame: (gameData, hasCampaign) => ipcRenderer.invoke('games:add', gameData, hasCampaign),
     statsZerados: () => ipcRenderer.invoke('games:stats-zerados'),
     deleteGame: (name) => ipcRenderer.invoke('games:delete', name)
   },
@@ -123,7 +128,8 @@ contextBridge.exposeInMainWorld('api', {
   openLink: (url) => ipcRenderer.invoke('open-external-link', url),
   getAppVersion: () => ipcRenderer.invoke('app-version'),
 
-  fortnite: { getTrailers: () => ipcRenderer.invoke('fortnite:fetch-trailers'),
+  fortnite: {
+    getTrailers: () => ipcRenderer.invoke('fortnite:fetch-trailers'),
     getSeasons: () => ipcRenderer.invoke('fortnite:fetch-seasons')
   },
 
@@ -132,7 +138,6 @@ contextBridge.exposeInMainWorld('api', {
     update: (key, value) => ipcRenderer.send('assets-config:update', key, value)
   },
 
-  addGameToGist: (gameData) => ipcRenderer.invoke('add-game-to-gist', gameData),
   restartApp: () => ipcRenderer.send('update:restart')
 });
 

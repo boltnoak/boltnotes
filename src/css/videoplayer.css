@@ -115,19 +115,32 @@
 /* Barra do vídeo */
 #player-bar {
     flex: unset;
+    position: relative;
     background: rgba(15,15,15,.5);
     height: 1.25vh;
     width: 100%;
     border-radius: 2vh;
     overflow: hidden;
     cursor: pointer;
+    z-index: 1;
 }
 #player-bar-fill {
+    position: absolute;
     display: block;
     height: 100%;
     pointer-events: none;
     background-color: white;
-    transition: width 0.22s linear;
+    transition: width .22s linear;
+    z-index: 3;
+}
+#player-bar-hover-fill {
+    position: absolute;
+    display: flex;
+    height: 100%;
+    pointer-events: none;
+    background-color: rgba(255,255,255,.075);
+    /* transition: width .05s linear; */
+    z-index: 2;
 }
 /* Botões */
 #mute {

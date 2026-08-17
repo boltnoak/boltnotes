@@ -16,11 +16,11 @@
             <div class="boltnotes-logo"></div>
         </div>
     </div>
-    <div class="banner-bar"></div>
+    <!-- <div class="banner-bar"></div> -->
     <div class="pages-section">
         <a class="page" id="games" href="pages/games.html">
             <div class="page-image">
-                <img src="assets://basics/games-backlog-characters.png">
+                <img src="assets/games-backlog-characters.png">
                 <div class="text">
                     <i class="games-backlog-icon fa-solid fa-gamepad"></i>
                     <p class="text-backlog" data-i18n="backlogof">BACKLOG DE</p>
@@ -43,7 +43,7 @@
         </a>
         <a class="page" id="fortnite" href="pages/fortnite.html">
             <div class="page-image">
-                <img src="assets://basics/fortnite-page-image.png">
+                <img src="assets/fortnite-page-image.png">
                 <div class="fortnite-text">
                     <div class="fortnite-icon"></div>
                     <div class="page-image-text"></div>
@@ -56,7 +56,7 @@
             </div>
         </a>
     </div>
-    <div class="index-sep-bar"></div>
+    <!-- <div class="index-sep-bar"></div> -->
     <div class="page-infos">
             <div id="featured-title">
                 <i class="fa-solid fa-eye"></i>
@@ -101,7 +101,7 @@
                             </p>
                         </div>
                         <div class="level-progress">
-                            <p class="level-progress-text" data-i18n="progress">Progresso</p>
+                            <p class="level-progress-text"></p>
                             <div class="level-progress-bar">
                                 <p class="level-progress-bar-fill"></p>
                             </div>
@@ -170,97 +170,112 @@
 </div>
 
 <div class="game-popup-div">
-    <div class="game-popup">
-        <div class="game-banner-div">
-            <img class="game-banner">
-            <img class="game-logo">
-        </div>
-            <div class="game-status-div">
-            <div class="game-popup-status">
-                <div class="campaign-status-tag"></div>
-                <div class="campaign-status-change">
-                    <li class="option-ajogar" data-value="ajogar" data-i18n="ajogar">À Jogar</li>
-                    <li class="option-jogando" data-value="jogando" data-i18n="jogando">Jogando</li>
-                    <li class="option-zerado" data-value="zerado" data-i18n="zerado">Zerado</li>
+        <div class="game-popup">
+            <div class="game-sidebar">
+                <div class="game-banner-div">
+                    <img class="game-banner">
+                    <img class="game-logo">
                 </div>
-                <div class="achie-status-tag"></div>
-                <div class="achie-status-change">
-                    <li class="option-aplatinar" data-value="aplatinar" data-i18n="aplatinar">À Platinar</li>
-                    <li class="option-platinando" data-value="platinando" data-i18n="platinando">Platinando</li>
-                    <li class="option-platinado" data-value="platinado" data-i18n="platinado">Platinado</li>
+                <div class="game-popup-status">
+                    <div class="campaign-status-tag"></div>
+                    <div class="campaign-status-change">
+                        <li class="option-ajogar" data-value="ajogar" data-i18n="ajogar">À Jogar</li>
+                        <li class="option-jogando" data-value="jogando" data-i18n="jogando">Jogando</li>
+                        <li class="option-zerado" data-value="zerado" data-i18n="zerado">Zerado</li>
+                    </div>
+                    <div class="achie-status-tag"></div>
+                    <div class="achie-status-change">
+                        <li class="option-aplatinar" data-value="aplatinar" data-i18n="aplatinar">À Platinar</li>
+                        <li class="option-platinando" data-value="platinando" data-i18n="platinando">Platinando</li>
+                        <li class="option-platinado" data-value="platinado" data-i18n="platinado">Platinado</li>
+                    </div>
+                </div>
+                <div class="sep-bar"></div>
+                <div class="game-popup-info">
+                    <div class="game-releaseDate"><span class="game-releaseDate-title" data-i18n="release-date">LANÇADO EM</span><p class="game-releaseDate-text"></p></div>
+                    <div class="dev-pub"><span data-i18n="developer">DEVELOPER</span><div class="game-popup-title"><p class="dev-name"></p></div></div>
+                    <div class="dev-pub"><span data-i18n="publisher">PUBLISHER</span><div class="game-popup-title"><p class="pub-name"></p></div></div>
+                </div>
+                <div class="game-types">
+                    <div class="game-type type-mark-campaign">
+                        <div class="game-type-mark"></div>
+                        <span data-i18n="campaign">Campanha</span>
+                    </div>
+                    <div class="game-type type-mark-achie">
+                        <div class="game-type-mark"></div>
+                        <span data-i18n="achievements">Conquistas</span>
+                    </div>
                 </div>
             </div>
-            <div class="game-popup-info">
-                <div class="game-releaseDate"><span class="game-releaseDate-title" data-i18n="release-date">LANÇADO EM</span><p class="game-releaseDate-text"></p></div>
-                <div class="dev-pub"><span data-i18n="developer">DEVELOPER</span><div class="game-popup-title"><p class="dev-name"></p></div></div>
-                <div class="dev-pub"><span data-i18n="publisher">PUBLISHER</span><div class="game-popup-title"><p class="pub-name"></p></div></div>
-            </div>
-        </div>
-        <div class="game-content">
-            <div class="game-popup-campaign-achie">
-                <div class="game-achievements">
-                    <div>
-                        <div class="achie-info-title"><p class="achie-info-title-text" data-i18n="achievements">CONQUISTAS</p><p class="achie-info-title-numbers"></p></div>
-                        <div class="achie-info">
-                            <p class="achie-percentage"></p>
-                            <div class="achie-bar"><div class="achie-bar-fill"></div></div>
+            <div class="game-maincontent">
+                <div class="game-status-div">
+                    <div class="game-achievements">
+                        <div class="achie-info-div">
+                            <div class="achie-info-title"><p class="achie-info-title-text" data-i18n="achievements">CONQUISTAS</p><p class="achie-info-title-numbers"></p></div>
+                            <div class="achie-info">
+                                <p class="achie-percentage"></p>
+                                <div class="achie-bar"><div class="achie-bar-fill"></div></div>
+                            </div>
+                        </div>
+                        <div class="achie-add-minus">
+                            <i id="achie-add" onclick="changeAchieProgress(this, true)" class="fa-solid fa-plus"></i>
+                            <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="fa-solid fa-minus"></i>
                         </div>
                     </div>
-                    <div class="achie-add-minus">
-                        <i id="achie-add" onclick="changeAchieProgress(this, true)" class="fa-solid fa-plus"></i>
-                        <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="fa-solid fa-minus"></i>
+                </div>
+                <div class="game-content">
+                    <div class="game-popup-campaign-achie">
+                        <div class="game-campaign-div">
+                            <div class="campaign-info-title"><p class="campaign-info-title-text"></p><p class="achie-info-title-numbers"></p></div>
+                            <div class="campaign-info">
+                                <p class="game-popup-completeDate"></p>
+                            </div>
+                        </div>
+                        <!-- <div class="game-popup-sep-bar2 campaign-sep"></div> -->
+                        <div class="game-rating-div">
+                            <div class="game-rating-title">
+                                <p class="game-rating-title-text">NOTA</p>
+                                <p class="game-popup-rating"></p>
+                            </div>
+                            <div class="rating-change">
+                                <li onclick="changeRatingBtn(this)" data-value="10">10</li>
+                                <li onclick="changeRatingBtn(this)" data-value="9.5">9.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="9">9</li>
+                                <li onclick="changeRatingBtn(this)" data-value="8.5">8.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="8">8</li>
+                                <li onclick="changeRatingBtn(this)" data-value="7.5">7.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="7">7</li>
+                                <li onclick="changeRatingBtn(this)" data-value="6.5">6.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="6">6</li>
+                                <li onclick="changeRatingBtn(this)" data-value="5.5">5.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="5">5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="4.5">4.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="4">4</li>
+                                <li onclick="changeRatingBtn(this)" data-value="3.5">3.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="3">3</li>
+                                <li onclick="changeRatingBtn(this)" data-value="2.5">2.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="2">2</li>
+                                <li onclick="changeRatingBtn(this)" data-value="1.5">1.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="1">1</li>
+                                <li onclick="changeRatingBtn(this)" data-value="0.5">0.5</li>
+                                <li onclick="changeRatingBtn(this)" data-value="0">0</li>
+                                <li onclick="changeRatingBtn(this)" data-value="null">N/A</li>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="game-popup-sep-bar achie-sep"></div>
-                <div class="game-campaign-div">
-                    <div class="campaign-info-title"><p class="campaign-info-title-text"></p><p class="achie-info-title-numbers"></p></div>
-                    <div class="campaign-info">
-                        <p class="game-popup-completeDate"></p>
+                <div class="game-note-div">
+                    <!-- <div class="sep-bar"></div> -->
+                    <div class="game-note-title-div">
+                        <p class="game-note-title">REVIEW</p>
+                        <i id="editNote" class="fa-solid fa-pen" onclick="toggleNoteEdit(this)"></i>
+                        <div class="sep-bar"></div>
                     </div>
-                </div>
-                <div class="game-popup-sep-bar2 campaign-sep"></div>
-                <div class="game-rating-div">
-                    <div class="game-rating-title">
-                        <p class="game-rating-title-text">NOTA</p>
-                        <p class="game-popup-rating"></p>
-                    </div>
-                    <div class="rating-change">
-                        <li onclick="changeRatingBtn(this)" data-value="10">10</li>
-                        <li onclick="changeRatingBtn(this)" data-value="9.5">9.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="9">9</li>
-                        <li onclick="changeRatingBtn(this)" data-value="8.5">8.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="8">8</li>
-                        <li onclick="changeRatingBtn(this)" data-value="7.5">7.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="7">7</li>
-                        <li onclick="changeRatingBtn(this)" data-value="6.5">6.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="6">6</li>
-                        <li onclick="changeRatingBtn(this)" data-value="5.5">5.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="5">5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="4.5">4.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="4">4</li>
-                        <li onclick="changeRatingBtn(this)" data-value="3.5">3.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="3">3</li>
-                        <li onclick="changeRatingBtn(this)" data-value="2.5">2.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="2">2</li>
-                        <li onclick="changeRatingBtn(this)" data-value="1.5">1.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="1">1</li>
-                        <li onclick="changeRatingBtn(this)" data-value="0.5">0.5</li>
-                        <li onclick="changeRatingBtn(this)" data-value="0">0</li>
-                        <li onclick="changeRatingBtn(this)" data-value="null">N/A</li>
-                    </div>
+                    <p class="game-note" data-i18n-placeholder="game-note-placeholder" placeholder="Vazio" contenteditable="false"></p>
                 </div>
             </div>
-        </div>
-        <div class="game-note-div">
-            <div class="sep-bar"></div>
-            <div class="game-note-title-div">
-                <p class="game-note-title">REVIEW</p>
-                <i id="editNote" class="fa-solid fa-pen" onclick="toggleNoteEdit(this)"></i>
-            </div>
-            <p class="game-note" contenteditable="false"></p>
         </div>
     </div>
-</div>
 
 <script src="scripts/global.js"></script>
 <script src="scripts/basics.js"></script>

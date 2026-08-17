@@ -337,3 +337,26 @@ function videoTimeDisplay() {
 
     if (popupPlayBtn) popupPlayBtn.className = 'fa-solid fa-pause';
 }
+
+document.addEventListener('mousemove', (event) => {
+    const playerBar = document.getElementById('player-bar');
+    if (!playerBar) return;
+    if (!playerBar.contains(event.target)) return;
+
+    const hoverFill = document.getElementById('player-bar-hover-fill');
+    const rect = playerBar.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (mouseX / rect.width) * 100));
+    hoverFill.style.width = `${percentage}%`;
+});
+
+document.addEventListener('mouseout', (event) => {
+    const playerBar = document.getElementById('player-bar');
+
+    if (!playerBar) return;
+    if (!playerBar.contains(event.target)) return;
+    if (event.relatedTarget && playerBar.contains(event.relatedTarget)) return;
+
+    const hoverFill = document.getElementById('player-bar-hover-fill');
+    if (hoverFill) hoverFill.style.width = '0%';
+});

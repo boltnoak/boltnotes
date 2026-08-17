@@ -467,7 +467,6 @@ let canClick = false;
 
 function finish() {
   window.electronAPI.welcomeDone();
-  window.location = 'pages/index.html'
 }
 
 function toggleAssetsConfig(el) {

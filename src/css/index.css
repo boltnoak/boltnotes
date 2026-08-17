@@ -4,6 +4,9 @@
     padding-top: 0;
     height: 94.65vh;
     transform: translateY(5.15vh);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
 }
 .app-version {
     color: var(--text-dark-gray);
@@ -58,7 +61,7 @@ header {
     justify-content: center;
     z-index: 1;
     padding: 0;
-    margin: 1vh 0 2.5vh 0;
+    margin: 2vh 0 .5vh 0;
 }
 .featured-change-div {
     width: 100%;
@@ -121,16 +124,16 @@ header {
     height: 11.5vh;
     width: 100vw;
     background-color: var(--text);
-    mask: url(assets://basics/boltnotes-logo-horizontal.svg) no-repeat center / contain;
-    -webkit-mask: url(assets://basics/boltnotes-logo-horizontal.svg) no-repeat center / contain;
+    mask: url(../assets/boltnotes-logo-horizontal.svg) no-repeat center / contain;
+    -webkit-mask: url(../assets/boltnotes-logo-horizontal.svg) no-repeat center / contain;
     user-select: none;
 }
 .fortnite-icon {
     height: 12vh;
     width: 11vw;
     background-color: var(--text-dark-gray);
-    mask: url(assets://basics/fortnite-icon.svg) no-repeat center / contain;
-    -webkit-mask: url(assets://basics/fortnite-icon.svg) no-repeat center / contain;
+    mask: url(../assets/fortnite-icon.svg) no-repeat center / contain;
+    -webkit-mask: url(../assets/fortnite-icon.svg) no-repeat center / contain;
     user-select: none;
     font-size: 15vh;
     color: var(--text-dark-gray);
@@ -168,13 +171,13 @@ header {
 }
 .page-infos {
     height: 41.4vh;
-    margin: 1.25vh 10vw 0 10vw;
+    margin: 0 10vw;
     display: flex;
     flex-direction: column;
-    gap: 1.25vh;
+    gap: 1.5vh;
 }
 .page-image {
-    height: 28vh;
+    height: 32.9vh;
     overflow: hidden;
     transform: translateY(0);
     background: linear-gradient(to bottom, var(--tab-hover), var(--tab-active));
@@ -206,7 +209,7 @@ header {
     color: var(--text-dark-gray);
     opacity: .1;
     z-index: 1;
-    transform: translateX(.15vw) translateY(-.5vh);
+    transform: translateX(.15vw) translateY(-2vh);
 }
 .text {
     position: absolute;
@@ -218,7 +221,7 @@ header {
     justify-content: center;
     align-items: center;
     width: 100%;
-    transform: translateX(4.65vw);
+    transform: translateX(6.65vw) translateY(3vh);
 }
 .fortnite-text {
     position: absolute;
@@ -230,8 +233,8 @@ header {
     justify-content: end;
     align-items: center;
     width: 100%;
-    z-index: 1;
-    transform: translateX(7.4vw);
+    z-index: 2;
+    transform: translateX(7.6vw) translateY(-.75vh);
 }
 .page-image-sidebar {
     width: 12.5vw;
@@ -280,8 +283,8 @@ header {
     background-repeat: no-repeat;
     z-index: 99;
     background-color: var(--text);
-    mask: url(../welcome-assets/fortnite-logo.svg) no-repeat center / contain;
-    -webkit-mask: url(../welcome-assets/fortnite-logo.svg) no-repeat center / contain;
+    mask: url(../assets/fortnite-logo.svg) no-repeat center / contain;
+    -webkit-mask: url(../assets/fortnite-logo.svg) no-repeat center / contain;
     user-select: none;
     opacity: 1;
     background-clip: padding-box;
@@ -295,10 +298,11 @@ header {
     border: solid .4vh var(--sep-bar);
 }
 .page-image img {
-    object-fit: contain;
+    object-fit: cover;
     z-index: 2;
     transform: translateX(-.4vw);
     pointer-events: none;
+    width: 67%;
 }
 .page-title {
     color: var(--text);
@@ -315,6 +319,7 @@ header {
     background-color: var(--tag);
     padding: .5vh 0 .6vh 0;
     height: 3vh;
+    display: none;
 }
 .info p {
     color: var(--text);
@@ -1032,15 +1037,6 @@ header {
     margin: 1.25vh 1vw 0 1vw;
     height: fit-content;
 }
-.achie-info-title {
-    display: flex;
-    flex-direction: row;
-    margin: 0;
-    position: relative;
-    width: 21.3vw;
-    justify-content: space-between;
-    overflow: hidden;
-}
 .game-popup-rating {
     margin: 0;
     font-weight: 500;
@@ -1233,41 +1229,6 @@ header {
     padding: 1vh;
     cursor: pointer;
 }
-.campaign-status-change {
-    position: absolute;
-    transform: translateY(4.1vh) translateX(-.65vw);
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    list-style-type: none;
-    gap: 1vh;
-    right: 8vw;
-    border-radius: 1vh;
-    background-color: var(--tab-hover);
-    padding: .8vh;
-}
-.campaign-status-change.noAchie {
-    transform: translateY(4.1vh) translateX(7.68vw);
-}
-.campaign-status-change li {
-    padding: .3vh .4vw .3vh 1.5vw;
-    font-size: 2vh;
-    font-weight: 700;
-    border-radius: .8vh;
-    width: fit-content;
-    align-self: flex-end;
-    cursor: pointer;
-}
-.campaign-status-change li::before {
-    content: '';
-    position: absolute;
-    width: .8vw;
-    height: 1.5vh;
-    border-radius: 50%;
-    object-fit: cover;
-    align-self: center;
-    transform: translateX(-1.08vw);
-}
 .option-ajogar {
     background-color: var(--text-dark-gray);
     color: var(--text-gray);
@@ -1290,38 +1251,6 @@ header {
     background-color: var(--green-light);
 }
 
-.achie-status-change {
-    position: absolute;
-    transform: translateY(4.1vh);
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    list-style-type: none;
-    right: .7vw;
-    gap: 1vh;
-    border-radius: 1vh;
-    background-color: var(--tab-hover);
-    padding: .8vh;
-}
-.achie-status-change li {
-    padding: .3vh .4vw .3vh 1.5vw;
-    font-size: 2vh;
-    font-weight: 700;
-    border-radius: .8vh;
-    width: fit-content;
-    align-self: flex-end;
-    cursor: pointer;
-}
-.achie-status-change li::before {
-    content: '';
-    position: absolute;
-    width: .8vw;
-    height: 1.5vh;
-    border-radius: 50%;
-    object-fit: cover;
-    align-self: center;
-    transform: translateX(-1.08vw);
-}
 .option-aplatinar {
     background-color: var(--text-dark-gray);
     color: var(--text-gray);
@@ -1436,4 +1365,1041 @@ header {
     border-radius: 1vh;
     justify-content: center;
 
+}
+
+.game-note[contenteditable]:empty::before {
+    content: attr(placeholder);
+    color: var(--text-dark-gray);
+    pointer-events: none;
+    display: block;
+}
+header {
+    background-color: transparent;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.page-content {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    margin: 0;
+    gap: 1.25vh;
+}
+
+/* Jogos */
+/* Status dos jogos */
+
+@keyframes popupIn {
+    from { opacity: 0; transform: scale(0.95) }
+    to { opacity: 1; transform: scale(1) }}
+@keyframes popupOut {
+    from { opacity: 1; transform: scale(1) }
+    to { opacity: 0; transform: scale(0.95) }}
+
+.game-popup-div {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 98;
+    background: rgba(0,0,0,.6);
+    margin: 0;
+    height: 100vh;
+    transition: background 1s linear;
+    animation: popupBGIn .5s ease forwards;
+    backdrop-filter: blur(4px);
+}
+.game-popup {
+    background: var(--bg);
+    border-radius: 1.3vh;
+    width: 80vw;
+    height: 75vh;
+    z-index: 99;
+    animation: popupIn .2s ease forwards;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+.game-sidebar {
+    width: 55%;
+}
+.is-closing {
+    animation: popupOut .2s ease forwards;
+}
+.game-banner-div {
+    height: 25vh;
+    width: 100%;
+    border-radius: 0 0;
+    object-fit: cover;
+}
+.game-banner {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.game-logo {
+    position: absolute;
+    margin: 0;
+    max-width: 40%;
+    max-height: 18vh;
+    left: 21vw;
+    align-self: center;
+    transform: translateX(-15vw) translateY(-.4vh) scale(1.2);
+    font-weight: 900;
+    font-size: 6vh;
+    pointer-events: none;
+}
+.game-logo:not([src]), 
+.game-logo[src=""] {
+    visibility: hidden;
+}
+.game-logo:not([src])::before, 
+.game-logo[src=""]::before {
+    content: attr(alt); 
+    visibility: visible;
+    display: flex;
+    font-weight: 900;
+    font-size: 6vh;
+    color: white;
+    max-width: 100%;
+    white-space: nowrap;
+    transform: translateY(3.8vh);
+    opacity: .8;
+}
+.game-maincontent {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.game-content::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    /* filter: blur(3px); */
+    opacity: .3;
+    z-index: -2;
+}
+
+.game-maincontent::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to bottom, transparent 0%, transparent 50.5%, var(--bg) 54.5%);
+    z-index: -1;
+    pointer-events: none;
+}
+.game-sidebar .sep-bar {
+    margin: 0 .8vw 1.25vh .8vw;
+    border-radius: 8vh;
+    background-color: var(--sep-bar);
+}
+.game-note-title-div .sep-bar {
+    margin: 0 .2vw;
+    border-radius: 8vh;
+    width: 100%;
+    border-color: var(--text);
+}
+.game-status-div{
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    background-color: var(--tab);
+    padding: 1.5vh 1vw;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.game-popup-campaign-achie {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    gap: 2.6vw;
+}
+.achie-add-minus {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1vh;
+    align-items: center;
+    overflow: hidden;
+    height: fit-content;
+}
+#achie-add {
+    font-size: 1.8vh;
+    display: flex;
+    height: fit-content;
+    padding: .8vh .7vw .5vh .7vw;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    background-color: var(--btn);
+    cursor: pointer;
+    color: var(--text);
+}
+#achie-minus {
+    font-size: 1.8vh;
+    display: flex;
+    height: fit-content;
+    padding: .5vh .7vw .5vh .7vw;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    background-color: var(--btn);
+    cursor: pointer;
+    color: var(--text);
+}
+#achie-minus:hover,
+#achie-add:hover {
+    background-color: var(--btn-hover);
+}
+.achie-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .4vw;
+    width: 100%;
+}
+.achie-info p {
+    margin: 0;
+    font-weight: 700;
+    color: var(--blue);
+}
+.game-rating-div {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    width: fit-content;
+    font-size: 5.5vh;
+    gap: .5vw;
+    cursor: pointer;
+}
+.game-campaign-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    font-size: 5.5vh;
+    gap: 0;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 1vh var(--green-light);
+    padding: 1vh 1vw;
+    border-radius: 1.1vh;
+}
+.campaign-info {
+    width: 21.3vw;
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    align-items: center;
+    gap: .4vw;
+}
+.rating-info {
+    font-weight: 800;
+}
+.campaign-info p {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2vh;
+    color: var(--text);
+}
+.achie-bar {
+    width: 100%;
+    display: flex;
+    flex: 1;
+    height: 1vh;
+    background-color: var(--tag);
+    margin: 0;
+    overflow: hidden;
+    border-radius: 1vh;
+}
+.achie-bar-fill {
+    width: 100%;
+    height: 1vh;
+    background-color: var(--blue);
+    margin: 0;
+    transition: width .1s linear;
+}
+.game-popup-status {
+    display: flex;
+    flex-direction: row;
+    gap: .625vw;
+    margin: 1.25vh;
+    justify-content: center;
+}
+.game-popup-info {
+    display: flex;
+    gap: 1.45vh .7vw;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9vw, 2fr));
+    justify-content: center;
+    margin: 0 .8vw;
+}
+.achie-quant {
+    font-size: 2vh;
+    font-weight: 700;
+    align-self: center;
+}
+.campaign-status-tag {
+    font-size: 2vh;
+    font-weight: 700;
+    background-color: var(--green);
+    width: fit-content;
+    border-radius: .8vh;
+    padding: .3vh .4vw .3vh 1.5vw;
+    color: var(--text-green);
+    cursor: pointer;
+}
+.campaign-status-tag::before {
+    content: '';
+    position: absolute;
+    width: .8vw;
+    height: 1.5vh;
+    border-radius: 50%;
+    background-color: var(--green-light);
+    object-fit: cover;
+    align-self: center;
+    transform: translateX(-1.08vw);
+}
+.campaign-status-tag.jogando {
+    background-color: var(--blue);
+    color: var(--text-blue);
+}
+.campaign-status-tag.jogando::before {
+    background-color: var(--blue-light);
+}
+.campaign-status-tag.ajogar {
+    background-color: var(--text-dark-gray);
+    color: var(--text-gray);
+}
+.campaign-status-tag.ajogar::before {
+    background-color: var(--text-gray);
+}
+.achie-status-tag.platinando {
+    background-color: var(--orange);
+    color: var(--text-orange);
+}
+.achie-status-tag.platinando::before {
+    background-color: var(--orange-light);
+}
+.achie-status-tag.aplatinar {
+    background-color: var(--text-dark-gray);
+    color: var(--text-gray);
+}
+.achie-status-tag.aplatinar::before {
+    background-color: var(--text-gray);
+}
+.game-content {
+    margin: 0;
+    height: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.achie-info-title {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    position: relative;
+    justify-content: space-between;
+    overflow: hidden;
+}
+.game-popup-rating {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text);
+    height: fit-content;
+    font-size: 6.5vh;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+}
+.game-popup-rating.no-rating {
+    margin: 0;
+    font-size: 4.7vh;
+    font-weight: 600;
+    color: var(--text-dark-gray);
+}
+.game-rating-title {
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    gap: .75vw;
+    height: 76.5%;
+    transition: background .1s linear;
+    padding: 1vh .6vw;
+    border-radius: 1.1vh;
+    backdrop-filter: blur(8px);
+    --shadow-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 1vh var(--shadow-color);
+}
+.game-rating-title:hover {
+    background-color: var(--sep-bar);
+}
+.game-rating-title-text {
+    margin: 0;
+    font-weight: 700;
+    font-size: 3vh;
+    text-transform: uppercase;
+}
+.achie-info-title-text {
+    margin: 0;
+    font-weight: 900;
+    font-size: 3vh;
+    width: fit-content;
+    color: var(--text-light-gray);
+    text-transform: uppercase;
+}
+.achie-info-title-numbers {
+    margin: 0;
+    font-weight: 600;
+    font-size: 2.25vh;
+    align-self: flex-end;
+    overflow: hidden;
+    color: var(--text-gray);
+}
+.campaign-info-title {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    position: relative;
+    width: fit-content;
+    justify-content: space-between;
+    overflow: hidden;
+}
+.campaign-info-title-text {
+    margin: 0;
+    font-weight: 900;
+    font-size: 3vh;
+    color: var(--green);
+    text-transform: uppercase;
+}
+.game-achievements {
+    display: flex;
+    flex-direction: row;
+    gap: .6vw;
+    width: 100%;
+}
+.achie-info-div {
+    width: 100%;
+}
+.campaign-info-title-numbers {
+    margin: 0;
+    font-weight: 600;
+    font-size: 2.25vh;
+    align-self: center;
+    overflow: hidden;
+    color: var(--text-gray);
+}
+.dev-pub {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.8vh;
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+    color: var(--text);
+    background-color: var(--tag);
+    border-radius: 1vh;
+    padding: .5vh .55vw;
+}
+.dev-pub span {
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 2vh;
+    color: var(--text);
+}
+.game-popup-title {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0;
+    min-width: 100%;
+    text-align: center;
+    color: var(--text);
+}
+.dev-name, .pub-name {font-size: 2vh;
+    font-weight: 500;
+    margin: 0;
+    display: inline-block;
+    white-space: nowrap;
+    text-align: left; 
+    transform: translateX(0);
+    animation: scroll-text 7s linear infinite;
+}
+.game-releaseDate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.8vh;
+    position: relative;
+    overflow: hidden;
+    color: var(--text-dark-gray);
+    text-transform: uppercase;
+    color: var(--text);
+    background-color: var(--tag);
+    border-radius: 1vh;
+    padding: .5vh .55vw;
+}
+.game-releaseDate p {
+    font-size: 2vh;
+    font-weight: 500;
+    margin: 0;
+    color: var(--text);
+}
+.game-releaseDate span {
+    font-weight: 900;
+    margin: 0;
+    font-size: 2vh;
+    white-space: nowrap;
+    width: fit-content;
+    color: var(--text);
+}
+.dev-name.no-scroll, .pub-name.no-scroll {
+    animation: none;
+}
+@keyframes scroll-text {
+    0%, 15% {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+    75%, 85% {
+        transform: translateX(var(--scroll-distance, 0px));
+        opacity: 1;
+    }
+    88% {
+        opacity: 0;
+        transform: translateX(var(--scroll-distance, 0px));
+    }
+    91% {
+        opacity: 0;
+        transform: translateX(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+.achie-status-tag {
+    font-size: 2vh;
+    font-weight: 700;
+    background-color: var(--yellow);
+    width: fit-content;
+    border-radius: .8vh;
+    padding: .3vh .4vw .3vh 1.5vw;
+    color: var(--text-yellow);
+    cursor: pointer;
+}
+.achie-status-tag::before {
+    content: '';
+    position: absolute;
+    width: .8vw;
+    height: 1.5vh;
+    border-radius: 50%;
+    background-color: var(--yellow-light);
+    object-fit: cover;
+    align-self: center;
+    transform: translateX(-1.08vw);
+}
+.close-game-popup {
+    position: absolute;
+    transform: translateX(-2.5vw);
+    padding: 1vh;
+    cursor: pointer;
+}
+.campaign-status-change {
+    position: absolute;
+    transform: translateY(4.1vh) translateX(-.65vw);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    gap: 1vh;
+    left: 7vw;
+    border-radius: 1vh;
+    background-color: var(--tab-hover);
+    padding: .8vh;
+    z-index: 1;
+}
+.campaign-status-change.noAchie {
+    transform: translateY(4.1vh) translateX(7.68vw);
+}
+.campaign-status-change li {
+    padding: .3vh .4vw .3vh 1.5vw;
+    font-size: 2vh;
+    font-weight: 700;
+    border-radius: .8vh;
+    width: fit-content;
+    align-self: flex-end;
+    cursor: pointer;
+}
+.campaign-status-change li::before {
+    content: '';
+    position: absolute;
+    width: .8vw;
+    height: 1.5vh;
+    border-radius: 50%;
+    object-fit: cover;
+    align-self: center;
+    transform: translateX(-1.08vw);
+}
+.option-ajogar {
+    background-color: var(--text-dark-gray);
+    color: var(--text-gray);
+}
+.option-ajogar::before {
+    background-color: var(--text-gray);
+}
+.option-jogando {
+    background-color: var(--blue);
+    color: var(--text-blue);
+}
+.option-jogando::before {
+    background-color: var(--blue-light);
+}
+.option-zerado {
+    background-color: var(--green);
+    color: var(--text-green);
+}
+.option-zerado::before {
+    background-color: var(--green-light);
+}
+
+.achie-status-change {
+    position: absolute;
+    transform: translateY(4.1vh);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    left: 13.15vw;
+    gap: 1vh;
+    border-radius: 1vh;
+    background-color: var(--tab-hover);
+    padding: .8vh;
+    z-index: 1;
+}
+.achie-status-change li {
+    padding: .3vh .4vw .3vh 1.5vw;
+    font-size: 2vh;
+    font-weight: 700;
+    border-radius: .8vh;
+    width: fit-content;
+    align-self: flex-end;
+    cursor: pointer;
+}
+.achie-status-change li::before {
+    content: '';
+    position: absolute;
+    width: .8vw;
+    height: 1.5vh;
+    border-radius: 50%;
+    object-fit: cover;
+    align-self: center;
+    transform: translateX(-1.08vw);
+}
+.option-aplatinar {
+    background-color: var(--text-dark-gray);
+    color: var(--text-gray);
+}
+.option-aplatinar::before {
+    background-color: var(--text-gray);
+}
+.option-platinando {
+    background-color: var(--orange);
+    color: var(--text-orange);
+}
+.option-platinando::before {
+    background-color: var(--orange-light);
+}
+.option-platinado {
+    background-color: var(--yellow);
+    color: var(--text-yellow);
+}
+.option-platinado::before {
+    background-color: var(--yellow-light);
+}
+
+.rating-change {
+    position: absolute;
+    transform: translateY(7.85vh) translateX(1.55vw);
+    z-index: 99;
+    margin: 0;
+    display: none;
+    flex-direction: row;
+    list-style-type: none;
+    right: .7vw;
+    gap: 1vh;
+    border-radius: 1vh;
+    background-color: var(--tab-hover);
+    padding: .6vh;
+}
+.rating-change li {
+    background-color: transparent;
+    padding: .7vh .5vw;
+    width: 1.5vw;
+    font-size: 2vh;
+    font-weight: 700;
+    border-radius: .8vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .1s linear;
+    cursor: pointer;
+}
+.rating-change li:hover {
+    background-color: var(--btn-hover);
+}
+
+
+.game-note-div {
+    margin: .6vh 1vw 0 1vw;
+    display: flex;
+    bottom: 0;
+    flex-direction: column;
+    height: 45%;
+    width: 96%;
+}
+.game-note-title-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .5vw;
+    font-size: 3.25vh;
+    font-weight: 900;
+    width: 100%;
+}
+.game-note-title {
+    margin: 0;
+}
+.game-note-title-div i{
+    background-color: transparent;
+    padding: 1vh .6vw;
+    border-radius: 1vh;
+    text-align: center;
+    transition: background .15s linear;
+    color: var(--text);
+    cursor: pointer;
+    z-index: 98;
+    font-size: 2vh;
+}
+.game-note-title-div i:hover {
+    background-color: var(--tab-hover);
+}
+
+.sep-bar {
+    margin: .4vh .15vw .6vh 0;
+}
+.game-note {
+    overflow: hidden;
+    overflow-y: auto;
+    margin: 1vh 0 0 .3vw;
+    font-weight: 500;
+    user-select: text;
+    height: 80%;
+    border-radius: 1vh;
+    cursor: default;
+}
+.game-note[contenteditable="true"] {
+    background: transparent;
+    outline: none;
+    border: none;
+    color: inherit;
+    cursor: text;
+    caret-color: var(--text);
+}
+
+
+
+
+#zerados-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--tag);
+    border-radius: 1.6vh;
+    padding: 2vh;
+    max-width: 30vw;
+    position: relative;
+    z-index: 1;
+    cursor: default;
+}
+
+#zerados-chart {
+    max-width: 100%;
+    cursor: pointer;
+}
+
+
+#reload-btn[data-tooltip]::after {
+    transform: translate(-50%, -180%);
+    background-color: var(--tab-hover);
+    padding: 1vh .6vw;
+    transition: opacity .2s ease, transform .1s ease;
+    color: var(--text);
+}
+#reload-btn[data-tooltip]:hover::after {
+    transform: translate(-50%, -180%);
+}
+.tooltip[data-tooltip]::after {
+    transform: translate(-50%, -180%);
+    background-color: var(--tab-hover);
+    padding: 1vh .6vw;
+    transition: opacity .2s ease, transform .1s ease;
+    z-index: 99;
+    color: var(--text);
+}
+.tooltip[data-tooltip]:hover::after {
+    transform: translate(-50%, -180%);
+}
+#delete-games.tooltip[data-tooltip]::after {
+    transform: translate(-52.5%, -200%);
+    background-color: var(--tab-hover);
+    padding: 1vh .6vw;
+    transition: opacity .2s ease, transform .1s ease;
+    z-index: 99;
+    color: var(--text);
+}
+#delete-games.tooltip[data-tooltip]:hover::after {
+    transform: translate(-52.5%, -200%);
+}
+
+.manage-games {
+    display: flex;
+    flex-direction: row;
+    width: 96.5%;
+    margin: 0 .5vw .2vh 0;
+    margin: 0 .5vw .2vh .8vw;
+    gap: .5vw;
+}
+#delete-games {
+    padding: 2.15vh 1.5vw;
+    margin: 0;
+    font-weight: 700;
+    border-radius: 1.25vh;
+    transition: all .1s linear;
+    background-color: var(--btn);
+    cursor: pointer;
+    text-decoration: underline .21vh;
+    text-underline-offset: .3vh;
+    text-decoration-color: transparent;
+    transition: all .1s linear;
+    text-align: center;
+    width: fit-content;
+    height: fit-content;
+}
+#delete-games:hover {
+    background-color: var(--btn-hover);
+}
+#delete-games.active {
+    background-color: var(--red);
+    color: var(--text-red);
+}
+
+
+body.delete-mode-active .game {
+    cursor: pointer;
+    position: relative;
+}
+
+body.delete-mode-active .game::after {
+    content: '\f1f8';
+    font-family: 'Font Awesome 7 Free';
+    font-weight: 900;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(220, 40, 40, 0);
+    color: transparent;
+    font-size: 7vh;
+    transition: all 0.15s ease;
+    pointer-events: none;
+    border-radius: 1vh;
+}
+
+body.delete-mode-active .game:hover::after {
+    color: var(--red-light);
+    background-color: var(--red);
+}
+body.delete-mode-active .game.jogando::after {
+    font-size: 4vh;
+}
+body.delete-mode-active .game.jogando:hover::after {
+    color: var(--red-light);
+    background-color: var(--red);
+}
+body.delete-mode-active .game.platinando::after {
+    font-size: 5.5vh;
+}
+body.delete-mode-active .game.platinando:hover::after {
+    color: var(--red-light);
+    background-color: var(--red);
+}
+body.delete-mode-active .game:hover::after {
+    color: var(--red-light);
+    background-color: var(--red);
+}
+
+#delete-mode-btn.active {
+    background-color: var(--red);
+    color: var(--text);
+}
+
+.confirm-popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+}
+
+.confirm-popup-content {
+    background: var(--bg);
+    border-radius: 2vh;
+    padding: 3vh 1.5vw;
+    max-width: 26vw;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vh;
+}
+
+.confirm-popup-content i, .confirm-popup-content p {
+    margin: 0;
+}
+
+.confirm-icon {
+    font-size: 5vh;
+    color: var(--red);
+    margin-bottom: 1vh;
+}
+
+.confirm-game-name {
+    font-size: 2.5vh;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.confirm-warning {
+    font-size: 1.8vh;
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 1vw;
+    margin-top: 1vh;
+    width: 100%;
+}
+
+.delete-confirm-title-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5vh;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.delete-confirm-remove {
+    margin: 0 .45vw 0 0;
+}
+
+.confirm-buttons button {
+    font-family: 'Montserrat';
+    flex: 1;
+    padding: 1.2vh 0;
+    border-radius: 1vh;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    font-size: 2vh;
+    transition: background .1s linear;
+}
+
+#delete-confirm-cancel {
+    background: var(--btn);
+    color: var(--text);
+}
+
+#delete-confirm-cancel:hover {
+    background: var(--btn-hover);
+}
+
+#delete-confirm-yes.danger {
+    background: var(--red);
+    color: var(--text-red);
+}
+
+#delete-confirm-yes.danger:hover {
+    background: var(--red-light);
+}
+
+.game-types {
+    gap: 1.45vh 1vw;
+    position: absolute;
+    display: flex;
+    justify-content: start;
+    margin: 0 1vw;
+    bottom: 1.5vh;
+    width: 32.5%;
+}
+.game-type {
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    gap: .5vw;
+    /* padding: 1vh;
+    background-color: var(--btn);
+    border-radius: 1vh .8vw; */
+    font-weight: 600;
+    align-items: center;
+    font-size: 2.6vh;
+}
+.game-type.active .game-type-mark {
+    background-color: var(--text);
+    padding: .7vh;
+    border-radius: 2vh;
+    border: inset .5vh transparent;
+}
+.game-type-mark {
+    background-color: transparent;
+    padding: .7vh;
+    border-radius: 2vh;
+    border: inset .5vh var(--text);
+}
+.type-mark-campaign {
+    cursor: pointer;
 }

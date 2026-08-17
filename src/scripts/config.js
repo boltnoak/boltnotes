@@ -411,3 +411,25 @@ function showMessage(element, msg, color) {
         }, 3500);
     });
 }
+
+document.getElementById('export-backup-btn').addEventListener('click', async () => {
+    const result = await window.electronAPI.backup.export();
+    if (result.success) {
+        alert(`Backup exportado com sucesso!\n${result.path}`);
+    } else if (!result.canceled) {
+        alert(`Erro ao exportar: ${result.error}`);
+    }
+});
+
+document.getElementById('import-backup-btn').addEventListener('click', async () => {
+    const confirmed = confirm('Importar um backup vai substituir todos os seus dados atuais. Deseja continuar?');
+    if (!confirmed) return;
+
+    const result = await window.electronAPI.backup.import();
+    if (result.success) {
+        alert('Backup importado com sucesso! O app vai reiniciar.');
+        window.electronAPI.restartApp?.(); // ou window.location.reload()
+    } else if (!result.canceled) {
+        alert(`Erro ao importar: ${result.error}`);
+    }
+});

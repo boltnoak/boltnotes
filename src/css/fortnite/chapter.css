@@ -97,8 +97,15 @@ body {
     color: var(--text-light-gray);
     transition: color 0.25s ease-in-out;
     cursor: pointer;
-    padding: .8vh 0;
+    padding: 0;
     font-size: 4vh;
+}
+.season-trailers[data-tooltip]::after {
+    transform: translate(-100%, -50%);
+    padding: 0;
+}
+.season-trailers[data-tooltip]:hover::after {
+    transform: translate(-130%, -50%);
 }
 .season-trailers, .season-trailers::before, .season-trailers::after {
     cursor: pointer;
@@ -112,6 +119,7 @@ body {
     flex-direction: row;
     align-items: center;
     text-align: center;
+    justify-content: space-between;
     gap: .3vw;
     margin: 1vh 0;
 }
@@ -316,10 +324,12 @@ body {
     font-size: 4vh;
     opacity: .5;
     background: transparent;
-    padding: .8vh 0;
+    padding: 0;
     border-radius: 1.1vh;
     color: var(--text);
     cursor: pointer;
+    height: fit-content;
+    transform: translateY(.25vh);
     transition: all .1s;
 }
 #lock-unlock:hover {
@@ -551,9 +561,15 @@ body {
 .event-tags {
     display: flex;
     flex-direction: row;
-    margin: 1vh 0 0 0;
-    gap: .425vw;
+    margin: 0;
+    gap: .65vw;
     justify-content: center;
+}
+.season-title-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .4vw;
 }
 .event-data {
     padding: 2vh;
@@ -566,6 +582,7 @@ body {
     align-items: center;
     width: 15vw;
     flex: 1;
+    gap: 1.25vh;
 }
 .season-events:hover .event-data {
     background-color: var(--tab-hover);
@@ -696,7 +713,6 @@ body {
     height: 80vh;
 }
 .end-tag {
-    font-family: 'Montserrat';
     font-weight: 500;
     background-color: rgba(20, 20, 20, 0.75);
     padding: .4rem .7rem;
@@ -709,9 +725,8 @@ body {
     text-align: center;
 }
 .event-tag {
-    font-family: 'Montserrat';
     font-weight: 500;
-    white-space: nowrap;
+    /* white-space: nowrap; */
     background-color: var(--tag);
     padding: 1vh .65vw;
     border-radius: .8vh;
@@ -721,6 +736,7 @@ body {
     display: inline-block;
     align-self: center;
     text-align: center;
+    max-width: 6vw;
 }
 
 

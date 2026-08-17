@@ -253,6 +253,7 @@ window.addEventListener('load', async () => {
             setTimeout(() => {
                 if (startingScreen) startingScreen.remove();
                 checkChangelog();
+                initFeaturedFortnite();
             }, 400);
         } else {
             if (startingScreen) {

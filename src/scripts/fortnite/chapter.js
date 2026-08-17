@@ -378,7 +378,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                     newEvent.onclick = function() {
                         openLiveEvent(
                             this,
-                            evt.img.replace('-cover.png', ''),
+                            evt.img.replace(/-cover.*$/, ''),
                             evt.title || 'Evento',
                             evt.author || null,
                             evt.authorId || null

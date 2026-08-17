@@ -38,7 +38,6 @@ header {
     height: 94.65vh;
     transform: translateY(5.15vh);
     overflow: hidden;
-    padding-top: 7vh;
     background: transparent !important;
     flex-direction: column;
 }
@@ -176,14 +175,12 @@ header {
     display: none;
     opacity: 0;
     flex-direction: column;
+    height: 100%;
 }
 #step2 {
     display: none;
     opacity: 0;
     flex-direction: column;
-}
-.next2-btn {
-    transform: translateY(-10vh);
 }
 
 #start {
@@ -193,13 +190,19 @@ header {
     opacity: 0;
     flex-direction: column;
     justify-content: center;
-    transform: translateY(-10vh);
 }
 .logo {
     height: 30vh;
     width: 100%;
     display: flex;
     justify-content: center;
+}
+.logo-logo {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    mask: url(../assets/boltnotes-logo.svg) no-repeat center / contain;
+    -webkit-mask: url(../assets/boltnotes-logo.svg) no-repeat center / contain;
 }
 .start-text {
     width: 100%;

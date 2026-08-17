@@ -9,6 +9,7 @@
             <div id="player-controls">
                 <div id="player-bar" onclick="window.seek(event)">
                     <div id="player-bar-fill"></div>
+                    <div id="player-bar-hover-fill"></div>
                 </div>
                 <div class="player-controls-div">
                     <div class="player-controls-div1">

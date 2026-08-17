@@ -13,7 +13,7 @@ function parseIMG(text) {
         return `<div class="image-uploader-placeholder" onclick="triggerImageUpload()"><p>Escolher imagem</p></div>`;
     });
     text = text.replace(/\{image=([^}]+)\}/g, (match, url) => {
-        return `<img src="${url}" class="image">`;
+        return `<img src="documents://Notes/Media/${url}" class="image">`;
     });
 
     return text;
@@ -286,7 +286,7 @@ async function triggerImageUpload() {
     const imageProtocolPath = await window.api.notes.selectAndImage();
     if (!imageProtocolPath) return;
 
-    rawContent = rawContent.replace('/img/', `{image=${imageProtocolPath}}`);
+    rawContent = rawContent.replace('/img/', `{image=documents://Notes/Media/${imageProtocolPath}}`);
     
     renderContent();
     saveNote();
@@ -471,4 +471,14 @@ toggleDeleteBtn.addEventListener('click', () => {
     deleteBtns.forEach(btn => {
         btn.style.display = isVisible ? 'none' : 'block';
     });
+});
+
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+
+    if (editing) {
+      editToggle();
+    }
+  }
 });

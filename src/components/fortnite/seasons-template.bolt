@@ -2,8 +2,10 @@
 <div class="fn-season" data-code="">
     <p class="sep-bar-season"></p>
     <div class="seasonTitle-div">
-        <p class="season-title"></p>
-        <i id="lock-unlock"></i>
+        <div class="season-title-div">
+            <p class="season-title"></p>
+            <i id="lock-unlock"></i>
+        </div>
         <i class="season-trailers fa-solid fa-circle-play" data-tooltip="Ver trailers"></i>
     </div>
     <div class="banner-div">

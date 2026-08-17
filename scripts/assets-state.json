@@ -1,9 +1,4 @@
 {
-  "basics": {
-    "folderHash": "1a609044aeff952dcd67b5b7da7f04d8bed710ef7dac09a793f5e6db004c9670",
-    "zipHash": "57b8864857cc7c8af2068afe474a0a93c6ed4321485472c0a4127d15d2834eda",
-    "zipSize": 3087727
-  },
   "fortnite-c3s3-assets": {
     "folderHash": "398ce7c0324f3f7f63073df432c471a659788a0540e74293842f0b0cb410bfed",
     "zipHash": "9071205b93bf8f0d6fa01e4e1252919a138244bebfefb453a155a995b9f637c2",
@@ -105,9 +100,9 @@
     "zipSize": 2426727
   },
   "fortnite-c7s3-assets": {
-    "folderHash": "4f7239d27396a2ee2853178ca6863a3f20ff87bd1011a230e73eb15f578766b0",
-    "zipHash": "42fb1d117d212b271c775d080a9f3b0ea45131a65d7df45160d6865de313e573",
-    "zipSize": 1697982
+    "folderHash": "11e89f747a228f5b8744ace0caad84d8ba29d84571a1fa08b5d22cb72966771b",
+    "zipHash": "7ddd92226feaa8385b13112f836be1741812975f94d1f9712d91a06ad1e1f48c",
+    "zipSize": 1884220
   },
   "fortnite-c3s2-assets": {
     "folderHash": "72c07ae4a8f785eee9a911afbf23e1d561e830eb1274d6e445f96640fb68cc07",
@@ -476,5 +471,13 @@
   "c7s3_game_en.mkv": {
     "fileHash": "655971ec262c4eed352e172b6a5f5458283b4a255c8766dd2af0e47c21e923ea",
     "fileSize": 40477603
+  },
+  "live-event-c7s3.mkv": {
+    "fileHash": "26806a9a7fe1f029eb33a080439cead2ad3e0e20a5c676811d0253a819d52444",
+    "fileSize": 137242443
+  },
+  "live-event-c7s3.mp4": {
+    "fileHash": "1d01722165fe4df8801aeacced6b2adb1b6ea6605e3dec469e33c6eb42972eb6",
+    "fileSize": 145143482
   }
 }
