@@ -11,7 +11,7 @@ const AdmZip = require('adm-zip');
 const { XMLParser } = require('fast-xml-parser');
 const { spawn } = require('child_process');
 const { URL } = require('url');
-const archiver = require('archiver');
+// const archiver = require('archiver');
 
 process.on('uncaughtException', (err) => {
     if (err.message?.includes('ReadableStream is already closed')) {
@@ -1835,71 +1835,71 @@ ipcMain.handle('video:download-on-demand', async (event, { url, fileName, folder
   }
 });
 
-ipcMain.handle('backup:export', async () => {
-    const result = await dialog.showSaveDialog({
-        title: 'Exportar Backup',
-        defaultPath: `BoltNotes-Backup-${new Date().toISOString().split('T')[0]}.zip`,
-        filters: [{ name: 'Backup ZIP', extensions: ['zip'] }]
-    });
+// ipcMain.handle('backup:export', async () => {
+//     const result = await dialog.showSaveDialog({
+//         title: 'Exportar Backup',
+//         defaultPath: `BoltNotes-Backup-${new Date().toISOString().split('T')[0]}.zip`,
+//         filters: [{ name: 'Backup ZIP', extensions: ['zip'] }]
+//     });
 
-    if (result.canceled || !result.filePath) {
-        return { success: false, canceled: true };
-    }
+//     if (result.canceled || !result.filePath) {
+//         return { success: false, canceled: true };
+//     }
 
-    try {
-        await new Promise((resolve, reject) => {
-            const output = fs.createWriteStream(result.filePath);
-            const archive = archiver('zip', { zlib: { level: 9 } });
+//     try {
+//         await new Promise((resolve, reject) => {
+//             const output = fs.createWriteStream(result.filePath);
+//             const archive = archiver('zip', { zlib: { level: 9 } });
 
-            output.on('close', resolve);
-            archive.on('error', reject);
+//             output.on('close', resolve);
+//             archive.on('error', reject);
 
-            archive.pipe(output);
-            archive.directory(DOCUMENTS, false);
-            archive.finalize();
-        });
+//             archive.pipe(output);
+//             archive.directory(DOCUMENTS, false);
+//             archive.finalize();
+//         });
 
-        return { success: true, path: result.filePath };
-    } catch (error) {
-        console.error('Erro ao exportar backup:', error);
-        return { success: false, error: error.message };
-    }
-});
+//         return { success: true, path: result.filePath };
+//     } catch (error) {
+//         console.error('Erro ao exportar backup:', error);
+//         return { success: false, error: error.message };
+//     }
+// });
 
-ipcMain.handle('backup:import', async () => {
-    const result = await dialog.showOpenDialog({
-        title: 'Importar Backup',
-        properties: ['openFile'],
-        filters: [{ name: 'Backup ZIP', extensions: ['zip'] }]
-    });
+// ipcMain.handle('backup:import', async () => {
+//     const result = await dialog.showOpenDialog({
+//         title: 'Importar Backup',
+//         properties: ['openFile'],
+//         filters: [{ name: 'Backup ZIP', extensions: ['zip'] }]
+//     });
 
-    if (result.canceled || result.filePaths.length === 0) {
-        return { success: false, canceled: true };
-    }
+//     if (result.canceled || result.filePaths.length === 0) {
+//         return { success: false, canceled: true };
+//     }
 
-    const zipPath = result.filePaths[0];
+//     const zipPath = result.filePaths[0];
 
-    try {
-        const zip = new AdmZip(zipPath);
+//     try {
+//         const zip = new AdmZip(zipPath);
         
-        // Extrai para uma pasta temporária primeiro pra validar
-        const tempExtractPath = path.join(app.getPath('temp'), 'boltnotes-import-temp');
-        if (fs.existsSync(tempExtractPath)) {
-            fs.rmSync(tempExtractPath, { recursive: true });
-        }
+//         // Extrai para uma pasta temporária primeiro pra validar
+//         const tempExtractPath = path.join(app.getPath('temp'), 'boltnotes-import-temp');
+//         if (fs.existsSync(tempExtractPath)) {
+//             fs.rmSync(tempExtractPath, { recursive: true });
+//         }
         
-        zip.extractAllTo(tempExtractPath, true);
+//         zip.extractAllTo(tempExtractPath, true);
 
-        // Substitui a pasta DOCUMENTS pelo conteúdo importado
-        if (fs.existsSync(DOCUMENTS)) {
-            fs.rmSync(DOCUMENTS, { recursive: true });
-        }
-        fs.renameSync(tempExtractPath, DOCUMENTS);
+//         // Substitui a pasta DOCUMENTS pelo conteúdo importado
+//         if (fs.existsSync(DOCUMENTS)) {
+//             fs.rmSync(DOCUMENTS, { recursive: true });
+//         }
+//         fs.renameSync(tempExtractPath, DOCUMENTS);
 
-        // Limpa caches em memória, se houver
-        return { success: true };
-    } catch (error) {
-        console.error('Erro ao importar backup:', error);
-        return { success: false, error: error.message };
-    }
-});
+//         // Limpa caches em memória, se houver
+//         return { success: true };
+//     } catch (error) {
+//         console.error('Erro ao importar backup:', error);
+//         return { success: false, error: error.message };
+//     }
+// });
