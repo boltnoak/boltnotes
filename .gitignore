@@ -107,5 +107,5 @@ release
 
 # Assets
 dist-assets
-assets
+/assets
 open-fortnite-yt.sh
