@@ -854,8 +854,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-
-    document.getElementById('fortnite').style.display = fortniteAssets === false ? 'none' : 'flex';
 });
 
 const FILE_STATS = "Fortnite/stats.json";
@@ -962,9 +960,12 @@ async function preencherValores() {
     const levelsBar = document.querySelector('.level-progress-bar-fill');
     const levelsText = document.querySelector('.level-progress-text');
     
+    const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
+    const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(1);
+
     if (levels) levels.textContent = data.levels || "0";
     if (levelsBar) levelsBar.style.width = `${(data.levels / 200) * 100}%`;
-    if (levelsText) levelsText.textContent = `${window._t['progress']} - ${((data.levels / 200) * 100).toFixed(1)}%`
+    if (levelsText) levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
     if (wins) wins.textContent = data.wins || "0";
 
     const levelAdd = document.querySelector('.statusLevel-add');
@@ -985,11 +986,19 @@ async function preencherValores() {
     const winsSpan = document.querySelector('.status-win');
     if (levelAdd) levelAdd.onclick = () => {
         updateStat('levels', 1, levelsSpan);
-        if (levelsText) levelsText.textContent = `${window._t['progress']} - ${((data.levels / 200) * 100).toFixed(1)}%`
+        if (levelsText) {
+            const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
+            const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(1);
+            levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
+        }
     }
     if (levelMinus) levelMinus.onclick = () => {
         updateStat('levels', -1, levelsSpan);
-        if (levelsText) levelsText.textContent = `${window._t['progress']} - ${((data.levels / 200) * 100).toFixed(1)}%`
+        if (levelsText) {
+            const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
+            const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(1);
+            levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
+        }
     }
     if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);
     if (winMinus) winMinus.onclick = () => updateStat('wins', -1, winsSpan);

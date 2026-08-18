@@ -218,10 +218,12 @@ header {
     display: flex;
     flex-direction: column;
     height: 100%;
-    justify-content: center;
+    justify-content: end;
+    /* margin: 0 1.25vw 0 0; */
     align-items: center;
     width: 100%;
-    transform: translateX(6.65vw) translateY(3vh);
+    z-index: 2;
+    transform: translateX(6.65vw);
 }
 .fortnite-text {
     position: absolute;
@@ -258,7 +260,7 @@ header {
     -webkit-text-stroke: .15vh var(--text);
     text-transform: uppercase;
     height: 5.5vh;
-    margin: 0 0 2vh 0;
+    margin: 0 0 2.5vh 0;
 }
 .text-notes {
     font-family: 'Vazirmatn';
@@ -298,11 +300,13 @@ header {
     border: solid .4vh var(--sep-bar);
 }
 .page-image img {
-    object-fit: cover;
-    z-index: 2;
+    object-fit: contain;
+    z-index: 1;
     transform: translateX(-.4vw);
     pointer-events: none;
-    width: 67%;
+    display: flex;
+    justify-self: start;
+    width: fit-content;
 }
 .page-title {
     color: var(--text);

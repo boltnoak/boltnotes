@@ -479,5 +479,21 @@
   "live-event-c7s3.mp4": {
     "fileHash": "1d01722165fe4df8801aeacced6b2adb1b6ea6605e3dec469e33c6eb42972eb6",
     "fileSize": 145143482
+  },
+  "c7s4_cine_en.mkv": {
+    "fileHash": "f9d02154d73af861fad7a75b1a878fc858e993805362a85e441e19241f67bc46",
+    "fileSize": 27414262
+  },
+  "c7s4_cine_pt-BR.mkv": {
+    "fileHash": "f9d02154d73af861fad7a75b1a878fc858e993805362a85e441e19241f67bc46",
+    "fileSize": 27414262
+  },
+  "c7s4_game_en.mkv": {
+    "fileHash": "7bf48cc5ced878e0e2f9400363a8307af4bf97ae1ecf88c0a8fbd8fdc4656d91",
+    "fileSize": 34716214
+  },
+  "c7s4_game_pt-BR.mkv": {
+    "fileHash": "8e16f32209af180d5d46e6915976a1334d18f4bb9938529027f0a676c1c96d8e",
+    "fileSize": 48500211
   }
 }

@@ -722,7 +722,6 @@ loadLatestFN();
 window.electronAPI.onCacheUpdated?.((info) => {
     if (info.fileName.startsWith('fn-seasons')) {
         cachedSeasonInfo = info.data;
-        // re-renderiza se estiver na página certa
     }
 });
 

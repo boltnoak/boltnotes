@@ -4,9 +4,9 @@
     <div class="seasonTitle-div">
         <div class="season-title-div">
             <p class="season-title"></p>
-            <i id="lock-unlock"></i>
+            <i class="season-trailers fa-solid fa-circle-play" data-tooltip="Ver trailers"></i>
         </div>
-        <i class="season-trailers fa-solid fa-circle-play" data-tooltip="Ver trailers"></i>
+        <i id="lock-unlock"></i>
     </div>
     <div class="banner-div">
         <div class="banner">
