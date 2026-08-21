@@ -100,6 +100,13 @@
     border-color: var(--tab-active);
     background-color: var(--tab-active);
 }
+/* .reviewTopic-big:hover .review-topic-div {
+    border-color: var(--tab-hover);
+}
+.reviewTopic-big:hover .review-topic {
+    border-color: var(--tab-hover);
+    background-color: var(--tab-hover);
+} */
 .reviewTopic-big {
     width: 100%;
 }
@@ -107,7 +114,7 @@
     height: fit-content;
 }
 .reviewTopic-smaller {
-    width: 98%;
+    width: 92.5%;
 }
 .reviewTopic-small {
     width: 75%;

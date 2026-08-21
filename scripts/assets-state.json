@@ -495,5 +495,10 @@
   "c7s4_game_pt-BR.mkv": {
     "fileHash": "8e16f32209af180d5d46e6915976a1334d18f4bb9938529027f0a676c1c96d8e",
     "fileSize": 48500211
+  },
+  "fortnite-c7s4-assets": {
+    "folderHash": "91b36d56649d4b9cf7f9bde7d7d7b5abd214b32c8b429a4a7a32dad93845dadf",
+    "zipHash": "5cdf308c154193c64d4ecda688528d62ee5cf91c46b4f301cb0f70f3414e35ca",
+    "zipSize": 1031344
   }
 }

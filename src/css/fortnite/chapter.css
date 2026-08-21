@@ -10,7 +10,7 @@ body {
 }
 
 #fnSeason, .fn-season {
-    margin: 0 3vw 0 4.5vw;
+    margin: 0 .3vw 0 1vw;
     padding: 0;
 }
 
@@ -89,7 +89,7 @@ body {
     color: var(--text);
     font-weight: 900;
     margin-right: 0;
-    font-size: 3vw;
+    font-size: 5vh;
     margin: 0;
     font-family: 'Montserrat';
 }
@@ -98,7 +98,7 @@ body {
     transition: color 0.25s ease-in-out;
     cursor: pointer;
     padding: 0;
-    font-size: 4vh;
+    font-size: 3.5vh;
 }
 .season-trailers[data-tooltip]::after {
     transform: translate(0%, -50%);
@@ -121,7 +121,10 @@ body {
     text-align: center;
     justify-content: space-between;
     gap: .3vw;
-    margin: 1vh 0;
+    /* margin: 1vh 0; */
+    margin: 0;
+    padding: .3vh .5vw 0 .5vw;
+    background: linear-gradient(to bottom, rgba(0,0,0,.8) 0%, transparent 100%);
 }
 /* Banner */
 .banner {
@@ -130,7 +133,7 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
     background-color: var(--tab);
-    height: 58vh;
+    height: 73vh;
     width: 75%;
     position: relative;
     margin: 0;
@@ -300,7 +303,9 @@ body {
 }
 .sep-bar-season {
     margin: 1.5vh 0 4.25vh 0;
-    border: solid 2px var(--sep-bar);
+    margin: 1.75vh 0;
+    border: solid .43vh var(--sep-bar);
+    /* border: solid 2px var(--tag); */
     border-radius: 1vh;
     justify-content: center;
 }
@@ -321,7 +326,7 @@ body {
 }
 #lock-unlock {
     margin: 0;
-    font-size: 4vh;
+    font-size: 3.5vh;
     opacity: .5;
     background: transparent;
     padding: 0;
@@ -569,7 +574,7 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: .4vw;
+    gap: .5vw;
 }
 .event-data {
     padding: 0 .5vw 0 .5vw;

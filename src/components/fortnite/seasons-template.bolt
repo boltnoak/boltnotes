@@ -1,6 +1,8 @@
 <template id="season-template">
 <div class="fn-season" data-code="">
     <p class="sep-bar-season"></p>
+    <div class="banner-div">
+        <div class="banner">
     <div class="seasonTitle-div">
         <div class="season-title-div">
             <p class="season-title"></p>
@@ -8,8 +10,6 @@
         </div>
         <i id="lock-unlock"></i>
     </div>
-    <div class="banner-div">
-        <div class="banner">
             <div class="rating-options">
                 <div class="rating-option" data-value="0">0</div>
                 <div class="rating-option" data-value="0.5">0.5</div>

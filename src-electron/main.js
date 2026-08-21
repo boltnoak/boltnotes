@@ -21,6 +21,9 @@ process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err);
 });
 
+const isSilent = process.argv.includes('--silent');
+console.log(isSilent);
+
 const ASSETS_DIR = path.join(
   app.getPath('userData'),
   'assets'
@@ -325,7 +328,7 @@ const APPDATA = path.join(
 );
 
 const COVERS = path.join(
-    APPDATA,
+    ASSETS_DIR,
     'game-covers'
 );
 
@@ -336,12 +339,12 @@ const MEDIA_DIR = path.join(
 );
 
 const GAMELOGOS = path.join(
-    APPDATA,
+    ASSETS_DIR,
     'game-logos'
 );
 
 const HEROS = path.join(
-    APPDATA,
+    ASSETS_DIR,
     'game-heros'
 );
 
@@ -514,9 +517,16 @@ if (!gotTheLock) {
   app.quit();
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
-    if (win) {
-      if (win.isMinimized()) win.restore();
-      if (!win.isVisible()) win.show();
+    if (!win) return;
+
+    const isSilentSecond = commandLine.includes('--silent');
+
+    if (win.isMinimized()) win.restore();
+    if (!win.isVisible()) {
+      if (!isSilentSecond) {
+        win.show();
+      }
+    } else if (!isSilentSecond) {
       win.focus();
     }
   });
@@ -673,12 +683,13 @@ if (!gotTheLock) {
     manageStartup(configs.open_on_startup);
 
     win.once('ready-to-show', async () => {
-      if (configs.maximize_on_start) {
-        win.maximize();
-      }
-
       makeTray();
-      win.show();
+      if (!isSilent) {
+        if (configs.maximize_on_start) {
+          win.maximize();
+        }
+        win.show();
+      }
 
       if (app.isPackaged) {
         autoUpdater.checkForUpdates();
@@ -1076,7 +1087,9 @@ function navigateTo(htmlFile) {
 
     win.loadFile(path.join(BUNDLE, 'pages', htmlFile));
     win.webContents.once('did-finish-load', () => {
-        win.show();
+        if (!isSilent) {
+          win.show();
+        }
         win.focus();
     });
 }
@@ -1121,10 +1134,14 @@ function makeTray() {
     tray.setContextMenu(buildTrayMenu(trayNameIcon));
 
     tray.on('click', () => {
-        if (win) {
-            win.show();
-            win.focus();
+      if (win) {
+        const configs = getConfig();
+        if (!win.isVisible() && configs.maximize_on_start) {
+          win.maximize();
         }
+        win.show();
+        win.focus();
+      }
     });
 }
 

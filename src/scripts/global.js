@@ -356,7 +356,7 @@ async function formatDate(dataStr, style = 'default') {
     if (!dataStr) return '';
 
     const [day, month, year] = dataStr.split('/');
-    const dataObj = new Date(`${year}-${month}-${day}`);
+    const dataObj = new Date(Number(year), Number(month) - 1, Number(day));
     if (isNaN(dataObj)) return dataStr;
 
     const config = await window.electronAPI.config.getConfig();

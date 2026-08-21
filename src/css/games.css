@@ -644,7 +644,7 @@ header {
     background-color: var(--tab);
     /* border-radius: .8vh; */
     padding: 1vh .9vw;
-    padding: 2vh 1vw;
+    padding: 2vh .75vw;
     height: fit-content;
     /* margin: 1vh; */
 }
@@ -671,7 +671,7 @@ header {
     background-color: var(--tab);
     background-color: var(--orange);
     border-radius: .8vh;
-    padding: 1vh;
+    padding: .75vh .75vw;
     height: fit-content;
     /* margin: 1vh; */
 }

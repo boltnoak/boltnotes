@@ -42,7 +42,7 @@ header {
     user-select: none;
 }
 .sep-bar-v {
-    margin: 0 1vw 1.25vh 1vw;
+    margin: 0 .6vw 1.25vh .6vw;
 }
 .note-sep-bar {
     margin: 0 .8vw 1.8vh 0;
@@ -88,6 +88,7 @@ header {
     align-items: center;
     transition: background .1s linear;
     user-select: none;
+    overflow: hidden;
 }
 .tab-name {
     width: 100%;
@@ -108,14 +109,24 @@ header {
     display: none !important;
 }
 #delete-note {
-    transition: color .1s linear;
+    transition: all .1s linear;
     margin-right: .45vh;
     display: flex;
     justify-self: end;
+    position: absolute;
+    right: .35vw;
+    height: fit-content;
     color: var(--text);
+    background-color: var(--btn);
+    padding: 1vh .5vw;
+    border-radius: 1vh;
 }
 #delete-note:hover {
-    color: var(--red);
+    color: var(--text-red);
+    background-color: var(--red);
+}
+#delete-note:hover .tab {
+    background-color: var(--tab);
 }
 .newNote-input {
     display: flex;
@@ -226,7 +237,7 @@ body.dragging-tab * {
     justify-content: space-between;
     gap: .5vw;
     background-color: var(--btn-color);
-    border-radius: 1.65vh;
+    border-radius: 1.25vh;
     padding: 1vh .6vw;
 }
 #title-note {
@@ -324,8 +335,8 @@ h1 {
     text-align: center;
     gap: .75vw;
     background-color: var(--tab-hover);
-    border-radius: 1.65vh;
-    padding: 1vh 1vw;
+    border-radius: 1.25vh;
+    padding: 1vh .8vw;
 }
 .note-list-title-div div {
     display: flex;
