@@ -508,7 +508,7 @@ header {
     padding: 1.2vh;
     overflow: hidden;
     height: 31.5vh;
-    width: 45vw;
+    width: 47vw;
 }
 #recent-season-name {
     margin: 0;
@@ -1361,14 +1361,6 @@ header {
     color: inherit;
     cursor: text;
     caret-color: var(--text);
-}
-
-.index-sep-bar {
-    margin: 1.3vh 10vw 0 10vw;
-    border: solid .4vh var(--sep-bar);
-    border-radius: 1vh;
-    justify-content: center;
-
 }
 
 .game-note[contenteditable]:empty::before {
@@ -2406,4 +2398,29 @@ body.delete-mode-active .game:hover::after {
 }
 .type-mark-campaign {
     cursor: pointer;
+}
+
+.featured-change-div,
+#featured-title,
+.banner,
+.page-infos,
+.playingNow-panel,
+.recentSeason-panel,
+#notes, #games, #fortnite, .app-version {
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+/* Classe que o JS adiciona no body quando tudo está pronto */
+body.ui-ready .featured-change-div,
+body.ui-ready #featured-title,
+body.ui-ready .page-infos,
+body.ui-ready .playingNow-panel,
+body.ui-ready .recentSeason-panel,
+body.ui-ready .banner,
+body.ui-ready #notes,
+body.ui-ready #games,
+body.ui-ready #fortnite,
+body.ui-ready .app-version {
+    opacity: 1;
 }

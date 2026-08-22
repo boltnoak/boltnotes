@@ -480,7 +480,7 @@ body {
     background: var(--bg);
     padding: 1.5vh;width: 74vw;
     height: 80%;
-    width: 55%;
+    width: 37.25%;
     border-radius: 2.3vh;
     animation: popupIn .15s ease forwards;
     overflow: hidden;

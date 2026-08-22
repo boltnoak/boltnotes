@@ -1,6 +1,6 @@
-const pageBase = document.querySelector('base').href.replace('file://', '');
-
-// Ferramentas de dev
+/////////////////
+/// DEV TOOLS ///
+/////////////////
 window.addEventListener('keydown', (e) => {
   if (!window.electronAPI || !window.electronAPI.isDev) {
     if (e.code === "F5" || e.code === "F12") {
@@ -8,20 +8,17 @@ window.addEventListener('keydown', (e) => {
     }
     return;
   }
-
   if (e.code == "F5") {
     const bodyElement = document.querySelector('.pageBody');
     if (bodyElement) {
       sessionStorage.setItem('pageBodyScroll', bodyElement.scrollTop);
     }
     window.location.reload();
-  };
-  
+  }
   if (e.code == "F12") {
     window.electronAPI.devTools();
-  };
+  }
 });
-
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     if (!e.target.isContentEditable) return;
@@ -29,7 +26,6 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     document.execCommand('insertLineBreak');
 });
-
 document.addEventListener('paste', (e) => {
     if (!e.target.isContentEditable) return;
     
@@ -38,56 +34,9 @@ document.addEventListener('paste', (e) => {
     document.execCommand('insertText', false, text);
 });
 
-// Restaurar o scroll após o reload
-// window.addEventListener('load', () => {
-//   const savedScroll = sessionStorage.getItem('pageBodyScroll');
-  
-//   if (savedScroll) {
-//     const bodyElement = document.querySelector('.pageBody');
-//     const target = parseInt(savedScroll, 10);
-
-//     if (bodyElement) {
-//       let attempts = 0;
-//       const scrollRetry = setInterval(() => {
-//         bodyElement.scrollTop = target;
-//         attempts++;
-
-//         if (Math.abs(bodyElement.scrollTop - target) <= 1 || attempts > 20) {
-//           clearInterval(scrollRetry);
-//           sessionStorage.removeItem('pageBodyScroll');
-//         }
-//       }, 100);
-//     }
-//   }
-// });
-
-// let lastScrollPercent = 0;
-
-// function getScrollPercent() {
-//     const bodyElement = document.querySelector('.pageBody');
-//     if (!bodyElement) return 0;
-//     const maxScroll = bodyElement.scrollHeight - bodyElement.clientHeight;
-//     return maxScroll > 0 ? bodyElement.scrollTop / maxScroll : 0;
-// }
-
-// function applyScrollPercent(percent) {
-//     const bodyElement = document.querySelector('.pageBody');
-//     if (!bodyElement) return;
-//     const maxScroll = bodyElement.scrollHeight - bodyElement.clientHeight;
-//     bodyElement.scrollTop = percent * maxScroll;
-// }
-
-// window.addEventListener('resize', () => {
-//     applyScrollPercent(lastScrollPercent);
-// });
-
-// document.addEventListener('scroll', (e) => {
-//     if (e.target.classList?.contains('pageBody')) {
-//         lastScrollPercent = getScrollPercent();
-//     }
-// }, true);
-
-// Menu
+/////////////////////////////////////
+/// BARRA DE TÍTULO/BOTÕES DO APP ///
+/////////////////////////////////////
 function minimizeApp() {
   window.electronAPI.menu.minimizeApp();
 }
@@ -97,45 +46,6 @@ function maximizeApp() {
 function closeApp() {
   window.electronAPI.menu.closeApp();
 }
-
-window.electronAPI.onWindowStateChange((state) => {
-    sessionStorage.setItem('windowState', state);
-    applyWindowState(state);
-});
-
-function applyWindowState(state) {
-  const menuMax = document.getElementById('menuMax');
-  const isNormal = state === 'normal';
-
-  document.documentElement.classList.toggle('window-normal', isNormal);
-  document.documentElement.classList.toggle('window-maximized', !isNormal);
-
-  if (menuMax) {
-    menuMax.className = isNormal
-      ? 'fa-regular fa-window-maximize'
-      : 'fa-regular fa-window-restore';
-  }
-}
-
-async function updateMaximizeIcon() {
-    const menuMax = document.getElementById('menuMax');
-
-    const isMaximized = await window.electronAPI.menu.isMaximized();
-
-    menuMax.className = isMaximized
-        ? 'fa-regular fa-window-restore'
-        : 'fa-regular fa-window-maximize';
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const versao = await window.api.getAppVersion();
-  
-  const elementoVersao = document.getElementById('app-version');
-  if (elementoVersao) {
-    elementoVersao.innerText = `v${versao}`;
-  }
-});
-
 async function initMenu() {
     const res = await fetch('components/menu.bolt');
     const data = await res.text();
@@ -204,6 +114,33 @@ async function initMenu() {
 }
 initMenu();
 
+////////////////////////
+/// ESTADO DA JANELA ///
+////////////////////////
+window.electronAPI.onWindowStateChange((state) => {
+    sessionStorage.setItem('windowState', state);
+    applyWindowState(state);
+});
+function applyWindowState(state) {
+  const menuMax = document.getElementById('menuMax');
+  const isNormal = state === 'normal';
+
+  document.documentElement.classList.toggle('window-normal', isNormal);
+  document.documentElement.classList.toggle('window-maximized', !isNormal);
+
+  if (menuMax) {
+    menuMax.className = isNormal
+      ? 'fa-regular fa-window-maximize'
+      : 'fa-regular fa-window-restore';
+  }
+}
+async function updateMaximizeIcon() {
+    const menuMax = document.getElementById('menuMax');
+    const isMaximized = await window.electronAPI.menu.isMaximized();
+    menuMax.className = isMaximized
+        ? 'fa-regular fa-window-restore'
+        : 'fa-regular fa-window-maximize';
+}
 
 async function checkChangelog() {
     const { shouldShow, version } = await window.electronAPI.changelog.check();
@@ -220,10 +157,10 @@ async function checkChangelog() {
         title.innerHTML = `<i class="fa-solid fa-rectangle-list"></i>Mudanças da versão ${version}${title.textContent}`;
         list.innerHTML = changes.map(line => {
             if (line.trim().startsWith('#')) {
-                const nomeDoTopico = line.replace('#', '').trim();
+                const topicName = line.replace('#', '').trim();
                 return `<div class="changelog-category">
                     <i class="fa-solid fa-circle-dot"></i>
-                    <h4 class="changelog-category-text">${nomeDoTopico}:</h4>
+                    <h4 class="changelog-category-text">${topicName}:</h4>
                 </div>`;
             }
             return `<div class="changelog-topic"><li><i class="fa-solid fa-caret-right"></i>${line}</li></div>`;
@@ -238,7 +175,6 @@ async function checkChangelog() {
 }
 
 checkChangelog();
-// initFeaturedFortnite();
 
 async function viewDownloadPackage(packageName) {
     const name = document.querySelector('.download-status-name');

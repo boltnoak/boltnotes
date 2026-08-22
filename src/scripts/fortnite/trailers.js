@@ -115,7 +115,7 @@ async function openTrailer(el) {
         for (const tipo of tipos) {
             const info = cachedTrailers?.[code]?.[tipo];
 
-            if (!info && tipo !== "game" && tipo !== "cine") continue;
+            if (!info) continue;
 
             const labelText = info?.title || `Trailer ${tipo}`;
             const labelDate = await formatDate(info?.date || 'Sem data');
@@ -256,7 +256,7 @@ async function openTrailer(el) {
             const justDate = document.createElement("div");
 
             justDate.className = "video-date";
-            justDate.innerHTML = `<span class="moreVideo-date">Data do trailer: ${labelDate}</span>`;
+            justDate.innerHTML = `<span class="moreVideo-date">${labelDate}</span>`;
             listContainer.classList.add('noMore');
 
             listContainer.appendChild(justDate);
@@ -327,8 +327,7 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
 
     const title = document.getElementById('video-title');
     if (title) title.textContent = eventTitle;
-
-    removeCreatedEspecialDivs();
+    const video = document.getElementById('video');
 
     if (author != null) {
         const authorDiv = document.createElement('div');
@@ -339,8 +338,10 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
 
         authorText.innerHTML = `<span data-i18n="by">By</span> 
         <a onclick="openLinkOnBrowser('https://www.youtube.com/@${authorId}')">${author}</a>`;
-        if (document.getElementById('video-player')) document.getElementById('video-player').appendChild(authorDiv);
         authorDiv.appendChild(authorText);
+        
+        const wrapper = document.querySelector('#video');
+        wrapper.appendChild(authorDiv);
         applyLocale();
     }
 
@@ -459,7 +460,6 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
     }
 
     const path = `${basePath}.${ext}`;
-    const video = document.getElementById('video');
 
     removeCreatedEspecialDivs();
     await openVideoPlayer(el);

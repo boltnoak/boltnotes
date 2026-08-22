@@ -436,6 +436,9 @@ addEventListener('click', (e) => {
     if (e.target.matches('.season-map')) openMap(e.target);
 });
 
+////////////////////////////
+/// VISUALIZAÇÃO DE MAPA ///
+////////////////////////////
 function openMap(el) {
     const container = el.closest('.fn-season');
     const code = container?.dataset.code;
@@ -582,142 +585,6 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 } else {
     document.addEventListener("DOMContentLoaded", inicializarDados);
 }
-
-function watchEndEvent() {
-    const videoPlayer = document.getElementById('endEventVideo-player');
-    if (!videoPlayer) return;
-
-    videoPlayer.classList.add('active'); 
-    
-    const video = videoPlayer.querySelector('#video-event');
-    const playBtn = videoPlayer.querySelector('#play-pause-event');
-    const wrapper = videoPlayer.querySelector('.video-wrapper');
-    const juice = videoPlayer.querySelector('#player-bar-fill-event');
-
-    if (wrapper) {
-        wrapper.onmousemove = () => showControls(wrapper);
-        wrapper.onmousedown = () => showControls(wrapper);
-        wrapper.ontouchstart = () => showControls(wrapper);
-        showControls(wrapper);
-    }
-
-    if (video) {
-        video.volume = 0.5;
-        video.ontimeupdate = () => {
-            if (!isNaN(video.duration) && video.duration > 0) {
-                const perc = (video.currentTime / video.duration) * 100;
-                if (juice) juice.style.width = perc + "%";
-            }
-        };
-
-        video.play().catch(err => console.log("Autoplay bloqueado:", err));
-        if (playBtn) playBtn.className = 'fa-solid fa-pause';
-    }
-}
-
-function minimizeVideo(event) {
-    if (event) event.stopPropagation();
-    
-    const videoPlayer = document.getElementById('endEventVideo-player');
-    if (!videoPlayer) return;
-
-    videoPlayer.classList.remove('active'); 
-    
-    const video = videoPlayer.querySelector('#video-event');
-    if (video) {
-        video.pause();
-    }
-}
-
-function initEndEvent() {
-    const code = document.getElementById('end-event')?.dataset.code;
-
-    const title = document.getElementById('video-title-event');
-
-    if (title) { title.textContent = document.querySelector('.endEvent-title').textContent }
-    
-    const video = document.getElementById('video-event');
-    const wrapper = document.querySelector('.video-wrapper');
-    const cover = document.getElementById('endEvent-cover');
-            
-    if (wrapper) {
-        wrapper.onmousemove = () => showControls(wrapper);
-        wrapper.onmousedown = () => showControls(wrapper);
-        wrapper.ontouchstart = () => showControls(wrapper);
-    }
-    if (code) {
-        const fileName = `${code}.mp4`
-        const videoPath = `assets://${fileName}`;
-        const coverPath = `assets://${code}-cover.png`;
-
-        cover.style.backgroundImage = `url(${coverPath})`;
-        video.src = videoPath;
-
-        const videoPathLog = videoPath.replace(/.*(?=\/)/,'').replace(/\//,'');
-        const coverPathLog = coverPath.replace(/.*(?=\/)/,'').replace(/\//,'');
-
-        console.log('Vídeo do evento de final: ' + videoPathLog +
-        '\nCapa do evento de final: ' + coverPathLog);
-    }
-    if (video) { video.volume = .5 }
-}
-
-function getLatestSeason(data) {
-    const parsed = Object.entries(data)
-        .map(([key, value]) => {
-
-            const match = key.match(
-                /^c(\d+)(ms|s|og|remix)?(\d+)?$/i
-            );
-
-            if (!match) return null;
-
-            return {
-                key,
-                data: value,
-                chapter: Number(match[1]),
-                type: match[2] || '',
-                season: Number(match[3] || 0)
-            };
-        })
-        .filter(Boolean);
-
-    parsed.sort((a, b) => {
-
-        if (a.chapter !== b.chapter) {
-            return b.chapter - a.chapter;
-        }
-
-        return b.season - a.season;
-    });
-
-    return parsed[0] || null;
-}
-
-async function loadLatestFN() {
-    try {
-        const assetDir = await window.api.load('assets://');
-        const seasons = await window.api.fortnite.getSeasons();
-
-        const latest = getLatestSeason(seasons);
-
-        if (!latest) return;
-
-        const latestPathLobby = `assets://${latest.key}-lobby.jpg`;
-        const latestPath = `assets://${latest.key}.jpg`;
-
-        console.log(`Temporada mais recente do Fortnite: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
-
-        const banner = document.getElementById("latestSeasonBG");
-        if (banner && latestPath) { banner.style.backgroundImage = `url('${latestPath}')`}
-
-    } catch (err) {
-        console.error("Erro ao inicializar:", err);
-    }
-}
-
-loadLatestFN();
-
 
 window.electronAPI.onCacheUpdated?.((info) => {
     if (info.fileName.startsWith('fn-seasons')) {
