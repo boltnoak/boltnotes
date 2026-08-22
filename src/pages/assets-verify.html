@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/assets-verify.css">
+    <script src="scripts/theme-loader.js"></script>
+    <script src="scripts/apply-locales.js"></script>
+    <title>BoltNotes</title>
+</head>
+<body>
+    <div id="starting-screen">
+        <div class="loading-content">
+            <h2 id="loading-title" data-i18n="sync-assets-starting">Sincronizando recursos</h2>
+
+            <div class="spinner-div">
+                <div class="spinner"></div>
+            </div>
+            <div class="loading-details-div">
+                <p id="loading-details" data-i18n="sync-assets-verify">Verificando recursos...</p>
+                <p id="loading-progress"></p>
+            </div>
+            
+            <div class="progress-container">
+                <div id="progress-bar-fill">
+                    <div class="shine-effect"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- <script src="scripts/global.js"></script> -->
+<script src="scripts/assets-verify.js"></script>
+</body>
+</html>

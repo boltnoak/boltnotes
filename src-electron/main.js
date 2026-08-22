@@ -157,6 +157,12 @@ async function downloadPackage(name) {
     if (line !== lastLog) {
       lastLog = line;
       process.stdout.write(`\r${line}   `);
+      assetsWin?.webContents.send('assets-progress', {
+        package: name,
+        downloaded,
+        total,
+        percent: total ? Math.round(downloaded * 100 / total) : null
+      });
       win?.webContents.send('assets-progress', {
         package: name,
         downloaded,
@@ -507,6 +513,39 @@ function createWindow() {
     });
     win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
 }
+let assetsWin = null;
+
+function createAssetsWindow() {
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+
+  assetsWin = new BrowserWindow({
+    width: Math.round(screenWidth * 0.50),
+    height: Math.round(screenHeight * 0.50),
+    autoHideMenuBar: process.platform !== 'linux',
+    frame: process.platform !== 'linux',
+    transparent: true,
+    roundedCorners: false,
+    backgroundColor: '#00000000',
+    show: false,
+    hasShadow: false,
+    resizable: process.platform === 'linux',
+    maximizable: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      autoplayPolicy: 'no-user-gesture-required',
+      additionalArguments: [app.isPackaged ? '--production' : '--development']
+    }
+  });
+
+  assetsWin.once('ready-to-show', () => assetsWin.show());
+  assetsWin.loadFile(path.join(BUNDLE, 'pages', 'assets-verify.html'));
+
+  assetsWin.on('closed', () => { assetsWin = null; });
+}
+
 ipcMain.on('drag-window', (event, { mouseX, mouseY }) => {
   const [winX, winY] = win.getPosition();
   win.setPosition(winX + mouseX, winY + mouseY);
@@ -516,16 +555,14 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', (event, commandLine) => {
     if (!win) return;
 
     const isSilentSecond = commandLine.includes('--silent');
 
     if (win.isMinimized()) win.restore();
-    if (!win.isVisible()) {
-      if (!isSilentSecond) {
-        win.show();
-      }
+    if (!mainWin.isVisible()) {
+      if (!isSilentSecond) win.show();
     } else if (!isSilentSecond) {
       win.focus();
     }
@@ -675,13 +712,24 @@ if (!gotTheLock) {
     });
 
     startFolders();
-
-    createWindow();
+    createAssetsWindow();
 
     const configs = getConfig();
-
     manageStartup(configs.open_on_startup);
-
+try {
+    await syncAssets();
+    assetsReady = true;
+    if (assetsWin && !assetsWin.isDestroyed()) {
+      assetsWin.webContents.send('assets-ready');
+    }
+    assetsWin.hide();
+    createWindow();
+  } catch (err) {
+    console.error(err);
+    if (assetsWin && !assetsWin.isDestroyed()) {
+      assetsWin.webContents.send('assets-error', err.message);
+    }
+  }
     win.once('ready-to-show', async () => {
       makeTray();
       if (!isSilent) {
@@ -699,16 +747,6 @@ if (!gotTheLock) {
         win.loadFile(path.join(BUNDLE, 'pages', 'welcome.html'));
       } else {
         win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
-
-        await syncAssets()
-          .then(() => {
-            assetsReady = true;
-            win.webContents.send('assets-ready');
-          })
-          .catch(err => {
-            console.error(err);
-            win.webContents.send('assets-error', err.message);
-          });
       }
     });
 
