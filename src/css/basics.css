@@ -16,6 +16,11 @@
     src: url(../fonts/Vazirmatn-VariableFont.ttf) format('truetype');
     font-display: block;
 }
+@font-face{
+    font-family: 'ArquivoBlack';
+    src: url(../fonts/ArchivoBlack-Regular.ttf) format('truetype');
+    font-display: block;
+}
 i {
     color: white;
 }
@@ -259,10 +264,9 @@ body {
     font-family: 'Montserrat';
 }
 .pageBody {
-    width: 100vw;
-    height: 100%;
-    height: 87.85vh;
-    transform: translateY(5.15vh);
+    width: 95.3vw;
+    height: 100vh;
+    margin: 0 0 0 4.7vw;
     overflow: hidden;
     background: transparent !important;
 }
@@ -281,19 +285,16 @@ body {
     box-shadow: none;
 }
 
-/* Estado Modo Janela: Aplica as bordas arredondadas suavizadas nativas */
-html.window-maximized .app-container {
+/* html.window-maximized .app-container {
   border-radius: 0 !important;
   clip-path: none !important;
 }
-
-/* Estado Modo Janela: Aplica as bordas arredondadas */
 html.window-normal .app-container {
   border-radius: 1vh !important;
   overflow: hidden !important;
   isolation: isolate;
   clip-path: inset(0 round 1.3vh);
-}
+} */
 
 #menu {
     padding: 1.225vh 0 1.225vh .75vw;
@@ -323,17 +324,15 @@ html.window-normal .app-container {
 #update-btn {
     -webkit-app-region: no-drag;
     display: none;
-    font-family: 'Montserrat';
-    font-weight: 600;
+    background-color: var(--btn-color);
+    color: var(--btn-text-color);
+}
+#update-btn i {
+    color: var(--btn-text-color);
+}
+#update-btn:hover {
     background-color: var(--btn-hover-color);
-    color: var(--text);
-    border: none;
-    font-size: 2vh;
-    margin-left: auto;
-    margin-right: 2vh;
-    padding: .5vh .5vw;
-    border-radius: 1vh;
-    cursor: pointer;
+    color: var(--btn-text-color);
 }
 .menuButtons {
     -webkit-app-region: no-drag;
@@ -401,71 +400,6 @@ html.window-normal .app-container {
 .no-drag {
     -webkit-app-region: no-drag;
 }
-.back {
-    /* border-radius: 6vh; */
-    border-radius: 4vh;
-    border: solid .6vh transparent;
-    transition: border 0.25s ease-in-out;
-    padding: 0 .5vw;
-    font-size: 3vh;
-    color: var(--text);
-    font-weight: 700;
-    margin: 0;
-    justify-content: center;
-    text-decoration: none;
-    user-select: none;
-    align-items: center;
-    display: flex;
-    gap: .4vw;
-    flex-direction: row-reverse;
-    /* background-color: var(--btn); */
-    /* transition: background .1s linear; */
-    /* padding: .2vh .85vw; */
-}
-.back i {
-    color: var(--text);
-    font-size: 2.5vh;
-    width: fit-content;
-    margin: 0;
-}
-.back:hover {
-    border: solid .6vh var(--text);
-    /* background-color: var(--btn-hover); */
-}
-
-header div {
-    display: flex;
-    flex-direction: row;
-    gap: .225vw;
-}
-
-.home i {
-    color: var(--text);
-}
-.home {
-    border-radius: 4vh;
-    border: solid .6vh transparent;
-    transition: border 0.25s ease-in-out;
-    padding: .5vh .4vw;
-    font-size: 2.7vh;
-    color: var(--text);
-    font-family: 'Montserrat';
-    font-weight: 700;
-    justify-content: center;
-    text-decoration: none;
-    user-select: none;
-    align-items: center;
-    display: flex;
-    flex-direction: row-reverse;
-    cursor: pointer;
-    /* /* background-color: var(--btn); */
-    /* transition: background .1s linear; */
-    /* padding: .2vh .85vw; */
-}
-.home:hover {
-    border: solid .6vh var(--text);
-    /* background-color: var(--btn-hover); */
-}
 
 button:focus,
 a:focus,
@@ -500,22 +434,202 @@ select:focus {
 }
 
 header {
-    height: 7vh;
+    width: 3.4vw;
+    height: 100vh;
     bottom: 0;
     left: 0;
     right: 0;
     position: absolute;
-    margin: 0 .5vw;
+    padding: 0 .75vw 0 .55vw;
     z-index: 99;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    display: flex;
+    gap: 1.1vh;
+    overflow: hidden;
+    text-align: center;
+    background-color: var(--tab);
+    transition: width .125s ease-out;
+    box-shadow: 0 0 1vw rgba(0, 0, 0, .1);
+}
+/* header div {
+    display: flex;
+    flex-direction: row;
+    gap: .225vw;
+} */
+.header-sep-bar {
+    margin: 0;
+    height: .7vh;
+    width: 100%;
+    background-color: var(--sep-bar);
+    border-radius: 1vh;
+}
+.sidebar-sep-bar {
+    margin: 0;
+    height: .7vh;
+    width: 100%;
+    background-color: var(--sep-bar);
+    border-radius: 1vh;
+}
+.sidebar-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+.sidebar-header-logo span {
+    transition: opacity .1s linear;
+    opacity: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+header:hover,
+html.sidebar-expanded header {
+    width: 16.75vw;
+}
+header:hover .sidebar-btn span,
+header:hover .sidebar-header-logo span,
+html.sidebar-expanded header .sidebar-btn span,
+html.sidebar-expanded header .sidebar-header-logo span {
+    opacity: 1;
+    display: flex;
+}
+.sidebar-header-logo {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    display: flex;
-    gap: 1vh;
-    overflow: hidden;
-    text-align: center;
+    margin: 2.5vh 0 1.4vh 0;
+    font-weight: 500;
+    /* text-transform: uppercase; */
+    font-size: 3vh;
+    gap: .5vw;
 }
+.sidebar-header-logo img {
+    height: 4vh;
+    margin: 0 0 0 .75vw;
+    width: 100%;
+}
+.sidebar-fortnite-icon {
+    height: 4vh;
+    width: 2.25vw;
+    background-color: transparent;
+    mask: url(../assets/fortnite-icon.svg) no-repeat center / contain;
+    -webkit-mask: url(../assets/fortnite-icon.svg) no-repeat center / contain;
+    user-select: none;
+    font-size: 15vh;
+    color: transparent;
+    opacity: 1;
+    z-index: 1;
+    transition: color .3s ease, background .3s ease;
+}
+
+.sidebar-btn {
+    height: fit-content;
+    width: fit-content;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    text-decoration: none;
+    color: transparent;
+    gap: .55vw;
+    font-weight: 700;
+    font-size: 2.7vh;
+    padding: 1.5vh .7vw;
+    border-radius: 1vh;
+    transition: background .1s linear, color .3s ease;
+    /* width: 100%; */
+    width: 2.15vw;
+}
+html.sidebar-color-ready .sidebar-btn,
+html.sidebar-color-ready .sidebar-btn i {
+    color: var(--text);
+}
+html.sidebar-color-ready .sidebar-fortnite-icon {
+    background-color: var(--text);
+}
+header:hover .sidebar-btn,
+html.sidebar-expanded header .sidebar-btn {
+    width: 15.5vw;
+}
+.sidebar-btn span {
+    transition: opacity .1s linear;
+    opacity: 0;
+    display: none;
+}
+header:hover .sidebar-btn-number,
+html.sidebar-expanded header .sidebar-btn-number {
+    background-color: transparent;
+}
+.sidebar-btn-number {
+    color: var(--text);
+    font-family: 'ArquivoBlack';
+    font-size: 3.5vh;
+    font-weight: 900;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    width: 2.15vw;
+    flex-shrink: 0;
+    background-color: var(--tag);
+    border-radius: .6vh;
+    transition: background-color .1s linear;
+}
+.sidebar-bottom {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: 1.65vh;
+    gap: 1.35vh;
+}
+.sidebar-btn.active {
+    background-color: var(--btn-hover);
+}
+.sidebar-btn i {
+    color: transparent;
+    font-size: 3.5vh;
+    cursor: pointer;
+    transition: color .3s ease;
+}
+.sidebar-btn:hover {
+    background-color: var(--btn);
+}
+
+/* .config {
+    position: absolute;
+    bottom: .5vh;
+    margin-bottom: 1vh; */
+    /* height: fit-content;
+    width: fit-content;
+    pointer-events: auto;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 1.5vh .5vw;
+    text-decoration: none;
+    color: var(--text);
+    gap: .55vw;
+    font-weight: 500;
+    font-size: 2.7vh;
+    padding: 1vh;
+    border-radius: 1vh;
+    transition: background .1s linear;
+}
+.config:hover {
+    background-color: var(--btn);
+}
+#config {
+    color: var(--text);
+    font-size: 4vh;
+    cursor: pointer;
+} */
+
 .title {
     font-size: 20px;
     font-family: 'Montserrat';
@@ -547,7 +661,7 @@ header {
 .sep-bar {
     margin: .4vh 0;
     border: solid .4vh var(--sep-bar);
-    border-radius: 1vh;
+    border-radius: 1vh 1vh 1vh 1vh;
     justify-content: center;
 }
 .close-popup{
@@ -682,4 +796,39 @@ footer {
     color: var(--blue);
     padding: 0;
     border-radius: .5vh;
+}
+
+
+.top-tab {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border-radius: 3vh;
+    gap: .35vw;
+    font-size: 3vh;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .1s linear;
+    position: relative;
+}
+.top-tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -.6vh;
+    height: .5vh;
+    background-color: transparent;
+    width: 100%;
+    border-radius: 1vh;
+    transition: all .1s linear;
+}
+.top-tab.active::after {
+    background-color: var(--text);
+}
+.top-tab i {
+    color: var(--text);
+    height: fit-content;
+    width: fit-content;
 }

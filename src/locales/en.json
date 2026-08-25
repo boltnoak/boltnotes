@@ -123,5 +123,6 @@
   "delete-confirm-title": "Delete",
   "cancel": "Cancel",
   "delete-confirm-warning": "This action cannot be undone.",
-  "by": "By"
+  "by": "By",
+  "back": "Return"
 }

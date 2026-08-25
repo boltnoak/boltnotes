@@ -494,15 +494,15 @@ function createWindow() {
     win = new BrowserWindow({
         width: larguraProporcional,
         height: alturaProporcional,
-        autoHideMenuBar: process.platform !== 'linux',
-        frame: process.platform !== 'linux',
-        transparent: true,
-        roundedCorners: false,
-        backgroundColor: '#00000000',
+        // autoHideMenuBar: process.platform !== 'linux',
+        // frame: process.platform !== 'linux',
+        // transparent: true,
+        // roundedCorners: false,
+        backgroundColor: '#050505',
         show: false,
-        hasShadow: false,
-        resizable: process.platform == 'linux',
-        maximizable: true,
+        // hasShadow: false,
+        // resizable: process.platform == 'linux',
+        // maximizable: true,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,
@@ -515,6 +515,47 @@ function createWindow() {
 }
 let assetsWin = null;
 
+app.getAppMetrics().forEach(metric => {
+  console.log(metric.pid, metric.memory.workingSetSize / 1024, 'MB');
+});
+
+const preloaded = {};
+
+const PAGES = ['fortnite', 'fortnite-chapter', 'notes', 'games'];
+
+function createHiddenWindow(name) {
+  const win = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      backgroundThrottling: false,
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+  win.loadFile(path.join(BUNDLE, 'pages', `${name}.html`));
+  preloaded[name] = win;
+  return win;
+}
+
+function preloadAll() {
+  PAGES.forEach(name => createHiddenWindow(name));
+}
+
+function goTo(name) {
+  const nextWin = preloaded[name];
+  if (!nextWin) return; // fallback: página não pré-carregada, carregar normal
+
+  nextWin.show();
+  if (mainWindow && mainWindow !== nextWin) {
+    mainWindow.hide(); // ou .destroy() se quiser liberar memória
+  }
+  mainWindow = nextWin;
+
+  // já cria uma nova janela oculta pra substituir a que virou "main"
+  // pra manter sempre uma versão fresca em standby (opcional)
+  createHiddenWindow(name);
+}
+
+
 function createAssetsWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
@@ -526,10 +567,10 @@ function createAssetsWindow() {
     frame: process.platform !== 'linux',
     transparent: true,
     roundedCorners: false,
-    backgroundColor: '#00000000',
+    backgroundColor: '#050505',
     show: false,
     hasShadow: false,
-    resizable: process.platform === 'linux',
+    resizable: false,
     maximizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -724,6 +765,7 @@ try {
     }
     assetsWin.hide();
     createWindow();
+    preloadAll();
   } catch (err) {
     console.error(err);
     if (assetsWin && !assetsWin.isDestroyed()) {
@@ -850,58 +892,58 @@ ipcMain.on('menu:is-maximized-sync', (event) => {
     event.returnValue = win ? win.isMaximized() : false;
 });
 
-async function fetchWithCache(url, cacheFileName) {
-  const cacheDir = path.join(APPDATA, 'cache');
-  const cachePath = path.join(cacheDir, cacheFileName);
+// async function fetchWithCache(url, cacheFileName) {
+//   const cacheDir = path.join(APPDATA, 'cache');
+//   const cachePath = path.join(cacheDir, cacheFileName);
 
-  if (!fs.existsSync(cacheDir)) {
-    fs.mkdirSync(cacheDir, { recursive: true });
-  }
+//   if (!fs.existsSync(cacheDir)) {
+//     fs.mkdirSync(cacheDir, { recursive: true });
+//   }
 
-  if (fs.existsSync(cachePath)) {
-    try {
-      const cacheData = fs.readFileSync(cachePath, 'utf-8');
-      const cached = JSON.parse(cacheData);
+//   if (fs.existsSync(cachePath)) {
+//     try {
+//       const cacheData = fs.readFileSync(cachePath, 'utf-8');
+//       const cached = JSON.parse(cacheData);
 
-      updateCacheInBackground(url, cachePath).catch(() => {});
+//       updateCacheInBackground(url, cachePath).catch(() => {});
 
-      return cached;
-    } catch (error) {
-      console.warn(`Cache corrompido ou quebrado, buscando novo: ${cacheFileName}`);
-    }
-  }
+//       return cached;
+//     } catch (error) {
+//       console.warn(`Cache corrompido ou quebrado, buscando novo: ${cacheFileName}`);
+//     }
+//   }
 
-  try {
-    const response = await fetchWithRetry(url, {}, 2, 1000);
-    const data = await response.json();
+//   try {
+//     const response = await fetchWithRetry(url, {}, 2, 1000);
+//     const data = await response.json();
     
-    fs.writeFileSync(cachePath, JSON.stringify(data), 'utf-8');
-    return data;
-  } catch (error) {
-    console.warn(`Falha ao buscar online e sem cache disponível: ${cacheFileName}`);
-    return null;
-  }
-}
-async function updateCacheInBackground(url, cachePath) {
-  try {
-    const response = await fetchWithRetry(url, {}, 1, 500);
-    const newData = await response.json();
-    const newDataStr = JSON.stringify(newData);
-    let oldDataStr = null;
+//     fs.writeFileSync(cachePath, JSON.stringify(data), 'utf-8');
+//     return data;
+//   } catch (error) {
+//     console.warn(`Falha ao buscar online e sem cache disponível: ${cacheFileName}`);
+//     return null;
+//   }
+// }
+// async function updateCacheInBackground(url, cachePath) {
+//   try {
+//     const response = await fetchWithRetry(url, {}, 1, 500);
+//     const newData = await response.json();
+//     const newDataStr = JSON.stringify(newData);
+//     let oldDataStr = null;
     
-    if (fs.existsSync(cachePath)) {
-      try {
-        oldDataStr = fs.readFileSync(cachePath, 'utf-8');
-      } catch (error) {}
-    }
-    if (newDataStr !== oldDataStr) {
-      fs.writeFileSync(cachePath, newDataStr, 'utf-8');
-      console.log(`Cache atualizado: ${path.basename(cachePath)}`);
+//     if (fs.existsSync(cachePath)) {
+//       try {
+//         oldDataStr = fs.readFileSync(cachePath, 'utf-8');
+//       } catch (error) {}
+//     }
+//     if (newDataStr !== oldDataStr) {
+//       fs.writeFileSync(cachePath, newDataStr, 'utf-8');
+//       console.log(`Cache atualizado: ${path.basename(cachePath)}`);
 
-      win?.webContents.send('cache-updated', { fileName: path.basename(cachePath), data: newData });
-    }
-  } catch (error) {}
-}
+//       win?.webContents.send('cache-updated', { fileName: path.basename(cachePath), data: newData });
+//     }
+//   } catch (error) {}
+// }
 
 ipcMain.handle('updates:check-update', async () => {
   if (!app.isPackaged) {
@@ -953,20 +995,20 @@ ipcMain.on('assets-config:update', (_, key, value) => {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 });
 
-ipcMain.handle('fortnite:fetch-trailers', async () => {
-  const language = getConfig().language;
-  return await fetchWithCache(
-    `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers-${language}.json`,
-    `fn-trailers-${language}.json`
-  );
-});
-ipcMain.handle('fortnite:fetch-seasons', async () => {
-  const language = getConfig().language;
-  return await fetchWithCache(
-    `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`,
-    `fn-seasons-${language}.json`
-  );
-});
+// ipcMain.handle('fortnite:fetch-trailers', async () => {
+//   const language = getConfig().language;
+//   return await fetchWithCache(
+//     `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers-${language}.json`,
+//     `fn-trailers-${language}.json`
+//   );
+// });
+// ipcMain.handle('fortnite:fetch-seasons', async () => {
+//   const language = getConfig().language;
+//   return await fetchWithCache(
+//     `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`,
+//     `fn-seasons-${language}.json`
+//   );
+// });
 
 ipcMain.on('devTools', () => {
   if (!app.isPackaged && win && !win.isDestroyed()) {

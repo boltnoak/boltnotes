@@ -8,11 +8,6 @@
     height: 94.65vh;
     transform: translateY(5.15vh);
 }
-header {
-    box-shadow: none;
-    pointer-events: none;
-    background-color: transparent;
-}
 .back {
     pointer-events: auto;
 }
@@ -228,7 +223,7 @@ body.dragging-tab * {
     height: 100%;
 }
 .title-bar {
-    display: flex;
+    display: none;
     height: 6vh;
     margin: 0 1vw 1.3vh 0;
     flex-direction: row;

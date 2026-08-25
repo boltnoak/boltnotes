@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <script>
+        if (localStorage.getItem('sidebarExpanded') === 'true') {
+            document.documentElement.classList.add('sidebar-expanded');
+        }
+    </script>
     <base href="../">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +16,11 @@
 <body>
 <div class="app-container">
     <div class="pageBody">
-    <div class="banner">
+    <!-- <div class="banner">
         <div class="boltnotes-logo-div">
             <div class="boltnotes-logo"></div>
         </div>
-    </div>
+    </div> -->
     <!-- <div class="banner-bar"></div> -->
     <div class="pages-section">
         <a class="page" id="games" href="pages/games.html">
@@ -56,24 +61,24 @@
             </div>
         </a>
     </div>
-    <!-- <div class="index-sep-bar"></div> -->
-    <div class="page-infos">
-            <div id="featured-title">
-                <i class="fa-solid fa-eye"></i>
-                <span class="featured-title-text">Destaque</span>
-            </div>
             <div class="featured-change-div">
                 <div class="featured-change">
-                    <div class="featured-option" data-value="playing-now" onclick="changeFeatured(this)">
+                    <div class="featured-option top-tab" data-value="playing-now" onclick="changeFeatured(this)">
                         <i class="fa-solid fa-gamepad"></i>
                         <span data-i18n="playing-now">Jogando no momento</span>
                     </div>
-                    <div class="featured-option" data-value="fn-quick-edit" onclick="changeFeatured(this)">
+                    <div class="featured-option top-tab" data-value="fn-quick-edit" onclick="changeFeatured(this)">
                         <i class="fa-solid fa-square-poll-horizontal"></i>
                         Fortnite BR:
                         <span data-i18n="fn-quick-edit"></span>
                     </div>
                 </div>
+            </div>
+    <!-- <div class="index-sep-bar"></div> -->
+    <div class="page-infos">
+            <div id="featured-title">
+                <i class="fa-solid fa-eye"></i>
+                <span class="featured-title-text">Destaque</span>
             </div>
             <div class="playingNow-panel">
                 <div id="playingNow-games"></div>
@@ -112,6 +117,37 @@
         </div>
     </div>
 
+    <header>
+        <div class="sidebar-header">
+            <div class="sidebar-header-logo">
+                <img src="assets/boltnotes-icon.png">
+                <span>BoltNotes</span>
+            </div>
+        </div>
+        <a class="sidebar-btn" href="pages/games.html">
+            <i class="fa-solid fa-gamepad"></i>
+            <span data-i18n="games-backlog">Voltar</span>
+        </a>
+        <a class="sidebar-btn" href="pages/notes.html">
+            <i class="fa-solid fa-note-sticky"></i>
+            <span data-i18n="notes">Notas</span>
+        </a>
+        <a class="sidebar-btn" href="pages/fortnite.html">
+            <div class="sidebar-fortnite-icon"></div>
+            <span data-i18n="fortnite">Fortnite</span>
+        </a>
+        <div class="sidebar-bottom">
+            <a id="update-btn" class="sidebar-btn">
+                <i class="fa-solid fa-arrow-rotate-right"></i>
+                <span data-i18n="update">Atualizar</span>
+            </a>
+            <a class="config sidebar-btn" href="pages/config.html">
+                <i id="config" class="fa-solid fa-sliders"></i>
+                <span data-i18n="settings">Configurações</span>
+            </a>
+        </div>
+    </header>
+
     <div class="download-status-div">
         <div class="download-status">
             <p class="download-status-text"><span data-i18n="downloading">Baixando</span>...</p>
@@ -124,15 +160,10 @@
             </div>
         </div>
     </div>
-    <header>
+
         <div class="app-version">
             <span id="app-version"></span>
         </div>
-        <a class="config" href="pages/config.html">
-            <i id="config" class="fa-solid fa-sliders" data-i18n-tooltip="settings" data-tooltip="Configurações"></i>
-        </a>
-    </header>
-
     <div id="changelog-popup">
         <div class="changelog-content">
             <div class="changelog-title">
@@ -142,10 +173,6 @@
             <p class="changelog-sep-bar"></p>
             <ul id="changelog-list"></ul>
         </div>
-    </div>
-
-    <div id="loading-screen">
-        <div class="spinner"></div>
     </div>
 </div>
 

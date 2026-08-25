@@ -1,147 +1,95 @@
-const FILE = "Fortnite/reviews.json";
-const FILE_STATS = "Fortnite/stats.json";
-
-let reviews = {};
-let stats = {};
-let cachedSeasonInfo = null;
-let seasonTemplateHTML = null;
-
-async function loadHeader() {
-    document.body.insertAdjacentHTML('afterbegin', `
-        <header>
-            <div>
-                <a class="back"><span data-i18n="fn-chapters">Capítulos</span></a>
-                <a class="home" href="pages/index.html"></a>
-            </div>
-            <div class="chapter-section">
-                <i id="before-chapter"></i>
-                <p id="chapter-name"></p>
-                <i id="next-chapter"></i>
-            </div>
-        </header>`);
-    
-    const chapterBtn = document.querySelector('.chapters');
-    const chaptersa = document.getElementById('chapters-popup');
-
-    if (chapterBtn && chaptersa) {
-        chapterBtn.addEventListener('click', () => {
-            if (chaptersa.style.display === 'none' || chaptersa.style.display === '') {
-                chaptersa.style.display = 'flex';
-            } else {
-                chaptersa.style.display = 'none';
-            }
-        });
-    }
-}
-loadHeader();
-
-const backIcon = document.createElement('i');
-backIcon.className = 'fa-solid fa-book';
-const homeIcon = document.createElement('i');
-homeIcon.className = 'fa-solid fa-home';
-
-if (document.querySelector('.back')) document.querySelector('.back').appendChild(backIcon);
-if (document.querySelector('.home')) document.querySelector('.home').appendChild(homeIcon);
-
-const chaptersIcon = document.createElement('i');
-chaptersIcon.className = 'fa-solid fa-book';
-
-if (document.querySelector('.chapters')) document.querySelector('.chapters').appendChild(chaptersIcon);
+////////////////
+/// ARQUIVOS ///
+////////////////
+const REVIEWS_FILE = "Fortnite/reviews.json";
+const STATS_FILE = "Fortnite/stats.json";
 
 const urlParams = new URLSearchParams(window.location.search);
+
+/////////////////
+/// VARIÁVEIS ///
+/////////////////
+let reviews = {};
+let stats = {};
+
+let cachedSeasons = null;
+let seasonTemplateHTML = null;
+
 let chapterNum = parseInt(urlParams.get('num'), 10) || 3;
-let CURRENT_CHAPTER = `c${chapterNum}`;
-
-async function mudarCapitulo(novoCapituloNum) {
-    chapterNum = novoCapituloNum;
-    CURRENT_CHAPTER = `c${chapterNum}`;
-
-    const titleText = `${window._t['fn-chapter']} ${chapterNum}`;
-    document.title = `BoltNotes | Fortnite — ${titleText}`;
-    const menuTitle = document.getElementById('menuTitle');
-    menuTitle.textContent = `BoltNotes | Fortnite — ${titleText}`;
-    
-    const chapterNameEl = document.getElementById('chapter-name');
-    if (chapterNameEl) chapterNameEl.textContent = titleText;
-
-    const before = document.getElementById('before-chapter');
-    const next = document.getElementById('next-chapter');
-    
-    const data = await window.api.fortnite.getSeasons();
-    const keys = Object.keys(data);
-
-    const chaptersCount = keys.map(chave => {
-        const match = chave.match(/c(\d+)/);
-        return match ? parseInt(match[1], 10) : 0;
-    });
-
-    const chaptersMax = Math.max(...chaptersCount);
-    const chaptersMin = Math.min(...chaptersCount);
-
-    if (before) before.style.visibility = (chapterNum - 1) >= chaptersMin ? "visible" : "hidden";
-    if (next) next.style.visibility = (chapterNum + 1) <= chaptersMax ? "visible" : "hidden";
-
-    if (cachedSeasonInfo) {
-        await renderizarCapitulo(CURRENT_CHAPTER, cachedSeasonInfo);
-        
-        if (typeof initVideoEvents === "function") initVideoEvents();
-    }
-
-    const scroll = document.querySelector('.pageBody');
-    if (scroll) {
-        scroll.scrollTo({ top: 0 });
-    }
-}
-
-const before = document.getElementById('before-chapter');
-const next = document.getElementById('next-chapter');
-
-if (before) before.className = "fa-solid fa-angle-left";
-if (next) next.className = "fa-solid fa-angle-right";
+let currentChapter = `c${chapterNum}`;
+let chaptersMax = null;
+let chaptersMin = null;
 
 async function loadCloudSeasonInfo() {
-    if (cachedSeasonInfo) return cachedSeasonInfo;
-    try {
-        const content = await window.api.fortnite.getSeasons(); 
-        cachedSeasonInfo = content || {};
-        return cachedSeasonInfo;
-    } catch (e) {
-        console.error("Erro ao buscar dados da internet:", e);
-        return {};
-    }
+    if (cachedSeasons) return cachedSeasons;
+
+    const config = await window.electronAPI.config.getConfig();
+    const language = config.language || "pt-BR";
+
+    const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`;
+
+    const content = await fetchWithCache(url, `fn-seasons-${language}`);
+    cachedSeasons = content || {};
+    return cachedSeasons;
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const data = await loadCloudSeasonInfo();
+    const keys = Object.keys(data);
+
+    const chaptersCount = keys.map(key => 
+        parseInt(key.match(/^c(\d+)/i)?.[1] ?? 0, 10)
+    );
+
+    chaptersMax = Math.max(...chaptersCount);
+    chaptersMin = Math.min(...chaptersCount);
+});
+
+
+// const before = document.getElementById('before-chapter');
+// const next = document.getElementById('next-chapter');
+
+// async function mudarCapitulo(chapter) {
+//     chapterNum = chapter;
+//     currentChapter = `c${chapterNum}`;
+
+//     const titleText = `${window._t['fn-chapter']} ${chapterNum}`;
+//     document.title = `BoltNotes | Fortnite — ${titleText}`;
+    
+//     const chapterName = document.getElementById('chapter-name');
+//     chapterName.textContent = titleText;
+
+//     before.style.visibility = (chapterNum - 1) >= chaptersMin ? "visible" : "hidden";
+//     next.style.visibility = (chapterNum + 1) <= chaptersMax ? "visible" : "hidden";
+
+//     if (cachedSeasons) await renderizarCapitulo(currentChapter, cachedSeasons);
+
+//     document.querySelector('.pageBody').scrollTo({ top: 0 });
+// }
 
 async function inicializarDados() {
     try {
         const cloudData = await loadCloudSeasonInfo();
-        const localData = await window.electronAPI.json.load(FILE);
-        const statsData = await window.electronAPI.json.load(FILE_STATS);
+        const localData = await window.electronAPI.json.load(REVIEWS_FILE);
+        const statsData = await window.electronAPI.json.load(STATS_FILE);
         window.reviews = (localData && typeof localData === 'object') ? localData : {};
         window.stats = (statsData && typeof statsData === 'object') ? statsData : {};
 
-        const data = await window.api.fortnite.getSeasons();
+        const data = await loadCloudSeasonInfo();
         const keys = Object.keys(data);
 
-        const chaptersCount = keys.map(chave => {
-            const match = chave.match(/c(\d+)/);
-            return match ? parseInt(match[1], 10) : 0;
-        });
-
-        const chaptersMax = Math.max(...chaptersCount);
-        const chaptersMin = Math.min(...chaptersCount);
-
-        const beforeBtn = document.getElementById('before-chapter');
-        const nextBtn = document.getElementById('next-chapter');
+        // const beforeBtn = document.getElementById('before-chapter');
+        // const nextBtn = document.getElementById('next-chapter');
         
-        if (beforeBtn) {
-            beforeBtn.onclick = () => { if (chapterNum - 1 >= chaptersMin) mudarCapitulo(chapterNum - 1); };
-        }
-        if (nextBtn) {
-            nextBtn.onclick = () => { if (chapterNum + 1 <= chaptersMax) mudarCapitulo(chapterNum + 1); };
-        }
+        // if (beforeBtn) {
+        //     beforeBtn.onclick = () => { if (chapterNum - 1 >= chaptersMin) mudarCapitulo(chapterNum - 1); };
+        // }
+        // if (nextBtn) {
+        //     nextBtn.onclick = () => { if (chapterNum + 1 <= chaptersMax) mudarCapitulo(chapterNum + 1); };
+        // }
 
-        await mudarCapitulo(chapterNum);
-        await renderizarCapitulo(CURRENT_CHAPTER, cloudData);
+        // await mudarCapitulo(chapterNum);
+        await renderizarCapitulo(currentChapter, cloudData);
 
         if (typeof initVideoEvents === "function") initVideoEvents();
     } catch (err) {
@@ -168,6 +116,19 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
     if (!container) return;  
     container.innerHTML = '';
+
+    document.querySelector(`.sidebar-btn-chapter[data-chapter="${currentChapter.replace('c','')}"]`).classList.add('active');
+    // const aaaaa = document.querySelector(`.sidebar-btn[data-chapter="${prefixoCapitulo}"]`);
+    // if (aaaaa) {
+    //     document.querySelectorAll(`.sidebar-btn.active`).forEach(b => {
+    //         b.classList.remove('active');
+    //     });
+
+    //     aaaaa.classList.add('active');
+
+    // }
+    // const aaa = prefixoCapitulo
+    // document.querySelector(`.sidebar-btn[data-chapter="${aaa}"]`).classList.add('active')
 
     await getSeasonTemplate();
     await applyLocale();
@@ -253,7 +214,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                 }
 
                 try {
-                    await window.electronAPI.json.save(FILE_STATS, window.stats);
+                    await window.electronAPI.json.save(STATS_FILE, window.stats);
                 } catch (error) {
                     console.error("Erro ao salvar o estado do cadeado:", error);
                 }
@@ -398,8 +359,8 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         container.appendChild(clone);
     }
 
-    if (localDataUpdated) await window.electronAPI.json.save(FILE, window.reviews);
-    if (localStatsUpdated) await window.electronAPI.json.save(FILE_STATS, window.stats);
+    if (localDataUpdated) await window.electronAPI.json.save(REVIEWS_FILE, window.reviews);
+    if (localStatsUpdated) await window.electronAPI.json.save(STATS_FILE, window.stats);
 
     await preencherValores();
 }
@@ -408,7 +369,7 @@ async function preencherValores() {
     const allCodes = new Set([...Object.keys(window.reviews), ...Object.keys(window.stats)]);
 
     for (const code of allCodes) {
-        const info = cachedSeasonInfo[code] || {};
+        const info = cachedSeasons[code] || {};
         const reviewData = window.reviews[code] || {};
         const statsData = window.stats[code] || {};
 
@@ -588,8 +549,29 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 
 window.electronAPI.onCacheUpdated?.((info) => {
     if (info.fileName.startsWith('fn-seasons')) {
-        cachedSeasonInfo = info.data;
+        cachedSeasons = info.data;
     }
 });
 
 fetchVideoPopup();
+
+async function loadChapters() {
+    const data = await loadCloudSeasonInfo();
+    if (!data) return;
+
+    const chapters = [...new Set(
+        Object.keys(data)
+            .map(key => key.match(/^c\d+/i)?.[0])
+            .filter(Boolean)
+    )];
+
+    document.querySelector('.sidebar-chapter-section').innerHTML = chapters.map((e) => {
+        const number = e.replace('c', '');
+        return `<a class="sidebar-btn sidebar-btn-chapter" data-chapter="${number}" href="pages/fortnite-chapter.html?num=${number}">
+                    <p class="sidebar-btn-number">${number}</p>
+                    <span><span data-i18n="fn-chapter">Capítulo</span> ${number}</span>
+                </a>`;
+    }).join('');
+    applyLocale();
+}
+loadChapters();

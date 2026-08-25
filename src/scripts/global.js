@@ -112,28 +112,34 @@ async function initMenu() {
     }
     applyLocale();
 }
-initMenu();
+// initMenu();
+
+requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+        document.documentElement.classList.add('sidebar-color-ready');
+    });
+});
 
 ////////////////////////
 /// ESTADO DA JANELA ///
 ////////////////////////
-window.electronAPI.onWindowStateChange((state) => {
-    sessionStorage.setItem('windowState', state);
-    applyWindowState(state);
-});
-function applyWindowState(state) {
-  const menuMax = document.getElementById('menuMax');
-  const isNormal = state === 'normal';
+// window.electronAPI.onWindowStateChange((state) => {
+//     sessionStorage.setItem('windowState', state);
+//     applyWindowState(state);
+// });
+// function applyWindowState(state) {
+//   const menuMax = document.getElementById('menuMax');
+//   const isNormal = state === 'normal';
 
-  document.documentElement.classList.toggle('window-normal', isNormal);
-  document.documentElement.classList.toggle('window-maximized', !isNormal);
+//   document.documentElement.classList.toggle('window-normal', isNormal);
+//   document.documentElement.classList.toggle('window-maximized', !isNormal);
 
-  if (menuMax) {
-    menuMax.className = isNormal
-      ? 'fa-regular fa-window-maximize'
-      : 'fa-regular fa-window-restore';
-  }
-}
+//   if (menuMax) {
+//     menuMax.className = isNormal
+//       ? 'fa-regular fa-window-maximize'
+//       : 'fa-regular fa-window-restore';
+//   }
+// }
 async function updateMaximizeIcon() {
     const menuMax = document.getElementById('menuMax');
     const isMaximized = await window.electronAPI.menu.isMaximized();
@@ -251,5 +257,54 @@ async function formatDate(dataStr, style = 'default') {
             }).format(dataObj);
         default:
             return dataStr;
+    }
+}
+
+async function fetchWithRetry(url, options = {}, retries = 2, delay = 1000) {
+    for (let i = 0; i <= retries; i++) {
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response;
+        } catch (error) {
+            if (i === retries) throw error;
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+}
+
+async function updateCacheInBackground(url, cacheKey) {
+    const response = await fetchWithRetry(url, {}, 2, 1000);
+    const data = await response.json();
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+    return data;
+}
+
+async function fetchWithCache(url, cacheKeyName) {
+    const cacheKey = `cache:${cacheKeyName}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+        try {
+            const parsedCache = JSON.parse(cached);
+
+            // Atualiza em segundo plano, sem bloquear o retorno
+            updateCacheInBackground(url, cacheKey).catch(() => {});
+
+            return parsedCache;
+        } catch (error) {
+            console.warn(`Cache corrompido ou quebrado, buscando novo: ${cacheKeyName}`);
+        }
+    }
+
+    try {
+        const response = await fetchWithRetry(url, {}, 2, 1000);
+        const data = await response.json();
+
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+        return data;
+    } catch (error) {
+        console.warn(`Falha ao buscar online e sem cache disponível: ${cacheKeyName}`);
+        return null;
     }
 }

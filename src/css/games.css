@@ -7,20 +7,14 @@ body {
 .pageBody {
     display: flex;
     flex-direction: row;
-    height: 94.2vh;
-    transform: translateY(5.15vh);
-    margin-top: .5vh;
+    height: 100vh;
+    margin-top: 1.8vh;
 }
 .game-note[contenteditable]:empty::before {
     content: attr(placeholder);
     color: var(--text-dark-gray);
     pointer-events: none;
     display: block;
-}
-header {
-    background-color: transparent;
-    box-shadow: none;
-    pointer-events: none;
 }
 
 .page-content {
@@ -33,17 +27,19 @@ header {
 .sidebar {
     width: 100%;
     flex: 1;
-    margin: 0 0 6.5vh 0;
+    margin: 0 0 1.55vh .8vw;
     justify-content: space-between;
     display: flex;
     flex-direction: column;
     gap: 0;
 }
 .sidebar-sep-bar {
-    margin: 0 0 1.5vh .5vw;
-    border: solid .4vh rgba(25,25,25,.4);
+    margin: 0 0 9.5vh .5vw;
+    height: .7vh;
+    height: 100%;
+    width: .35vw;
+    background-color: var(--sep-bar);
     border-radius: 1vh;
-    justify-content: center;
 }
 .game-popup-sep-bar {
     margin: .5vh 1vw;
@@ -62,18 +58,23 @@ header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     margin: 0 1vw;
     padding: 0;
-    gap: .6vw;
+    height: 5.25vh;
+    gap: 1vw;
 }
 .modes div {
     display: flex;
     flex-direction: row;
     margin: 0;
     padding: 0;
-    gap: .6vw;
+    gap: .8vw;
 }
-.mode-btn.active {
+.fa-chart-pie {
+    height: fit-content;
+}
+/* .mode-btn.active {
     background-color: var(--text);
     color: var(--bg);
     pointer-events: none;
@@ -82,8 +83,8 @@ header {
     background-color: var(--text);
     color: var(--bg);
     pointer-events: none;
-}
-.mode-btn {
+} */
+/* .mode-btn {
     background-color: var(--btn);
     color: var(--text-light-gray);
     font-weight: 700;
@@ -102,17 +103,17 @@ header {
     display: flex;
     align-self: center;
     justify-self: center;
-}
-.mode-btn.active i {
+} */
+/* .mode-btn.active i {
     color: var(--bg);
-}
-.mode-btn:hover {
+} */
+/* .mode-btn:hover {
     background-color: var(--btn-hover);
     color: var(--text);
 }
 .mode-btn:hover i {
     color: var(--text);
-}
+} */
 
 
 /* Painel de jogando no momento */
@@ -144,7 +145,7 @@ header {
     overflow: hidden;
     overflow-y: scroll;
     padding: .8vh .8vw .8vh .8vw;
-    padding: .8vh 0 .8vh .8vw;
+    padding: .8vh 0 .8vh 0;
     display: flex;
     flex-direction: column;
     gap: 1vh;
@@ -203,7 +204,7 @@ header {
     height: 35vh;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: .8vh .8vw .8vh .8vw;
+    padding: .8vh 0 .8vh 0;
     display: flex;
     flex-direction: column;
     gap: 1vh;
@@ -356,9 +357,9 @@ header {
     justify-content: center;
 }
 #view-campaigns {
-    padding: .75vh 1vw;
+    padding: .75vh .8vw;
     margin: 0;
-    gap: 1.2vw;
+    gap: .8vw;
     overflow: hidden;
     overflow-y: auto;
     height: 0;
@@ -375,7 +376,7 @@ header {
 }
 #view-campaigns.grid .game {
     height: 36.3vh;
-    width: 17vw;
+    width: 16.3vw;
 }
 #view-campaigns.grid .pre-order {
     display: none;
@@ -999,7 +1000,7 @@ header {
 }
 #view-achievements.grid .game {
     height: 31vh;
-    width: 17vw;
+    width: 16.3vw;
 }
 #view-achievements.grid .pre-order {
     display: none;
@@ -1127,7 +1128,9 @@ header {
     z-index: 98;
     background: rgba(0,0,0,.6);
     margin: 0;
+    width: 95.3vw;
     height: 100vh;
+    margin: 0 0 0 4.7vw;
     transition: background 1s linear;
     animation: popupBGIn .5s ease forwards;
     backdrop-filter: blur(4px);
@@ -1913,7 +1916,7 @@ header {
     flex-direction: row;
     width: 96.5%;
     margin: 0 .5vw .2vh 0;
-    margin: 0 .5vw .2vh .8vw;
+    margin: 0;
     gap: .5vw;
 }
 #delete-games {

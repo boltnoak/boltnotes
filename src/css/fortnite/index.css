@@ -3,10 +3,14 @@
 .banner-bg {
     background-position: top;
     background-size: cover;
-    height: 100%;
+    height: 45%;
 }
 .sep-bar-v {
     margin: 1.5vh 1.5vw .5vh 1.5vw;
+}
+.pageBody {
+
+    padding-top: 0;
 }
 .logo {
     height: 20vh;
@@ -62,6 +66,23 @@
     font-size: 4.5vh;
     justify-self: center;
     user-select: none;
+}
+.sidebar-chapter-section {
+    max-height: 47vh;
+    border-radius: 1vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1vh;
+    overflow: hidden;
+    overflow-y: auto;
+}
+.sidebar-chapter-section::-webkit-scrollbar {
+    display: none;
+}
+.sidebar-chapter-section .sidebar-btn span {
+    display: flex;
+    flex-direction: row;
+    gap: .55vw;
 }
 .chapter-section {
     align-items: center;

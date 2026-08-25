@@ -1,3 +1,8 @@
+/////////////////
+/// VARIÁVEIS ///
+/////////////////
+let cachedSeasons = null;
+
 //////////////
 /// BÁSICO ///
 //////////////
@@ -117,15 +122,16 @@ let cachedSeasonInfo = null;
 let saveTimeout = null;
 
 async function loadCloudSeasonInfo() {
-    if (cachedSeasonInfo) return cachedSeasonInfo;
-    try {
-        const content = await window.api.fortnite.getSeasons(); 
-        cachedSeasonInfo = content || {};
-        return cachedSeasonInfo;
-    } catch (e) {
-        console.error("Erro ao buscar dados da internet:", e);
-        return {};
-    }
+    if (cachedSeasons) return cachedSeasons;
+
+    const config = await window.electronAPI.config.getConfig();
+    const language = config.language || "pt-BR";
+
+    const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`;
+
+    const content = await fetchWithCache(url, `fn-seasons-${language}`);
+    cachedSeasons = content || {};
+    return cachedSeasons;
 }
 
 function getLatestSeason(data) {
@@ -160,7 +166,7 @@ function getLatestSeason(data) {
 }
 
 async function initFeaturedFortnite() {
-    const seasons = await window.api.fortnite.getSeasons();
+    const seasons = await loadCloudSeasonInfo();
     const latest = getLatestSeason(seasons);
 
     if (!latest) return;
@@ -185,7 +191,7 @@ async function initFeaturedFortnite() {
 }
 
 async function preencherValores() {
-    const seasons = await window.api.fortnite.getSeasons();
+    const seasons = await loadCloudSeasonInfo();
     const latest = getLatestSeason(seasons);
 
     if (!latest) return;

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-br" data-i18n-title="settings_page_title">
 <head>
+    <script>
+        if (localStorage.getItem('sidebarExpanded') === 'true') {
+            document.documentElement.classList.add('sidebar-expanded');
+        }
+    </script>
     <base href="../">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -185,12 +190,33 @@
     </div>
 
     <header>
-        <a class="back" href="pages/index.html"><span data-i18n="home">Início</span><i class="fa-solid fa-house"></i></a>
-    </header>
-
-    <div id="loading-screen">
-        <div class="spinner"></div>
+        <div class="sidebar-header-logo">
+            <img src="assets/boltnotes-icon.png">
+            <span>BoltNotes</span>
+        </div>
+    <a class="sidebar-btn" href="pages/games.html">
+        <i class="fa-solid fa-gamepad"></i>
+        <span data-i18n="games-backlog">Voltar</span>
+    </a>
+    <a class="sidebar-btn" href="pages/notes.html">
+        <i class="fa-solid fa-note-sticky"></i>
+        <span data-i18n="notes">Notas</span>
+    </a>
+    <a class="sidebar-btn" href="pages/fortnite.html">
+        <div class="sidebar-fortnite-icon"></div>
+        <span data-i18n="fortnite">Fortnite</span>
+    </a>
+    <div class="sidebar-bottom">
+        <a class="sidebar-btn" href="pages/index.html">
+            <i class="fa-solid fa-house"></i>
+            <span data-i18n="home">Início</span>
+        </a>
+        <a class="config sidebar-btn active" href="pages/config.html">
+            <i id="config" class="fa-solid fa-sliders"></i>
+            <span data-i18n="settings">Configurações</span>
+        </a>
     </div>
+    </header>
 </div>
 
 <script src="scripts/global.js"></script>

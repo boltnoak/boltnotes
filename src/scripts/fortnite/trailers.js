@@ -16,6 +16,7 @@ async function loadLocalReviews() {
     }
 }
 
+
 function formatTime(seconds) {
     if (isNaN(seconds) || seconds === Infinity) return "00:00";
     
@@ -32,18 +33,16 @@ function formatTime(seconds) {
 }
 
 async function loadCloudTrailers() {
-    if (cachedTrailers) {
-        console.log("Trailers carregados do cache!");
-        return cachedTrailers;
-    }
-    try {
-        const content = await window.api.fortnite.getTrailers(); 
-        cachedTrailers = content || {};
-        return cachedTrailers;
-    } catch (e) {
-        console.error("Erro ao buscar trailers da internet:", e);
-        return {};
-    }
+    if (cachedTrailers) return cachedTrailers;
+
+    const config = await window.electronAPI.config.getConfig();
+    const language = config.language || "pt-BR";
+
+    const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers-${language}.json`;
+
+    const content = await fetchWithCache(url, `fn-trailers-${language}`);
+    cachedTrailers = content || {};
+    return cachedTrailers;
 }
 
 let isOpening = false;
@@ -101,7 +100,7 @@ async function openTrailer(el) {
         listContainer.innerHTML = "";
 
         const seasonData = cachedReviews[code] || {};
-        const seasonDataInfo = cachedSeasonInfo[code] || {};
+        const seasonDataInfo = cachedSeasons[code] || {};
         const pageName = document.getElementById(`${code}-name`)?.textContent;
         const seasonName = seasonDataInfo.name || pageName || code;
 
@@ -110,7 +109,7 @@ async function openTrailer(el) {
         let firstVideoTitle = null;
 
         const config = await window.electronAPI.config.getConfig();
-        const language = config.language || 'pt';
+        const language = config.language;
 
         for (const tipo of tipos) {
             const info = cachedTrailers?.[code]?.[tipo];
@@ -310,17 +309,6 @@ const EVENT_KEYS = {
 };
 
 let isTeamSelectVisible = false;
-async function loadCloudSeasonInfo() {
-    if (cachedSeasonInfo) return cachedSeasonInfo;
-    try {
-        const content = await window.api.fortnite.getSeasons(); 
-        cachedSeasonInfo = content || {};
-        return cachedSeasonInfo;
-    } catch (e) {
-        console.error("Erro ao buscar dados da internet:", e);
-        return {};
-    }
-}
 async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
     const container = el.closest('.fn-season');
     const code = container?.dataset.code;

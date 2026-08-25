@@ -2,11 +2,10 @@
 
 .pageBody {
     padding-top: 0;
-    height: 94.65vh;
-    transform: translateY(5.15vh);
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 1.5vh;
+    gap: 1.6vh;
 }
 .app-version {
     color: var(--text-dark-gray);
@@ -20,19 +19,7 @@
     margin: 0;
     padding: 1vh .6vw;
     border-radius: 1vh;
-}
-.config {
-    position: absolute;
-    right: .5vw;
-    height: fit-content;
-    width: fit-content;
-    pointer-events: auto;
-    margin: 0;
-}
-#config {
-    color: var(--text);
-    font-size: 3.5vh;
-    cursor: pointer;
+    display: none;
 }
 #config[data-tooltip]::after {
     transform: translate(-90%, -200%);
@@ -41,14 +28,14 @@
 #config[data-tooltip]:hover::after {
     transform: translate(-90%, -250%);
 }
-header {
+/* header {
     padding: 0;
     z-index: 97;
     height: 9.5vh;
     overflow: visible;
     pointer-events: none;
     margin: 0 1vw;
-}
+} */
 
 /*Banner*/
 .banner {
@@ -64,55 +51,24 @@ header {
     margin: 2vh 0 .5vh 0;
 }
 .featured-change-div {
-    width: 100%;
+    width: 98%;
     display: flex;
     justify-content: center;
+    /* background-color: var(--tab); */
+    margin: 0 1vw;
+    border-radius: 1vh;
+    padding: 1vh 0;
 }
 .featured-change {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    background-color: var(--tab);
-    padding: .8vh .5vw;
+    padding: 0;
     margin: 0;
     border-radius: 4vh;
-    gap: .5vw;
+    gap: 1.5vw;
     width: fit-content;
-}
-.featured-option {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--btn);
-    padding: 1vh .75vw 1vh .85vw;
-    border-radius: 3vh;
-    gap: .35vw;
-    font-size: 2.2vh;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .1s linear;
-}
-.featured-option i {
-    color: var(--text);
-    height: fit-content;
-    width: fit-content;
-}
-.featured-option:hover {
-    background-color: var(--btn-hover);
-}
-.featured-option.active {
-    background-color: var(--btn-color);
-    color: var(--btn-text-color);
-}
-.featured-option.active i {
-    color: var(--btn-text-color);
-}
-.featured-option.active:hover {
-    background-color: var(--btn-hover-color);
-}
-#notes .page-image {
-    height: 32.9vh;
+    margin-bottom: .7vh;
 }
 .boltnotes-logo-div {
     display: flex;
@@ -150,13 +106,14 @@ header {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin: 0 10vw;
+    margin: 2vh 1vw 0 1vw;
 }
 
 /* Páginas */
 .page {
     text-decoration: none;
-    width: 49vh;
+    width: 100vh;
+    height: 40vh;
     border-radius: 1.2vh;
     overflow: hidden;
     display: flex;
@@ -164,20 +121,21 @@ header {
     cursor: pointer;
     flex: 1;
     gap: .8vh;
-    transition: transform .05s linear;
+    transform: scale(1);
+    transition: transform .1s linear;
 }
 .page:hover {
     transform: scale(1.02);
 }
 .page-infos {
-    height: 41.4vh;
-    margin: 0 10vw;
+    height: 55vh;
+    margin: 0 1vw;
     display: flex;
     flex-direction: column;
     gap: 1.5vh;
 }
 .page-image {
-    height: 32.9vh;
+    height: 40vh;
     overflow: hidden;
     transform: translateY(0);
     background: linear-gradient(to bottom, var(--tab-hover), var(--tab-active));
@@ -372,7 +330,8 @@ header {
     margin: 0;
     justify-content: center;
     user-select: none;
-    height: 34vh;
+    height: 100%;
+    width: 40vw;
     align-items: start;
 }
 #playingNow-games {
@@ -400,10 +359,10 @@ header {
 
 /* Jogos */
 .game {
-    width: 27vw;
+    width: 100%;
     border-radius: 2vh;
     overflow: hidden;
-    height: 32.8vh;
+    height: 93.5%;
     gap: 0;
     display: flex;
     flex-direction: column;
@@ -415,7 +374,7 @@ header {
     cursor: pointer;
 }
 .game-cover {
-    height: 23.5vh;
+    height: 36vh;
     object-fit: cover;
     margin: .9vh .5vw 0 .5vw;
     border-radius: .8vh .8vh 0 0;
@@ -430,7 +389,7 @@ header {
     border-radius: 0 0 .8vh .8vh;
 }
 .game-title {
-    font-size: 2.5vh;
+    font-size: 2.9vh;
     flex: 1;
     font-family: 'Montserrat';
     font-weight: 700;
@@ -496,25 +455,26 @@ header {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 34vh;
+    height: 46.25vh;
 }
 .recent-season {
     display: flex;
     flex-direction: row;
+    justify-content: start;
+    align-items: center;
     width: max-content;
-    background-color: var(--tab-hover);
-    gap: 1vw;
-    border-radius: 1.5vh;
-    padding: 1.2vh;
+    gap: 1.3vw;
+    margin: 0 .25vw 0 .25vw;
     overflow: hidden;
-    height: 31.5vh;
-    width: 47vw;
+    height: 100%;
+    width: 100%;
 }
 #recent-season-name {
     margin: 0;
-    font-size: 4vh;
+    font-size: 4.5vh;
     font-weight: 900;
     font-family: 'Montserrat';
+    text-wrap: wrap;
 }
 .recentSeason-panel img {
     width: 22vw;
@@ -526,20 +486,20 @@ header {
     display: flex;
     flex-direction: column;
     width: fit-content;
-    height: 97.7%;
-    width: 40%;
+    height: 100%;
+    width: 50vw;
     justify-content: space-between;
 }
 
 .status {
     font-family: 'Montserrat';
-    font-weight: 500;
-    font-size: 3vh;
+    font-weight: 600;
+    font-size: 3.5vh;
     margin: 0;
     color: var(--text);
     display: flex;
     flex-direction: row;
-    gap: .5vw;
+    gap: 1vw;
     align-items: center;
     user-select: none;
 }
@@ -550,18 +510,18 @@ header {
 }
 .recentSeason-image {
     height: 100%;
-    width: 27vw;
+    width: 100%;
     overflow: hidden;
     background-size: cover;
-    background-position: center;
+    background-position: 0 -3vh;
     transform: translateY(0);
-    border-radius: 1vh;
+    border-radius: 1.5vh;
     background-color: rgba(30,30,30,.1);
 }
 .level-progress-text {
     font-family: 'Montserrat';
-    font-weight: 600;
-    font-size: 2.7vh;
+    font-weight: 700;
+    font-size: 3.5vh;
     margin: 0;
     color: var(--btn-color);
     display: flex;
@@ -570,7 +530,11 @@ header {
     user-select: none;
 }
 .level-progress {
-    margin: 0 0 0;
+    margin: 0;
+    display: flex;
+    gap: 1vh;
+    flex-direction: column;
+    margin-bottom: .35vh;
 }
 .fa-square-caret-up, .fa-trophy {
     font-size: 3vh;
@@ -578,7 +542,7 @@ header {
     width: fit-content;
 }
 .statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus {
-    font-size: 2vh;
+    font-size: 3.5vh;
     color: var(--text);
     padding: .8vh .8vw;
     width: fit-content;
@@ -591,24 +555,24 @@ header {
     cursor: pointer;
 }
 .status-level {
-    width: 100%;
+    width: 4vw;
     display: flex;
     justify-content: center;
     flex: 1;
 }
 .status-win {
-    width: 100%;
+    width: 4vw;
     display: flex;
     justify-content: center;
     flex: 1;
 }
 .level-progress-bar {
     background-color: var(--tag);
-    height: 1.2vh;
+    height: 1.4vh;
     width: 100%;
     overflow: hidden;
     padding: 0;
-    margin: 1vh 0 0 0;
+    margin: 0;
     border-radius: 1vh;
     transition: width .1s linear;
 }
@@ -618,6 +582,9 @@ header {
     padding: 0;
     height: 100%;
     margin: 0;
+}
+.status i {
+    font-size: 3.5vh;
 }
 .level-status, .win-status {
     display: flex;
@@ -1369,11 +1336,11 @@ header {
     pointer-events: none;
     display: block;
 }
-header {
+/* header {
     background-color: transparent;
     box-shadow: none;
     pointer-events: none;
-}
+} */
 
 .page-content {
     display: flex;

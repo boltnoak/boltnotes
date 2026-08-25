@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-br" data-i18n-title="games_page_title">
 <head>
+    <script>
+        if (localStorage.getItem('sidebarExpanded') === 'true') {
+            document.documentElement.classList.add('sidebar-expanded');
+        }
+    </script>
     <base href="../">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,10 +41,10 @@
         <div class="page-content">
             <div class="modes">
                 <div>
-                    <p class="mode-btn active" data-mode="campaigns" onclick="switchMode(this)"><i class="fa-solid fa-circle-check"></i><span data-i18n="campaigns">Campanhas</span></p>
-                    <p class="mode-btn" data-mode="achievements" onclick="switchMode(this)"><i class="fa-solid fa-trophy"></i><span data-i18n="achievements">Conquistas</span></p>
+                    <p class="mode-btn active top-tab" data-mode="campaigns" onclick="switchMode(this)"><i class="fa-solid fa-circle-check"></i><span data-i18n="campaigns">Campanhas</span></p>
+                    <p class="mode-btn top-tab" data-mode="achievements" onclick="switchMode(this)"><i class="fa-solid fa-trophy"></i><span data-i18n="achievements">Conquistas</span></p>
                 </div>
-                <i class="mode-btn fa-solid fa-chart-pie" data-mode="charts" onclick="switchMode(this)"></i>
+                <i class="mode-btn fa-solid fa-chart-pie top-tab" data-mode="charts" onclick="switchMode(this)"></i>
             </div>
             <div class="view-bar">
                 <div class="view-options">
@@ -185,7 +190,33 @@
     </div>
 
     <header>
-        <a class="back" href="pages/index.html"><span data-i18n="home">Início</span><i class="fa-solid fa-house"></i></a>
+        <div class="sidebar-header-logo">
+            <img src="assets/boltnotes-icon.png">
+            <span>BoltNotes</span>
+        </div>
+        <a class="sidebar-btn active" href="pages/games.html">
+            <i class="fa-solid fa-gamepad"></i>
+            <span data-i18n="games-backlog">Voltar</span>
+        </a>
+        <a class="sidebar-btn" href="pages/notes.html">
+            <i class="fa-solid fa-note-sticky"></i>
+            <span data-i18n="notes">Notas</span>
+        </a>
+        <a class="sidebar-btn" href="pages/fortnite.html">
+            <div class="sidebar-fortnite-icon"></div>
+            <span data-i18n="fortnite">Fortnite</span>
+        </a>
+        
+        <div class="sidebar-bottom">
+            <a class="sidebar-btn" href="pages/index.html">
+                <i class="fa-solid fa-house"></i>
+                <span data-i18n="home">Início</span>
+            </a>
+            <a class="config sidebar-btn" href="pages/config.html">
+                <i id="config" class="fa-solid fa-sliders"></i>
+                <span data-i18n="settings">Configurações</span>
+            </a>
+        </div>
     </header>
 
     <div id="loading-screen">
