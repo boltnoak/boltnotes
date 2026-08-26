@@ -47,7 +47,8 @@
     padding: 1.5vh;
     border-radius: 2vh;
     overflow: hidden;
-    min-width: 10vw;
+    min-width: fit-content;
+    min-height: 69vh;
     display: flex;
     flex-direction: column;
     gap: 1.5vh;

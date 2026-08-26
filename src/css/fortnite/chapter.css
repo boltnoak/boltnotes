@@ -12,6 +12,10 @@ body {
 #fnSeason, .fn-season {
     margin: 0 .3vw 0 1vw;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.78vh;
+    position: relative;
 }
 
 /* Capítulos (proximo e anterior) */
@@ -167,9 +171,9 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
-    font-family: 'Montserrat';
     cursor: default;
     color: var(--text);
+    position: relative;
 }
 .status {
     font-size: 1vh;
@@ -230,7 +234,7 @@ body {
 .seasonCharacter-div {
     position: relative;
     width: 45vw;
-    min-height: 72.5vh;
+    min-height: 66.65vh;
     height: fit-content;
     overflow: hidden;
     -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
@@ -245,7 +249,7 @@ body {
     object-fit: contain;
     object-position: center 15%;
     z-index: 1;
-    object-position: 50% 10%;
+    object-position: 50% 0%;
     transform-origin: top center;
     transform: translateZ(0);
     -webkit-mask-repeat: no-repeat;
@@ -269,15 +273,19 @@ body {
     flex-direction: row;
     align-items: center;
     text-align: center;
-    margin: 0 0 .85vh 0;
+    margin: 0;
     color: var(--text);
+    position: absolute;
+    display: none;
 }
 .seasonStatus-title-div {
     display: flex;
+    display: none;
     flex-direction: row;
     align-items: center;
+    position: absolute;
     text-align: center;
-    margin: .9vh 0 0 0;
+    margin: 0;
     color: var(--text);
 }
 .seasonContents-title {
@@ -303,10 +311,10 @@ body {
     font-size: 3.5vh;
     margin-right: .2vw;
     color: var(--text);
+    position: relative;
 }
 .sep-bar-season {
-    margin: 1.5vh 0 4.25vh 0;
-    margin: 1.75vh 0;
+    margin: 1.5vh 0 0 0;
     border: solid .43vh var(--sep-bar);
     /* border: solid 2px var(--tag); */
     border-radius: 1vh;
@@ -328,8 +336,8 @@ body {
     margin: 0;
     gap: .8vw;
     display: flex;
-    flex-direction: row;
-    transform: translateY(-5.625vh);
+    flex-direction: row-reverse;
+    /* transform: translateY(-5.625vh); */
 }
 #lock-unlock {
     margin: 0;
