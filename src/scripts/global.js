@@ -47,50 +47,50 @@ function closeApp() {
   window.electronAPI.menu.closeApp();
 }
 async function initMenu() {
-    const res = await fetch('components/menu.bolt');
-    const data = await res.text();
+    // const res = await fetch('components/menu.bolt');
+    // const data = await res.text();
 
-    const container = document.querySelector('.app-container');
-    (container || document.body).insertAdjacentHTML('afterbegin', data);
+    // const container = document.querySelector('.app-container');
+    // (container || document.body).insertAdjacentHTML('afterbegin', data);
 
-    const menuMax = document.getElementById('menuMax');
-    const savedState = sessionStorage.getItem('windowState') || 'normal';
-    if (menuMax) {
-        menuMax.className = savedState === 'maximized'
-            ? 'fa-regular fa-window-restore'
-            : 'fa-regular fa-window-maximize';
-    }
+    // const menuMax = document.getElementById('menuMax');
+    // const savedState = sessionStorage.getItem('windowState') || 'normal';
+    // if (menuMax) {
+    //     menuMax.className = savedState === 'maximized'
+    //         ? 'fa-regular fa-window-restore'
+    //         : 'fa-regular fa-window-maximize';
+    // }
 
-    const menu = document.getElementById('menu');
-    let dragging = false;
-    let lastX, lastY;
+    // const menu = document.getElementById('menu');
+    // let dragging = false;
+    // let lastX, lastY;
 
-    menu.addEventListener('mousedown', (e) => {
-        if (e.target.closest('.menuButtons') || e.target.closest('#update-btn')) return;
+    // menu.addEventListener('mousedown', (e) => {
+    //     if (e.target.closest('.menuButtons') || e.target.closest('#update-btn')) return;
 
-        const isMaximized = sessionStorage.getItem('windowState') === 'maximized';
-        if (isMaximized) return;
+    //     const isMaximized = sessionStorage.getItem('windowState') === 'maximized';
+    //     if (isMaximized) return;
         
-        dragging = true;
-        lastX = e.screenX;
-        lastY = e.screenY;
-    });
+    //     dragging = true;
+    //     lastX = e.screenX;
+    //     lastY = e.screenY;
+    // });
 
-    document.addEventListener('mousemove', (e) => {
-        if (!dragging) return;
-        const dx = e.screenX - lastX;
-        const dy = e.screenY - lastY;
-        lastX = e.screenX;
-        lastY = e.screenY;
-        window.electronAPI.menu.dragWindow({ mouseX: dx, mouseY: dy });
-    });
+    // document.addEventListener('mousemove', (e) => {
+    //     if (!dragging) return;
+    //     const dx = e.screenX - lastX;
+    //     const dy = e.screenY - lastY;
+    //     lastX = e.screenX;
+    //     lastY = e.screenY;
+    //     window.electronAPI.menu.dragWindow({ mouseX: dx, mouseY: dy });
+    // });
 
-    document.addEventListener('mouseup', () => { dragging = false; });
+    // document.addEventListener('mouseup', () => { dragging = false; });
 
-    document.getElementById('menuTitle').textContent = document.title;
+    // document.getElementById('menuTitle').textContent = document.title;
 
-    await updateMaximizeIcon();
-    applyWindowState(sessionStorage.getItem('windowState') || 'normal');
+    // await updateMaximizeIcon();
+    // applyWindowState(sessionStorage.getItem('windowState') || 'normal');
 
     const updateBtn = document.getElementById('update-btn');
         if (updateBtn) {
@@ -99,11 +99,11 @@ async function initMenu() {
         const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
         console.log('AutoUpdater - Tem update?', jaTemUpdate);
       
-        if (jaTemUpdate) updateBtn.style.display = 'block';
+        if (jaTemUpdate) updateBtn.style.display = 'flex';
 
         window.electronAPI.onUpdateReady(() => {
             console.log('AutoUpdater - Evento recebido!');
-            updateBtn.style.display = 'block';
+            updateBtn.style.display = 'flex';
         });
 
         updateBtn.addEventListener('click', () => {
@@ -112,7 +112,7 @@ async function initMenu() {
     }
     applyLocale();
 }
-// initMenu();
+initMenu();
 
 requestAnimationFrame(() => {
     requestAnimationFrame(() => {

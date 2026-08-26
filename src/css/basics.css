@@ -324,6 +324,7 @@ html.window-normal .app-container {
 #update-btn {
     -webkit-app-region: no-drag;
     display: none;
+    flex-direction: row;
     background-color: var(--btn-color);
     color: var(--btn-text-color);
 }
