@@ -46,73 +46,26 @@ function maximizeApp() {
 function closeApp() {
   window.electronAPI.menu.closeApp();
 }
-async function initMenu() {
-    // const res = await fetch('components/menu.bolt');
-    // const data = await res.text();
-
-    // const container = document.querySelector('.app-container');
-    // (container || document.body).insertAdjacentHTML('afterbegin', data);
-
-    // const menuMax = document.getElementById('menuMax');
-    // const savedState = sessionStorage.getItem('windowState') || 'normal';
-    // if (menuMax) {
-    //     menuMax.className = savedState === 'maximized'
-    //         ? 'fa-regular fa-window-restore'
-    //         : 'fa-regular fa-window-maximize';
-    // }
-
-    // const menu = document.getElementById('menu');
-    // let dragging = false;
-    // let lastX, lastY;
-
-    // menu.addEventListener('mousedown', (e) => {
-    //     if (e.target.closest('.menuButtons') || e.target.closest('#update-btn')) return;
-
-    //     const isMaximized = sessionStorage.getItem('windowState') === 'maximized';
-    //     if (isMaximized) return;
-        
-    //     dragging = true;
-    //     lastX = e.screenX;
-    //     lastY = e.screenY;
-    // });
-
-    // document.addEventListener('mousemove', (e) => {
-    //     if (!dragging) return;
-    //     const dx = e.screenX - lastX;
-    //     const dy = e.screenY - lastY;
-    //     lastX = e.screenX;
-    //     lastY = e.screenY;
-    //     window.electronAPI.menu.dragWindow({ mouseX: dx, mouseY: dy });
-    // });
-
-    // document.addEventListener('mouseup', () => { dragging = false; });
-
-    // document.getElementById('menuTitle').textContent = document.title;
-
-    // await updateMaximizeIcon();
-    // applyWindowState(sessionStorage.getItem('windowState') || 'normal');
-
+async function updateCheckInit() {
     const updateBtn = document.getElementById('update-btn');
-        if (updateBtn) {
-        console.log('AutoUpdater - Verificando status...');
-      
-        const jaTemUpdate = await window.electronAPI.checkUpdateStatus();
-        console.log('AutoUpdater - Tem update?', jaTemUpdate);
-      
-        if (jaTemUpdate) updateBtn.style.display = 'flex';
+    if (updateBtn) {
+        const isUpdate = await window.electronAPI.checkUpdateStatus();
 
+        if (isUpdate) {
+            updateBtn.style.display = 'flex';
+            console.log('Atualização encontrada!');
+        }
         window.electronAPI.onUpdateReady(() => {
-            console.log('AutoUpdater - Evento recebido!');
+            console.log('Atualização pronta.');
             updateBtn.style.display = 'flex';
         });
-
         updateBtn.addEventListener('click', () => {
             window.electronAPI.restartAndInstall();
         });
     }
     applyLocale();
 }
-initMenu();
+updateCheckInit();
 
 requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -181,6 +134,37 @@ async function checkChangelog() {
 }
 
 checkChangelog();
+
+// async function openChangelog() {
+//     const { shouldShow, version } = await window.electronAPI.changelog.check();
+
+//     const changes = await window.electronAPI.changelog.get();
+    
+//     if (changes && changes.length > 0) {
+//         const popup = document.getElementById('changelog-popup');
+//         const list = document.getElementById('changelog-list');
+//         const title = document.getElementById('changelog-version');
+//         const closeBtn = document.getElementById('close-changelog-btn');
+
+//         if (title && !title.length > 0) title.innerHTML = `<i class="fa-solid fa-rectangle-list"></i>Mudanças da versão ${version}${title.textContent}`;
+//         if (list && !list.length > 0) list.innerHTML = changes.map(line => {
+//             if (line.trim().startsWith('#')) {
+//                 const topicName = line.replace('#', '').trim();
+//                 return `<div class="changelog-category">
+//                     <i class="fa-solid fa-circle-dot"></i>
+//                     <h4 class="changelog-category-text">${topicName}:</h4>
+//                 </div>`;
+//             }
+//             return `<div class="changelog-topic"><li><i class="fa-solid fa-caret-right"></i>${line}</li></div>`;
+//         }).join('');
+//         popup.style.display = 'flex';
+
+//         closeBtn.addEventListener('click', async () => {
+//             popup.style.display = 'none';
+//             await window.electronAPI.changelog.markSeen(); 
+//         }, { once: true });
+//     }
+// }
 
 async function viewDownloadPackage(packageName) {
     const name = document.querySelector('.download-status-name');

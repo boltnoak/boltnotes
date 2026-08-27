@@ -8,7 +8,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   const version = await window.api.getAppVersion();
   const versionEl = document.getElementById('app-version');
 
-  if (versionEl) {
-    versionEl.innerText = `v${version}`;
-  }
+  if (versionEl) versionEl.innerText = `v${version}`;
 });

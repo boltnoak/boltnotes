@@ -1,15 +1,9 @@
 @import url(basics.css);
 
 .pageBody {
-    font-family: 'Montserrat';
-    color: var(--text);
     display: flex;
     flex-direction: row;
-    height: 94.65vh;
-    transform: translateY(5.15vh);
-}
-.back {
-    pointer-events: auto;
+    margin-top: 2vh;
 }
 
 /* Básico */
@@ -37,7 +31,7 @@
     user-select: none;
 }
 .sep-bar-v {
-    margin: 0 .6vw 1.25vh .6vw;
+    margin: 0 .8vw 2vh .8vw;
 }
 .note-sep-bar {
     margin: 0 .8vw 1.8vh 0;
@@ -49,7 +43,7 @@
 #note-list {
     display: flex;
     flex-direction: column;
-    height: 87vh;
+    height: 100%;
     width: 23%;
     padding: 0 0 0 1vw;
     position: relative;
@@ -219,8 +213,9 @@ body.dragging-tab * {
 .note-view {
     display: flex;
     flex-direction: column;
-    width: 73.68%;
+    width: 100%;
     height: 100%;
+    flex: 1;
 }
 .title-bar {
     display: none;
@@ -272,9 +267,9 @@ body.dragging-tab * {
     background-color: var(--btn-hover-color);
 }
 #content {
-    margin: 0 0 0 .5vw;
+    margin: 0 1vw 0 .5vw;
     font-size: 2.5vh;
-    padding: 0 0 1vh 0;
+    padding: 0 0 2vh 0;
     white-space: pre-wrap;
     caret-color: var(--text);
     user-select: text;

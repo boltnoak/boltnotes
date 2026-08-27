@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const fortniteBtn = document.querySelector('a.sidebar-btn[href*="fortnite"]');
     const fortniteHomeBtn = document.getElementById('fortnite');
-    const savedUrl = localStorage.getItem('fortniteLastUrl');
+    const savedUrl = sessionStorage.getItem('fortniteLastUrl');
 
     if (fortniteBtn && savedUrl) {
         fortniteBtn.setAttribute('href', savedUrl);
