@@ -495,19 +495,19 @@
 .status {
     font-family: 'Montserrat';
     font-weight: 600;
-    font-size: 3.5vh;
+    font-size: 4vh;
     margin: 0;
     color: var(--text);
     display: flex;
     flex-direction: row;
-    gap: 1vw;
+    gap: .665vw;
     align-items: center;
     user-select: none;
 }
 .season-status-div {
     display: flex;
     flex-direction: column;
-    gap: 1.1vh;
+    gap: 1.465vh;
 }
 .recentSeason-image {
     height: 100%;
@@ -542,35 +542,50 @@
     color: var(--text);
     width: fit-content;
 }
-.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus {
+.statusLevel-add,
+.statusLevel-minus,
+.statusWin-add,
+.statusWin-minus {
     font-size: 3.5vh;
     color: var(--text);
-    padding: 1vh .8vw;
+    padding: 1.25vh .8vw;
     width: fit-content;
     border-radius: .8vh;
-    transition: background .1s linear;
+    background-color: var(--tab);
+    transition: background .15s linear;
     display: flex;
-    flex: 1;
     justify-content: center;
+    flex: 1;
 }
-.statusLevel-add:hover, .statusLevel-minus:hover, .statusWin-add:hover, .statusWin-minus:hover {
-    background: var(--btn-hover);
+.statusLevel-add:hover,
+.statusLevel-minus:hover,
+.statusWin-add:hover,
+.statusWin-minus:hover {
+    background: var(--tab-hover);
     cursor: pointer;
 }
-.status-level {
-    width: 4vw;
+.status-level, .status-win {
+    width: 100%;
     display: flex;
     justify-content: center;
+    border-radius: 1vh;
+    padding: .5vh 0;
     flex: 1;
+    position: relative;
 }
-.status-win {
-    width: 4vw;
-    display: flex;
-    justify-content: center;
-    flex: 1;
+.status-win::after, .status-level::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: .55vh;
+    background-color: var(--btn);
+    width: 100%;
+    border-radius: 1vh;
+    transition: all .1s linear;
 }
 .level-progress-bar {
-    background-color: var(--tag);
+    background-color: color-mix(in srgb, var(--text-blue) 50%, transparent);
     height: 1.4vh;
     width: 100%;
     overflow: hidden;

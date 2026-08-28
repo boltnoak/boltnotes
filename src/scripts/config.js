@@ -328,7 +328,7 @@ async function checkUpdates() {
 
     window.electronAPI.onUpdateReady(() => {
         showMessage(text, `${window._t['check-updates-done']}`, 'var(--blue)');
-        if (btn) btn.style.display = 'block';
+        if (btn) btn.style.display = 'flex';
     });
 
     try {

@@ -2,6 +2,7 @@
 /// VARIÁVEIS ///
 /////////////////
 let cachedSeasons = null;
+let saveTimeout = null;
 
 //////////////
 /// BÁSICO ///
@@ -118,9 +119,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 ////////////////
 const FORTNITE_STATS = "Fortnite/stats.json";
 
-let cachedSeasonInfo = null;
-let saveTimeout = null;
-
 async function loadCloudSeasonInfo() {
     if (cachedSeasons) return cachedSeasons;
 
@@ -176,14 +174,15 @@ async function initFeaturedFortnite() {
     const cloudData = await loadCloudSeasonInfo();
     const statsData = window.electronAPI.json.load(FORTNITE_STATS);
     const stats = (statsData && typeof statsData === 'object' && !Array.isArray(statsData)) ? statsData : {};
-    
+
+    const codeTranslated = document.querySelector('.recent-season-name-span').textContent.replace(/^(.).*/, "$1") || 'S';
     const infoTemporada = cloudData[code] || stats[code] || {};
-    const seasonName = infoTemporada.name || "Temporada Atual";
+    const seasonName = `${code.toUpperCase().replace(/S/, codeTranslated)} | ${infoTemporada.name}` || "Temporada Atual";
 
     document.getElementById('recentSeason-image').style.backgroundImage = `url(assets://fortnite-${code}-assets/${code}.jpg)`;
     document.querySelector('.shine-effect-v-latest-season').style.display = 'none';
 
-    document.getElementById('recent-season-name').textContent = `${infoTemporada.name}`
+    document.getElementById('recent-season-name').textContent = seasonName;
 
     document.querySelector('.status-level').id = `${code}-levels`;
     document.querySelector('.status-win').id = `${code}-wins`;

@@ -95,7 +95,9 @@
     </div>
     <div class="season-contents">
         <div class="season-events" style="display: none;">
-            <img class="event-img">
+            <div class="event-img-div">
+                <img class="event-img">
+            </div>
             <div class="event-data">
                 <p class="event-title"></p>
                 <div class="event-tags">
