@@ -22,7 +22,8 @@
     pointer-events: auto;
     transition: all .1s linear;
     width: 14.5vw;
-    right: .5vw;
+    right: 4.5vw;
+    bottom: 7vh;
 }
 .next-btn:hover {
     background-color: var(--btn-hover-color);
@@ -31,12 +32,16 @@
 
 header {
     margin: 4vh 8vw;
+    width: 100%;
+}
+header:hover {
+    width: 100%;
 }
 
 .pageBody {
     width: 100%;
-    height: 94.65vh;
-    transform: translateY(5.15vh);
+    height: 100vh;
+    margin: 0;
     overflow: hidden;
     background: transparent !important;
     flex-direction: column;
@@ -62,6 +67,7 @@ header {
     transform: scale(0.9);
     position: absolute;
     width: 80vw;
+    display: flex;
 }
 .page-infos {
     position: absolute;

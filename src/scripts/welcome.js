@@ -68,54 +68,54 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-async function initMenu() {
-    const res = await fetch('components/menu.bolt');
-    const data = await res.text();
+// async function initMenu() {
+//     const res = await fetch('components/menu.bolt');
+//     const data = await res.text();
 
-    const container = document.querySelector('.app-container');
-    (container || document.body).insertAdjacentHTML('afterbegin', data);
+//     const container = document.querySelector('.app-container');
+//     (container || document.body).insertAdjacentHTML('afterbegin', data);
 
-    const menuMax = document.getElementById('menuMax');
-    const savedState = sessionStorage.getItem('windowState') || 'normal';
-    if (menuMax) {
-        menuMax.className = savedState === 'maximized'
-            ? 'fa-regular fa-window-restore'
-            : 'fa-regular fa-window-maximize';
-    }
+//     const menuMax = document.getElementById('menuMax');
+//     const savedState = sessionStorage.getItem('windowState') || 'normal';
+//     if (menuMax) {
+//         menuMax.className = savedState === 'maximized'
+//             ? 'fa-regular fa-window-restore'
+//             : 'fa-regular fa-window-maximize';
+//     }
 
-    const menu = document.getElementById('menu');
-    let dragging = false;
-    let lastX, lastY;
+//     const menu = document.getElementById('menu');
+//     let dragging = false;
+//     let lastX, lastY;
 
-    menu.addEventListener('mousedown', (e) => {
-        if (e.target.closest('.menuButtons') || e.target.closest('#update-btn')) return;
+//     menu.addEventListener('mousedown', (e) => {
+//         if (e.target.closest('.menuButtons') || e.target.closest('#update-btn')) return;
 
-        const isMaximized = sessionStorage.getItem('windowState') === 'maximized';
-        if (isMaximized) return;
+//         const isMaximized = sessionStorage.getItem('windowState') === 'maximized';
+//         if (isMaximized) return;
         
-        dragging = true;
-        lastX = e.screenX;
-        lastY = e.screenY;
-    });
+//         dragging = true;
+//         lastX = e.screenX;
+//         lastY = e.screenY;
+//     });
 
-    document.addEventListener('mousemove', (e) => {
-        if (!dragging) return;
-        const dx = e.screenX - lastX;
-        const dy = e.screenY - lastY;
-        lastX = e.screenX;
-        lastY = e.screenY;
-        window.electronAPI.menu.dragWindow({ mouseX: dx, mouseY: dy });
-    });
+//     document.addEventListener('mousemove', (e) => {
+//         if (!dragging) return;
+//         const dx = e.screenX - lastX;
+//         const dy = e.screenY - lastY;
+//         lastX = e.screenX;
+//         lastY = e.screenY;
+//         window.electronAPI.menu.dragWindow({ mouseX: dx, mouseY: dy });
+//     });
 
-    document.addEventListener('mouseup', () => { dragging = false; });
+//     document.addEventListener('mouseup', () => { dragging = false; });
 
-    document.getElementById('menuTitle').textContent = document.title;
+//     document.getElementById('menuTitle').textContent = document.title;
 
-    await updateMaximizeIcon();
-    applyWindowState(sessionStorage.getItem('windowState') || 'normal');
-}
+//     await updateMaximizeIcon();
+//     applyWindowState(sessionStorage.getItem('windowState') || 'normal');
+// }
 
-initMenu();
+// initMenu();
 
 async function changeFeatured(selectEl) {
     const selectedFeatured = selectEl.value;
@@ -417,41 +417,7 @@ async function updateNoteCount() {
   }
 }
 
-let cachedSeasonInfo = null;
-
-async function loadFortniteStats() {
-  try {
-    const data = await loadCloudSeasonInfo();
-
-    if (!data || Object.keys(data).length === 0) {
-      console.log("Nenhum dado de Fortnite encontrado ainda.");
-      return; 
-    }
-
-    const keys = Object.keys(data);
-    const chapters = new Set();
-    
-    keys.forEach(key => {
-      const match = key.match(/^c(\d+)s(\d+)$/i);
-      if (match) {
-        const chapter = match[1];
-        chapters.add(chapter);
-      }
-    });
-
-    const totalSeasons = keys.length;
-    const totalChapters = chapters.size;
-
-    document.getElementById("season-count").textContent = `${totalSeasons + 20} ${window._t['fn-seasons']}`;
-    document.getElementById("chapter-count").textContent = `${totalChapters + 2} ${window._t['fn-chapters']}`;
-
-  } catch (error) {
-    console.error("Erro ao calcular o progresso do Fortnite:", error);
-  }
-}
-
-updateNoteCount();
-loadFortniteStats();
+let cachedSeasons = null;
 
 function parseBRDate(dateStr) {
   if (!dateStr || !dateStr.includes("/")) return 0;
@@ -614,13 +580,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 const FILE_STATS = "Fortnite/stats.json";
 
 async function loadCloudSeasonInfo() {
-    if (cachedSeasonInfo) return cachedSeasonInfo;
-    try {
-        const content = await window.api.fortnite.getSeasons(); 
-        cachedSeasonInfo = content || {};
-        return cachedSeasonInfo;
-    } catch (e) {
-        console.error("Erro ao buscar dados da internet:", e);
-        return {};
-    }
+    if (cachedSeasons) return cachedSeasons;
+
+    const config = await window.electronAPI.config.getConfig();
+    const language = config.language || "pt-BR";
+
+    const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`;
+
+    const content = await fetchWithCache(url, `fn-seasons-${language}`);
+    cachedSeasons = content || {};
+    return cachedSeasons;
 }
