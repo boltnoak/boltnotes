@@ -265,6 +265,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function tabSwitch(el) {
     const code = el.dataset.code;
+    const title = el.querySelector('span').textContent;
+    const mainTitle = document.querySelector('.tab-configs-title');
+    mainTitle.textContent = title
 
     const tabs = document.querySelectorAll('.tab');
     const configs = document.querySelectorAll('.tab-configs');

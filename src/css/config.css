@@ -3,6 +3,7 @@
 .pageBody {
     display: flex;
     flex-direction: row;
+    margin-top: 1.85vh;
 }
 
 .config-item {
@@ -10,7 +11,7 @@
     align-items: center;
     height: 3.5vh;
     gap: 1.25vh;
-    margin: .6vh 0 0 0;
+    margin: .35vh 0;
     font-family: 'Montserrat';
     color: var(--text);
     border-radius: 1.6vh;
@@ -19,26 +20,23 @@
     justify-content: start;
 }
 .tabs {
-    width: 35%;
+    width: 25%;
     display: flex;
     flex-direction: column;
-    margin: 2vh 0 0 .75vw;
+    margin: 0 0 0 .75vw;
     gap: 1vh;
 }
 
 .tab {
-    font-family: 'Montserrat';
     background-color: var(--tab);
     color: var(--text);
-    display: inline-block;
-    width: 90%;
     font-weight: 500;
     padding: 2vh 1vw;
     height: 3vh;
-    border-radius: 1.5vh;
-    position: relative;
+    border-radius: 1.25vh;
     cursor: pointer;
-    transition: background-color 0.2s, border .2s;
+    display: flex;
+    transition: background .2s, border .2s;
     align-items: center;
 }
 .tab i {
@@ -62,10 +60,11 @@
 .tab-configs {
     display: flex;
     flex-direction: column;
-    margin: 1vh 1vw 0 .6vw;
+    margin: 0 0 0 .25vw;
     width: 100%;
     display: none;
     gap: .25vh;
+    flex: 1;
 }
 .tab-configs.active {
     display: flex;
@@ -74,34 +73,45 @@
     background-color: var(--btn-hover-color);
 }
 .sep {
-    font-family: 'Montserrat';
     color: var(--text);
-    font-weight: 800;
-    font-size: 4vh;
-    margin: .5vh 0 0 0;
+    font-weight: 700;
+    font-size: 3.5vh;
+    margin: 0;
 }
 .toggle {
-    display: inline-block;
-    width: 3.3vw;
-    height: 3.2vh;
+    display: flex;
+    align-items: center;
+    width: 6.5vh;
+    height: 3.5vh;
     background-color: var(--tab-hover);
-    border-radius: 1.2vh;
+    border-radius: 2vh;
     position: relative;
     cursor: pointer;
-    transition: background-color 0.15s, border .2s;
+    transition: background 0.15s, border .2s;
 }
-
+.tab-configs-title {
+    font-size: 5vh;
+    font-weight: 900;
+    margin: 0;
+}
 .toggle::after {
     content: '';
     position: absolute;
-    width: 2.18vh;
-    top: .05rem;
-    height: 2.16vh;
-    border-radius: 1.25vh;
-    background-color: var(--text);
-    transition: transform 0.1s, border .2s;
+    padding: 1.3vh;
+    top: 0;
+    border-radius: 2vh;
+    background-color: var(--text-dark-gray);
+    transition: background .15s, border .2s;
     object-fit: cover;
+    left: 0;
     border: solid .5vh var(--tab-hover);
+}
+.toggle.active::after {
+    /* transform: translateX(1.65vw); */
+    border-color: var(--btn-hover-color);
+    background-color: var(--btn-text-color);
+    right: 0;
+    left: auto;
 }
 .mark {
     display: inline-block;
@@ -141,24 +151,30 @@
     user-select: none;
     left: 1.5vw;
 }
+.tab-configs-div {
+    display: flex;
+    flex-direction: column;
+    gap: .65vh;
+    width: 100%;
+    flex: 1;
+    margin: 0 .75vw 0 0;
+}
 .version {
     margin: 0;
 }
-.toggle.active::after {
-    transform: translateX(1.65vw);
-    border: solid .5vh var(--btn-hover-color);
-}
 .sep-bar {
-    margin: 0 .5vw 0 .1vw;
+    margin: 0 0 0 0;
     border: solid .4vh var(--sep-bar);
-    border-radius: 1vh;
-    justify-content: center;
+}
+.sep-bar-v {
+    margin: 0 .65vw;
 }
 .path {
-    background-color: var(--tab-hover);
+    background-color: var(--btn-text-color);
     padding: 2vh 1vw;
-    border-radius: 1.3vh;
-    margin: .6vh 0;
+    border-radius: 1.5vh;
+    margin: .6vh .25vw .6vh 0;
+    color: var(--btn-hover-color);
     border: solid .5vh var(--btn-color);
     font-weight: 500;
 }
@@ -171,9 +187,10 @@
     width: 100%;
 }
 .themeSelector-select {
-    margin: 0;
+    margin: .35vh 0;
     display: grid;
     padding: 0;
+    gap: .5vw;
     height: fit-content;
     grid-template-columns: repeat(auto-fill, minmax(12vw, 1fr));
 
@@ -211,19 +228,26 @@
     overflow: hidden;
 }
 .themeSelector-select li:hover {
-    border: solid .6vh var(--text);
+    /* border: solid .6vh var(--text); */
+    background-color: var(--btn-hover);
 }
 .themeSelector-select li {
     display: flex;
     align-items: center;
-    gap: .5vh;
-    padding: .8vh .2vw;
+    gap: 1.25vh;
+    padding: 1.25vh .5vw;
+    width: fit-content;
     color: var(--text);
     cursor: pointer;
     transition: border 0.2s;
+    background-color: var(--btn);
     flex-direction: column;
-    border: solid .6vh transparent;
-    border-radius: 2vh;
+    border-radius: 1.5vh;
+    transition: background .15s linear;
+}
+.themeSelector-select li.active-config {
+    background-color: var(--text);
+    color: var(--bg);
 }
 .themes {
     height: fit-content;
@@ -238,12 +262,13 @@
     display: none;
 }
 .theme-color-preview {
-    height: 12vh;
-    width: 12.7vw;
+    height: 11.5vh;
+    width: 11.95vw;
     border-radius: 1vh;
     display: inline-block;
-    border: 1px solid var(--text-dark-gray);
+    /* border: 1px solid var(--text-dark-gray); */
     flex-shrink: 0;
+    box-shadow: 0 0 1vh var(--text-dark-gray);
 }
 .featured-selector-div {
     width: 100%;
@@ -257,30 +282,24 @@
     justify-content: start;
     align-items: start;
     gap: 0;
-    background-color: var(--btn);
     width: fit-content;
     border-radius: 1vh;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    background-color: var(--tab);
-    padding: .8vh .4vw;
-    border-radius: 1.5vh;
-    gap: 1vh;
+    /* padding: .8vh .4vw; */
+    /* border-radius: 1.5vh; */
+    gap: .45vw;
 }
 .featuredSelector-select li:hover {
     background-color: var(--btn-hover);
-    border-radius: 1vh;
 }
 .featuredSelector-select .active-config {
     color: var(--btn-text-color);
     background-color: var(--btn-color);
-    border-radius: 1vh;
 }
 .featuredSelector-select .active-config:hover {
     background-color: var(--btn-hover-color);
-    border-radius: 1vh;
 }
 .featuredSelector-select li {
     display: flex;
@@ -300,10 +319,10 @@
     align-items: center;
     background-color: var(--btn);
     padding: 1vh .75vw;
-    border-radius: 1vh;
+    border-radius: .75vh;
     gap: .5vw;
-    font-weight: 600;
-    width: 91.3%;
+    font-weight: 650;
+    min-width: 14vw;
     cursor: pointer;
     transition: background .1s linear;
 }
@@ -322,18 +341,18 @@
 .btn {
     font-family: 'Montserrat';
     font-family: 2vh;
-    font-weight: 600;
-    background-color: var(--btn-color);
-    color: var(--btn-text-color);
-    padding: .75vh .75vw;
-    margin: 0;
+    font-weight: 625;
+    background-color: var(--btn);
+    color: var(--text);
+    padding: 1.25vh .6vw;
+    margin: .15vh 0;
     border-radius: 1vh;
     cursor: pointer;
     transition: background .15s linear;
     width: fit-content;
 }
 .btn:hover {
-    background-color: var(--btn-hover-color);
+    background-color: var(--btn-hover);
 }
 .checkUpdates {
     padding: 0;
@@ -382,9 +401,9 @@
 
 .change-lang-btn {
     background-color: var(--btn);
-    padding: 1vh 0;
-    width: 20vw;
-    text-align: center;
+    padding: 1vh .65vw;
+    width: 17.75vw;
+    text-align: start;
     font-weight: 600;
     cursor: pointer;
     transition: background .15s linear;
@@ -396,12 +415,14 @@
     display: none;
     flex-direction: column;
     position: absolute;
-    gap: 1vh;
-    transform: translateY(3.35vh);
+    gap: 0;
+    transform: translateY(5.75vh);
     background-color: var(--tab);
     width: 19vw;
-    padding: 1vh;
-    border-radius: 1.5vh;
+    margin: 0;
+    padding: 0;
+    border-radius: 1.25vh;
+    overflow: hidden;
 }
 .config-item p {
     margin: 0;
@@ -422,7 +443,6 @@
 }
 .custom-select li:hover {
     background-color: var(--btn-hover);
-    border-radius: 1vh;
 }
 .custom-select .active-config {
     color: var(--btn-text-color);
@@ -435,8 +455,8 @@
 }
 .custom-select li {
     display: flex;
-    align-items: center;
-    padding: 1vh 1.25vw;
+    align-items: start;
+    padding: 1vh .65vw;
     object-fit: cover;
     cursor: pointer;
     transition: border 0.2s;
@@ -444,5 +464,5 @@
     background-color: var(--btn);
     flex-direction: column;
     transition: background .1s linear, border-radius .1s linear;
-    border-radius: 1vh;
+    border-radius: 0;
 }

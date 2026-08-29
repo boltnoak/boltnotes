@@ -18,6 +18,7 @@
   "games-completed": "Completed",
   "games-platinums": "Platinums",
   "campaigns": "Campaigns",
+  "campaign": "Campaign",
   "achievements": "Achievements",
   "no-rating": "No rating",
   "ajogar": "To play",
@@ -66,6 +67,7 @@
   "playing-now-nogames": "No games being played",
   "platinum-now-nogames": "No games in progress",
   "add": "Add",
+  "add-steam-game": "Add Steam game",
   "name": "Name",
 
   "downloading": "Downloading",
@@ -86,7 +88,7 @@
   "settings": "Settings",
   "settings_page_title": "BoltNotes | Settings",
   "language": "Language",
-  "show-hide-pages": "Show/hide pages",
+  "show-hide-pages": "Toggle pages",
   "assets-and-updates": "Assets and Updates",
   "sync-assets": "Sync assets",
   "check-updates": "Check for Updates",
@@ -124,5 +126,6 @@
   "cancel": "Cancel",
   "delete-confirm-warning": "This action cannot be undone.",
   "by": "By",
-  "back": "Return"
+  "back": "Return",
+  "has": "Has"
 }

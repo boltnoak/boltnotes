@@ -18,6 +18,7 @@
   "games-completed": "Zerados",
   "games-platinums": "Platinados",
   "campaigns": "Campanhas",
+  "campaign": "Campanha",
   "achievements": "Conquistas",
   "no-rating": "Sem nota",
   "ajogar": "À Jogar",
@@ -66,6 +67,7 @@
   "playing-now-nogames": "Nenhum jogo sendo jogado",
   "platinum-now-nogames": "Nenhum jogo sendo platinado",
   "add": "Adicionar",
+  "add-steam-game": "Adicionar jogo Steam",
   "name": "Nome",
 
   "downloading": "Baixando",
@@ -86,7 +88,7 @@
   "settings": "Configurações",
   "settings_page_title": "BoltNotes | Configurações",
   "language": "Idioma",
-  "show-hide-pages": "Mostrar/ocultar páginas",
+  "show-hide-pages": "Alternar páginas",
   "assets-and-updates": "Recursos e Atualizações",
   "sync-assets": "Sincronizar recursos",
   "check-updates": "Verificar atualizações",
@@ -124,5 +126,6 @@
   "cancel": "Cancelar",
   "delete-confirm-warning": "Essa ação não pode ser desfeita.",
   "by": "Por",
-  "back": "Voltar"
+  "back": "Voltar",
+  "has": "Possui"
 }

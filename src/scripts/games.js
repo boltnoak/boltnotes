@@ -417,6 +417,17 @@ async function loadStatus() {
     }
 }
 
+// function updateFade() {
+//     const scrollTop = panel.scrollTop;
+//     const scrollBottom = panel.scrollHeight - panel.clientHeight - scrollTop;
+
+//     panel.style.setProperty('--fade-top', scrollTop > 0 ? '2vh' : '0');
+//     panel.style.setProperty('--fade-bottom', scrollBottom > 0 ? '2vh' : '0');
+// }
+
+// panel.addEventListener('scroll', updateFade);
+// updateFade();
+
 async function loadGamesAchie() {
     renderIdAchie++;
     const myRenderId = renderIdAchie;
@@ -730,13 +741,21 @@ function toggleViewMode(mode) {
     if (currentMode === 'campaigns') {
         if (sortRatingHigh) sortRatingHigh.style.display = 'block';
         if (sortRatingLow) sortRatingLow.style.display = 'block';
+        viewAchie.style.display = 'none';
+        viewGames.style.display = 'grid';
+        document.querySelector('.view-bar').style.display = 'flex';
         loadGames();
     } else if (currentMode === 'achievements') {
         if (sortRatingHigh) sortRatingHigh.style.display = 'none';
         if (sortRatingLow) sortRatingLow.style.display = 'none';
         if (sortRecent) sortRecent.style.display = 'block';
         if (sortOld) sortOld.style.display = 'block';
+        viewGames.style.display = 'none';
+        viewAchie.style.display = 'grid';
+        document.querySelector('.view-bar').style.display = 'flex';
         loadGamesAchie();
+    } else if (currentMode === 'charts') {
+        document.querySelector('.view-bar').style.display = 'none';
     }
 }
 function switchMainView(targetView) {
@@ -959,6 +978,7 @@ async function changeAchieProgress(el, isAdd = true) {
     achieCount.textContent = `${unlocked}/${total}`;
     achieBarFill.style.width = `${percentage}%`;
     achiePercentage.textContent = `${percentage}%`;
+        await loadGamesAchie();
 
     if (percentage === 100) {
         document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--yellow)';
