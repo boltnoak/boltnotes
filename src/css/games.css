@@ -6,7 +6,7 @@ body {
 
 .pageBody {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
     height: 98.25vh;
     margin-top: 1.55vh;
     gap: .6vw;
@@ -23,7 +23,7 @@ body {
     flex-direction: column;
     width: 75%;
     margin: 0 .65vw 0 0;
-    margin: 0 0 0 .65vw;
+    /* margin: 0 0 0 .65vw; */
     gap: 1vh;
     justify-content: start;
 }
@@ -31,7 +31,7 @@ body {
     width: 100%;
     flex: 1;
     margin: 0 0 1.55vh .8vw;
-    margin: 0 0 1.55vh 0;
+    /* margin: 0 0 1.55vh 0; */
     justify-content: start;
     display: flex;
     flex-direction: column;
@@ -39,9 +39,10 @@ body {
     gap: 1vh;
 }
 .sidebar-sep-bar {
-    margin: 0 0 2vh 0;
-    height: 100vh;
-    width: .35vw;
+    margin: 0;
+    height: 96.5vh;
+    width: 0;
+    padding: .175vw;
     background-color: var(--sep-bar);
     border-radius: 1vh;
 }
@@ -193,7 +194,7 @@ body {
 .playingNow-no-games {
     color: var(--text-dark-gray);
     font-family: 'Montserrat';
-    font-weight: 500;
+    font-weight: 600;
     font-size: 2.25vh;
     margin: 0;
     width: 100%;
@@ -257,7 +258,7 @@ body {
 .platinandoNow-no-games {
     color: var(--text-dark-gray);
     font-family: 'Montserrat';
-    font-weight: 500;
+    font-weight: 600;
     font-size: 2.25vh;
     margin: 0;
     width: 100%;
@@ -777,7 +778,7 @@ body {
     overflow: hidden;
     padding: 0;
     margin: 0;
-    height: 1.25vh;
+    height: 1vh;
     width: 100%;
     flex: none;
 }
@@ -786,7 +787,7 @@ body {
     background: var(--text-orange);
     overflow: hidden;
     padding: 0;
-    height: 1.25vh;
+    height: 10vh;
     width: 100%;
     flex: none;
 }
