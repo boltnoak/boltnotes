@@ -11,16 +11,19 @@ function changeFeatured(el) {
     const code = el.dataset.value;
     const playingNow = document.querySelector('.playingNow-panel');
     const fnQuickEdit = document.querySelector('.recentSeason-panel');
+    const gamesFeatured = document.querySelector('.featured-games');
 
     if (code == 'playing-now') {
         loadGames();
         playingNow.style.display = 'flex';
         fnQuickEdit.style.display = 'none';
+        gamesFeatured.style.display = 'flex';
     }
     else if (code == 'fn-quick-edit') {
         initFeaturedFortnite();
         playingNow.style.display = 'none';
         fnQuickEdit.style.display = 'flex';
+        gamesFeatured.style.display = 'none';
     }
     changeFeaturedView(code);
 }
@@ -65,7 +68,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         'fn_fast_edit': document.querySelector('.recentSeason-panel')
     };
 
-    if (currentFeatured === 'none') document.querySelector('.page-infos').style.display = 'none';
+    if (currentFeatured === 'none') {
+        document.querySelector('.page-infos').style.display = 'none';
+        document.getElementById('featured-title').style.display = 'none';
+        document.querySelector('.featured-change-div').style.display = 'none';
+    }
     else if (currentFeatured === 'fn_fast_edit') {
         initFeaturedFortnite();
         document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.add('active');
@@ -75,15 +82,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.featured-title-text').textContent = `Fortnite BR — ${window._t['fn-quick-edit']}`;
         document.querySelector('.playingNow-panel').style.display = 'none';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
+        document.querySelector('.featured-games').style.display = 'none';
     } else if (currentFeatured === 'playing_now') {
         loadGames();
         document.querySelector('.featured-option[data-value="playing-now"]').classList.add('active');
         document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.remove('active');
         document.querySelector('#featured-title i').classList.remove('fa-square-poll-horizontal');
         document.querySelector('#featured-title i').classList.add('fa-gamepad');
-        document.querySelector('.featured-title-text').textContent = `${window._t['playing-now']}`;
+        document.querySelector('.featured-title-text').textContent = `${window._t['playing-now']} ${window._t['and']} ${window._t['ajogar']}`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
         document.querySelector('.playingNow-panel').style.display = 'flex';
+        document.querySelector('.featured-games').style.display = 'flex';
     } else {
         for (const [key, value] of Object.entries(featuredPanels)) {
             if (key === 'none') continue;
@@ -369,9 +378,11 @@ async function loadGames() {
     ]);
 
     const playingNow = document.querySelector(".playingNow-panel");
+    const toPlayDiv = document.querySelector(".toPlay-panel");
     if (!playingNow) return;
 
     playingNow.innerHTML = "";
+    toPlayDiv.innerHTML = "";
 
     const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
     const dbGames = data.games ? data.games : [];
@@ -398,9 +409,11 @@ async function loadGames() {
     });
 
     const playing = [];
+    const toPlay = [];
 
     for (const g of games) {
         if (g._status === "jogando") playing.push(g);
+        if (g._status === "ajogar" && g.hasCampaign === true) {toPlay.push(g)};
     }
 
     const completedMap = new Map(
@@ -413,6 +426,9 @@ async function loadGames() {
     const playingCards = await Promise.all(
         playing.map(game => createGameCard(game, true))
     );
+    const toPlayCards = await Promise.all(
+        toPlay.map(game => createGameCard(game))
+    );
 
     const playingFragment = document.createDocumentFragment();
     for (const card of playingCards) playingFragment.appendChild(card);
@@ -424,7 +440,18 @@ async function loadGames() {
         playingFragment.appendChild(noGames);
     }
 
+    const toPlayFragment = document.createDocumentFragment();
+    for (const card of toPlayCards) toPlayFragment.appendChild(card);
+
+     if (toPlayFragment.childElementCount === 0) {
+        const noGames = document.createElement("div");
+        noGames.className = "playingNow-no-games";
+        noGames.textContent = `${window._t['playing-now-nogames']}`;
+        toPlayFragment.appendChild(noGames);
+    }
+
     playingNow.appendChild(playingFragment);
+    toPlayDiv.appendChild(toPlayFragment);
 }
 async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
@@ -448,14 +475,13 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const status = (game.status || "").toLowerCase().trim();
 
     gameInfo.appendChild(title);
+    div.appendChild(img);
+    div.appendChild(gameInfo);
 
-    if (status === "jogando") div.classList.add('jogando');
+    div.classList.add(status);
 
     title.textContent = game.name;
     div.dataset.id = game.name;
-
-    div.appendChild(img);
-    div.appendChild(gameInfo);
 
     div.addEventListener('click', () => openGamePopup(div));
 

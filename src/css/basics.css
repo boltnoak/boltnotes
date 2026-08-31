@@ -327,6 +327,7 @@ html.window-normal .app-container {
     flex-direction: row;
     background-color: var(--btn-color);
     color: var(--btn-text-color);
+    cursor: pointer;
 }
 #update-btn i {
     color: var(--btn-text-color);

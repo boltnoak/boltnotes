@@ -97,6 +97,7 @@ async function loadGames() {
     if (myRenderId !== renderIdGames) return;
 
     const playingNow = document.querySelector(".playingNow-panel");
+    const toPlayDiv = document.querySelector(".toPlay-panel");
     const list = document.getElementById("view-campaigns");
     if (!playingNow || !list) return;
 
@@ -151,12 +152,14 @@ async function loadGames() {
     const sort = document.getElementById("realSorting-options")?.value || "date-recent";
 
     const playing = [];
+    const toPlay = [];
     const backlog = [];
     const completed = [];
 
     for (const g of games) {
         if (g._status === "jogando") playing.push(g);
         else if (g._status === "zerado") completed.push(g);
+        // else if (g._status === "ajogar") toPlay.push(g);
         else backlog.push(g);
     }
 
@@ -191,6 +194,18 @@ async function loadGames() {
         if (sort === "rating-low") return (a.rating || 0) - (b.rating || 0);
         return 0;
     });
+    const toPlayCards = await Promise.all(
+        toPlay.map(game => createGameCard(game))
+    );
+    const toPlayFragment = document.createDocumentFragment();
+    for (const card of toPlayCards) toPlayFragment.appendChild(card);
+
+     if (toPlayFragment.childElementCount === 0) {
+        const noGames = document.createElement("div");
+        noGames.className = "playingNow-no-games";
+        noGames.textContent = `${window._t['playing-now-nogames']}`;
+        toPlayFragment.appendChild(noGames);
+    }
 
     const others = [...backlog, ...completed];
 
@@ -217,6 +232,7 @@ async function loadGames() {
             for (const card of cards) fragment.appendChild(card);
             
             container.appendChild(fragment);
+            // toPlayDiv.appendChild(toPlayFragment);
 
             requestAnimationFrame(() => {
                 cards.forEach((card, index) => {
@@ -225,6 +241,13 @@ async function loadGames() {
                             card.classList.add("fade-in");
                         }
                     }, index * 40); 
+                });
+                toPlayCards.forEach((card, index) => {
+                    setTimeout(() => {
+                        if (myRenderId === renderIdGames) {
+                            card.classList.add("fade-in");
+                        }
+                    }, index * 40);
                 });
             });
 
@@ -325,12 +348,8 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         rating.style.textDecoration = 'none';
     }
 
-    if (status === "jogando") tag.classList.add("jogando");
-    else if (status === "zerado") tag.classList.add("zerado");
-    else if (status === "ajogar") tag.classList.add("ajogar");
-    else if (status === "wishlist") tag.classList.add("wishlist");
-
-    if (status === "jogando") div.classList.add('jogando');
+    tag.classList.add(status);
+    div.classList.add(status);
 
     title.textContent = game.name;
     div.dataset.id = game.name;
@@ -345,27 +364,22 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
         title.prepend(index);
     }
 
-    const completedDateFormated = await formatDate(game.completeDate, 'default');
     if (status === "zerado") {
         const statusText = document.createElement("span");
         statusText.className = "status-text";
-        statusText.textContent = completedDateFormated || "";
+        statusText.textContent = await formatDate(game.completeDate, 'default') || "";
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
-        div.classList.add('zerado');
     } else if (status === "ajogar") {
         const statusText = document.createElement("span");
         statusText.className = "status-text";
         statusText.setAttribute('data-i18n', 'ajogar');
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
-        div.classList.add('ajogar');
     }
 
-    if (status != "jogando") {
-        tag.appendChild(tagFill);
-        div.appendChild(img);
-    }
+    tag.appendChild(tagFill);
+    div.appendChild(img);
     div.appendChild(gameInfo);
 
     div.addEventListener('click', () => {
@@ -1065,6 +1079,7 @@ async function openGamePopup(el) {
     const achieAddBtn = document.getElementById('achie-add');
     const achieMinusBtn = document.getElementById('achie-minus');
     const completeDateText = document.querySelector('.game-popup-completeDate');
+    const achieDateText = document.querySelector('.achie-popup-completeDate');
     const achieDiv = document.querySelector('.game-achievements');
     const campaignText = document.querySelector('.campaign-info-title-text');
     const noteTittleDiv = document.querySelector('.game-note-title-div');
@@ -1076,6 +1091,7 @@ async function openGamePopup(el) {
     const typeAchieMark = document.querySelector('.type-mark-achie');
 
     const campaignDiv = document.querySelector('.game-campaign-div');
+    const achieStatusDiv = document.querySelector('.gameinfo-achie-div');
     const campaignChange = document.querySelector('.campaign-status-change');
 
     const ratingText = document.querySelector('.game-popup-rating');
@@ -1189,6 +1205,7 @@ async function openGamePopup(el) {
     }
 
     completeDateText.textContent = gameCampaign.completeDate || "";
+    achieDateText.textContent = achieGame.completeDate || "";
     noteText.innerHTML = gameNote?.note || "";
 
     if (gameCampaign.rating >= 0) {
@@ -1300,8 +1317,8 @@ async function openGamePopup(el) {
         // achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
-        noteTittleDiv.style.display = 'none';
-        note.style.display = 'none';
+        // noteTittleDiv.style.display = 'none';
+        // note.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'jogando') {
         updateStatus(statusText, 'jogando', 'Jogando');
@@ -1309,8 +1326,8 @@ async function openGamePopup(el) {
         // achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
-        noteTittleDiv.style.display = 'none';
-        note.style.display = 'none';
+        // noteTittleDiv.style.display = 'none';
+        // note.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'zerado') {
         updateStatus(statusText, 'zerado', 'Zerado');
@@ -1318,19 +1335,22 @@ async function openGamePopup(el) {
         // campaignSep.style.display = 'block';
         campaignDiv.style.display = 'flex';
         ratingDiv.style.display = 'flex';
-        noteTittleDiv.style.display = 'flex';
-        note.style.display = 'flex';
+        // noteTittleDiv.style.display = 'flex';
+        // note.style.display = 'flex';
         applyLocale();
     }
 
     if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'aplatinar') {
         updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
+        achieStatusDiv.style.display = 'none';
     }
     if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'platinando') {
         updateAchie(achieStatusText, 'platinando', 'Platinando');
+        achieStatusDiv.style.display = 'none';
     }
     if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'platinado') {
         updateAchie(achieStatusText, 'platinado', 'Platinado');
+        achieStatusDiv.style.display = 'flex';
     }
 
     if (jogoEncontrado && jogoEncontrado.achieStatus) {

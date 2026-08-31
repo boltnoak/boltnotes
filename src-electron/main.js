@@ -591,11 +591,11 @@ ipcMain.on('drag-window', (event, { mouseX, mouseY }) => {
   const [winX, winY] = win.getPosition();
   win.setPosition(winX + mouseX, winY + mouseY);
 });
-const gotTheLock = app.requestSingleInstanceLock();
+// const gotTheLock = app.requestSingleInstanceLock();
 
-if (!gotTheLock) {
-  app.quit();
-} else {
+// if (!gotTheLock) {
+//   app.quit();
+// } else {
   app.on('second-instance', (event, commandLine) => {
     if (!win) return;
 
@@ -807,7 +807,7 @@ win.on('unmaximize', () => {
       }
     });
   });
-}
+// }
 
 ipcMain.on('welcome:done', async () => {
   const currentConfig = getConfig();
