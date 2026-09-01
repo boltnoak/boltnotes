@@ -550,6 +550,7 @@ body {
     object-fit: cover;
     margin-bottom: .2vh;
     width: 100%;
+    /* border-radius: 1.3vh; */
     pointer-events: none;
 }
 .game-info {
@@ -1212,7 +1213,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1.25vh;
-    z-index: 95;
 }
 .is-closing {
     animation: popupOut .2s ease forwards;

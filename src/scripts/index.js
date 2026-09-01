@@ -445,8 +445,8 @@ async function loadGames() {
 
      if (toPlayFragment.childElementCount === 0) {
         const noGames = document.createElement("div");
-        noGames.className = "playingNow-no-games";
-        noGames.textContent = `${window._t['playing-now-nogames']}`;
+        noGames.className = "toPlay-no-games";
+        noGames.textContent = `${window._t['to-play-nogames']}`;
         toPlayFragment.appendChild(noGames);
     }
 
