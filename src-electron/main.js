@@ -567,7 +567,7 @@ function createAssetsWindow() {
     frame: process.platform !== 'linux',
     transparent: true,
     roundedCorners: false,
-    backgroundColor: '#050505',
+    backgroundColor: '#00000000',
     show: false,
     hasShadow: false,
     resizable: false,
@@ -757,21 +757,21 @@ ipcMain.on('drag-window', (event, { mouseX, mouseY }) => {
 
     const configs = getConfig();
     manageStartup(configs.open_on_startup);
-try {
-    await syncAssets();
-    assetsReady = true;
-    if (assetsWin && !assetsWin.isDestroyed()) {
-      assetsWin.webContents.send('assets-ready');
+    try {
+      await syncAssets();
+      assetsReady = true;
+      if (assetsWin && !assetsWin.isDestroyed()) {
+        assetsWin.webContents.send('assets-ready');
+        assetsWin.destroy();
+      }
+      createWindow();
+      preloadAll();
+    } catch (err) {
+      console.error(err);
+      if (assetsWin && !assetsWin.isDestroyed()) {
+        assetsWin.webContents.send('assets-error', err.message);
+      }
     }
-    assetsWin.hide();
-    createWindow();
-    preloadAll();
-  } catch (err) {
-    console.error(err);
-    if (assetsWin && !assetsWin.isDestroyed()) {
-      assetsWin.webContents.send('assets-error', err.message);
-    }
-  }
     win.once('ready-to-show', async () => {
       makeTray();
       if (!isSilent) {
