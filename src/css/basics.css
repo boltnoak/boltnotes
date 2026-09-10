@@ -381,8 +381,6 @@ html.window-normal .app-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: translate(0%, -50%);
-    padding: 0 1.2vw;
     border-radius: .8vh;
     font-size: 2.2vh;
     font-family: 'Montserrat';
@@ -390,12 +388,17 @@ html.window-normal .app-container {
     white-space: nowrap;
     opacity: 0;
     top: 50%;
+    z-index: 99;
     pointer-events: none;
-    transition: opacity .1s ease, transform .1s ease;
+    transform: translate(-50%, -180%);
+    background-color: var(--tab-hover);
+    padding: 1vh .6vw;
+    transition: opacity .2s ease, transform .1s ease;
+    color: var(--text);
 }
 [data-tooltip]:hover::after {
     opacity: 1;
-    transform: translate(8%, -50%);
+    transform: translate(-50%, -180%);
 }
 .drag {
     -webkit-app-region: drag;
@@ -485,10 +488,12 @@ header {
 .sidebar-header-logo span {
     transition: opacity .1s linear;
     opacity: 0;
+    font-weight: 700;
     height: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
+    width: 100%;
 }
 header:hover,
 html.sidebar-expanded header {
@@ -501,20 +506,28 @@ html.sidebar-expanded header .sidebar-header-logo span {
     opacity: 1;
     display: flex;
 }
+/* header:hover .sidebar-header-logo,
+html.sidebar-expanded header .sidebar-header-logo {
+    background-color: var(--blue);
+} */
 .sidebar-header-logo {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 3vh 0 1.4vh 0;
+    padding: 1vh .65vw;
+    margin: 2vh 0 .25vh 0;
     font-weight: 500;
     /* text-transform: uppercase; */
     font-size: 3vh;
-    gap: .5vw;
+    gap: .65vw;
+    width: 94%;
+    background-color: transparent;
+    transition: background .1s linear;
+    border-radius: 1vh;
 }
 .sidebar-header-logo img {
-    height: 4vh;
-    margin: 0 0 0 .75vw;
-    width: 100%;
+    height: 4.5vh;
+    margin: 0;
 }
 .sidebar-fortnite-icon {
     height: 4vh;

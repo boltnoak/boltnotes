@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.remove('active');
         document.querySelector('#featured-title i').classList.remove('fa-square-poll-horizontal');
         document.querySelector('#featured-title i').classList.add('fa-gamepad');
-        document.querySelector('.featured-title-text').textContent = `${window._t['playing-now']} ${window._t['and']} ${window._t['ajogar']}`;
+        document.querySelector('.featured-title-text').textContent = `${window._t['playing-now']}`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
         document.querySelector('.playingNow-panel').style.display = 'flex';
         document.querySelector('.featured-games').style.display = 'flex';
@@ -452,6 +452,7 @@ async function loadGames() {
 
     playingNow.appendChild(playingFragment);
     toPlayDiv.appendChild(toPlayFragment);
+    enableWheelScroll('.playingNow-panel');
 }
 async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
@@ -488,23 +489,58 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     return div;
 }
 
-const panel = document.querySelector('.playingNow-panel');
-const DISTANCIA_SCROLL = 67; 
-panel.addEventListener('wheel', (e) => {
-  e.preventDefault();
+function enableWheelScroll(selector, distancia = 67) {
+  const panel = document.querySelector(selector);
+  if (!panel) return;
 
-  if (e.deltaY > 0) {
-    panel.scrollBy({
-      top: DISTANCIA_SCROLL,
-      behavior: 'smooth'
+  const storageKey = `scrollPos:${selector}`;
+
+  function getCurrentGame() {
+    const games = panel.querySelectorAll('.game');
+    let closest = null;
+    let closestDist = Infinity;
+
+    games.forEach(game => {
+      const dist = Math.abs(game.offsetTop - panel.scrollTop);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = game;
+      }
     });
-  } else {
-    panel.scrollBy({
-      top: -DISTANCIA_SCROLL,
-      behavior: 'smooth'
-    });
+
+    return closest;
   }
-}, { passive: false });
+
+  function saveCurrentGame() {
+    const current = getCurrentGame();
+    if (current) {
+      localStorage.setItem(storageKey, current.dataset.id);
+    }
+  }
+
+  function restoreScroll() {
+    const savedId = localStorage.getItem(storageKey);
+    if (!savedId) return;
+
+    const target = panel.querySelector(`.game[data-id="${CSS.escape(savedId)}"]`);
+    if (target) {
+      panel.scrollTop = target.offsetTop;
+    }
+  }
+
+  panel.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    panel.scrollBy({
+      top: e.deltaY > 0 ? distancia : -distancia,
+      behavior: 'smooth'
+    });
+
+    clearTimeout(panel._saveTimeout);
+    panel._saveTimeout = setTimeout(saveCurrentGame, 200);
+  }, { passive: false });
+
+  restoreScroll();
+}
 
 function parseBRDate(dateStr) {
     if (!dateStr || typeof dateStr !== 'string') return null;
@@ -731,6 +767,7 @@ async function loadGamesAchie() {
     if (myRenderId === renderIdAchie) {
         await renderInBatches(others, list, false);
     }
+    enableWheelScroll('.platinandoNow-panel');
 }
 async function createGameAchieCard(game, completedIndex = null) {
     const div = document.createElement("div");
@@ -1005,6 +1042,7 @@ async function openGamePopup(el) {
     const achieAddBtn = document.getElementById('achie-add');
     const achieMinusBtn = document.getElementById('achie-minus');
     const completeDateText = document.querySelector('.game-popup-completeDate');
+    const achieDateText = document.querySelector('.achie-popup-completeDate');
     const achieDiv = document.querySelector('.game-achievements');
     const campaignText = document.querySelector('.campaign-info-title-text');
     const noteTittleDiv = document.querySelector('.game-note-title-div');
@@ -1016,6 +1054,7 @@ async function openGamePopup(el) {
     const typeAchieMark = document.querySelector('.type-mark-achie');
 
     const campaignDiv = document.querySelector('.game-campaign-div');
+    const achieStatusDiv = document.querySelector('.gameinfo-achie-div');
     const campaignChange = document.querySelector('.campaign-status-change');
 
     const ratingText = document.querySelector('.game-popup-rating');
@@ -1088,10 +1127,10 @@ async function openGamePopup(el) {
     const normalizedPath = localHeroPath ? localHeroPath.replace(/\\/g, '/') : null;
     const bgValue = normalizedPath 
         ? `url("file://${normalizedPath}")` 
-        : 'url("assets://basics/placeholder.png")';
+        : 'url("assets/placeholder.png")';
 
     mainBG.style.setProperty('--bg-image', bgValue);
-    banner.src = localCoverPath ? `file://${localCoverPath}` : 'assets://basics/placeholder.png';
+    banner.src = localCoverPath ? `file://${localCoverPath}` : 'assets/placeholder.png';
     // logo.src = localLogoPath ? `file://${localLogoPath}` : '';
 
     logo.alt = el.dataset.id;
@@ -1122,7 +1161,14 @@ async function openGamePopup(el) {
         }
     }
 
+    if (gameCampaign.hasCampaign === false) {
+        statusText.style.display = 'none';
+    } else {
+        statusText.style.display = 'flex';
+    }
+
     completeDateText.textContent = gameCampaign.completeDate || "";
+    achieDateText.textContent = achieGame.completeDate || "";
     noteText.innerHTML = gameNote?.note || "";
 
     if (gameCampaign.rating >= 0) {
@@ -1234,8 +1280,8 @@ async function openGamePopup(el) {
         // achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
-        noteTittleDiv.style.display = 'none';
-        note.style.display = 'none';
+        // noteTittleDiv.style.display = 'none';
+        // note.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'jogando') {
         updateStatus(statusText, 'jogando', 'Jogando');
@@ -1243,8 +1289,8 @@ async function openGamePopup(el) {
         // achieSep.style.display = 'none';
         campaignDiv.style.display = 'none';
         ratingDiv.style.display = 'none';
-        noteTittleDiv.style.display = 'none';
-        note.style.display = 'none';
+        // noteTittleDiv.style.display = 'none';
+        // note.style.display = 'none';
     }
     if (gameCampaign.status.toLowerCase() == 'zerado') {
         updateStatus(statusText, 'zerado', 'Zerado');
@@ -1252,19 +1298,22 @@ async function openGamePopup(el) {
         // campaignSep.style.display = 'block';
         campaignDiv.style.display = 'flex';
         ratingDiv.style.display = 'flex';
-        noteTittleDiv.style.display = 'flex';
-        note.style.display = 'flex';
+        // noteTittleDiv.style.display = 'flex';
+        // note.style.display = 'flex';
         applyLocale();
     }
 
     if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'aplatinar') {
         updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
+        achieStatusDiv.style.display = 'none';
     }
     if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'platinando') {
         updateAchie(achieStatusText, 'platinando', 'Platinando');
+        achieStatusDiv.style.display = 'none';
     }
     if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'platinado') {
         updateAchie(achieStatusText, 'platinado', 'Platinado');
+        achieStatusDiv.style.display = 'flex';
     }
 
     if (jogoEncontrado && jogoEncontrado.achieStatus) {

@@ -11,7 +11,6 @@ const AdmZip = require('adm-zip');
 const { XMLParser } = require('fast-xml-parser');
 const { spawn } = require('child_process');
 const { URL } = require('url');
-// const archiver = require('archiver');
 
 process.on('uncaughtException', (err) => {
     if (err.message?.includes('ReadableStream is already closed')) {
@@ -22,7 +21,7 @@ process.on('uncaughtException', (err) => {
 });
 
 const isSilent = process.argv.includes('--silent');
-console.log(isSilent);
+if (isSilent) console.log('Iniciando silenciosamente...');
 
 const ASSETS_DIR = path.join(
   app.getPath('userData'),
@@ -485,24 +484,17 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 
 function createWindow() {
-    const primaryDisplay = screen.getPrimaryDisplay();
-    const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+    const display = screen.getPrimaryDisplay();
+    const { width: screenWidth, height: screenHeight } = display.workAreaSize;
 
-    const larguraProporcional = Math.round(screenWidth * 0.86);
-    const alturaProporcional = Math.round(screenHeight * 0.85);
+    const width = Math.round(screenWidth * 0.86);
+    const height = Math.round(screenHeight * 0.85);
 
     win = new BrowserWindow({
-        width: larguraProporcional,
-        height: alturaProporcional,
-        // autoHideMenuBar: process.platform !== 'linux',
-        // frame: process.platform !== 'linux',
-        // transparent: true,
-        // roundedCorners: false,
+        width: width,
+        height: height,
         backgroundColor: '#050505',
         show: false,
-        // hasShadow: false,
-        // resizable: process.platform == 'linux',
-        // maximizable: true,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,
@@ -521,7 +513,7 @@ app.getAppMetrics().forEach(metric => {
 
 const preloaded = {};
 
-const PAGES = ['fortnite', 'fortnite-chapter', 'notes', 'games'];
+const PAGES = ['fortnite', 'fortnite-chapter', 'games'];
 
 function createHiddenWindow(name) {
   const win = new BrowserWindow({
@@ -542,16 +534,13 @@ function preloadAll() {
 
 function goTo(name) {
   const nextWin = preloaded[name];
-  if (!nextWin) return; // fallback: página não pré-carregada, carregar normal
+  if (!nextWin) return;
 
   nextWin.show();
   if (mainWindow && mainWindow !== nextWin) {
-    mainWindow.hide(); // ou .destroy() se quiser liberar memória
+    mainWindow.hide();
   }
   mainWindow = nextWin;
-
-  // já cria uma nova janela oculta pra substituir a que virou "main"
-  // pra manter sempre uma versão fresca em standby (opcional)
   createHiddenWindow(name);
 }
 
@@ -566,12 +555,11 @@ function createAssetsWindow() {
     autoHideMenuBar: process.platform !== 'linux',
     frame: process.platform !== 'linux',
     transparent: true,
-    roundedCorners: false,
     backgroundColor: '#00000000',
     show: false,
     hasShadow: false,
     resizable: false,
-    maximizable: true,
+    maximizable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -591,11 +579,11 @@ ipcMain.on('drag-window', (event, { mouseX, mouseY }) => {
   const [winX, winY] = win.getPosition();
   win.setPosition(winX + mouseX, winY + mouseY);
 });
-// const gotTheLock = app.requestSingleInstanceLock();
+const gotTheLock = app.requestSingleInstanceLock();
 
-// if (!gotTheLock) {
-//   app.quit();
-// } else {
+if (!gotTheLock) {
+    app.quit();
+} else {
   app.on('second-instance', (event, commandLine) => {
     if (!win) return;
 
@@ -775,11 +763,13 @@ ipcMain.on('drag-window', (event, { mouseX, mouseY }) => {
     }
     win.once('ready-to-show', async () => {
       makeTray();
+      if (configs.maximize_on_start) {
+        win.maximize();
+      }
       if (!isSilent) {
-        if (configs.maximize_on_start) {
-          win.maximize();
-        }
         win.show();
+      } else {
+        win.hide();
       }
 
       if (app.isPackaged) {
@@ -808,7 +798,7 @@ win.on('unmaximize', () => {
       }
     });
   });
-// }
+}
 
 ipcMain.on('welcome:done', async () => {
   const currentConfig = getConfig();
@@ -850,7 +840,7 @@ autoUpdater.on('update-downloaded', (info) => {
     new Notification({
         title: 'Atualização baixada!',
         body: `Versão: ${info.version}`,
-        icon: path.join(__dirname, 'icon.png')
+        icon: path.join(__dirname, 'tray-icon.png')
     }).show();
 });
 ipcMain.handle('update:check-status', () => {
@@ -1108,7 +1098,7 @@ function manageStartup(abrirComOOS) {
 
       const isPackaged = app.isPackaged;
       const iconPath = isPackaged
-        ? path.join(process.resourcesPath, 'tray-icon.png')
+        ? path.join(process.resourcesPath, 'app-icon.png')
         : path.join('build', 'icon.png');
       const execPath = process.env.APPIMAGE || app.getPath('exe');
 
@@ -1168,9 +1158,7 @@ function navigateTo(htmlFile) {
 
     win.loadFile(path.join(BUNDLE, 'pages', htmlFile));
     win.webContents.once('did-finish-load', () => {
-        if (!isSilent) {
-          win.show();
-        }
+        win.show();
         win.focus();
     });
 }
@@ -1205,13 +1193,19 @@ function makeTray() {
 
   const iconPath = isPackaged
       ? path.join(process.resourcesPath, 'tray-icon.png')
-      : path.join('build', 'icon.png');
+      : path.join('build', 'tray-icon.png');
 
     trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
     trayNameIcon = nativeImage.createFromPath(iconPath).resize({ width: 14, height: 14 });
 
     tray = new Tray(trayIcon);
-    tray.setToolTip('BoltNotes');
+    if (app.isPackaged) {
+      const name = 'BoltNotes';
+      tray.setToolTip(name);
+    } else {
+      const name = 'BoltNotes (Dev)';
+      tray.setToolTip(name);
+    }
     tray.setContextMenu(buildTrayMenu(trayNameIcon));
 
     tray.on('click', () => {
