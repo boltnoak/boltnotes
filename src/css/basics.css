@@ -264,6 +264,20 @@ body {
     background: transparent !important;
     font-family: 'Montserrat';
 }
+.normal-btn {
+    background-color: var(--btn);
+    color: var(--text);
+    padding: 1vh .5vw;
+    border-radius: .8vh;
+    cursor: pointer;
+    font-weight: 600;
+    scale: 1;
+    transition: background .15s linear, scale .05s linear;
+}
+.normal-btn:hover {
+    background-color: var(--btn-hover);
+    scale: 1.1;
+}
 .pageBody {
     width: 95.3vw;
     height: 100vh;

@@ -8,7 +8,8 @@ const noteTitleElement = document.getElementById('title-note');
 const editBtn = document.getElementById("edit-note");
 const newBtn = document.getElementById("newNote-add");
 const toggleDeleteBtn = document.getElementById('toggleDeleteBtns');
-titleBar.style.display = 'none';
+// titleBar.style.display = 'none';
+document.querySelector('.note-list-bar').style.display = 'flex';
 
 /////////////////
 /// VARIÁVEIS ///
@@ -19,6 +20,7 @@ let editing = false;
 let isEditingTitle = false;
 let oldTitleName = "";
 let saveTimeout;
+let isFirstLoad = true;
 
 ////////////////////
 /// RENDERIZAÇÃO ///
@@ -88,7 +90,7 @@ async function loadNotes() {
 
   tablist.innerHTML = names.map(name => `
       <p class="tab${name === activeName ? ' active' : ''}" data-name="${name}">
-          <i class="fa-solid fa-grip-vertical tab-drag-handle"></i>
+          <!-- <i class="fa-solid fa-grip-vertical tab-drag-handle"></i> -->
           <span class="tab-name">${name}</span>
           <i id="delete-note" class="fa-solid fa-trash" style="display: none;"></i>
       </p>`).join("");
@@ -96,7 +98,7 @@ async function loadNotes() {
   if (sortableInstance) sortableInstance.destroy();
   sortableInstance = Sortable.create(tablist, {
     animation: 150,
-    handle: '.tab-drag-handle',
+    handle: '.tab',
     direction: 'vertical',
     forceFallback: true,
     fallbackOnBody: true,
@@ -106,7 +108,12 @@ async function loadNotes() {
     }
   });
 
-  openFromHash() || openTab(tablist.querySelector(".tab.active") || tablist.querySelector(".tab"));
+  // if (isFirstLoad) {
+  //   isFirstLoad = false;
+  //   openFromHash();
+  // } else {
+  //   openFromHash() || openTab(tablist.querySelector(".tab.active") || tablist.querySelector(".tab"));
+  // }
 }
 
 tablist.addEventListener("click", (e) => {
@@ -125,7 +132,7 @@ function openTab(tab) {
   tablist.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   tab.classList.add("active");
   loadNote(tab, false);
-  titleBar.style.display = 'flex';
+  // titleBar.style.display = 'flex';
 }
 
 async function loadNote(tab, edit = false) {
@@ -139,11 +146,14 @@ async function loadNote(tab, edit = false) {
 
     rawContent = decodeHtml(data);
     editing = edit;
-    editBtn.className = editing ? "fa-solid fa-floppy-disk" : "fa-solid fa-pen-to-square";
+    editBtn.className = editing ? "normal-btn fa-solid fa-floppy-disk" : "normal-btn fa-solid fa-pen-to-square";
 
     renderContent();
     noteTitleElement.textContent = name;
     window.location.hash = safeName;
+    document.querySelector('.note-list-bar').style.display = 'none';
+    document.querySelector('.note-view').style.display = 'flex';
+    document.querySelector('.open-note-bar').style.display = 'flex';
   } catch (err) {
     console.error("Erro ao carregar a nota:", err);
   }
@@ -174,7 +184,7 @@ async function deleteNote(name) {
   if (!tablist.querySelector('.tab')) {
     rawContent = '';
     content.innerHTML = '';
-    titleBar.style.display = 'none';
+    // titleBar.style.display = 'none';
   }
 }
 
@@ -183,7 +193,7 @@ async function createNote() {
   let name = baseName;
   let counter = 1;
   while ([...tablist.querySelectorAll('.tab')].some(t => t.dataset.name === name)) {
-    name = `${baseName} ( ${counter} )`;
+    name = `${baseName} (${counter})`;
     counter++;
   }
 
@@ -194,15 +204,21 @@ async function createNote() {
     await window.api.notes.create(name);
     await loadNotes();
 
-    requestAnimationFrame(() => {
-      const newTab = [...tablist.querySelectorAll('.tab')].find(t => t.dataset.name === name);
-      if (!newTab) return;
-      openTab(newTab);
-      loadNote(newTab, true).then(() => content.focus());
-    });
+    // requestAnimationFrame(() => {
+    //   const newTab = [...tablist.querySelectorAll('.tab')].find(t => t.dataset.name === name);
+    //   if (!newTab) return;
+    //   openTab(newTab);
+    //   loadNote(newTab, true).then(() => content.focus());
+    // });
   } catch (err) {
     console.error("Erro ao criar nota:", err);
   }
+}
+function exitNote() {
+  window.location.hash = "";
+  document.querySelector('.note-view').style.display = 'none';
+  document.querySelector('.open-note-bar').style.display = 'none';
+  document.querySelector('.note-list-bar').style.display = 'flex';
 }
 
 //////////////
@@ -214,7 +230,7 @@ function editToggle() {
     rawContent = getTextFromEditor();
     saveNote();
   }
-  editBtn.className = editing ? "fa-solid fa-floppy-disk" : "fa-solid fa-pen-to-square";
+  editBtn.className = editing ? "normal-btn fa-solid fa-floppy-disk" : "normal-btn fa-solid fa-pen-to-square";
   renderContent();
 }
 

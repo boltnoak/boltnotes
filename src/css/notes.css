@@ -2,8 +2,10 @@
 
 .pageBody {
     display: flex;
-    flex-direction: row;
-    margin-top: 2vh;
+    flex-direction: column;
+    /* margin-top: 2vh; */
+    gap: 1vh;
+    position: relative;
 }
 
 /* Básico */
@@ -44,27 +46,30 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 23%;
-    padding: 0 0 0 1vw;
-    position: relative;
+    width: 98%;
+    margin: 1vh 1vw;
+    /* position: absolute; */
     justify-content: space-between;
     gap: 1.5vh;
 }
 #tabs {
-    display: flex;
+    display: grid;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
-    gap: 1vh;
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
+    grid-auto-rows: 30vh;
+    gap: 1.5vh .75vw;
 }
 #tabs::-webkit-scrollbar-thumb {
     display: none;
 }
 .tab {
     display: flex;
-    font-size: 2vh;
-    font-weight: 500;
+    font-size: 3vh;
+    font-weight: 550;
     flex-direction: row;
     background-color: var(--tab);
     padding: 2vh 1vw;
@@ -73,20 +78,28 @@
     border-radius: 1.25vh;
     cursor: pointer;
     margin: 0;
-    justify-content: start;
+    justify-content: center;
     align-items: center;
     transition: background .1s linear;
     user-select: none;
     overflow: hidden;
 }
 .tab-name {
-    width: 100%;
-    flex: 1;
-    font-weight: 600;
+    width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
+    pointer-events: none;
 }
 .tab.active {
-    background-color: var(--tab-active);
+    /* background-color: var(--tab-active); */
 }
+.tab:focus {
+  background-color: #007bff;
+  color: white;
+}
+
 .tab:hover {
     background-color: var(--tab-hover);
 }
@@ -98,17 +111,21 @@
     display: none !important;
 }
 #delete-note {
-    transition: all .1s linear;
-    margin-right: .45vh;
+    transition: background .1s linear, color .1s linear;
+    /* margin-right: .45vh; */
     display: flex;
-    justify-self: end;
+    justify-content: center;
+    align-items: center;
     position: absolute;
-    right: .35vw;
-    height: fit-content;
-    color: var(--text);
-    background-color: var(--btn);
-    padding: 1vh .5vw;
-    border-radius: 1vh;
+    /* right: .35vw; */
+    width: 100%;
+    height: 100%;
+    color: var(--tab);
+    background-color: var(--tab-active);
+    z-index: 2;
+    font-size: 32vh;
+    /* padding: 1vh .5vw; */
+    /* border-radius: 1vh; */
 }
 #delete-note:hover {
     color: var(--text-red);
@@ -116,6 +133,9 @@
 }
 #delete-note:hover .tab {
     background-color: var(--tab);
+}
+#delete-note:hover .tab-name {
+    pointer-events: none;
 }
 .newNote-input {
     display: flex;
@@ -175,7 +195,7 @@ body.dragging-tab * {
 #editSorting:hover {
     background-color: var(--tab-hover);
 }
-#toggleDeleteBtns {
+/* #toggleDeleteBtns {
     background-color: transparent;
     padding: 1vh .5vw;
     border-radius: 1vh;
@@ -183,93 +203,95 @@ body.dragging-tab * {
     transition: all .15s linear;
     color: var(--text);
     cursor: pointer;
-    z-index: 98;
     background-color: var(--btn);
     color: var(--text);
 }
 #toggleDeleteBtns:hover {
     background-color: var(--btn-hover);
-}
-#newNote-add {
-    background-color: transparent;
-    padding: 1vh .5vw;
-    border-radius: 1vh;
-    text-align: center;
-    transition: background .15s linear;
-    color: var(--text);
-    cursor: pointer;
-    z-index: 98;
-    background-color: var(--btn);
-    color: var(--text);
-}
-#newNote-add:hover {
-    background-color: var(--btn-hover);
-}
+} */
 #note-list .sep-bar {
     margin: 0 0 .5vh 0;
 }
 
 /* Visualização de notas */
 .note-view {
-    display: flex;
+    display: none;
     flex-direction: column;
     width: 100%;
-    height: 100%;
+    height: 89%;
     flex: 1;
+    z-index: 50;
+    position: absolute;
+    background-color: var(--bg);
+    bottom: 0;
 }
 .title-bar {
-    display: none;
-    height: 6vh;
-    margin: 0 1vw 1.3vh 0;
+    display: flex;
+    height: 10vh;
+    margin: 0;
     flex-direction: row;
     align-items: center;
     text-align: center;
     justify-content: space-between;
     gap: .5vw;
-    background-color: var(--btn-color);
-    border-radius: 1.25vh;
-    padding: 1vh .6vw;
+    /* background-color: var(--btn-color); */
+    /* border-radius: 1.25vh; */
+    padding: .8vh 1.25vw .65vh .8vw;
+    z-index: 97;
+    border-bottom: solid .76vh var(--tab-active);
+    background-image: linear-gradient(to bottom, transparent 0%, var(--tab) 80%);
 }
-#title-note {
-    font-weight: 600;
+.note-list-bar {
+    display: flex;
+    margin: 0;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+    gap: .5vw;
+    width: 100%;
+    height: 100%;
+}
+.open-note-bar {
+    display: none;
+    margin: 0;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+    gap: .5vw;
+    width: 100%;
+    height: 100%;
+}
+.open-note-bar div,
+.note-list-bar div {
+    display: flex;
+    flex-direction: row;
+    gap: .65vw;
+    align-items: center;
+}
+#title-note,
+.note-list-bar p {
+    font-weight: 800;
     padding: 0;
     padding: .25vh .25vw;
     border: solid .5vh transparent;
     border-radius: 1vh;
-    font-size: 3vh;
+    font-size: 5vh;
     margin: 0;
-    color: var(--btn-text-color);
-    caret-color: var(--btn-text-color);
+    color: var(--text);
+    caret-color: var(--text-gray);
     cursor: text;
 }
 #title-note:focus {
-    border: solid .5vh var(--btn-text-color);
+    border: solid .5vh var(--btn-hover);
     border-radius: 1vh;
     outline: none;
 }
-#edit-note {
-    cursor: pointer;
-    color: var(--btn-hover-color);
-    font-size: 3vh;
-    background-color: var(--btn-text-color);
-    padding: 1vh .75vw;
-    border-radius: 1vh;
-    width: fit-content;
-    height: fit-content;
-    transition: all .1s linear;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-#edit-note:hover {
-    color: var(--btn-text-color);
-    background-color: var(--btn-hover-color);
-}
 #content {
-    margin: 0 1vw 0 .5vw;
+    margin: 0 0 0 1.5vw;
     font-size: 2.5vh;
-    padding: 0 0 2vh 0;
+    padding: 1.35vh 0 2vh 0;
     white-space: pre-wrap;
     caret-color: var(--text);
     user-select: text;
