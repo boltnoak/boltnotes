@@ -29,7 +29,7 @@ body {
 .sidebar {
     width: 100%;
     flex: 1;
-    padding: 0 .65vw 1.4vh .65vw;
+    padding: 0 .65vw 1.5vh .65vw;
     padding-top: 1.55vh;
     /* margin: 0 0 1.55vh 0; */
     justify-content: start;
@@ -163,7 +163,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1vh;
-    height: 52.5vh;
+    height: 52.4vh;
 }
 #toPlaySection-title {
     display: flex;
@@ -282,6 +282,21 @@ body {
     justify-content: center;
     align-items: center;
     opacity: .5;
+}
+.gamepanel-no-games {
+    color: var(--text-dark-gray);
+    font-family: 'Montserrat';
+    font-weight: 600;
+    font-size: 2.25vh;
+    margin: 0;
+    width: 100%;
+    height: 95%;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    opacity: .5;
+    position: absolute;
 }
 
 /* .platinandoNowSection {
@@ -2470,6 +2485,9 @@ body.delete-mode-active .game:hover::after {
 .game.platinado .status-text {
     color: var(--bg);
 }
+.game.aplatinar .status-text {
+    font-weight: 625;
+}
 .game:hover .status-div {
     background-color: var(--btn-hover);
 }
@@ -2496,6 +2514,7 @@ body.delete-mode-active .game:hover::after {
     flex: 1;
     overflow: hidden;
     overflow-y: auto;
+    position: relative;
 }
 .toPlay-panel {
     display: grid;
@@ -2503,11 +2522,12 @@ body.delete-mode-active .game:hover::after {
     grid-auto-rows: 22vh;
     padding: .5vh .25vw;
     width: 100%;
-    height: 45.5vh;
+    height: 45.4vh;
     gap: 1.5vh .75vw;
     flex: 1;
     overflow: hidden;
     overflow-y: auto;
+    position: relative;
 }
 .gameinfo-achie-div {
     display: flex;
@@ -2548,4 +2568,45 @@ body.delete-mode-active .game:hover::after {
     font-weight: 700;
     font-size: 2vh;
     color: var(--text);
+}
+
+.noGames {
+    height: 105%;
+    grid-column: 1 / -1;
+    width: 100%;
+    background-color: var(--tab);
+    opacity: .5;
+    background-image: url(../assets/no-games.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    user-select: none;
+}
+#view-campaigns.noGames {
+    display: flex ;
+    height: 85% ;
+    align-items: start ;
+    grid-template-columns: none ;
+    grid-template-rows: none ;
+    flex: none ;
+    visibility: visible ;
+    overflow: hidden;
+}
+#view-achievements.noGames {
+    display: flex ;
+    height: 85% ;
+    align-items: start ;
+    grid-template-columns: none;
+    grid-template-rows: none ;
+    flex: none ;
+    visibility: visible ;
+    overflow: hidden;
+}
+.view-options.noGames {
+    opacity: 0;
+    pointer-events: none;
+}
+#view-campaigns.noGames::-webkit-scrollbar,
+#view-achievements.noGames::-webkit-scrollbar {
+    display: none;
 }

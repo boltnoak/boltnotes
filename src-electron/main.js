@@ -1860,72 +1860,72 @@ ipcMain.handle('games:delete', async (_, gameName) => {
 });
 const activeDownloads = new Set();
 
-ipcMain.handle('video:download-on-demand', async (event, { url, fileName, folderCode }) => {
-  const safeFileName = path.basename(fileName);
-  const safeFolderCode = folderCode.replace(/[^a-z0-9-]/gi, '');
+// ipcMain.handle('video:download-on-demand', async (event, { url, fileName, folderCode }) => {
+//   const safeFileName = path.basename(fileName);
+//   const safeFolderCode = folderCode.replace(/[^a-z0-9-]/gi, '');
 
-  if (!url || !safeFileName || !safeFolderCode) {
-    return { success: false, error: 'Parâmetros inválidos' };
-  }
+//   if (!url || !safeFileName || !safeFolderCode) {
+//     return { success: false, error: 'Parâmetros inválidos' };
+//   }
 
-  try {
-    const parsedUrl = new URL(url);
-    if (parsedUrl.protocol !== 'https:') {
-      return { success: false, error: 'Protocolo não autorizado. Use HTTPS.' };
-    }
-  } catch (err) {
-    return { success: false, error: 'URL malformada' };
-  }
+//   try {
+//     const parsedUrl = new URL(url);
+//     if (parsedUrl.protocol !== 'https:') {
+//       return { success: false, error: 'Protocolo não autorizado. Use HTTPS.' };
+//     }
+//   } catch (err) {
+//     return { success: false, error: 'URL malformada' };
+//   }
 
-  const targetFolder = path.join(ASSETS_DIR, `fortnite-${safeFolderCode}-assets`);
-  const finalPath = path.join(targetFolder, safeFileName);
-  const tempPath = finalPath + '.tmp';
+//   const targetFolder = path.join(ASSETS_DIR, `fortnite-${safeFolderCode}-assets`);
+//   const finalPath = path.join(targetFolder, safeFileName);
+//   const tempPath = finalPath + '.tmp';
 
-  if (!finalPath.startsWith(ASSETS_DIR + path.sep)) {
-    return { success: false, error: 'Caminho inválido' };
-  }
+//   if (!finalPath.startsWith(ASSETS_DIR + path.sep)) {
+//     return { success: false, error: 'Caminho inválido' };
+//   }
 
-  if (fs.existsSync(finalPath)) {
-    return { success: true, path: finalPath, cached: true };
-  }
+//   if (fs.existsSync(finalPath)) {
+//     return { success: true, path: finalPath, cached: true };
+//   }
 
-  if (activeDownloads.has(finalPath)) {
-    return { success: false, error: 'Download já está em andamento' };
-  }
+//   if (activeDownloads.has(finalPath)) {
+//     return { success: false, error: 'Download já está em andamento' };
+//   }
 
-  activeDownloads.add(finalPath);
+//   activeDownloads.add(finalPath);
 
-  try {
-    if (!fs.existsSync(targetFolder)) {
-      fs.mkdirSync(targetFolder, { recursive: true });
-    }
+//   try {
+//     if (!fs.existsSync(targetFolder)) {
+//       fs.mkdirSync(targetFolder, { recursive: true });
+//     }
 
-    await downloadFile(url, tempPath, (downloaded, total) => {
-      const percent = total ? Math.round((downloaded * 100) / total) : 0;
+//     await downloadFile(url, tempPath, (downloaded, total) => {
+//       const percent = total ? Math.round((downloaded * 100) / total) : 0;
 
-      if (!event.sender.isDestroyed()) {
-        event.sender.send('video:download-progress', { fileName: safeFileName, percent });
-      }
-    });
+//       if (!event.sender.isDestroyed()) {
+//         event.sender.send('video:download-progress', { fileName: safeFileName, percent });
+//       }
+//     });
 
-    fs.renameSync(tempPath, finalPath);
+//     fs.renameSync(tempPath, finalPath);
 
-    activeDownloads.delete(finalPath);
+//     activeDownloads.delete(finalPath);
 
-    return { success: true, path: finalPath };
+//     return { success: true, path: finalPath };
     
-  } catch (error) {
-    console.error(`Erro ao baixar ${safeFileName}:`, error);
+//   } catch (error) {
+//     console.error(`Erro ao baixar ${safeFileName}:`, error);
 
-    if (fs.existsSync(tempPath)) {
-      fs.unlinkSync(tempPath);
-    }
+//     if (fs.existsSync(tempPath)) {
+//       fs.unlinkSync(tempPath);
+//     }
 
-    activeDownloads.delete(finalPath);
+//     activeDownloads.delete(finalPath);
 
-    return { success: false, error: error.message };
-  }
-});
+//     return { success: false, error: error.message };
+//   }
+// });
 
 // ipcMain.handle('backup:export', async () => {
 //     const result = await dialog.showSaveDialog({

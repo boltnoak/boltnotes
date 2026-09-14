@@ -4,6 +4,19 @@ const title = document.getElementById('seasonTrailer-title');
 let controlsTimeout = null;
 let mouseInsideVideo = false;
 
+async function getLocalVideoUrl(folderCode, fileName) {
+  try {
+    const opfsRoot = await navigator.storage.getDirectory();
+    const assetsRoot = await opfsRoot.getDirectoryHandle('assets');
+    const folder = await assetsRoot.getDirectoryHandle(`fortnite-${folderCode}-assets`);
+    const fileHandle = await folder.getFileHandle(fileName);
+    const file = await fileHandle.getFile();
+    return URL.createObjectURL(file); // ex: blob:https://seusite.com/xxxx
+  } catch {
+    return null; // arquivo não existe localmente ainda
+  }
+}
+
 function showControls(wrapper) {
     if (!wrapper) return;
 

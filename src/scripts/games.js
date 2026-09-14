@@ -135,7 +135,7 @@ async function loadGames() {
     const toPlayDiv = document.querySelector(".toPlay-panel");
     const list = document.getElementById("view-campaigns");
     // const libaryList = document.getElementById("view-campaigns");
-    if (!playingNow || !list) return;
+    if (!playingNow || !toPlayDiv || !list) return;
 
     playingNow.innerHTML = "";
     toPlayDiv.innerHTML = "";
@@ -167,7 +167,7 @@ async function loadGames() {
         combinedGame._completeMs = parseBRDate(combinedGame.completeDate)?.getTime?.() ?? NaN;
         combinedGame._completedIndex = null;
 
-        if (status !== "zerado" && status !== "jogando" && !hasProgress && combinedGame.releaseDate?.includes("/")) {
+        if (status !== "zerado" && status !== "jogando" && status !== "ajogar" && !hasProgress && combinedGame.releaseDate?.includes("/")) {
             const parts = combinedGame.releaseDate.split("/");
             if (parts.length === 3) {
                 const d = parseInt(parts[0], 10);
@@ -231,18 +231,27 @@ async function loadGames() {
         if (sort === "rating-low") return (a.rating || 0) - (b.rating || 0);
         return 0;
     });
-    const toPlayCards = await Promise.all(
-        toPlay.map(game => createGameCard(game))
-    );
-    const toPlayFragment = document.createDocumentFragment();
-    for (const card of toPlayCards) toPlayFragment.appendChild(card);
 
-     if (toPlayFragment.childElementCount === 0) {
+    const toPlayCards = await Promise.all(toPlay.map(game => createGameCard(game)));
+    const toPlayFragment = document.createDocumentFragment();
+
+    for (const card of toPlayCards) toPlayFragment.appendChild(card);
+    toPlayDiv.appendChild(toPlayFragment);
+
+    const validToPlay = toPlayDiv.querySelectorAll(".game:not(.no-campaign)").length;
+    if (validToPlay === 0) {
         const noGames = document.createElement("div");
-        noGames.className = "playingNow-no-games";
+        noGames.className = "gamepanel-no-games";
         noGames.textContent = `${window._t['to-play-nogames']}`;
-        toPlayFragment.appendChild(noGames);
+        toPlayDiv.appendChild(noGames);
     }
+
+    toPlayCards.forEach((card, index) => {
+        setTimeout(() => {
+            if (myRenderId === renderIdGames) {
+            card.classList.add("fade-in");
+        }}, index * 40); 
+    });
 
     const others = [...backlog, ...completed];
 
@@ -269,7 +278,6 @@ async function loadGames() {
             for (const card of cards) fragment.appendChild(card);
             
             container.appendChild(fragment);
-            toPlayDiv.appendChild(toPlayFragment);
 
             requestAnimationFrame(() => {
                 cards.forEach((card, index) => {
@@ -278,13 +286,6 @@ async function loadGames() {
                             card.classList.add("fade-in");
                         }
                     }, index * 40); 
-                });
-                toPlayCards.forEach((card, index) => {
-                    setTimeout(() => {
-                        if (myRenderId === renderIdGames) {
-                            card.classList.add("fade-in");
-                        }
-                    }, index * 40);
                 });
             });
 
@@ -300,7 +301,25 @@ async function loadGames() {
     if (myRenderId === renderIdGames) {
         await renderInBatches(others, list, false);
     }
+    toPlayCards.forEach((card, index) => {
+        setTimeout(() => {
+            if (myRenderId === renderIdAchie) {
+                card.classList.add("fade-in");
+        }}, index * 40);
+    });
     enableWheelScroll('.playingNow-panel');
+
+    // list.classList.remove('noGames');
+    // document.querySelector('.view-options').classList.remove('noGames');
+
+    // const validZerado = list.querySelectorAll(".game:not(.no-campaign)").length;
+    // if (validZerado === 0) {
+    //     const noGames = document.createElement("div");
+    //     noGames.className = "main-gamepanel-no-games";
+    //     list.appendChild(noGames);
+    //     list.classList.add('noGames');
+    //     document.querySelector('.view-options').classList.add('noGames');
+    // }
 }
 async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
@@ -550,9 +569,7 @@ async function loadGamesAchie() {
     });
 
     const totalCompleted = completed.length;
-    const toPlatinarCards = await Promise.all(
-        toPlatinar.map(game => createGameAchieCard(game))
-    );
+
     completed.forEach((game, idx) => {
         if (sort === "date-recent") {
             game._completedIndex = totalCompleted - idx;
@@ -567,14 +584,17 @@ async function loadGamesAchie() {
         return 0;
     });
 
+    const toPlatinarCards = await Promise.all(toPlatinar.map(game => createGameAchieCard(game)));
     const toPlatinarFragment = document.createDocumentFragment();
-    for (const card of toPlatinarCards) toPlatinarFragment.appendChild(card);
 
-     if (toPlatinarFragment.childElementCount === 0) {
+    for (const card of toPlatinarCards) toPlatinarFragment.appendChild(card);
+    toPlatinarDiv.appendChild(toPlatinarFragment);
+
+     if (toPlatinarDiv.childElementCount === 0) {
         const noGames = document.createElement("div");
-        noGames.className = "playingNow-no-games";
+        noGames.className = "gamepanel-no-games";
         noGames.textContent = `${window._t['to-platinum-nogames']}`;
-        toPlatinarFragment.appendChild(noGames);
+        toPlatinarDiv.appendChild(noGames);
     }
 
     const others = [...backlog, ...completed];
@@ -602,7 +622,6 @@ async function loadGamesAchie() {
             for (const card of cards) fragment.appendChild(card);
             
             container.appendChild(fragment);
-            toPlatinarDiv.appendChild(toPlatinarFragment);
 
             requestAnimationFrame(() => {
                 cards.forEach((card, index) => {
@@ -611,13 +630,6 @@ async function loadGamesAchie() {
                             card.classList.add("fade-in");
                         }
                     }, index * 40); 
-                });
-                toPlatinarCards.forEach((card, index) => {
-                    setTimeout(() => {
-                        if (myRenderId === renderIdAchie) {
-                            card.classList.add("fade-in");
-                        }
-                    }, index * 40);
                 });
             });
 
@@ -632,7 +644,22 @@ async function loadGamesAchie() {
     if (myRenderId === renderIdAchie) {
         await renderInBatches(others, list, false);
     }
+    toPlatinarCards.forEach((card, index) => {
+        setTimeout(() => {
+            if (myRenderId === renderIdAchie) {
+                card.classList.add("fade-in");
+        }}, index * 40);
+    });
     enableWheelScroll('.platinandoNow-panel');
+
+    // list.classList.remove('noGames');
+    // document.querySelector('.view-options').classList.remove('noGames');
+
+    // const validZerado = list.querySelectorAll(".game:not(.no-campaign)").length;
+    // if (validZerado === 0) {
+    //     list.classList.add('noGames');
+    //     document.querySelector('.view-options').classList.add('noGames');
+    // }
 }
 async function createGameAchieCard(game, completedIndex = null) {
     const div = document.createElement("div");

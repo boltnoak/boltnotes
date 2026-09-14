@@ -35,14 +35,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
     get: () => ipcRenderer.invoke('i18n:get')
   },
 
-  video: {
-    downloadOnDemand: (data) => ipcRenderer.invoke('video:download-on-demand', data),
-    onProgress: (callback) => {
-      const listener = (_event, progressData) => callback(progressData);
-      ipcRenderer.on('video:download-progress', listener);
-      return () => ipcRenderer.removeListener('video:download-progress', listener);
-    }
-  },
+  // video: {
+  //   downloadOnDemand: (data) => ipcRenderer.invoke('video:download-on-demand', data),
+  //   onProgress: (callback) => {
+  //     const listener = (_event, progressData) => callback(progressData);
+  //     ipcRenderer.on('video:download-progress', listener);
+  //     return () => ipcRenderer.removeListener('video:download-progress', listener);
+  //   }
+  // },
 
   backup: {
     export: () => ipcRenderer.invoke('backup:export'),

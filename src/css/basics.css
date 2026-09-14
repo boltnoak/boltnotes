@@ -739,8 +739,8 @@ footer {
     width: 22vw;
     border-radius: 2vh;
     margin: 0;
-    left: 1vw;
-    bottom: 8.5vh;
+    right: 2vw;
+    bottom: 3vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -752,6 +752,7 @@ footer {
     transition: transform .1s linear, opacity .1s linear;
     opacity: 0;
     visibility: hidden;
+    box-shadow: 0 0 1.25vh var(--btn-hover);
 }
 .download-status-div.show {
     transform: translateY(0);
@@ -791,14 +792,14 @@ footer {
     font-weight: 800;
     font-size: 3vh;
     text-align: center;
-    background-color: var(--tab-active);
+    background-color: var(--tab-hover);
     width: 100%;
     padding: .6vh 0;
-    border-radius: .5vh;
+    /* border-radius: .5vh; */
 }
 .download-status-name {
     margin: 1vh .5vw;
-    font-weight: 500;
+    font-weight: 550;
     font-size: 2.5vh;
     color: var(--text-gray);
     text-align: center;
@@ -822,12 +823,13 @@ footer {
 }
 .download-status-percentage {
     margin: 0;
-    font-weight: 700;
+    font-weight: 750;
     font-size: 2vh;
     text-align: center;
     color: var(--blue);
     padding: 0;
     border-radius: .5vh;
+    width: 2vw;
 }
 
 

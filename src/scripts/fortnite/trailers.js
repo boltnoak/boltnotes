@@ -1,6 +1,109 @@
 let cachedTrailers = null;
 let cachedReviews = null;
 
+const activeDownloads = new Set();
+
+function sanitizeFileName(fileName) {
+  return fileName.replace(/[\\/]/g, '').replace(/\.\./g, '');
+}
+function sanitizeFolderCode(folderCode) {
+  return folderCode.replace(/[^a-z0-9-]/gi, '');
+}
+
+async function getLocalVideoUrl(folderCode, fileName) {
+  try {
+    const opfsRoot = await navigator.storage.getDirectory();
+    const assetsRoot = await opfsRoot.getDirectoryHandle('assets');
+    const folder = await assetsRoot.getDirectoryHandle(`fortnite-${folderCode}-assets`);
+    const fileHandle = await folder.getFileHandle(fileName);
+    const file = await fileHandle.getFile();
+    return URL.createObjectURL(file); // ex: blob:https://seusite.com/xxxx
+  } catch {
+    return null; // arquivo não existe localmente ainda
+  }
+}
+
+async function getAssetsRoot() {
+  const opfsRoot = await navigator.storage.getDirectory();
+  return opfsRoot.getDirectoryHandle('assets', { create: true });
+}
+
+async function downloadOnDemand(url, fileName, folderCode, onProgress) {
+  const safeFileName = sanitizeFileName(fileName);
+  const safeFolderCode = sanitizeFolderCode(folderCode);
+
+  if (!url || !safeFileName || !safeFolderCode) {
+    return { success: false, error: 'Parâmetros inválidos' };
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    if (parsedUrl.protocol !== 'https:') {
+      return { success: false, error: 'Protocolo não autorizado. Use HTTPS.' };
+    }
+  } catch {
+    return { success: false, error: 'URL malformada' };
+  }
+
+  const assetsRoot = await getAssetsRoot();
+  const folderName = `fortnite-${safeFolderCode}-assets`;
+  const targetFolder = await assetsRoot.getDirectoryHandle(folderName, { create: true });
+  const cacheKey = `${folderName}/${safeFileName}`;
+
+  try {
+    await targetFolder.getFileHandle(safeFileName);
+    return { success: true, path: cacheKey, cached: true };
+  } catch { /* não existe ainda */ }
+
+  if (activeDownloads.has(cacheKey)) {
+    return { success: false, error: 'Download já está em andamento' };
+  }
+  activeDownloads.add(cacheKey);
+
+  const tempName = safeFileName + '.tmp';
+
+  try {
+    const response = await fetch(url); // exige CORS liberado no servidor de origem
+    if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
+
+    const total = Number(response.headers.get('content-length')) || 0;
+    let downloaded = 0;
+
+    const tempHandle = await targetFolder.getFileHandle(tempName, { create: true });
+    const writable = await tempHandle.createWritable();
+    const reader = response.body.getReader();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      await writable.write(value);
+      downloaded += value.byteLength;
+      onProgress?.({
+        fileName: safeFileName,
+        percent: total ? Math.round((downloaded * 100) / total) : 0,
+      });
+    }
+    await writable.close();
+
+    if (typeof tempHandle.move === 'function') {
+      await tempHandle.move(safeFileName); // rename atômico, Chrome recente
+    } else {
+      const finalHandle = await targetFolder.getFileHandle(safeFileName, { create: true });
+      const finalWritable = await finalHandle.createWritable();
+      await finalWritable.write(await (await tempHandle.getFile()).arrayBuffer());
+      await finalWritable.close();
+      await targetFolder.removeEntry(tempName);
+    }
+
+    activeDownloads.delete(cacheKey);
+    return { success: true, path: cacheKey };
+  } catch (error) {
+    try { await targetFolder.removeEntry(tempName); } catch {}
+    activeDownloads.delete(cacheKey);
+    return { success: false, error: error.message };
+  }
+}
+
 async function loadLocalReviews() {
     if (cachedReviews) {
         console.log("Reviews carregados do cache!");
@@ -121,7 +224,10 @@ async function openTrailer(el) {
 
             const extension = info?.ext || 'webm';
             const fileName = `${code}_${tipo}_${language}.${extension}`;
-            const assetUri = `assets://fortnite-${code}-assets/${fileName}`;
+            // Antes: const assetUri = `assets://fortnite-${code}-assets/${fileName}`;
+            // Agora usamos um marcador lógico (folder+nome); a URL real (blob:) só é
+            // resolvida na hora de tocar, via getLocalVideoUrl().
+            const assetUri = { folderCode: code, fileName };
 
             const btn = document.createElement("div");
             btn.className = "video-item-btn";
@@ -143,15 +249,13 @@ async function openTrailer(el) {
 
                 const extensoes = ['webm', 'mkv', 'mp4'];
                 let localUriEncontrado = null;
-                let fileNameParaDownload = null;
 
                 for (const ext of extensoes) {
                     const testFileName = `${code}_${tipo}_${language}.${ext}`;
-                    const testUri = `assets://fortnite-${code}-assets/${testFileName}`;
-                    
-                    const exists = await window.electronAPI.existsAssets(testUri);
-                    if (exists) {
-                        localUriEncontrado = testUri;
+                    // Antes: const exists = await window.electronAPI.existsAssets(testUri);
+                    const localUrl = await getLocalVideoUrl(code, testFileName);
+                    if (localUrl) {
+                        localUriEncontrado = localUrl;
                         break;
                     }
                 }
@@ -160,7 +264,7 @@ async function openTrailer(el) {
                     changeVideo(localUriEncontrado);
                 } else {
                     btn.style.setProperty('--download-progress', '0%');
-    
+
                     btn.innerHTML = `
                         <div class="progress-fill"></div>
                         <i class="download-icon fa-solid fa-circle-down"></i>
@@ -172,13 +276,12 @@ async function openTrailer(el) {
                     btn.classList.add('downloading');
 
                     const extensoesParaTentar = ['mkv', 'mp4', 'webm'];
-                    let arquivoSendoBaixadoAtual = `${code}_${tipo}_${language}.${extensoesParaTentar[0]}`;
 
-                    const removeProgressListener = window.electronAPI.video.onProgress(({ fileName: eventFileName, percent }) => {
-                        if (eventFileName !== arquivoSendoBaixadoAtual) return;
-
+                    // Antes: window.electronAPI.video.onProgress(...) + removeProgressListener()
+                    // Agora o progresso vem direto como callback, sem precisar de listener global.
+                    const onProgress = ({ fileName: eventFileName, percent }) => {
                         btn.style.setProperty('--download-progress', `${percent}%`);
-                        
+
                         const textBase = btn.querySelector('.text-base');
                         const textOverlay = btn.querySelector('.text-overlay');
 
@@ -197,7 +300,7 @@ async function openTrailer(el) {
 
                         updateProgressContent(textBase);
                         updateProgressContent(textOverlay);
-                    });
+                    };
 
                     try {
                         let result;
@@ -205,21 +308,17 @@ async function openTrailer(el) {
 
                         for (const ext of extensoesParaTentar) {
                             const currentFileName = `${code}_${tipo}_${language}.${ext}`;
-                            arquivoSendoBaixadoAtual = currentFileName;
-                            
-                            const cloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${currentFileName}`;
-                            assetUriFinal = `assets://fortnite-${code}-assets/${currentFileName}`;
 
-                            result = await window.electronAPI.video.downloadOnDemand({
-                                url: cloudUrl,
-                                fileName: currentFileName,
-                                folderCode: code
-                            });
+                            const cloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${currentFileName}`;
+
+                            // Antes: window.electronAPI.video.downloadOnDemand({ url, fileName, folderCode })
+                            result = await downloadOnDemand(cloudUrl, currentFileName, code, onProgress);
 
                             if (result.success) {
+                                assetUriFinal = await getLocalVideoUrl(code, currentFileName);
                                 btn.classList.remove('downloading');
-                                break; 
-                            } 
+                                break;
+                            }
                         }
 
                         if (result.success) {
@@ -231,9 +330,7 @@ async function openTrailer(el) {
                             btn.innerHTML = `<span>${labelText}</span><span class="moreVideo-date">Falhou</span>`;
                         }
                     } catch (err) {
-                        console.error('Erro no download IPC:', err);
-                    } finally {
-                        removeProgressListener();
+                        console.error('Erro no download:', err);
                     }
                 }
             };
@@ -241,6 +338,7 @@ async function openTrailer(el) {
             listContainer.appendChild(btn);
 
             if (!firstVideoToPlay) {
+                // Antes usava a string assetUri direto; agora resolvemos on-demand no click.
                 firstVideoToPlay = { uri: assetUri, btn: btn, title: labelText };
             }
         }
@@ -337,31 +435,37 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
     const videoTitle = document.getElementById('video-title');
     const closeBtn = document.querySelector('#video-close');
 
-    const basePath = `assets://fortnite-${code}-assets/${fileCode}`;
-    const hasWebm = await window.electronAPI.existsAssets(`${basePath}.webm`);
+    // Antes: const basePath = `assets://fortnite-${code}-assets/${fileCode}`;
+    // Agora guardamos folderCode + nome-base separadamente, e resolvemos a URL
+    // (blob:) só na hora de realmente tocar o vídeo.
+    const folderCode = code;
+    const baseFileName = fileCode;
+
     let ext = null;
-    
-    if (hasWebm) {
+    const webmUrl = await getLocalVideoUrl(folderCode, `${baseFileName}.webm`);
+    if (webmUrl) {
         ext = 'webm';
     } else {
-        const hasMp4 = await window.electronAPI.existsAssets(`${basePath}.mp4`);
-        if (hasMp4) {
+        const mp4Url = await getLocalVideoUrl(folderCode, `${baseFileName}.mp4`);
+        if (mp4Url) {
             ext = 'mp4';
         }
     }
 
     let forceDownloadExtras = false;
     if (ext && code === 'c7s2') {
-        const hasFoundation = await window.electronAPI.existsAssets(`${basePath}-foundation.${ext}`);
-        const hasIceKing = await window.electronAPI.existsAssets(`${basePath}-ice-king.${ext}`);
-        if (!hasFoundation || !hasIceKing) forceDownloadExtras = true;
+        const hasFoundationUrl = await getLocalVideoUrl(folderCode, `${baseFileName}-foundation.${ext}`);
+        const hasIceKingUrl = await getLocalVideoUrl(folderCode, `${baseFileName}-ice-king.${ext}`);
+        if (!hasFoundationUrl || !hasIceKingUrl) forceDownloadExtras = true;
     }
 
+    let downloadPopup, nameEl, percentageEl, progressBarFill;
+
     if (!ext || forceDownloadExtras) {
-        const downloadPopup = document.querySelector('.download-status-div');
-        const nameEl = document.querySelector('.download-status-name');
-        const percentageEl = document.querySelector('.download-status-percentage');
-        const progressBarFill = document.querySelector('.download-status-progress-bar-fill');
+        downloadPopup = document.querySelector('.download-status-div');
+        nameEl = document.querySelector('.download-status-name');
+        percentageEl = document.querySelector('.download-status-percentage');
+        progressBarFill = document.querySelector('.download-status-progress-bar-fill');
 
         if (downloadPopup) {
             if (nameEl) nameEl.textContent = eventTitle;
@@ -371,14 +475,12 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
             downloadPopup.classList.add('show');
             document.querySelector('.season-trailers').classList.add('disabled');
             document.querySelector('.season-events').classList.add('disabled');
-            document.getElementById('before-chapter').classList.add('disabled');
-            document.getElementById('next-chapter').classList.add('disabled');
         }
 
-        const removeProgressListener = window.electronAPI.video.onProgress(({ percent }) => {
+        const onProgress = ({ percent }) => {
             if (percentageEl) percentageEl.textContent = `${percent}%`;
             if (progressBarFill) progressBarFill.style.width = `${percent}%`;
-        });
+        };
 
         try {
             let downloadSucesso = false;
@@ -389,11 +491,7 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                     const fileName = `${fileCode}.${testExt}`;
                     const cloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${fileName}`;
 
-                    const result = await window.electronAPI.video.downloadOnDemand({
-                        url: cloudUrl,
-                        fileName: fileName,
-                        folderCode: code
-                    });
+                    const result = await downloadOnDemand(cloudUrl, fileName, code, onProgress);
 
                     if (result.success) {
                         ext = testExt;
@@ -417,17 +515,13 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                 
                 for (const team of teams) {
                     const extraName = `${fileCode}-${team}.${ext}`;
-                    const hasExtraLocal = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/${extraName}`);
+                    const hasExtraLocalUrl = await getLocalVideoUrl(folderCode, extraName);
                     
-                    if (!hasExtraLocal) {
+                    if (!hasExtraLocalUrl) {
                         if (nameEl) nameEl.textContent = `${window._t[`event_c7s2-${team || ""}`]}`;
                         
                         const extraCloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${extraName}`;
-                        await window.electronAPI.video.downloadOnDemand({
-                            url: extraCloudUrl,
-                            fileName: extraName,
-                            folderCode: code
-                        });
+                        await downloadOnDemand(extraCloudUrl, extraName, code, onProgress);
                     }
                     videoTimeDisplay();
                 }
@@ -438,7 +532,6 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
             closeVideo();
             return;
         } finally {
-            removeProgressListener();
             if (downloadPopup) downloadPopup.classList.remove('show');
             document.querySelector('.season-trailers').classList.remove('disabled');
             document.querySelector('.season-events').classList.remove('disabled');
@@ -447,7 +540,7 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
         }
     }
 
-    const path = `${basePath}.${ext}`;
+    const path = await getLocalVideoUrl(folderCode, `${baseFileName}.${ext}`);
 
     removeCreatedEspecialDivs();
     await openVideoPlayer(el);
@@ -504,13 +597,49 @@ async function chooseTeam(team) {
     const key = `${code}-${team}`;
     const titleKey = `${EVENT_KEYS[code]}-${team}`;
     const titleName = window._t?.[titleKey] || code;
-    const ext = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/live-event-${key}.webm`) ? 'webm' : 'mp4';
-    const path = `assets://fortnite-${code}-assets/live-event-${key}.${ext}`;
+
+    // Antes:
+    // const ext = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/live-event-${key}.webm`) ? 'webm' : 'mp4';
+    // const path = `assets://fortnite-${code}-assets/live-event-${key}.${ext}`;
+    const webmUrl = await window.videoDownloadManager.getLocalVideoUrl(code, `live-event-${key}.webm`);
+    const ext = webmUrl ? 'webm' : 'mp4';
+    const path = webmUrl || await window.videoDownloadManager.getLocalVideoUrl(code, `live-event-${key}.${ext}`);
 
     const title = document.getElementById('video-title');
     title.textContent = titleName || key;
 
     changeVideo(path);
+}
+
+async function changeVideo(src) {
+    const video = document.getElementById("video");
+    const juice = document.getElementById('player-bar-fill');
+    const playPause = document.getElementById('play-pause');
+
+    if (!video) return;
+    if (juice) {
+        juice.style.transition = 'none';
+        juice.style.width = '0%';
+        juice.offsetHeight;
+        juice.style.transition = '';
+    }
+
+    playPause.className = 'fa-solid fa-pause';
+
+    video.pause();
+    video.src = src;
+    video.load();
+
+    video.onloadeddata = async () => {
+    const trailerVideo = document.getElementById("video-player");
+
+    trailerVideo.classList.add("open");
+    };
+    try {
+        await video.play();
+    } catch {
+        console.warn("Autoplay bloqueado");
+    }
 }
 
 async function changeVideo(src) {
