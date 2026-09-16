@@ -253,7 +253,7 @@ async function triggerImageUpload() {
   const imageProtocolPath = await window.api.notes.selectAndImage();
   if (!imageProtocolPath) return;
 
-  rawContent = rawContent.replace('/img/', `{image=documents://Notes/Media/${imageProtocolPath}}`);
+  rawContent = rawContent.replace('/img/', `{image=${imageProtocolPath}}`);
   renderContent();
   saveNote();
 }
