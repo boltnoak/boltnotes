@@ -3,6 +3,7 @@ const title = document.getElementById('seasonTrailer-title');
 
 let controlsTimeout = null;
 let mouseInsideVideo = false;
+let videoVolume = .5;
 
 async function getLocalVideoUrl(folderCode, fileName) {
   try {
@@ -202,6 +203,7 @@ function allowVolumeControl() {
         novoVolume = Math.min(1, Math.max(0, novoVolume));
 
         videoElement.volume = novoVolume;
+        videoVolume = novoVolume;
 
         console.log(`${Math.round(novoVolume * 100)}%`);
 
@@ -298,7 +300,7 @@ async function openVideoPlayer(el) {
     allowVolumeControl();
 
     const video = document.getElementById('video');
-    if (video) video.volume = .5;
+    if (video) video.volume = videoVolume;
 
     if (wrapper) window.showControls(wrapper);
 }

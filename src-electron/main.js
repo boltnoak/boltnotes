@@ -581,7 +581,7 @@ ipcMain.on('drag-window', (event, { mouseX, mouseY }) => {
 });
 const gotTheLock = app.requestSingleInstanceLock();
 
-if (!gotTheLock) {
+if (!gotTheLock && app.isPackaged) {
     app.quit();
 } else {
   app.on('second-instance', (event, commandLine) => {
@@ -590,10 +590,11 @@ if (!gotTheLock) {
     const isSilentSecond = commandLine.includes('--silent');
 
     if (win.isMinimized()) win.restore();
-    if (!mainWin.isVisible()) {
-      if (!isSilentSecond) win.show();
-    } else if (!isSilentSecond) {
-      win.focus();
+    
+    if (!isSilentSecond) {
+      win.show();
+    } else {
+      win.hide();
     }
   });
 

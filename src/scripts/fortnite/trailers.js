@@ -2,6 +2,11 @@ let cachedTrailers = null;
 let cachedReviews = null;
 
 const activeDownloads = new Set();
+const CACHE_NAME = 'boltnotes-assets-v1';
+
+function assetKey(folderCode, fileName) {
+  return `https://local-assets/fortnite-${folderCode}-assets/${fileName}`;
+}
 
 function sanitizeFileName(fileName) {
   return fileName.replace(/[\\/]/g, '').replace(/\.\./g, '');
@@ -12,20 +17,34 @@ function sanitizeFolderCode(folderCode) {
 
 async function getLocalVideoUrl(folderCode, fileName) {
   try {
-    const opfsRoot = await navigator.storage.getDirectory();
-    const assetsRoot = await opfsRoot.getDirectoryHandle('assets');
-    const folder = await assetsRoot.getDirectoryHandle(`fortnite-${folderCode}-assets`);
-    const fileHandle = await folder.getFileHandle(fileName);
-    const file = await fileHandle.getFile();
-    return URL.createObjectURL(file); // ex: blob:https://seusite.com/xxxx
+    const cache = await caches.open(CACHE_NAME);
+    const key = assetKey(folderCode, sanitizeFileName(fileName));
+    const response = await cache.match(key);
+    if (!response) return null;
+
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
   } catch {
-    return null; // arquivo não existe localmente ainda
+    return null;
   }
 }
 
-async function getAssetsRoot() {
-  const opfsRoot = await navigator.storage.getDirectory();
-  return opfsRoot.getDirectoryHandle('assets', { create: true });
+function getFileNameFromUrlOrHeader(url, response) {
+  const disposition = response?.headers?.get('content-disposition');
+  if (disposition && disposition.includes('filename=')) {
+    const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+    if (matches && matches[1]) {
+      return matches[1].replace(/['"]/g, '');
+    }
+  }
+
+  try {
+    const pathname = new URL(url).pathname;
+    const nameFromUrl = pathname.split('/').pop();
+    return decodeURIComponent(nameFromUrl);
+  } catch {
+    return null;
+  }
 }
 
 async function downloadOnDemand(url, fileName, folderCode, onProgress) {
@@ -45,60 +64,52 @@ async function downloadOnDemand(url, fileName, folderCode, onProgress) {
     return { success: false, error: 'URL malformada' };
   }
 
-  const assetsRoot = await getAssetsRoot();
-  const folderName = `fortnite-${safeFolderCode}-assets`;
-  const targetFolder = await assetsRoot.getDirectoryHandle(folderName, { create: true });
-  const cacheKey = `${folderName}/${safeFileName}`;
+  const cache = await caches.open(CACHE_NAME);
+  const cacheKey = assetKey(safeFolderCode, safeFileName);
 
-  try {
-    await targetFolder.getFileHandle(safeFileName);
+  const existing = await cache.match(cacheKey);
+  if (existing) {
     return { success: true, path: cacheKey, cached: true };
-  } catch { /* não existe ainda */ }
+  }
 
   if (activeDownloads.has(cacheKey)) {
     return { success: false, error: 'Download já está em andamento' };
   }
   activeDownloads.add(cacheKey);
 
-  const tempName = safeFileName + '.tmp';
-
   try {
-    const response = await fetch(url); // exige CORS liberado no servidor de origem
+    const response = await fetch(url);
     if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
 
     const total = Number(response.headers.get('content-length')) || 0;
     let downloaded = 0;
 
-    const tempHandle = await targetFolder.getFileHandle(tempName, { create: true });
-    const writable = await tempHandle.createWritable();
+    // Precisamos "espiar" o progresso e ainda assim salvar a Response original no cache.
+    // Solução: ler manualmente via reader, reportar progresso, e reconstruir a Response no final.
     const reader = response.body.getReader();
+    const chunks = [];
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      await writable.write(value);
+      chunks.push(value);
       downloaded += value.byteLength;
       onProgress?.({
         fileName: safeFileName,
         percent: total ? Math.round((downloaded * 100) / total) : 0,
       });
     }
-    await writable.close();
 
-    if (typeof tempHandle.move === 'function') {
-      await tempHandle.move(safeFileName); // rename atômico, Chrome recente
-    } else {
-      const finalHandle = await targetFolder.getFileHandle(safeFileName, { create: true });
-      const finalWritable = await finalHandle.createWritable();
-      await finalWritable.write(await (await tempHandle.getFile()).arrayBuffer());
-      await finalWritable.close();
-      await targetFolder.removeEntry(tempName);
-    }
+    const blob = new Blob(chunks);
+    const fakeResponse = new Response(blob, {
+      headers: { 'Content-Type': blob.type || 'video/mp4' }
+    });
+
+    await cache.put(cacheKey, fakeResponse);
 
     activeDownloads.delete(cacheKey);
     return { success: true, path: cacheKey };
   } catch (error) {
-    try { await targetFolder.removeEntry(tempName); } catch {}
     activeDownloads.delete(cacheKey);
     return { success: false, error: error.message };
   }
@@ -149,26 +160,6 @@ async function loadCloudTrailers() {
 }
 
 let isOpening = false;
-
-function togglePlay(e, element) {
-    if (e) e.stopPropagation();
-
-    const wrapper = element ? element.closest('.video-wrapper') : document.querySelector('.video-wrapper');
-    if (!wrapper) return;
-
-    const video = wrapper.querySelector('video');
-    const playBtn = wrapper.querySelector('[id^="play-pause"]');
-
-    if (!video) return;
-
-    if (video.paused) {
-        video.play().catch(err => console.log("Erro ao reproduzir:", err));
-        playBtn.className = 'fa-solid fa-pause';
-    } else {
-        video.pause();
-        playBtn.className = 'fa-solid fa-play';
-    }
-}
 
 async function openTrailer(el) {
     if (isOpening) return;
@@ -239,7 +230,6 @@ async function openTrailer(el) {
             const wrapper = document.querySelector('.video-wrapper');
 
             btn.onclick = async () => {
-                togglePlay();
                 window.showControls(wrapper);
                 document.querySelectorAll('.video-item-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -588,9 +578,7 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
 
 async function chooseTeam(team) {
     const overlay = document.getElementById('team-select-overlay');
-    if (overlay) {
-        overlay.classList.remove('active'); 
-    }
+    if (overlay) overlay.classList.remove('active');
     isTeamSelectVisible = false;
 
     const code = 'c7s2';
@@ -598,48 +586,12 @@ async function chooseTeam(team) {
     const titleKey = `${EVENT_KEYS[code]}-${team}`;
     const titleName = window._t?.[titleKey] || code;
 
-    // Antes:
-    // const ext = await window.electronAPI.existsAssets(`assets://fortnite-${code}-assets/live-event-${key}.webm`) ? 'webm' : 'mp4';
-    // const path = `assets://fortnite-${code}-assets/live-event-${key}.${ext}`;
-    const webmUrl = await window.videoDownloadManager.getLocalVideoUrl(code, `live-event-${key}.webm`);
+    const webmUrl = await getLocalVideoUrl(code, `live-event-${key}.webm`);
     const ext = webmUrl ? 'webm' : 'mp4';
-    const path = webmUrl || await window.videoDownloadManager.getLocalVideoUrl(code, `live-event-${key}.${ext}`);
+    const path = webmUrl || await getLocalVideoUrl(code, `live-event-${key}.${ext}`);
 
-    const title = document.getElementById('video-title');
-    title.textContent = titleName || key;
-
+    document.getElementById('video-title').textContent = titleName || key;
     changeVideo(path);
-}
-
-async function changeVideo(src) {
-    const video = document.getElementById("video");
-    const juice = document.getElementById('player-bar-fill');
-    const playPause = document.getElementById('play-pause');
-
-    if (!video) return;
-    if (juice) {
-        juice.style.transition = 'none';
-        juice.style.width = '0%';
-        juice.offsetHeight;
-        juice.style.transition = '';
-    }
-
-    playPause.className = 'fa-solid fa-pause';
-
-    video.pause();
-    video.src = src;
-    video.load();
-
-    video.onloadeddata = async () => {
-    const trailerVideo = document.getElementById("video-player");
-
-    trailerVideo.classList.add("open");
-    };
-    try {
-        await video.play();
-    } catch {
-        console.warn("Autoplay bloqueado");
-    }
 }
 
 async function changeVideo(src) {

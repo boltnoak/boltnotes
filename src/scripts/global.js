@@ -73,6 +73,17 @@ requestAnimationFrame(() => {
     });
 });
 
+
+async function ensurePersistentStorage() {
+  if (navigator.storage && navigator.storage.persist) {
+    const granted = await navigator.storage.persist();
+    console.log(granted ? 'Storage persistente concedido' : 'Storage NÃO persistente');
+    return granted;
+  }
+  return false;
+}
+ensurePersistentStorage();
+
 ////////////////////////
 /// ESTADO DA JANELA ///
 ////////////////////////

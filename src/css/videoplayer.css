@@ -274,7 +274,7 @@
     scroll-snap-align: start;
     color: var(--text);
     padding: 1.5vh 1vw;
-    cursor: pointer;
+    cursor: default;
     display: flex;
     transition: background 0.1s;
     font-family: 'Montserrat';
@@ -288,6 +288,7 @@
     position: relative;
     flex: 1;
     overflow: hidden;
+    pointer-events: none;
 }
 .video-item-btn .download-icon {
     position: absolute;
