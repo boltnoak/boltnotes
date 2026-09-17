@@ -2,7 +2,7 @@
   "name": "boltnotes",
   "productName": "BoltNotes",
   "version": "1.6.5",
-  "description": "Backlog de jogos, Notas e Fortnite",
+  "description": "Notes, Games Backlog and Fortnite Season Reviews",
   "main": "src-electron/main.js",
   "private": true,
   "build": {
@@ -40,6 +40,11 @@
         "rpm"
       ],
       "category": "Utility",
+      "desktop": {
+        "entry": {
+          "Categories": "Utility;Game;"
+        }
+      },
       "icon": "build/icons",
       "extraResources": [
         {
@@ -80,7 +85,10 @@
     "release:major": "git add . && git commit -m \"major release\" && npm version major && git push && git push --tags"
   },
   "keywords": [],
-  "author": "BoltUO",
+  "author": {
+    "name": "BoltUO",
+    "email": "miguelbelmonte018@gmail.com"
+  },
   "license": "MIT",
   "dependencies": {
     "adm-zip": "^0.6.0",

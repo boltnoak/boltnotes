@@ -1106,12 +1106,14 @@ function manageStartup(abrirComOOS) {
       const desktopContent = `[Desktop Entry]
 Type=Application
 Name=BoltNotes
-Comment=Aplicativo de Notas e Hub de Jogos
+Comment=Notes, Games Backlog and Fortnite Season Reviews
+Comment[en]=Notes, Games Backlog and Fortnite Season Reviews
+Comment[pt_BR]=Notas, Backlog de Jogos e Reviews de Temporada do Fortnite
 Exec="${execPath}"
 Icon=${iconPath}
 Terminal=false
-StartupNotify=false
 X-GNOME-Autostart-enabled=true
+Categories=Utility;Game;
 `;
 
       try {
