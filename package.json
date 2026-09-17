@@ -35,7 +35,10 @@
       "output": "dist"
     },
     "linux": {
-      "target": "AppImage",
+      "target": [
+        "AppImage",
+        "rpm"
+      ],
       "category": "Utility",
       "icon": "build/icons",
       "extraResources": [

@@ -34,12 +34,12 @@ jobs:
       - run: npm ci
 
       - name: Install Linux dependencies
-        run: sudo apt-get install -y libopenjp2-tools
+        run: sudo apt-get update && sudo apt-get install -y libopenjp2-tools rpm
 
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npx electron-builder --linux AppImage --publish always
+        run: npx electron-builder --linux AppImage rpm --publish always
 
   windows:
     runs-on: windows-latest
