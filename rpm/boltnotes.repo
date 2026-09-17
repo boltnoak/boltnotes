@@ -1,0 +1,5 @@
+[boltnotes]
+name=BoltNotes Repository
+baseurl=https://boltnoak.github.io/boltnotes/rpm/x86_64/
+enabled=1
+gpgcheck=0
