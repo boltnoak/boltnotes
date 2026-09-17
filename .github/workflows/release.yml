@@ -34,12 +34,27 @@ jobs:
       - run: npm ci
 
       - name: Install Linux dependencies
-        run: sudo apt-get update && sudo apt-get install -y libopenjp2-tools rpm
+        run: sudo apt-get update && sudo apt-get install -y libopenjp2-tools rpm createrepo-c
 
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npx electron-builder --linux AppImage rpm --publish always
+
+      - name: Publish RPM repo to GitHub Pages
+        run: |
+          git clone --branch gh-pages https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/boltnoak/boltnotes.git gh-pages-repo
+
+          mkdir -p gh-pages-repo/rpm/x86_64
+          cp dist/boltnotes-linux-x86_64.rpm gh-pages-repo/rpm/x86_64/
+          createrepo_c gh-pages-repo/rpm/x86_64
+
+          cd gh-pages-repo
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add rpm/x86_64
+          git commit -m "Update RPM repo for ${{ github.ref_name }}" || echo "Nada para commitar"
+          git push
 
   windows:
     runs-on: windows-latest
