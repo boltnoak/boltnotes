@@ -1,8 +1,5 @@
-
 <div align="center">
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="450">
-    <image class="s"  width="800" height="450" xlink:href="screenshots.gif"/>
-    </svg>
+  <img src="screenshots.apng" width="800" alt="BoltNotes screenshots">
 </div>
 
 <div align="center">
