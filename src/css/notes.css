@@ -94,9 +94,6 @@
     z-index: 3;
     pointer-events: none;
 }
-.tab.active {
-    /* background-color: var(--tab-active); */
-}
 .tab:focus {
   background-color: #007bff;
   color: white;
@@ -220,7 +217,7 @@ body.dragging-tab * {
     display: none;
     flex-direction: column;
     width: 100%;
-    height: 89%;
+    height: 87.8%;
     flex: 1;
     z-index: 50;
     position: absolute;
