@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/shell.css">
+    <title>BoltNotes</title>
+    <script src="scripts/shell.js"></script>
+    <script src="scripts/theme-loader.js"></script>
+    <script src="scripts/apply-locales.js"></script>
+    <script src="scripts/fn-sidebar.js"></script>
+</head>
+<body>
+    <div id="menu" class="drag">
+        <p id="menuTitle">BOLTNOTES</p>
+        <div class="menuButtons">
+            <button id="menuMin" onclick="minimizeApp()" aria-label="Minimizar">
+                <svg viewBox="0 0 12 12" width="15" height="12">
+                    <rect x=".5" y="5.25" width="12" height="2" fill="currentColor"/>
+                </svg>
+            </button>
+            <button id="menuMax" onclick="maximizeApp()" aria-label="Maximizar">
+                <svg class="icon-maximize" viewBox="0 0 10 10" width="12" height="12">
+                    <rect x="1.5" y="1.5" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                <svg class="icon-restore" viewBox="0 0 10 10" width="12" height="12">
+                    <rect x="3" y="0.5" width="6.5" height="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M1.5 3 V9.5 H8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <button id="menuClose" onclick="closeApp()" aria-label="Fechar">
+                <svg viewBox="0 0 12 12" width="12" height="12">
+                    <path d="M1 1 L11 11 M11 1 L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="shell-page">
+        <header>
+            <div class="sidebar-bottom">
+                <a id="update-btn" class="sidebar-btn">
+                    <i class="fa-solid fa-arrow-rotate-right"></i>
+                    <span data-i18n="update">Atualizar</span>
+                </a>
+                <a class="config sidebar-btn" href="pages/config.html">
+                    <i id="config" class="fa-solid fa-sliders"></i>
+                    <span data-i18n="settings">Configurações</span>
+                </a>
+            </div>
+        </header>
+
+        <div class="sidebar-space"></div>
+        <iframe id="content" src="pages/index.html" frameborder="0"></iframe>
+    </div>
+
+<script src="scripts/global.js"></script>
+<script src="scripts/basics.js"></script>
+</body>
+</html>

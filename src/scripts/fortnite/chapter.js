@@ -117,18 +117,16 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
     if (!container) return;  
     container.innerHTML = '';
 
-    document.querySelector(`.sidebar-btn-chapter[data-chapter="${currentChapter.replace('c','')}"]`).classList.add('active');
-    // const aaaaa = document.querySelector(`.sidebar-btn[data-chapter="${prefixoCapitulo}"]`);
-    // if (aaaaa) {
-    //     document.querySelectorAll(`.sidebar-btn.active`).forEach(b => {
-    //         b.classList.remove('active');
-    //     });
-
-    //     aaaaa.classList.add('active');
-
-    // }
-    // const aaa = prefixoCapitulo
-    // document.querySelector(`.sidebar-btn[data-chapter="${aaa}"]`).classList.add('active')
+    if (window.parent) {
+        // Remove active de todos para evitar múltiplos selecionados
+        window.parent.document.querySelectorAll('.sidebar-btn-chapter').forEach(btn => btn.classList.remove('active'));
+        
+        // Adiciona active no capítulo atual da página
+        const activeSidebarBtn = window.parent.document.querySelector(`.sidebar-btn-chapter[data-chapter="${currentChapter.replace('c','')}"]`);
+        if (activeSidebarBtn) {
+            activeSidebarBtn.classList.add('active');
+        }
+    }
 
     await getSeasonTemplate();
     await applyLocale();
@@ -563,15 +561,27 @@ async function loadChapters() {
         Object.keys(data)
             .map(key => key.match(/^c\d+/i)?.[0])
             .filter(Boolean)
-    )];
-
-    document.querySelector('.sidebar-chapter-section').innerHTML = chapters.map((e) => {
+    )].sort((a, b) => {
+        const numA = parseInt(a.replace('c', ''), 10);
+        const numB = parseInt(b.replace('c', ''), 10);
+        return numB - numA;
+    });
+    const chaptersHtml = chapters.map((e) => {
         const number = e.replace('c', '');
-        return `<a class="sidebar-btn sidebar-btn-chapter" data-chapter="${number}" href="pages/fortnite-chapter.html?num=${number}">
+        return `<a class="sidebar-btn sidebar-btn-chapter" data-chapter="${number}" data-nav="pages/fortnite-chapter.html?num=${number}">
                     <p class="sidebar-btn-number">${number}</p>
                     <span><span data-i18n="fn-chapter">Capítulo</span> ${number}</span>
                 </a>`;
     }).join('');
-    applyLocale();
+    if (window.parent && typeof window.parent.setFortniteChapters === 'function') {
+        window.parent.setFortniteChapters(chaptersHtml);
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentNum = urlParams.get('num');
+        if (currentNum) {
+            window.parent.document.querySelectorAll('.sidebar-btn-chapter').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.chapter === currentNum);
+            });
+        }
+    }
 }
 loadChapters();

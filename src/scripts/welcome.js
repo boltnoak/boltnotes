@@ -41,12 +41,6 @@ function applyWindowState(state) {
 
   document.documentElement.classList.toggle('window-normal', isNormal);
   document.documentElement.classList.toggle('window-maximized', !isNormal);
-
-  if (menuMax) {
-    menuMax.className = isNormal
-      ? 'fa-regular fa-window-maximize'
-      : 'fa-regular fa-window-restore';
-  }
 }
 
 async function updateMaximizeIcon() {
@@ -68,55 +62,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// async function initMenu() {
-//     const res = await fetch('components/menu.bolt');
-//     const data = await res.text();
-
-//     const container = document.querySelector('.app-container');
-//     (container || document.body).insertAdjacentHTML('afterbegin', data);
-
-//     const menuMax = document.getElementById('menuMax');
-//     const savedState = sessionStorage.getItem('windowState') || 'normal';
-//     if (menuMax) {
-//         menuMax.className = savedState === 'maximized'
-//             ? 'fa-regular fa-window-restore'
-//             : 'fa-regular fa-window-maximize';
-//     }
-
-//     const menu = document.getElementById('menu');
-//     let dragging = false;
-//     let lastX, lastY;
-
-//     menu.addEventListener('mousedown', (e) => {
-//         if (e.target.closest('.menuButtons') || e.target.closest('#update-btn')) return;
-
-//         const isMaximized = sessionStorage.getItem('windowState') === 'maximized';
-//         if (isMaximized) return;
-        
-//         dragging = true;
-//         lastX = e.screenX;
-//         lastY = e.screenY;
-//     });
-
-//     document.addEventListener('mousemove', (e) => {
-//         if (!dragging) return;
-//         const dx = e.screenX - lastX;
-//         const dy = e.screenY - lastY;
-//         lastX = e.screenX;
-//         lastY = e.screenY;
-//         window.electronAPI.menu.dragWindow({ mouseX: dx, mouseY: dy });
-//     });
-
-//     document.addEventListener('mouseup', () => { dragging = false; });
-
-//     document.getElementById('menuTitle').textContent = document.title;
-
-//     await updateMaximizeIcon();
-//     applyWindowState(sessionStorage.getItem('windowState') || 'normal');
-// }
-
-// initMenu();
-
 async function changeFeatured(selectEl) {
     const selectedFeatured = selectEl.value;
 
@@ -133,14 +78,14 @@ async function changeFeatured(selectEl) {
         document.querySelector('#featured-title').style.display = 'flex';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
         
-        document.querySelector('.playingNow-panel').style.display = 'none';
+        document.querySelector('.featured-games').style.display = 'none';
     }
     if (selectedFeatured == 'playing_now') {
         document.querySelector('.page-infos').style.display = 'flex';
 
         document.querySelector('#featured-title').innerHTML = `<i class="fa-solid fa-gamepad"></i>${window._t['playing-now']}`;
         document.querySelector('#featured-title').style.display = 'flex';
-        document.querySelector('.playingNow-panel').style.display = 'flex';
+        document.querySelector('.featured-games').style.display = 'flex';
 
         document.querySelector('.recentSeason-panel').style.display = 'none';
     }
@@ -236,15 +181,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             updateNoteCount();
             loadFortniteStats();
         });
-    });
-
-    const assetsConf = await window.api.assetsConfig.get();
-
-    document.querySelectorAll('a[data-assets-code]').forEach(button => {
-        const code = button.dataset.code;
-        if (assetsConf[code] !== false) {
-            button.classList.add('active');
-        }
     });
     
     const themeContainers = document.querySelectorAll('.theme-selector-div');
@@ -435,16 +371,6 @@ function finish() {
   window.electronAPI.welcomeDone();
 }
 
-function toggleAssetsConfig(el) {
-    const mark = document.querySelector('.fortnite-mark');
-    const option = mark.dataset.code;
-
-    mark.classList.toggle('active');
-    
-    const isActive = mark.classList.contains('active');
-
-    window.api.assetsConfig.update(option, isActive);
-}
 
 document.addEventListener('DOMContentLoaded', async () => {
   const nextButtons = document.querySelectorAll('.next-btn');
@@ -511,15 +437,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const config = await window.electronAPI.config.getConfig();
 
-    const assetsConf = await window.api.assetsConfig.get();
-
-    document.querySelectorAll('a[data-assets-code]').forEach(button => {
-        const code = button.dataset.code;
-        if (assetsConf[code] !== false) {
-            button.classList.add('active');
-        }
-    });
-
     const toggles = {
         'notes_on_home': document.getElementById('notes'),
         'backlog_on_home': document.getElementById('games'),
@@ -531,7 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'none': [
             document.querySelector('.page-infos')
         ],
-        'playing_now': document.querySelector('.playingNow-panel'),
+        'playing_now': document.querySelector('.featured-games'),
         'fn_fast_edit': document.querySelector('.recentSeason-panel')
     };
 
@@ -539,17 +456,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (currentFeatured === 'none') {
         document.querySelector('.recentSeason-panel').style.display = 'none';
-        document.querySelector('.playingNow-panel').style.display = 'none';
+        document.querySelector('.featured-games').style.display = 'none';
         document.querySelector('#featured-title').style.display = 'none';
         document.querySelector('.page-infos').style.display = 'none';
     } if (currentFeatured === 'fn_fast_edit') {
         document.querySelector('#featured-title').innerHTML = `<i class="fa-solid fa-square-poll-horizontal"></i>Fortnite BR — ${window._t['fn-quick-edit']}`;
-        document.querySelector('.playingNow-panel').style.display = 'none';
+        document.querySelector('.featured-games').style.display = 'none';
         document.querySelector('.recentSeason-panel').style.display = 'flex';
     } if (currentFeatured === 'playing_now') {
         document.querySelector('#featured-title').innerHTML = `<i class="fa-solid fa-gamepad"></i>${window._t['playing-now']}`;
         document.querySelector('.recentSeason-panel').style.display = 'none';
-        document.querySelector('.playingNow-panel').style.display = 'flex';
+        document.querySelector('.featured-games').style.display = 'flex';
     } else {
         for (const [key, value] of Object.entries(featuredPanels)) {
             if (key === 'none') continue;

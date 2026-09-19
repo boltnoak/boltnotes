@@ -1967,7 +1967,7 @@ async function renderChart() {
         options: {
             cutout: '88%',
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: false,
             animation: {
                 animateRotate: true,
                 animateScale: true,

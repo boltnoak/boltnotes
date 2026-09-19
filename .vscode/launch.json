@@ -4,10 +4,8 @@
         {
             "name": "Electron Program",
             "request": "launch",
-            "runtimeArgs": [
-                "start"
-            ],
-            "runtimeExecutable": "npm",
+            "runtimeExecutable": "flatpak-spawn",
+            "runtimeArgs": ["--host", "npm", "start"],
             "skipFiles": [
                 "<node_internals>/**"
             ],

@@ -1,14 +1,26 @@
-@import url(index.css);
+@import url(basics.css);
+@import url(shell.css);
 @import url(config.css);
 
 .config-item-lang {
     justify-content: center;
     text-align: center;
     align-self: center;
-    transform: translateY(20vh);
 }
 .change-lang-drop-select {
-    transform: translateY(-15.35vh);
+    transform: translateY(-10.5vh);
+    /* position: relative; */
+    z-index: 99;
+}
+.body-page {
+    height: 0;
+    flex: 1;
+    width: 100%;
+    border-radius: 0;
+    background-color: var(--bg);
+    background-image: url(../assets/welcome-start-screen.png);
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 .next-btn {
     position: absolute;
@@ -20,10 +32,11 @@
     border-radius: 1vh;
     cursor: pointer;
     pointer-events: auto;
-    transition: all .1s linear;
-    width: 14.5vw;
+    transition: background .1s linear, transform .1s linear;
+    width: 16.5vw;
     right: 4.5vw;
     bottom: 7vh;
+    text-align: center;
 }
 .next-btn:hover {
     background-color: var(--btn-hover-color);
@@ -38,68 +51,95 @@ header:hover {
     width: 100%;
 }
 
-.pageBody {
-    width: 100%;
-    height: 100vh;
-    margin: 0;
-    overflow: hidden;
-    background: transparent !important;
+body {
+    display: flex;
     flex-direction: column;
+    margin-top: 0;
 }
 
 .page {
-    cursor: default;
+    pointer-events: none;
 }
 .page:hover {
     transform: none;
 }
 .game {
     cursor: default;
+    pointer-events: none;
 }
 .game:hover {
     transform: none;
     cursor: default;
 }
 
+.featured-games {
+    height: 81%;
+    width: 100%;
+}
+
 .pages-section {
-    height: 35vh;
+    /* height: 35vh; */
     margin: 0;
-    transform: scale(0.9);
-    position: absolute;
-    width: 80vw;
+    /* transform: scale(0.9); */
+    /* position: absolute; */
+    width: 100%;
     display: flex;
+    /* visibility: visible; */
+    opacity: 1;
 }
 .page-infos {
-    position: absolute;
+    /* position: absolute;
     bottom: 18vh;
     left: 0;
     transform: scale(0.9) translateX(-4vw);
-    width: 65vw;
+    width: 65vw; */
+    height: 54%;
+    width: 100%;
 }
 
 .featuredSelector-select {
     flex-direction: column;
     width: 100%;
     padding: 0;
+    border-radius: 0;
+}
+.featured-selector-div,
+.config-item.featured {
+    width: 100%;
 }
 .featured-change {
-    position: absolute;
-    bottom: 25vh;
-    right: 18vw;
-    background-color: var(--tab);
-    padding: .25vh .5vw 1vh .5vw;
+    /* position: absolute; */
+    /* bottom: 25vh;
+    right: 18vw; */
+    /* background-color: var(--tab); */
+    padding: 0 0 10vh 1vw;
     border-radius: 1.5vh;
+    display: flex;
     flex-direction: column;
-    gap: 0;
+    justify-content: center;
+    align-items: start;
+    gap: .28vh;
+    height: 100%;
+    flex: 1;
+    width: 95.8%;
 }
 .pages-change {
-    position: absolute;
-    top: 16vh;
-    right: 7vw;
-    background-color: var(--tab);
-    padding: .5vh .8vw 1.5vh .8vw;
-    border-radius: 1.5vh;
-    gap: 0;
+    /* position: absolute; */
+    /* top: 16vh; */
+    /* right: 7vw; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* background-color: var(--tab); */
+    padding: 0 0 0 1.47vw;
+    border-radius: 1vh;
+    gap: .25vh;
+    height: 100%;
+    flex: 1;
+    width: 95.8%;
+}
+.recent-season {
+    pointer-events: none;
 }
 
 @keyframes fadeOut {
@@ -111,10 +151,10 @@ header:hover {
   to { opacity: 1; }
 }
 .fadeOut {
-  animation: fadeOut 0.15s ease-in-out forwards !important;
+  animation: fadeOut 0s ease-in-out forwards !important;
 }
 .fadeIn {
-  animation: fadeIn 0.15s ease-in-out forwards !important;
+  animation: fadeIn 0s ease-in-out forwards !important;
 }
 .mark {
     display: inline-block;
@@ -180,13 +220,15 @@ header:hover {
 #step1 {
     display: none;
     opacity: 0;
-    flex-direction: column;
+    flex-direction: row;
     height: 100%;
+    background-color: var(--bg);
 }
 #step2 {
     display: none;
     opacity: 0;
     flex-direction: column;
+    background-color: var(--bg);
 }
 
 #start {
@@ -212,10 +254,57 @@ header:hover {
 }
 .start-text {
     width: 100%;
+    height: 100vh;
     text-align: center;
-    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    font-weight: 550;
     font-size: 3vh;
-    margin: 2.5vh 0 0 0;
+    margin: 0 0 10.5vh 0;
     color: var(--text-gray);
-    transform: translateX(-.125vw);
+}
+.custom-select {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    gap: 1vh;
+    right: 5.75vw;
+    bottom: 15vh;
+    width: 18.25vw;
+    overflow: visible;
+    border-radius: 1.25vh;
+}
+.change-lang-btn {
+    width: 100%;
+}
+
+.step1-box1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6vh;
+    height: 100%;
+    width: 0;
+    flex: 1;
+    margin: 2vh .8vw 0 .95vw;
+}
+.step1-box2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    gap: 1.6vh;
+    height: 100%;
+    width: 25%;
+    /* margin: 2vh .8vw 0 .95vw; */
+    border-left: solid .38vw var(--tab-active);
+    background-image: linear-gradient(to left, transparent 0%, var(--tab) 80%);
+}
+.recentSeason-panel {
+    margin: 0 0 2.5vh 0;
+}
+.featuredSelector-select li {
+    width: 90%;
 }

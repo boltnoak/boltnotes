@@ -23,9 +23,15 @@ process.on('uncaughtException', (err) => {
 const isSilent = process.argv.includes('--silent');
 if (isSilent) console.log('Iniciando silenciosamente...');
 
+const DOCUMENTS = path.join(
+    app.getPath('documents'),
+    'BoltNotes'
+);
+
 const ASSETS_DIR = path.join(
-  app.getPath('userData'),
-  'assets'
+  DOCUMENTS,
+  'Fortnite',
+  'Assets'
 );
 
 const LOCAL_MANIFEST = path.join(
@@ -237,8 +243,6 @@ async function syncAssets() {
   let remote, local;
   const failedPackages = [];
 
-  const assetsConfig = getAssetsConfig();
-
   try {
     remote = await getRemoteManifest();
 
@@ -263,11 +267,6 @@ async function syncAssets() {
   for (const pkg of remote.packages) {
     const idx = local.packages.findIndex(p => p.name === pkg.name);
     const localPkg = idx >= 0 ? local.packages[idx] : null;
-
-    if (pkg.name.startsWith('fortnite') && assetsConfig.fortnite === false) {
-        console.log(`Assets - ${pkg.name} ignorado (Fortnite desativado)`);
-        continue;
-    }
 
     if (localPkg && localPkg.hash === pkg.hash) {
       console.log(`Assets - ${pkg.name} (atualizado)`);
@@ -323,18 +322,14 @@ autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 autoUpdater.autoInstallOnAppQuit = false;
 
-const DOCUMENTS = path.join(
-    app.getPath('documents'),
-    'BoltNotes'
-);
-
 const APPDATA = path.join(
     app.getPath('userData')
 );
 
 const COVERS = path.join(
-    ASSETS_DIR,
-    'game-covers'
+    DOCUMENTS,
+    'Games',
+    'Covers'
 );
 
 const MEDIA_DIR = path.join(
@@ -344,31 +339,33 @@ const MEDIA_DIR = path.join(
 );
 
 const GAMELOGOS = path.join(
-    ASSETS_DIR,
-    'game-logos'
+    DOCUMENTS,
+    'Games',
+    'Logos'
 );
 
 const HEROS = path.join(
-    ASSETS_DIR,
-    'game-heros'
+    DOCUMENTS,
+    'Games',
+    'Heros'
 );
 
 const USER_COVERS = path.join(
     DOCUMENTS,
     'Games',
-    'Custom Covers'
+    'Covers'
 );
 
 const USER_HEROS = path.join(
     DOCUMENTS,
     'Games',
-    'Custom Heros'
+    'Heros'
 );
 
 const USER_LOGOS = path.join(
     DOCUMENTS,
     'Games',
-    'Custom Logos'
+    'Logos'
 );
 
 const BUNDLE = path.join(
@@ -388,9 +385,6 @@ function startFolders() {
         DOCUMENTS,
         path.join(DOCUMENTS, 'Fortnite'),
         path.join(DOCUMENTS, 'Games'),
-        path.join(DOCUMENTS, 'Games', 'Custom Covers'),
-        path.join(DOCUMENTS, 'Games', 'Custom Heros'),
-        path.join(DOCUMENTS, 'Games', 'Custom Logos'),
         path.join(DOCUMENTS, 'Notes'),
         path.join(DOCUMENTS, 'Notes', 'Media')
     ];
@@ -454,7 +448,7 @@ function getConfig() {
     show_version: true,
     last_seen_version: null,
     theme: 'dark',
-    featured: 'none',
+    featured: 'playing_now',
     welcomed: false,
     show_featured_changer: false
   };
@@ -477,7 +471,9 @@ process.on('SIGINT', () => {
   isQuitting = true;
   app.quit();
 });
-
+app.commandLine.appendSwitch('ozone-platform', 'wayland');
+app.commandLine.appendSwitch('enable-features', 'WaylandWindowDecorations');
+app.commandLine.appendSwitch('enable-transparent-visuals');
 Menu.setApplicationMenu(null);
 app.commandLine.appendSwitch('enable-smooth-scrolling');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
@@ -490,20 +486,27 @@ function createWindow() {
     const width = Math.round(screenWidth * 0.86);
     const height = Math.round(screenHeight * 0.85);
 
+    const isWindows = process.platform === 'win32';
+
     win = new BrowserWindow({
+        transparent: true,
+        titleBarStyle: 'hidden',
         width: width,
         height: height,
-        backgroundColor: '#050505',
         show: false,
+        frame: isWindows,
+        hasShadow: isWindows,
+        backgroundColor: '#00000000',
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
           contextIsolation: true,
           nodeIntegration: false,
+          nodeIntegrationInSubFrames: true,
           autoplayPolicy: 'no-user-gesture-required',
           additionalArguments: [app.isPackaged ? '--production' : '--development']
         }
     });
-    win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
+    win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
 }
 let assetsWin = null;
 
@@ -550,7 +553,7 @@ function createAssetsWindow() {
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
 
   assetsWin = new BrowserWindow({
-    width: Math.round(screenWidth * 0.50),
+    width: Math.round(screenWidth * 0.40),
     height: Math.round(screenHeight * 0.50),
     autoHideMenuBar: process.platform !== 'linux',
     frame: process.platform !== 'linux',
@@ -599,6 +602,11 @@ if (!gotTheLock && app.isPackaged) {
   });
 
   app.whenReady().then(async () => {
+    protocol.handle('app', (req) => {
+      const url = new URL(req.url);
+      const filePath = path.join(BUNDLE, url.hostname, url.pathname);
+      return net.fetch(pathToFileURL(filePath).toString());
+    });
     protocol.handle('assets', (req) => {
       const url = new URL(req.url);
 
@@ -719,26 +727,90 @@ if (!gotTheLock && app.isPackaged) {
       });
     });
 
-    protocol.handle('documents', (req) => {
+    protocol.handle('documents', async (req) => {
       let file = decodeURIComponent(req.url.replace('documents://', ''));
 
-      if (file.endsWith('/')) {
-          file = file.slice(0, -1);
-      }
+      if (file.endsWith('/')) file = file.slice(0, -1);
 
-      if (file.startsWith('notes/')) {
-          file = 'Notes/' + file.slice(6);
-      }
+      if (file.startsWith('notes/')) file = 'Notes/' + file.slice(6);
+      if (file.startsWith('fortnite/')) file = 'Fortnite/' + file.slice(9);
 
       const fullPath = path.join(DOCUMENTS, file);
 
-      if (!fs.existsSync(fullPath)) {
-          return new Response('', { 
-              status: 200,
-              headers: { 'Content-Type': 'text/plain' }
-          });
+      if (!fullPath.startsWith(path.join(DOCUMENTS, path.sep))) {
+        return new Response('Forbidden', { status: 403 });
       }
-      return net.fetch(pathToFileURL(fullPath).toString());
+
+      const isFortnite = file.startsWith('Fortnite/');
+
+      if (req.method === 'PUT') {
+        if (!isFortnite) return new Response('Forbidden', { status: 403 });
+        try {
+          await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+          const tmp = fullPath + '.part';
+          await fs.promises.writeFile(tmp, Buffer.from(await req.arrayBuffer()));
+          await fs.promises.rename(tmp, fullPath);
+          return new Response(null, { status: 201 });
+        } catch (e) {
+          return new Response(e.message, { status: 500 });
+        }
+      }
+
+      const stat = fs.statSync(fullPath);
+      const range = req.headers.get('range');
+
+      const mime = {
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.svg': 'image/svg+xml',
+        '.mkv': 'video/x-matroska',
+        '.mp4': 'video/mp4'
+      };
+
+      const ext = path.extname(fullPath).toLowerCase();
+
+      if (!range) {
+        const stream = fs.createReadStream(fullPath);
+
+        return new Response(stream, {
+          status: 200,
+          headers: {
+            'Content-Type': mime[ext] || 'application/octet-stream',
+            'Content-Length': stat.size,
+            'Accept-Ranges': 'bytes'
+          }
+        });
+      }
+
+      // RANGE REQUEST
+      const match = /bytes=(\d+)-(\d*)/.exec(range);
+      const start = Number(match[1]);
+      const end = match[2] ? Number(match[2]) : stat.size - 1;
+
+      const chunkSize = end - start + 1;
+      const stream = fs.createReadStream(fullPath, { start, end });
+
+      return new Response(stream, {
+        status: 206,
+        headers: {
+          'Content-Range': `bytes ${start}-${end}/${stat.size}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunkSize,
+          'Content-Type': mime[ext] || 'application/octet-stream'
+        }
+      });
+
+      if (!fs.existsSync(fullPath)) {
+        if (isFortnite) return new Response('', { status: 404 });
+        return new Response('', {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain' },
+        });
+      }
+      return net.fetch(pathToFileURL(fullPath).toString(), {
+        headers: req.headers,
+      });
     });
 
     startFolders();
@@ -780,17 +852,17 @@ if (!gotTheLock && app.isPackaged) {
       if (!configs.welcomed) {
         win.loadFile(path.join(BUNDLE, 'pages', 'welcome.html'));
       } else {
-        win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
+        win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
       }
     });
 
     win.on('maximize', () => {
-  win.webContents.send('window-state-change', 'maximized');
-});
+      win.webContents.send('window-state-change', 'maximized');
+    });
 
-win.on('unmaximize', () => {
-  win.webContents.send('window-state-change', 'normal');
-});
+    win.on('unmaximize', () => {
+      win.webContents.send('window-state-change', 'normal');
+    });
     win.on('close', (event) => {
       const config = getConfig();
       if (!isQuitting && config.minimize_to_tray && win !== null) {
@@ -805,7 +877,7 @@ ipcMain.on('welcome:done', async () => {
   const currentConfig = getConfig();
   currentConfig.welcomed = true;
   fs.writeFileSync(path.join(APPDATA, 'config.json'), JSON.stringify(currentConfig, null, 2));
-  win.loadFile(path.join(BUNDLE, 'pages', 'index.html'));
+  win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
 
   await syncAssets()
     .then(() => {
@@ -884,59 +956,6 @@ ipcMain.on('menu:is-maximized-sync', (event) => {
     event.returnValue = win ? win.isMaximized() : false;
 });
 
-// async function fetchWithCache(url, cacheFileName) {
-//   const cacheDir = path.join(APPDATA, 'cache');
-//   const cachePath = path.join(cacheDir, cacheFileName);
-
-//   if (!fs.existsSync(cacheDir)) {
-//     fs.mkdirSync(cacheDir, { recursive: true });
-//   }
-
-//   if (fs.existsSync(cachePath)) {
-//     try {
-//       const cacheData = fs.readFileSync(cachePath, 'utf-8');
-//       const cached = JSON.parse(cacheData);
-
-//       updateCacheInBackground(url, cachePath).catch(() => {});
-
-//       return cached;
-//     } catch (error) {
-//       console.warn(`Cache corrompido ou quebrado, buscando novo: ${cacheFileName}`);
-//     }
-//   }
-
-//   try {
-//     const response = await fetchWithRetry(url, {}, 2, 1000);
-//     const data = await response.json();
-    
-//     fs.writeFileSync(cachePath, JSON.stringify(data), 'utf-8');
-//     return data;
-//   } catch (error) {
-//     console.warn(`Falha ao buscar online e sem cache disponível: ${cacheFileName}`);
-//     return null;
-//   }
-// }
-// async function updateCacheInBackground(url, cachePath) {
-//   try {
-//     const response = await fetchWithRetry(url, {}, 1, 500);
-//     const newData = await response.json();
-//     const newDataStr = JSON.stringify(newData);
-//     let oldDataStr = null;
-    
-//     if (fs.existsSync(cachePath)) {
-//       try {
-//         oldDataStr = fs.readFileSync(cachePath, 'utf-8');
-//       } catch (error) {}
-//     }
-//     if (newDataStr !== oldDataStr) {
-//       fs.writeFileSync(cachePath, newDataStr, 'utf-8');
-//       console.log(`Cache atualizado: ${path.basename(cachePath)}`);
-
-//       win?.webContents.send('cache-updated', { fileName: path.basename(cachePath), data: newData });
-//     }
-//   } catch (error) {}
-// }
-
 ipcMain.handle('updates:check-update', async () => {
   if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true;
@@ -964,43 +983,6 @@ ipcMain.handle('updates:check-update', async () => {
     };
   }
 })
-
-function getAssetsConfig() {
-    const configPath = path.join(APPDATA, 'assets-config.json');
-    if (!fs.existsSync(configPath)) {
-        const defaults = { fortnite: true };
-        fs.writeFileSync(configPath, JSON.stringify(defaults, null, 2));
-        return defaults;
-    }
-    try {
-        return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    } catch {
-        return { fortnite: true };
-    }
-}
-ipcMain.handle('assets-config:get', () => getAssetsConfig());
-
-ipcMain.on('assets-config:update', (_, key, value) => {
-  const configPath = path.join(APPDATA, 'assets-config.json');
-  const config = getAssetsConfig();
-  config[key] = value;
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-});
-
-// ipcMain.handle('fortnite:fetch-trailers', async () => {
-//   const language = getConfig().language;
-//   return await fetchWithCache(
-//     `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers-${language}.json`,
-//     `fn-trailers-${language}.json`
-//   );
-// });
-// ipcMain.handle('fortnite:fetch-seasons', async () => {
-//   const language = getConfig().language;
-//   return await fetchWithCache(
-//     `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`,
-//     `fn-seasons-${language}.json`
-//   );
-// });
 
 ipcMain.on('devTools', () => {
   if (!app.isPackaged && win && !win.isDestroyed()) {
@@ -1332,38 +1314,6 @@ ipcMain.handle("notes:save", async (event, name, content) => {
 ipcMain.handle('notes:save-order', async (_, content) => {
     fs.writeFileSync(NOTES_LIST, content);
 });
-ipcMain.handle('notes:count', () => {
-  const dir = path.join(DOCUMENTS, 'Notes');
-
-  if (!fs.existsSync(dir)) {
-    return 0;
-  }
-  const files = fs.readdirSync(dir);
-  const count = files.filter(f => f.endsWith('.txt')).length;
-
-  return count;
-});
-ipcMain.handle('games:finished-count', async () => {
-  const filePath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
-  let count = 0;
-
-  try {
-    const fileContent = await fs.promises.readFile(filePath, 'utf-8');
-    const gamesList = JSON.parse(fileContent);
-
-    if (Array.isArray(gamesList)) {
-      for (const game of gamesList) {
-        if (game.status && game.status.toLowerCase() === 'zerado') {
-          count++;
-        }
-      }
-    }
-  } catch (error) { 
-    console.error('Erro ao ler o arquivo campaigns.json ou contar os jogos:', error);
-  }
-
-  return count;
-});
 function getPythonBinaryPath(scriptName) {
     const ext = process.platform === 'win32' ? '.exe' : '';
     
@@ -1411,27 +1361,6 @@ ipcMain.handle('games:stats-zerados', async () => {
             reject(new Error(`Falha ao executar: ${err.message}`));
         });
     });
-});
-ipcMain.handle('games:achie-count', async () => {
-  const filePath = path.join(DOCUMENTS, 'Games', 'achievements.json');
-  let count = 0;
-
-  try {
-    const fileContent = await fs.promises.readFile(filePath, 'utf-8');
-    const gamesList = JSON.parse(fileContent);
-
-    if (Array.isArray(gamesList)) {
-      for (const game of gamesList) {
-        if (game.achieStatus && game.achieStatus.toLowerCase() === 'platinado') {
-          count++;
-        }
-      }
-    }
-  } catch (error) { 
-    console.error('Erro ao ler o arquivo achievements.json ou contar os jogos:', error);
-  }
-
-  return count;
 });
 
 ipcMain.handle('notes:rename', async (event, oldName, newName) => {
@@ -1862,139 +1791,3 @@ ipcMain.handle('games:delete', async (_, gameName) => {
     }
 });
 const activeDownloads = new Set();
-
-// ipcMain.handle('video:download-on-demand', async (event, { url, fileName, folderCode }) => {
-//   const safeFileName = path.basename(fileName);
-//   const safeFolderCode = folderCode.replace(/[^a-z0-9-]/gi, '');
-
-//   if (!url || !safeFileName || !safeFolderCode) {
-//     return { success: false, error: 'Parâmetros inválidos' };
-//   }
-
-//   try {
-//     const parsedUrl = new URL(url);
-//     if (parsedUrl.protocol !== 'https:') {
-//       return { success: false, error: 'Protocolo não autorizado. Use HTTPS.' };
-//     }
-//   } catch (err) {
-//     return { success: false, error: 'URL malformada' };
-//   }
-
-//   const targetFolder = path.join(ASSETS_DIR, `fortnite-${safeFolderCode}-assets`);
-//   const finalPath = path.join(targetFolder, safeFileName);
-//   const tempPath = finalPath + '.tmp';
-
-//   if (!finalPath.startsWith(ASSETS_DIR + path.sep)) {
-//     return { success: false, error: 'Caminho inválido' };
-//   }
-
-//   if (fs.existsSync(finalPath)) {
-//     return { success: true, path: finalPath, cached: true };
-//   }
-
-//   if (activeDownloads.has(finalPath)) {
-//     return { success: false, error: 'Download já está em andamento' };
-//   }
-
-//   activeDownloads.add(finalPath);
-
-//   try {
-//     if (!fs.existsSync(targetFolder)) {
-//       fs.mkdirSync(targetFolder, { recursive: true });
-//     }
-
-//     await downloadFile(url, tempPath, (downloaded, total) => {
-//       const percent = total ? Math.round((downloaded * 100) / total) : 0;
-
-//       if (!event.sender.isDestroyed()) {
-//         event.sender.send('video:download-progress', { fileName: safeFileName, percent });
-//       }
-//     });
-
-//     fs.renameSync(tempPath, finalPath);
-
-//     activeDownloads.delete(finalPath);
-
-//     return { success: true, path: finalPath };
-    
-//   } catch (error) {
-//     console.error(`Erro ao baixar ${safeFileName}:`, error);
-
-//     if (fs.existsSync(tempPath)) {
-//       fs.unlinkSync(tempPath);
-//     }
-
-//     activeDownloads.delete(finalPath);
-
-//     return { success: false, error: error.message };
-//   }
-// });
-
-// ipcMain.handle('backup:export', async () => {
-//     const result = await dialog.showSaveDialog({
-//         title: 'Exportar Backup',
-//         defaultPath: `BoltNotes-Backup-${new Date().toISOString().split('T')[0]}.zip`,
-//         filters: [{ name: 'Backup ZIP', extensions: ['zip'] }]
-//     });
-
-//     if (result.canceled || !result.filePath) {
-//         return { success: false, canceled: true };
-//     }
-
-//     try {
-//         await new Promise((resolve, reject) => {
-//             const output = fs.createWriteStream(result.filePath);
-//             const archive = archiver('zip', { zlib: { level: 9 } });
-
-//             output.on('close', resolve);
-//             archive.on('error', reject);
-
-//             archive.pipe(output);
-//             archive.directory(DOCUMENTS, false);
-//             archive.finalize();
-//         });
-
-//         return { success: true, path: result.filePath };
-//     } catch (error) {
-//         console.error('Erro ao exportar backup:', error);
-//         return { success: false, error: error.message };
-//     }
-// });
-
-// ipcMain.handle('backup:import', async () => {
-//     const result = await dialog.showOpenDialog({
-//         title: 'Importar Backup',
-//         properties: ['openFile'],
-//         filters: [{ name: 'Backup ZIP', extensions: ['zip'] }]
-//     });
-
-//     if (result.canceled || result.filePaths.length === 0) {
-//         return { success: false, canceled: true };
-//     }
-
-//     const zipPath = result.filePaths[0];
-
-//     try {
-//         const zip = new AdmZip(zipPath);
-        
-//         // Extrai para uma pasta temporária primeiro pra validar
-//         const tempExtractPath = path.join(app.getPath('temp'), 'boltnotes-import-temp');
-//         if (fs.existsSync(tempExtractPath)) {
-//             fs.rmSync(tempExtractPath, { recursive: true });
-//         }
-        
-//         zip.extractAllTo(tempExtractPath, true);
-
-//         // Substitui a pasta DOCUMENTS pelo conteúdo importado
-//         if (fs.existsSync(DOCUMENTS)) {
-//             fs.rmSync(DOCUMENTS, { recursive: true });
-//         }
-//         fs.renameSync(tempExtractPath, DOCUMENTS);
-
-//         // Limpa caches em memória, se houver
-//         return { success: true };
-//     } catch (error) {
-//         console.error('Erro ao importar backup:', error);
-//         return { success: false, error: error.message };
-//     }
-// });

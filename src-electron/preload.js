@@ -61,10 +61,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   config: { getConfig: () => ipcRenderer.invoke('config:get'),
     updateConfig: (key,value) => ipcRenderer.send('config:update',{key,value}) },
 
-  notes: {
-    rename: (oldName, newName) => ipcRenderer.invoke('notes:rename', oldName, newName)
-  },
-
   themes: {
       list: () => ipcRenderer.invoke('themes:list'),
       get: (name) => ipcRenderer.invoke('themes:get', name),
@@ -108,17 +104,15 @@ contextBridge.exposeInMainWorld('api', {
 
   notes: {
     create: (name) => ipcRenderer.invoke('notes:create',name),
+    rename: (oldName, newName) => ipcRenderer.invoke('notes:rename', oldName, newName),
     delete: (name) => ipcRenderer.invoke('notes:delete',name),
     save: (name,content) => ipcRenderer.invoke('notes:save',name,content),
-    count: () => ipcRenderer.invoke('notes:count'),
     saveOrder: (content) => ipcRenderer.invoke('notes:save-order', content),
     selectAndImage: () => ipcRenderer.invoke('notes:select-add-image')
   },
   
   games: {
     ensureCover: (data) => ipcRenderer.invoke('games:ensure-cover',data),
-    finishedCount: () => ipcRenderer.invoke('games:finished-count'),
-    achieCount: () => ipcRenderer.invoke('games:achie-count'),
     getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
     addGame: (gameData, hasCampaign) => ipcRenderer.invoke('games:add', gameData, hasCampaign),
     statsZerados: () => ipcRenderer.invoke('games:stats-zerados'),
@@ -127,16 +121,6 @@ contextBridge.exposeInMainWorld('api', {
 
   openLink: (url) => ipcRenderer.invoke('open-external-link', url),
   getAppVersion: () => ipcRenderer.invoke('app-version'),
-
-  fortnite: {
-    getTrailers: () => ipcRenderer.invoke('fortnite:fetch-trailers'),
-    getSeasons: () => ipcRenderer.invoke('fortnite:fetch-seasons')
-  },
-
-  assetsConfig: {
-    get: () => ipcRenderer.invoke('assets-config:get'),
-    update: (key, value) => ipcRenderer.send('assets-config:update', key, value)
-  },
 
   restartApp: () => ipcRenderer.send('update:restart')
 });

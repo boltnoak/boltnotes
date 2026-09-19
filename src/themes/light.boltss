@@ -1,5 +1,5 @@
 :root {
-    --bg: rgba(250, 250, 250);
+    --bg: rgba(195, 195, 195);
 
     --sep-bar: rgba(210, 210, 210, 0.4);
 
@@ -32,8 +32,8 @@
     --orange-light: rgba(250, 140, 90);
     --red-light: rgba(255, 90, 90);
 
-    --btn: rgba(200,200,200);
-    --btn-hover: rgba(227,227,227);
+    --btn: rgba(225,225,225);
+    --btn-hover: rgba(230,230,230);
     --btn-color: rgba(20, 150, 255);
     --btn-hover-color: rgba(20, 170, 255);
     --btn-text-color: rgba(0, 75, 127.5);

@@ -302,7 +302,7 @@ async function finishTitleEdit() {
   }
 
   try {
-    await window.electronAPI.notes.rename(cleanOldName, newName);
+    await window.api.notes.rename(cleanOldName, newName);
     window.location.hash = encodeURIComponent(newName);
     await loadNotes();
   } catch (err) {

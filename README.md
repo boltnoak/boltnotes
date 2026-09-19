@@ -1,27 +1,32 @@
+
 <div align="center">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="450">
+    <image class="s"  width="800" height="450" xlink:href="screenshots.apng"/>
+    </svg>
+</div>
 
-<img height="100" alt="boltnotes-logo" src="https://github.com/user-attachments/assets/b88f6bf8-8521-4651-8ff6-3c7e52b8fd3c" />
+<div align="center">
+A desktop app to manage notes, game backlogs and Fortnite season reviews.
 
-##
-
-**[<kbd> <br> Baixar e Instalar <br> </kbd>](https://github.com/boltnoak/boltnotes/releases/latest)**
+Availabe on Windows 10/11 and Linux
 </div>
 
 
+# **Installation**
+**Windows 10/11 —** [Download](https://github.com/boltnoak/boltnotes/releases/download)
 
-Um aplicativo desktop feito em Electron para gerenciar notas, backlog de jogos e reviews de temporadas do Fortnite.
-Compatível com Windows 10/11 e Linux(via AppImage)
+**AppImage —** [Download](https://github.com/boltnoak/boltnotes/releases/download)
+## Fedora
+```
+sudo curl -o /etc/yum.repos.d/boltnotes.repo https://boltnoak.github.io/boltnotes/rpm/boltnotes.repo
+sudo dnf install boltnotes
+```
 
-<div align="center">
+# **Features**
 
+* **Notes:** Criação e edição de notas de forma simples e rápida.
+* **Fortnite season reviews:** Avalie mapas, loot pools, passes de batalha e registre suas estatísticas de nível e vitórias de cada temporada.
+* **Games Backlog:** Adcione jogos, defina status: Jogando, Zerado, À Jogar, salvar a data de quando zerou seus jogos e informações sobre os jogos.
 
-</div>
-
-## Features
-
-* **Notas:** Criação e edição de notas de forma simples e rápida.
-* **Reviews de Temporadas do Fortnite:** Avalie mapas, loot pools, passes de batalha e registre suas estatísticas de nível e vitórias de cada temporada.
-* **Backlog de Jogos:** Adcione jogos, defina status: Jogando, Zerado, À Jogar, salvar a data de quando zerou seus jogos e informações sobre os jogos.
-#
 > [!NOTE]
-> Este projeto conta com o auxílio de IA na otimização de scripts e resolução de bugs.
+> This project was developed with AI assistance for optimizing scripts and resolving bugs.

@@ -1,8 +1,8 @@
-const basePagePathLog = document.querySelector('base').href
-    .replace(/.*(?=BoltNotes\/)/, 'Documentos/')
-    .replace('file://', '')
+// const basePagePathLog = document.querySelector('base').href
+//     .replace(/.*(?=BoltNotes\/)/, 'Documentos/')
+//     .replace('file://', '')
 
-console.log(`Local: ${basePagePathLog}`);
+// console.log(`Local: ${basePagePathLog}`);
 
 document.addEventListener('DOMContentLoaded', async () => {
   const version = await window.api.getAppVersion();

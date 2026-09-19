@@ -49,20 +49,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             const lang = li.dataset.value;
             langSpan.textContent = li.querySelector('span').textContent;
             langSelect.classList.remove('active');
+
             await window.electronAPI.config.updateConfig('language', lang);
-            window.electronAPI.notifyLanguageChanged();
-            applyLocale();
+            if (window.electronAPI.notifyLanguageChanged) window.electronAPI.notifyLanguageChanged()
+
+            if (typeof applyLocale === 'function') applyLocale();
+
+            if (window.parent && typeof window.parent.applyLocale === 'function') {
+                if (typeof window.parent.loadLanguage === 'function') await window.parent.loadLanguage(lang);
+                window.parent.applyLocale();
+            }
+
             changeLangSelect.style.display = 'none';
         });
-    });
-
-    const assetsConf = await window.api.assetsConfig.get();
-
-    document.querySelectorAll('a[data-assets-code]').forEach(button => {
-        const code = button.dataset.assetsCode;
-        if (assetsConf && assetsConf[code] !== false) {
-            button.classList.add('active');
-        }
     });
     
     const themeContainers = document.querySelectorAll('.theme-selector-div');
@@ -168,15 +167,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
     const currentFeatured = config.featured;
-
-    const assetsConf = await window.api.assetsConfig.get();
-
-    document.querySelectorAll('a[data-assets-code]').forEach(button => {
-        const code = button.dataset.assetsCode;
-        if (assetsConf && assetsConf[code] !== false) {
-            button.classList.add('active');
-        }
-    });
 
     const selectorsContainers = document.querySelectorAll('.featured-selector-div');
 
@@ -296,8 +286,16 @@ async function loadInfo() {
 async function selectNewTheme(themeName) {
     localStorage.removeItem('cached-theme-css');
     localStorage.removeItem('cached-theme-name');
-    
-    await applyTheme(); 
+
+    if (typeof applyTheme === 'function') {
+        await applyTheme();
+    }
+
+    if (window.parent && typeof window.parent.applyTheme === 'function') {
+        window.parent.localStorage.removeItem('cached-theme-css');
+        window.parent.localStorage.removeItem('cached-theme-name');
+        await window.parent.applyTheme();
+    }
 }
 
 async function changeTheme(selectEl) {
@@ -317,7 +315,7 @@ loadInfo();
 
 async function checkUpdates() {
     const text = document.querySelectorAll('#checkUpdates-text');
-    const btn = document.getElementById('update-btn');
+    const btn = window.parent ? window.parent.document.getElementById('update-btn') : null;
     if (!text || text.length === 0) return;
 
     let downloadIniciado = false;

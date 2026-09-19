@@ -47,7 +47,7 @@ function closeApp() {
   window.electronAPI.menu.closeApp();
 }
 async function updateCheckInit() {
-    const updateBtn = document.getElementById('update-btn');
+    const updateBtn = window.parent ? window.parent.document.getElementById('update-btn') : null;
     if (updateBtn) {
         const isUpdate = await window.electronAPI.checkUpdateStatus();
 
@@ -72,17 +72,6 @@ requestAnimationFrame(() => {
         document.documentElement.classList.add('sidebar-color-ready');
     });
 });
-
-
-async function ensurePersistentStorage() {
-  if (navigator.storage && navigator.storage.persist) {
-    const granted = await navigator.storage.persist();
-    console.log(granted ? 'Storage persistente concedido' : 'Storage NÃO persistente');
-    return granted;
-  }
-  return false;
-}
-ensurePersistentStorage();
 
 ////////////////////////
 /// ESTADO DA JANELA ///

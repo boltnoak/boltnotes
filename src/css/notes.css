@@ -45,9 +45,11 @@
 #note-list {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 84.5%;
     width: 98%;
-    margin: 1vh 1vw;
+    margin: 1.65vh 1vw;
+    overflow-x: hidden;
+    overflow-y: auto;
     /* position: absolute; */
     justify-content: space-between;
     gap: 1.5vh;
@@ -63,9 +65,9 @@
     grid-auto-rows: 30vh;
     gap: 1.5vh .75vw;
 }
-#tabs::-webkit-scrollbar-thumb {
+/* #tabs::-webkit-scrollbar-thumb {
     display: none;
-}
+} */
 .tab {
     display: flex;
     font-size: 3vh;
@@ -236,7 +238,7 @@ body.dragging-tab * {
     gap: .5vw;
     /* background-color: var(--btn-color); */
     /* border-radius: 1.25vh; */
-    padding: .8vh 1.25vw .65vh .8vw;
+    padding: .8vh 1.4vw .65vh 1.25vw;
     z-index: 97;
     border-bottom: solid .76vh var(--tab-active);
     background-image: linear-gradient(to bottom, transparent 0%, var(--tab) 80%);
@@ -332,7 +334,7 @@ h1 {
 .image {
     height: 50vh;
     border-radius: 1vh;
-    margin: 0;
+    margin: .65vh 0 0 0;
 }
 .note-list-title-div {
     display: flex;

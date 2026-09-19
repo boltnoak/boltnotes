@@ -1,23 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-br" data-i18n-title="games_page_title">
 <head>
-    <script>
-        if (localStorage.getItem('sidebarExpanded') === 'true') {
-            document.documentElement.classList.add('sidebar-expanded');
-        }
-    </script>
     <base href="../">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BoltNotes | Backlog de Jogos</title>
     <link rel="stylesheet" href="css/games.css">
     <script src="scripts/theme-loader.js"></script>
     <script src="scripts/apply-locales.js"></script>
     <script src="scripts/fn-sidebar.js"></script>
 </head>
 <body>
-<div class="app-container">
-    <div class="pageBody">
         <div class="sidebar">
             <div class="playingNowSection">
                 <div id="playingNowSection-title"><p>
@@ -91,10 +83,9 @@
             <div id="view-campaigns" class="main-view grid active"></div>
             <div id="view-achievements" class="main-view grid" style="display: none;"></div>
             <div id="view-charts" class="main-view">
-                <canvas id="zerados-chart" width="10vw" height="15vh"></canvas>
+                <canvas id="zerados-chart" width="5vw" height="5vh"></canvas>
             </div>
         </div>
-    </div>
 
     <div class="game-popup-div">
         <div class="game-popup">
@@ -207,44 +198,9 @@
         </div>
     </div>
 
-    <header>
-        <div class="sidebar-header-logo">
-            <img src="assets/boltnotes-icon.png">
-            <span>BoltNotes</span>
-        </div>
-        <a class="sidebar-btn active" href="pages/games.html">
-            <i class="fa-solid fa-gamepad"></i>
-            <span data-i18n="games-backlog">Voltar</span>
-        </a>
-        <a class="sidebar-btn" href="pages/notes.html">
-            <i class="fa-solid fa-note-sticky"></i>
-            <span data-i18n="notes">Notas</span>
-        </a>
-        <a class="sidebar-btn" href="pages/fortnite.html">
-            <div class="sidebar-fortnite-icon"></div>
-            <span data-i18n="fortnite">Fortnite</span>
-        </a>
-        
-        <div class="sidebar-bottom">
-            <a id="update-btn" class="sidebar-btn">
-                <i class="fa-solid fa-arrow-rotate-right"></i>
-                <span data-i18n="update">Atualizar</span>
-            </a>
-            <a class="sidebar-btn" href="pages/index.html">
-                <i class="fa-solid fa-house"></i>
-                <span data-i18n="home">Início</span>
-            </a>
-            <a class="config sidebar-btn" href="pages/config.html">
-                <i id="config" class="fa-solid fa-sliders"></i>
-                <span data-i18n="settings">Configurações</span>
-            </a>
-        </div>
-    </header>
-
     <div id="loading-screen">
         <div class="spinner"></div>
     </div>
-</div>
 
 <div id="addGame-popup">
     <div class="add-game-form">

@@ -4,8 +4,6 @@
 
 body {
     overflow-x: hidden;
-}
-.pageBody {
     overflow-y: auto;
 }
 
@@ -19,23 +17,6 @@ body {
 }
 
 /* Capítulos (proximo e anterior) */
-.sidebar-chapter-section {
-    max-height: 39.5vh;
-    border-radius: 1vh;
-    display: flex;
-    flex-direction: column;
-    gap: 1.1vh;
-    overflow: hidden;
-    overflow-y: auto;
-}
-.sidebar-chapter-section::-webkit-scrollbar {
-    display: none;
-}
-.sidebar-chapter-section .sidebar-btn span {
-    display: flex;
-    flex-direction: row;
-    gap: .55vw;
-}
 #chapter-name {
     margin: 0;
     padding: 0;
@@ -475,8 +456,8 @@ body {
     display: flex;
     align-items: center;
     height: 100vh;
-    width: 95.3vw;
-    margin: 0 0 0 4.7vw;
+    width: 100%;
+    /* margin: 0 0 0 4.7vw; */
     justify-content: center;
     backdrop-filter: blur(4px);
 }
@@ -494,8 +475,8 @@ body {
 .mapPopup-div {
     background: var(--bg);
     padding: 1.5vh;width: 74vw;
-    height: 80%;
-    width: 42.5%;
+    height: 75%;
+    width: 39.4%;
     border-radius: 2.3vh;
     animation: popupIn .15s ease forwards;
     overflow: hidden;

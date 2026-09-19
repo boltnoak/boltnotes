@@ -1,24 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <script>
-        if (localStorage.getItem('sidebarExpanded') === 'true') {
-            document.documentElement.classList.add('sidebar-expanded');
-        }
-    </script>
     <base href="../">
     <script src="scripts/fortnite/track.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BoltNotes | Fortnite</title>
     <link rel="stylesheet" href="css/fortnite/index.css">
     <script src="scripts/theme-loader.js"></script>
     <script src="scripts/apply-locales.js"></script>
-    <script src="scripts/fn-sidebar.js"></script>
 </head>
 <body>
-<div class="app-container">
-    <div class="pageBody">
     <div class="banner-bg" id="latestSeasonBG" style="background-image: url(assets/placeholder.png);">
     <div class="banner">
         <div class="logo" alt="Fortnite logo"></div>
@@ -27,56 +18,13 @@
         <div class="fortnite-br-chapters">
             <div class="chapter-section"></div>
         </div>
-        <!-- <div class="sep-bar-v"></div>
-            <div class="extra-section">
-            <a class="live-events-btn" href="pages/fortnite/chapter7.html"><i class="fa-solid fa-ticket"></i>Eventos</a>
-        </div> -->
     </div>
-    </div>
-</div>
-
-<header>
-    <div class="sidebar-header-logo">
-        <img src="assets/boltnotes-icon.png">
-        <span>BoltNotes</span>
-    </div>
-    <a class="sidebar-btn" href="pages/games.html">
-        <i class="fa-solid fa-gamepad"></i>
-        <span data-i18n="games-backlog">Voltar</span>
-    </a>
-    <a class="sidebar-btn" href="pages/notes.html">
-        <i class="fa-solid fa-note-sticky"></i>
-        <span data-i18n="notes">Notas</span>
-    </a>
-    <a class="sidebar-btn active" href="pages/fortnite.html">
-        <div class="sidebar-fortnite-icon"></div>
-        <span data-i18n="fortnite">Fortnite</span>
-    </a>
-    <div class="sidebar-sep-bar"></div>
-
-    <div class="sidebar-chapter-section"></div>
-
-    <div class="sidebar-bottom">
-        <div class="header-sep-bar"></div>
-        <a id="update-btn" class="sidebar-btn">
-            <i class="fa-solid fa-arrow-rotate-right"></i>
-            <span data-i18n="update">Atualizar</span>
-        </a>
-        <a class="sidebar-btn" href="pages/index.html">
-            <i class="fa-solid fa-house"></i>
-            <span data-i18n="home">Início</span>
-        </a>
-        <a class="config sidebar-btn" href="pages/config.html">
-            <i id="config" class="fa-solid fa-sliders"></i>
-            <span data-i18n="settings">Configurações</span>
-        </a>
-    </div>
-</header>
 
 <div id="loading-screen">
     <div class="spinner"></div>
 </div>
 
+<script src="scripts/shell-pageloader.js"></script>
 <script src="scripts/global.js"></script>
 <script src="scripts/basics.js"></script>
 <script src="scripts/fortnite/index.js"></script>

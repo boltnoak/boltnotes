@@ -2,90 +2,80 @@ let cachedTrailers = null;
 let cachedReviews = null;
 
 const activeDownloads = new Set();
-const CACHE_NAME = 'boltnotes-assets-v1';
-
-function assetKey(folderCode, fileName) {
-  return `https://local-assets/fortnite-${folderCode}-assets/${fileName}`;
-}
 
 function sanitizeFileName(fileName) {
-  return fileName.replace(/[\\/]/g, '').replace(/\.\./g, '');
+  return String(fileName ?? '').replace(/[\\/]/g, '').replace(/\.\./g, '').trim();
 }
+
+const FOLDERS = {
+  TRAILERS: 'Trailers',
+  LIVE_EVENTS: 'Live Events',
+};
+
 function sanitizeFolderCode(folderCode) {
-  return folderCode.replace(/[^a-z0-9-]/gi, '');
+  if (folderCode == null || folderCode === '') return null;
+  return String(folderCode).replace(/[^a-z0-9 _-]/gi, '').trim() || null;
 }
 
+// documents://Fortnite/<folderCode>/<fileName>  ou  documents://Fortnite/<fileName>
+function assetUrl(folderCode, fileName) {
+  const folder = sanitizeFolderCode(folderCode);
+  const name = encodeURIComponent(sanitizeFileName(fileName));
+  return folder
+    ? `documents://Fortnite/${encodeURIComponent(folder)}/${name}`
+    : `documents://Fortnite/${name}`;
+}
+
+async function fileExists(url) {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// Retorna a URL local (documents://...) se o arquivo existir, senão null.
+// Pode ser usada direto no <video src="...">.
 async function getLocalVideoUrl(folderCode, fileName) {
-  try {
-    const cache = await caches.open(CACHE_NAME);
-    const key = assetKey(folderCode, sanitizeFileName(fileName));
-    const response = await cache.match(key);
-    if (!response) return null;
-
-    const blob = await response.blob();
-    return URL.createObjectURL(blob);
-  } catch {
-    return null;
-  }
-}
-
-function getFileNameFromUrlOrHeader(url, response) {
-  const disposition = response?.headers?.get('content-disposition');
-  if (disposition && disposition.includes('filename=')) {
-    const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-    if (matches && matches[1]) {
-      return matches[1].replace(/['"]/g, '');
-    }
-  }
-
-  try {
-    const pathname = new URL(url).pathname;
-    const nameFromUrl = pathname.split('/').pop();
-    return decodeURIComponent(nameFromUrl);
-  } catch {
-    return null;
-  }
+  const url = assetUrl(folderCode, fileName);
+  return (await fileExists(url)) ? url : null;
 }
 
 async function downloadOnDemand(url, fileName, folderCode, onProgress) {
   const safeFileName = sanitizeFileName(fileName);
-  const safeFolderCode = sanitizeFolderCode(folderCode);
 
-  if (!url || !safeFileName || !safeFolderCode) {
+  if (!url || !safeFileName) {
     return { success: false, error: 'Parâmetros inválidos' };
   }
 
   try {
-    const parsedUrl = new URL(url);
-    if (parsedUrl.protocol !== 'https:') {
+    if (new URL(url).protocol !== 'https:') {
       return { success: false, error: 'Protocolo não autorizado. Use HTTPS.' };
     }
   } catch {
     return { success: false, error: 'URL malformada' };
   }
 
-  const cache = await caches.open(CACHE_NAME);
-  const cacheKey = assetKey(safeFolderCode, safeFileName);
+  const targetUrl = assetUrl(folderCode, safeFileName);
 
-  const existing = await cache.match(cacheKey);
-  if (existing) {
-    return { success: true, path: cacheKey, cached: true };
+  if (await fileExists(targetUrl)) {
+    return { success: true, path: targetUrl, cached: true };
   }
 
-  if (activeDownloads.has(cacheKey)) {
+  if (activeDownloads.has(targetUrl)) {
     return { success: false, error: 'Download já está em andamento' };
   }
-  activeDownloads.add(cacheKey);
+  activeDownloads.add(targetUrl);
 
   try {
     const response = await fetch(url);
     if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
 
     const total = Number(response.headers.get('content-length')) || 0;
+    const contentType = response.headers.get('content-type') || 'video/mp4';
     let downloaded = 0;
 
-    // Precisamos "espiar" o progresso e ainda assim salvar a Response original no cache.
-    // Solução: ler manualmente via reader, reportar progresso, e reconstruir a Response no final.
     const reader = response.body.getReader();
     const chunks = [];
 
@@ -100,18 +90,20 @@ async function downloadOnDemand(url, fileName, folderCode, onProgress) {
       });
     }
 
-    const blob = new Blob(chunks);
-    const fakeResponse = new Response(blob, {
-      headers: { 'Content-Type': blob.type || 'video/mp4' }
+    const blob = new Blob(chunks, { type: contentType });
+
+    const put = await fetch(targetUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': contentType },
+      body: blob,
     });
+    if (!put.ok) throw new Error(`Falha ao salvar (HTTP ${put.status})`);
 
-    await cache.put(cacheKey, fakeResponse);
-
-    activeDownloads.delete(cacheKey);
-    return { success: true, path: cacheKey };
+    return { success: true, path: targetUrl };
   } catch (error) {
-    activeDownloads.delete(cacheKey);
     return { success: false, error: error.message };
+  } finally {
+    activeDownloads.delete(targetUrl);
   }
 }
 
@@ -213,12 +205,9 @@ async function openTrailer(el) {
             const labelText = info?.title || `Trailer ${tipo}`;
             const labelDate = await formatDate(info?.date || 'Sem data');
 
-            const extension = info?.ext || 'webm';
-            const fileName = `${code}_${tipo}_${language}.${extension}`;
-            // Antes: const assetUri = `assets://fortnite-${code}-assets/${fileName}`;
-            // Agora usamos um marcador lógico (folder+nome); a URL real (blob:) só é
-            // resolvida na hora de tocar, via getLocalVideoUrl().
-            const assetUri = { folderCode: code, fileName };
+            // const extension = info?.ext || 'webm';
+            // const fileName = `${code}_${tipo}_${language}.${extension}`;
+            // const assetUri = { folderCode: code, fileName };
 
             const btn = document.createElement("div");
             btn.className = "video-item-btn";
@@ -243,7 +232,7 @@ async function openTrailer(el) {
                 for (const ext of extensoes) {
                     const testFileName = `${code}_${tipo}_${language}.${ext}`;
                     // Antes: const exists = await window.electronAPI.existsAssets(testUri);
-                    const localUrl = await getLocalVideoUrl(code, testFileName);
+                    const localUrl = await getLocalVideoUrl(FOLDERS.TRAILERS, testFileName);
                     if (localUrl) {
                         localUriEncontrado = localUrl;
                         break;
@@ -293,27 +282,25 @@ async function openTrailer(el) {
                     };
 
                     try {
-                        let result;
-                        let assetUriFinal;
+                        let result = { success: false, error: 'Não encontrado no servidor' };
+                        let assetUriFinal = null;
 
                         for (const ext of extensoesParaTentar) {
                             const currentFileName = `${code}_${tipo}_${language}.${ext}`;
-
                             const cloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${currentFileName}`;
 
-                            // Antes: window.electronAPI.video.downloadOnDemand({ url, fileName, folderCode })
-                            result = await downloadOnDemand(cloudUrl, currentFileName, code, onProgress);
+                            result = await downloadOnDemand(cloudUrl, currentFileName, FOLDERS.TRAILERS, onProgress);
 
                             if (result.success) {
-                                assetUriFinal = await getLocalVideoUrl(code, currentFileName);
-                                btn.classList.remove('downloading');
+                                assetUriFinal = await getLocalVideoUrl(FOLDERS.TRAILERS, currentFileName);
                                 break;
                             }
                         }
 
-                        if (result.success) {
+                        btn.classList.remove('downloading');
+
+                        if (result.success && assetUriFinal) {
                             btn.innerHTML = `<span>${labelText}</span><span class="moreVideo-date">${labelDate}</span>`;
-                            btn.classList.remove('downloading');
                             changeVideo(assetUriFinal);
                         } else {
                             alert('Erro ao baixar trailer: ' + result.error);
@@ -321,6 +308,8 @@ async function openTrailer(el) {
                         }
                     } catch (err) {
                         console.error('Erro no download:', err);
+                        btn.classList.remove('downloading');
+                        btn.innerHTML = `<span>${labelText}</span><span class="moreVideo-date">Falhou</span>`;
                     }
                 }
             };
@@ -328,8 +317,7 @@ async function openTrailer(el) {
             listContainer.appendChild(btn);
 
             if (!firstVideoToPlay) {
-                // Antes usava a string assetUri direto; agora resolvemos on-demand no click.
-                firstVideoToPlay = { uri: assetUri, btn: btn, title: labelText };
+                firstVideoToPlay = { btn: btn, title: labelText };
             }
         }
 
@@ -425,10 +413,7 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
     const videoTitle = document.getElementById('video-title');
     const closeBtn = document.querySelector('#video-close');
 
-    // Antes: const basePath = `assets://fortnite-${code}-assets/${fileCode}`;
-    // Agora guardamos folderCode + nome-base separadamente, e resolvemos a URL
-    // (blob:) só na hora de realmente tocar o vídeo.
-    const folderCode = code;
+    const folderCode = 'Live Events';
     const baseFileName = fileCode;
 
     let ext = null;
@@ -481,7 +466,7 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                     const fileName = `${fileCode}.${testExt}`;
                     const cloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${fileName}`;
 
-                    const result = await downloadOnDemand(cloudUrl, fileName, code, onProgress);
+                    const result = await downloadOnDemand(cloudUrl, fileName, folderCode, onProgress);
 
                     if (result.success) {
                         ext = testExt;
@@ -509,9 +494,9 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
                     
                     if (!hasExtraLocalUrl) {
                         if (nameEl) nameEl.textContent = `${window._t[`event_c7s2-${team || ""}`]}`;
-                        
+
                         const extraCloudUrl = `https://github.com/boltnoak/boltnotes-assets/releases/download/assets/${extraName}`;
-                        await downloadOnDemand(extraCloudUrl, extraName, code, onProgress);
+                        await downloadOnDemand(extraCloudUrl, extraName, folderCode, onProgress);
                     }
                     videoTimeDisplay();
                 }
@@ -586,9 +571,16 @@ async function chooseTeam(team) {
     const titleKey = `${EVENT_KEYS[code]}-${team}`;
     const titleName = window._t?.[titleKey] || code;
 
-    const webmUrl = await getLocalVideoUrl(code, `live-event-${key}.webm`);
-    const ext = webmUrl ? 'webm' : 'mp4';
-    const path = webmUrl || await getLocalVideoUrl(code, `live-event-${key}.${ext}`);
+    let path = null;
+    for (const ext of ['webm', 'mp4', 'mkv']) {
+        path = await getLocalVideoUrl(FOLDERS.LIVE_EVENTS, `live-event-${key}.${ext}`);
+        if (path) break;
+    }
+
+    if (!path) {
+        console.error(`Vídeo do time não encontrado: live-event-${key}`);
+        return;
+    }
 
     document.getElementById('video-title').textContent = titleName || key;
     changeVideo(path);

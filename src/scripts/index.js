@@ -45,15 +45,14 @@ function changeFeaturedView(el) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
-    const configAssets = await window.api.assetsConfig.get();
     const currentFeatured = config.featured;
 
     if (config.show_featured_changer === false) {
-        document.querySelector('.featured-change-div').style.display = 'none';
-        document.getElementById('featured-title').style.display = 'flex';
+        if (document.querySelector('.featured-change-div')) document.querySelector('.featured-change-div').style.display = 'none';
+        if (document.getElementById('featured-title')) document.getElementById('featured-title').style.display = 'flex';
     } else {
-        document.querySelector('.featured-change-div').style.display = 'flex';
-        document.getElementById('featured-title').style.display = 'none';
+        if (document.querySelector('.featured-change-div')) document.querySelector('.featured-change-div').style.display = 'flex';
+        if (document.getElementById('featured-title')) document.getElementById('featured-title').style.display = 'none';
     }
 
     const toggles = {
@@ -218,7 +217,7 @@ async function preencherValores() {
     const levelsText = document.querySelector('.level-progress-text');
     
     const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
-    const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(1);
+    const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
 
     if (levels) levels.textContent = data.levels || "0";
     if (levelsBar) levelsBar.style.width = `${(data.levels / 200) * 100}%`;
@@ -245,7 +244,7 @@ async function preencherValores() {
         updateStat('levels', 1, levelsSpan);
         if (levelsText) {
             const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
-            const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(1);
+            const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
             levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
         }
     }
@@ -253,7 +252,7 @@ async function preencherValores() {
         updateStat('levels', -1, levelsSpan);
         if (levelsText) {
             const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
-            const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(1);
+            const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
             levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
         }
     }
@@ -1331,13 +1330,6 @@ async function openGamePopup(el) {
     popup.style.display = 'flex';
     checkTextOverflow();
 }
-
-const closeGamePopup = document.querySelector('.game-popup-div');
-closeGamePopup.addEventListener('click', (e) => {
-    if (e.target === gamePopup) {
-        
-    }
-});
 
 gamePopupDiv.addEventListener('click', (e) => {
     if (e.target === gamePopupDiv) {

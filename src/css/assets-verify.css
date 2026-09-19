@@ -4,9 +4,10 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--bg);
+    /* background-color: var(--bg); */
     -webkit-app-region: drag;
     border-radius: 4vh;
+    clip-path: inset(0 round 4vh);
 }
 #menu {
     display: none;

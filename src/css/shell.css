@@ -3,9 +3,7 @@
 body {
     display: flex;
     flex-direction: column;
-    gap: 1.6vh;
     justify-content: center;
-    background-color: var(--bg);
 }
 .app-version {
     color: var(--text-dark-gray);
@@ -22,7 +20,7 @@ body {
     display: none;
 }
 .sidebar-chapter-section {
-    max-height: 39.5vh;
+    max-height: 42.55vh;
     border-radius: 1vh;
     display: flex;
     flex-direction: column;
@@ -102,18 +100,35 @@ body {
     height: 100%;
     background-color: var(--bg);
 }
+
+body {
+    border-radius: 1vh;
+    overflow: hidden; /* corta o conteúdo interno nos cantos arredondados */
+}
+
+.window-maximized body {
+    border-radius: 0; /* maximizado não deve ter radius */
+}
+.icon-restore { display: none; }
+
+.window-maximized .icon-maximize { display: none; }
+.window-maximized .icon-restore { display: block; }
+
+.window-normal .icon-maximize { display: block; }
+.window-normal .icon-restore { display: none; }
 .shell-page {
     display: flex;
     width: 100%;
     position: relative;
     flex-direction: row;
     min-height: 0;
-    height: 94.3vh;
+    height: 10vh;
     flex: 1;
+    object-fit: cover;
 }
 .sidebar-space {
     width: 3.56vw;
-    padding: 0 .55vw;
+    padding: .45rem .45rem;
 }
 .boltnotes-logo {
     height: 11.5vh;
@@ -450,12 +465,6 @@ body {
     background-color: var(--tab-active);
     z-index: 10;
 }
-.game.jogando:hover {
-    transform: scale(1.015);
-    cursor: pointer;
-    background-color: transparent;
-    z-index: 10;
-}
 .game-cover {
     height: 25vh;
     object-fit: cover;
@@ -497,8 +506,6 @@ body {
     display: flex;
     justify-content: center;
     overflow: hidden;
-    white-space: normal;
-    word-break: break-word;
 }
 /* Status dos jogos */
 .playingNow-panel .status {
@@ -748,7 +755,7 @@ body {
 .toPlay-panel {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(16vw, 1fr));
-    grid-auto-rows: 28.75vh;
+    grid-auto-rows: 30vh;
     padding: .25vh .25vw .25vh .25vw;
     width: 100%;
     border-radius: 1.3vh;
@@ -2518,4 +2525,52 @@ body.ui-ready .app-version {
     font-weight: 700;
     font-size: 2vh;
     color: var(--text);
+}
+
+.menuButtons {
+    display: flex;
+    -webkit-app-region: no-drag;
+}
+
+.menuButtons button {
+    width: 3.25rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.menuButtons button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#menuClose:hover {
+    background: #e81123;
+    color: var(--text);
+}
+html {
+    background: transparent !important;
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    /* background-color: var(--bg); */
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    overflow: hidden;
+}
+
+html.window-normal body {
+    clip-path: inset(0 round 1.3vh);
+}
+html.window-maximized body {
+    clip-path: none;
 }
