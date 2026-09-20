@@ -37,15 +37,10 @@ document.addEventListener('paste', (e) => {
 /////////////////////////////////////
 /// BARRA DE TÍTULO/BOTÕES DO APP ///
 /////////////////////////////////////
-function minimizeApp() {
-  window.electronAPI.menu.minimizeApp();
-}
-function maximizeApp() {
-  window.electronAPI.menu.maximizeApp();
-}
-function closeApp() {
-  window.electronAPI.menu.closeApp();
-}
+function minimizeApp() { window.electronAPI.menu.minimizeApp() }
+function maximizeApp() { window.electronAPI.menu.maximizeApp() }
+function closeApp() { window.electronAPI.menu.closeApp() }
+
 async function updateCheckInit() {
     const updateBtn = window.parent ? window.parent.document.getElementById('update-btn') : null;
     if (updateBtn) {

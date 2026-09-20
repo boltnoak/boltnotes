@@ -11,17 +11,14 @@
 </head>
 <body>
     <div class="banner-bg" id="latestSeasonBG" style="background-image: url(assets/placeholder.png);">
-    <div class="banner">
         <div class="logo" alt="Fortnite logo"></div>
     </div>
-    <div class="fortnite-contents">
-        <div class="fortnite-br-chapters">
-            <div class="chapter-section"></div>
-        </div>
-    </div>
+    <div class="chapter-section"></div>
 
 <div id="loading-screen">
-    <div class="spinner"></div>
+  <div class="progress"><span data-i18n="downloading"></span><div id="fortnite-progress"></div></div>
+  <div class="spinner"></div>
+  <p id="loading-text"></p>
 </div>
 
 <script src="scripts/shell-pageloader.js"></script>

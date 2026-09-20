@@ -24,7 +24,7 @@
 i {
     color: white;
 }
-#loading-screen {
+/* #loading-screen {
     position: absolute;
     top: 0;
     left: 0;
@@ -44,13 +44,13 @@ i {
 }
 #loading-screen.hidden {
     visibility: hidden;
-}
+} */
 .spinner {
-    border: 1.3vh solid var(--sep-bar);
-    width: 8vh;
-    height: 8vh;
+    border: 1.75vh solid var(--btn-color);
+    width: 11vh;
+    height: 11vh;
     border-radius: 50%;
-    border-left-color: var(--tag);
+    border-left-color: var(--btn-text-color);
     animation: spin 1s linear infinite;
 }
 .sep-bar-v {
@@ -311,6 +311,10 @@ body {
     overflow: hidden;
     -webkit-app-region: drag;
     background-color: var(--tab);
+}
+.menuButtons button svg {
+  width: .9rem;
+  height: .9rem;
 }
 .pageBody {
     /* width: 95.3vw; */

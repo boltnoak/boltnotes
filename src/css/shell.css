@@ -129,6 +129,7 @@ body {
 .sidebar-space {
     width: 3.56vw;
     padding: .45rem .45rem;
+    background-color: var(--tab);
 }
 .boltnotes-logo {
     height: 11.5vh;
@@ -2569,7 +2570,7 @@ body {
 }
 
 html.window-normal body {
-    clip-path: inset(0 round 1.3vh);
+    clip-path: inset(0 round 1.25vh);
 }
 html.window-maximized body {
     clip-path: none;

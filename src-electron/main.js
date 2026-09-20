@@ -278,7 +278,7 @@ async function syncAssets() {
     try {
       await downloadPackage(pkg.name);
 
-      console.log(`Assets - downloadPackage finalizado com sucesso para ${pkg.name}!`);
+      console.log(`Assets - download finalizado com sucesso para ${pkg.name}!`);
 
       if (idx >= 0) {
         local.packages[idx] = pkg;
@@ -489,13 +489,16 @@ function createWindow() {
     const isWindows = process.platform === 'win32';
 
     win = new BrowserWindow({
-        transparent: true,
-        titleBarStyle: 'hidden',
         width: width,
         height: height,
         show: false,
         frame: isWindows,
         hasShadow: isWindows,
+        autoHideMenuBar: isWindows,
+        resizable: !isWindows,
+        maximizable: !isWindows,
+        titleBarStyle: 'hidden',
+        transparent: true,
         backgroundColor: '#00000000',
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
@@ -814,36 +817,19 @@ if (!gotTheLock && app.isPackaged) {
     });
 
     startFolders();
-    createAssetsWindow();
+    createWindow();
 
     const configs = getConfig();
     manageStartup(configs.open_on_startup);
-    try {
-      await syncAssets();
-      assetsReady = true;
-      if (assetsWin && !assetsWin.isDestroyed()) {
-        assetsWin.webContents.send('assets-ready');
-        // assetsWin.destroy();
-      }
-      assetsWin.hide();
-      createWindow();
-      preloadAll();
-    } catch (err) {
-      console.error(err);
-      if (assetsWin && !assetsWin.isDestroyed()) {
-        assetsWin.webContents.send('assets-error', err.message);
-      }
-    }
+
     win.once('ready-to-show', async () => {
       makeTray();
       if (configs.maximize_on_start) {
         win.maximize();
       }
       if (!isSilent) {
-        win.show();
-      } else {
-        win.hide();
-      }
+        setTimeout(() => win.show(), 2500);
+      } else win.hide();
 
       if (app.isPackaged) {
         autoUpdater.checkForUpdates();
@@ -874,20 +860,10 @@ if (!gotTheLock && app.isPackaged) {
 }
 
 ipcMain.on('welcome:done', async () => {
-  const currentConfig = getConfig();
-  currentConfig.welcomed = true;
-  fs.writeFileSync(path.join(APPDATA, 'config.json'), JSON.stringify(currentConfig, null, 2));
-  win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
-
-  await syncAssets()
-    .then(() => {
-      assetsReady = true;
-      win.webContents.send('assets-ready');
-    })
-    .catch(err => {
-      console.error(err);
-      win.webContents.send('assets-error', err.message);
-    });
+    const currentConfig = getConfig();
+    currentConfig.welcomed = true;
+    fs.writeFileSync(path.join(APPDATA, 'config.json'), JSON.stringify(currentConfig, null, 2));
+    win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
 });
 
 ipcMain.handle('assets-check-status', () => {
