@@ -23,304 +23,14 @@ process.on('uncaughtException', (err) => {
 const isSilent = process.argv.includes('--silent');
 if (isSilent) console.log('Iniciando silenciosamente...');
 
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.autoInstallOnAppQuit = false;
+
 const DOCUMENTS = path.join(
     app.getPath('documents'),
     'BoltNotes'
 );
-
-const ASSETS_DIR = path.join(
-  DOCUMENTS,
-  'Fortnite',
-  'Assets'
-);
-
-const LOCAL_MANIFEST = path.join(
-  app.getPath('userData'),
-  'assets-manifest.json'
-);
-
-const MANIFEST_URL =
-  'https://github.com/boltnoak/boltnotes-assets/releases/latest/download/manifest.json';
-
-function downloadFile(url, destination, onProgress, retries = 3) {
-  return new Promise((resolve, reject) => {
-    let settled = false;
-
-    const safeResolve = () => {
-        if (settled) return;
-        settled = true;
-        resolve();
-    };
-
-    const safeReject = (err) => {
-        if (settled) return;
-        settled = true;
-        reject(err);
-    };
-
-    const attempt = (currentUrl, triesLeft) => {
-      let retried = false;
-
-      const retryOrFail = (err) => {
-          if (retried) return;
-          retried = true;
-
-          if (triesLeft > 0) {
-              setTimeout(() => attempt(currentUrl, triesLeft - 1), 2000);
-          } else {
-              safeReject(err);
-          }
-      };
-
-      const req = https.get(currentUrl, {
-        headers: {
-          'accept-encoding': 'identity',
-          'user-agent': 'BoltNotes'
-        }
-      }, response => {
-        if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
-          response.resume();
-          retried = true; // não conta como retry, é redirect
-          return attempt(response.headers.location, triesLeft);
-        }
-
-        if (response.statusCode !== 200) {
-          response.resume();
-          return safeReject(new Error(`Download falhou: ${response.statusCode}`));
-        }
-
-        const total = Number(response.headers['content-length']) || null;
-        let downloaded = 0;
-
-        const file = fs.createWriteStream(destination);
-
-        file.on('error', (err) => {
-          file.close(() => {
-            fs.unlink(destination, () => {});
-            retryOrFail(err);
-          });
-        });
-
-        response.on('data', chunk => {
-          downloaded += chunk.length;
-          if (onProgress) onProgress(downloaded, total);
-        });
-
-        response.pipe(file);
-
-        file.on('finish', () => {
-          file.close(() => {
-            if (total && downloaded !== total) {
-                fs.unlink(destination, () => {});
-                console.warn(`Download - Incompleto (${downloaded}/${total} bytes).`);
-                retryOrFail(new Error(`Download incompleto: ${downloaded}/${total} bytes.`));
-            } else {
-                if (onProgress && total) onProgress(total, total);
-                safeResolve();
-            }
-          });
-        });
-
-        response.on('error', (err) => {
-          file.close(() => {
-            fs.unlink(destination, () => {});
-            retryOrFail(err);
-          });
-        });
-      });
-
-      req.setTimeout(60000, () => {
-        req.destroy(new Error('Timeout'));
-      });
-
-      req.on('error', (err) => {
-        fs.unlink(destination, () => {});
-        retryOrFail(err);
-      });
-    };
-
-    attempt(url, retries);
-  });
-}
-
-async function downloadPackage(name) {
-  const url = `https://github.com/boltnoak/boltnotes-assets/releases/latest/download/${name}`;
-  const zipName = name.endsWith('.zip') ? name : `${name}.zip`;
-
-  const zipPath = path.join(app.getPath('userData'), zipName);
-  const folderName = name.replace('.zip', '');
-  const extractPath = path.join(ASSETS_DIR, folderName);
-
-  let lastLog = '';
-
-  await downloadFile(url, zipPath, (downloaded, total) => {
-    const mb = (downloaded / 1024 / 1024).toFixed(1);
-    const line = total
-      ? `Assets - ${name}: ${Math.round(downloaded * 100 / total)}% (${mb} MB / ${(total / 1024 / 1024).toFixed(1)} MB)`
-      : `Assets - ${name}: ${mb} MB`;
-
-    if (line !== lastLog) {
-      lastLog = line;
-      process.stdout.write(`\r${line}   `);
-      assetsWin?.webContents.send('assets-progress', {
-        package: name,
-        downloaded,
-        total,
-        percent: total ? Math.round(downloaded * 100 / total) : null
-      });
-      win?.webContents.send('assets-progress', {
-        package: name,
-        downloaded,
-        total,
-        percent: total ? Math.round(downloaded * 100 / total) : null
-      });
-    }
-  });
-
-  process.stdout.write('\n');
-
-  const zip = new AdmZip(zipPath);
-
-  await new Promise((resolve, reject) => {
-    zip.extractAllToAsync(extractPath, true, false, (error) => {
-      if (error) reject(error);
-      else resolve();
-    });
-  });
-
-  try {
-    fs.unlinkSync(zipPath);
-  } catch (err) {
-    console.error(`Erro ao deletar o arquivo temporário: ${err.message}`);
-  }
-}
-
-async function getRemoteManifest() {
-  try {
-    const response = await fetchWithRetry(MANIFEST_URL, {}, 3, 2000);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  } catch (err) {
-    throw err;
-  }
-}
-
-function getLocalManifest() {
-  if (!fs.existsSync(LOCAL_MANIFEST)) {
-    return null;
-  }
-
-  return JSON.parse(
-    fs.readFileSync(LOCAL_MANIFEST, 'utf8')
-  );
-}
-
-async function fetchWithRetry(url, options = {}, retries = 3, delay = 500, timeoutMs = 8000) {
-    for (let i = 0; i < retries; i++) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-        try {
-            const response = await fetch(url, { ...options, signal: controller.signal });
-            clearTimeout(timeout);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return response;
-        } catch (err) {
-            clearTimeout(timeout);
-            if (i < retries - 1) {
-                console.log(`Fetch - Tentativa ${i + 1} falhou (${err.message}), tentando em ${delay/1000}s...`);
-                await new Promise(r => setTimeout(r, delay));
-            } else {
-                throw err;
-            }
-        }
-    }
-}
-
-async function syncAssets() {
-  fs.mkdirSync(ASSETS_DIR, { recursive: true });
-
-  let remote, local;
-  const failedPackages = [];
-
-  try {
-    remote = await getRemoteManifest();
-
-    if (!remote || !remote.packages) {
-      throw new Error('Manifest remoto inválido ou incompleto.');
-    }
-  } catch (err) {
-    console.warn('Assets - Não foi possível obter o manifest remoto:', err.message);
-    
-    local = getLocalManifest();
-    if (local && local.packages) {
-      console.warn('Assets - Offline, usando assets locais.');
-      return { success: true, offline: true };
-    }
-    throw new Error(`Falha ao sincronizar assets. Tente sincronizar nas configurações > Geral > Sincronizar assets.`);
-  }
-
-  local = getLocalManifest() || { version: 0, packages: [] };
-  local.packages = local.packages || [];
-  let changed = false;
-
-  for (const pkg of remote.packages) {
-    const idx = local.packages.findIndex(p => p.name === pkg.name);
-    const localPkg = idx >= 0 ? local.packages[idx] : null;
-
-    if (localPkg && localPkg.hash === pkg.hash) {
-      console.log(`Assets - ${pkg.name} (atualizado)`);
-      continue;
-    }
-
-    console.log(`Assets - Baixando ${pkg.name}...`);
-
-    try {
-      await downloadPackage(pkg.name);
-
-      console.log(`Assets - download finalizado com sucesso para ${pkg.name}!`);
-
-      if (idx >= 0) {
-        local.packages[idx] = pkg;
-      } else {
-        local.packages.push(pkg);
-      }
-
-      changed = true;
-      fs.writeFileSync(LOCAL_MANIFEST, JSON.stringify(local, null, 2));
-      console.log(`Assets - ${pkg.name} salvo no manifest local`);
-
-    } catch (err) {
-      console.error(`Assets - Erro ao baixar ${pkg.name}:`, err.message);
-      failedPackages.push(pkg.name);
-    }
-  }
-  if (changed || local.version !== remote.version) {
-    local.version = remote.version;
-    fs.writeFileSync(LOCAL_MANIFEST, JSON.stringify(local, null, 2));
-  }
-
-  if (failedPackages.length > 0) {
-    console.warn(`Assets - ${failedPackages.length} pacote(s) falharam: ${failedPackages.join(', ')}`);
-    throw new Error(`Falha ao baixar: ${failedPackages.join(', ')}`);
-  }
-
-  console.log('Assets - Sincronização concluída com sucesso!');
-  return { success: true };
-}
-ipcMain.handle('sync-assets', async () => {
-  try {
-    await syncAssets(); 
-    return { success: true };
-  } catch (error) {
-    console.error("Erro ao sincronizar assets:", error);
-    return { success: false, error: error.message };
-  }
-});
-
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-autoUpdater.autoInstallOnAppQuit = false;
 
 const APPDATA = path.join(
     app.getPath('userData')
@@ -330,12 +40,6 @@ const COVERS = path.join(
     DOCUMENTS,
     'Games',
     'Covers'
-);
-
-const MEDIA_DIR = path.join(
-  DOCUMENTS,
-  'Notes',
-  'Media'
 );
 
 const GAMELOGOS = path.join(
@@ -374,27 +78,15 @@ const BUNDLE = path.join(
     'src'
 );
 
-const NOTES_LIST = path.join(
-    DOCUMENTS,
-    'Notes',
-    '.NotesList'
-);
-
 function startFolders() {
-    const foldersToCreate = [
+    const folders = [
         DOCUMENTS,
         path.join(DOCUMENTS, 'Fortnite'),
         path.join(DOCUMENTS, 'Games'),
         path.join(DOCUMENTS, 'Notes'),
         path.join(DOCUMENTS, 'Notes', 'Media')
     ];
-
-    foldersToCreate.forEach(folder => {
-        if (!fs.existsSync(folder)) {
-            fs.mkdirSync(folder, { recursive: true });
-            console.log(`BoltNotes - Pasta criada: ${folder}`);
-        }
-    });
+    folders.forEach(folder => {if (!fs.existsSync(folder)) {fs.mkdirSync(folder, { recursive: true })}});
 }
 
 protocol.registerSchemesAsPrivileged([
@@ -406,58 +98,40 @@ protocol.registerSchemesAsPrivileged([
             supportFetchAPI: true,
             corsEnabled: true
         }
-    },
-    {
-      scheme: 'assets',
-      privileges: {
-        standard: true,
-        secure: true,
-        supportFetchAPI: true,
-        corsEnabled: true
-      }
-    },
-    {
-      scheme: 'appdata',
-      privileges: {
-        standard: true,
-        secure: true,
-        supportFetchAPI: true,
-        corsEnabled: true
-      }
     }
 ]);
 
 let win;
 let tray = null;
 let trayIcon;
-let trayNameIcon;
 let isQuitting = false;
-let assetsReady = false;
 let updateReady = false;
+let trayNameIcon;
 
 function getConfig() {
-  const configPath = path.join(app.getPath('userData'),'config.json');
-  const configDefault = {
-    language: 'en',
-    maximize_on_start: false,
-    open_on_startup: false,
-    minimize_to_tray: false,
-    backlog_on_home: false,
-    notes_on_home: true,
-    fortnite_on_home: true,
-    show_version: true,
-    last_seen_version: null,
-    theme: 'dark',
-    featured: 'playing_now',
-    welcomed: false,
-    show_featured_changer: false
-  };
-  try {
-    if (fs.existsSync(configPath)) {
-      const dadosBrutos = fs.readFileSync(configPath, 'utf-8');
-      return JSON.parse(dadosBrutos) }} catch (erro) {
-    console.error("Erro ao ler o arquivo de configuração, usando padrão:", erro)}
-  return configDefault;
+    const configPath = path.join(app.getPath('userData'),'config.json');
+    const defaults = {
+        language: 'en',
+        maximize_on_start: false,
+        open_on_startup: false,
+        minimize_to_tray: false,
+        backlog_on_home: false,
+        notes_on_home: true,
+        fortnite_on_home: true,
+        show_version: true,
+        last_seen_version: null,
+        theme: 'dark',
+        featured: 'playing_now',
+        welcomed: false,
+        show_featured_changer: false
+    };
+    try {
+        if (fs.existsSync(configPath)) {
+            const data = fs.readFileSync(configPath, 'utf-8');
+            return JSON.parse(data)
+        }
+    } catch (erro) { console.error("getConfig error:", erro) }
+    return defaults;
 }
 
 app.on('before-quit', () => {
@@ -471,9 +145,7 @@ process.on('SIGINT', () => {
   isQuitting = true;
   app.quit();
 });
-app.commandLine.appendSwitch('ozone-platform', 'wayland');
-app.commandLine.appendSwitch('enable-features', 'WaylandWindowDecorations');
-app.commandLine.appendSwitch('enable-transparent-visuals');
+
 Menu.setApplicationMenu(null);
 app.commandLine.appendSwitch('enable-smooth-scrolling');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
@@ -501,24 +173,18 @@ function createWindow() {
         transparent: true,
         backgroundColor: '#00000000',
         webPreferences: {
-          preload: path.join(__dirname, 'preload.js'),
-          contextIsolation: true,
-          nodeIntegration: false,
-          nodeIntegrationInSubFrames: true,
-          autoplayPolicy: 'no-user-gesture-required',
-          additionalArguments: [app.isPackaged ? '--production' : '--development']
+            preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: true,
+            nodeIntegration: false,
+            nodeIntegrationInSubFrames: true,
+            autoplayPolicy: 'no-user-gesture-required',
+            additionalArguments: [app.isPackaged ? '--production' : '--development']
         }
     });
     win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
 }
-let assetsWin = null;
-
-app.getAppMetrics().forEach(metric => {
-  console.log(metric.pid, metric.memory.workingSetSize / 1024, 'MB');
-});
 
 const preloaded = {};
-
 const PAGES = ['fortnite', 'fortnite-chapter', 'games'];
 
 function createHiddenWindow(name) {
@@ -538,347 +204,158 @@ function preloadAll() {
   PAGES.forEach(name => createHiddenWindow(name));
 }
 
-function goTo(name) {
-  const nextWin = preloaded[name];
-  if (!nextWin) return;
+const MIME = {
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp',
+    '.svg': 'image/svg+xml',
+    '.mkv': 'video/x-matroska',
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
+    '.txt': 'text/plain; charset=utf-8',
+    '.json': 'application/json',
+};
+const ROOT_FOLDERS = ['Notes', 'Fortnite', 'Games', 'Themes'];
+const ROOT_MAP = Object.fromEntries(ROOT_FOLDERS.map(f => [f.toLowerCase(), f]));
 
-  nextWin.show();
-  if (mainWindow && mainWindow !== nextWin) {
-    mainWindow.hide();
-  }
-  mainWindow = nextWin;
-  createHiddenWindow(name);
-}
-
-
-function createAssetsWindow() {
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-
-  assetsWin = new BrowserWindow({
-    width: Math.round(screenWidth * 0.40),
-    height: Math.round(screenHeight * 0.50),
-    autoHideMenuBar: process.platform !== 'linux',
-    frame: process.platform !== 'linux',
-    transparent: true,
-    backgroundColor: '#00000000',
-    show: false,
-    hasShadow: false,
-    resizable: false,
-    maximizable: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      autoplayPolicy: 'no-user-gesture-required',
-      additionalArguments: [app.isPackaged ? '--production' : '--development']
-    }
-  });
-
-  assetsWin.once('ready-to-show', () => assetsWin.show());
-  assetsWin.loadFile(path.join(BUNDLE, 'pages', 'assets-verify.html'));
-
-  assetsWin.on('closed', () => { assetsWin = null; });
-}
-
-ipcMain.on('drag-window', (event, { mouseX, mouseY }) => {
-  const [winX, winY] = win.getPosition();
-  win.setPosition(winX + mouseX, winY + mouseY);
-});
 const gotTheLock = app.requestSingleInstanceLock();
-
 if (!gotTheLock && app.isPackaged) {
     app.quit();
 } else {
-  app.on('second-instance', (event, commandLine) => {
-    if (!win) return;
+    app.on('second-instance', (event, commandLine) => {
+        if (!win) return;
 
-    const isSilentSecond = commandLine.includes('--silent');
+        const isSilentSecond = commandLine.includes('--silent');
 
-    if (win.isMinimized()) win.restore();
-    
-    if (!isSilentSecond) {
-      win.show();
-    } else {
-      win.hide();
-    }
-  });
-
-  app.whenReady().then(async () => {
-    protocol.handle('app', (req) => {
-      const url = new URL(req.url);
-      const filePath = path.join(BUNDLE, url.hostname, url.pathname);
-      return net.fetch(pathToFileURL(filePath).toString());
-    });
-    protocol.handle('assets', (req) => {
-      const url = new URL(req.url);
-
-      const filePart =
-        url.pathname === '/'
-          ? url.hostname
-          : url.hostname + url.pathname;
-
-      const fullPath = path.join(ASSETS_DIR, decodeURIComponent(filePart));
-
-      if (!fs.existsSync(fullPath)) {
-        return new Response('Not Found', { status: 404 });
-      }
-
-      const stat = fs.statSync(fullPath);
-      const range = req.headers.get('range');
-
-      const mime = {
-        '.png': 'image/png',
-        '.jpg': 'image/jpeg',
-        '.jpeg': 'image/jpeg',
-        '.svg': 'image/svg+xml',
-        '.mkv': 'video/x-matroska',
-        '.mp4': 'video/mp4'
-      };
-
-      const ext = path.extname(fullPath).toLowerCase();
-
-      if (!range) {
-        const stream = fs.createReadStream(fullPath);
-
-        return new Response(stream, {
-          status: 200,
-          headers: {
-            'Content-Type': mime[ext] || 'application/octet-stream',
-            'Content-Length': stat.size,
-            'Accept-Ranges': 'bytes'
-          }
-        });
-      }
-
-      // RANGE REQUEST
-      const match = /bytes=(\d+)-(\d*)/.exec(range);
-      const start = Number(match[1]);
-      const end = match[2] ? Number(match[2]) : stat.size - 1;
-
-      const chunkSize = end - start + 1;
-      const stream = fs.createReadStream(fullPath, { start, end });
-
-      return new Response(stream, {
-        status: 206,
-        headers: {
-          'Content-Range': `bytes ${start}-${end}/${stat.size}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': chunkSize,
-          'Content-Type': mime[ext] || 'application/octet-stream'
+        if (win.isMinimized()) win.restore();
+        
+        if (!isSilentSecond) {
+            win.show();
+        } else {
+            win.hide();
         }
-      });
     });
+    app.whenReady().then(async () => {
+        app.whenReady().then(() => {
+            protocol.handle('documents', async (req) => {
+                try {
+                const url = new URL(req.url);
+                let file = decodeURIComponent(url.hostname + url.pathname);
 
-    protocol.handle('appdata', (req) => {
-      const url = new URL(req.url);
+                if (file.endsWith('/')) file = file.slice(0, -1);
+                const [first, ...rest] = file.split('/');
+                file = [ROOT_MAP[first.toLowerCase()] ?? first, ...rest].join('/');
 
-      const filePart =
-        url.pathname === '/'
-          ? url.hostname
-          : url.hostname + url.pathname;
+                const fullPath = path.join(DOCUMENTS, file);
+                if (!fullPath.startsWith(path.join(DOCUMENTS, path.sep))) return new Response('Forbidden', { status: 403 });
+                if (req.method === 'PUT') {
+                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+                    const tmp = fullPath + '.part';
+                    await fs.promises.writeFile(tmp, Buffer.from(await req.arrayBuffer()));
+                    await fs.promises.rename(tmp, fullPath);
+                    return new Response(null, { status: 201 });
+                }
+                if (req.method === 'DELETE') {
+                    await fs.promises.rm(fullPath, { force: true });
+                    return new Response(null, { status: 204 });
+                }
+                if (req.method !== 'GET' && req.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
 
-      const fullPath = path.join(APPDATA, decodeURIComponent(filePart));
+                const stat = await fs.promises.stat(fullPath).catch(() => null);
+                if (!stat || !stat.isFile()) return new Response('Not found', { status: 404 });
 
-      if (!fs.existsSync(fullPath)) {
-        return new Response('Not Found', { status: 404 });
-      }
+                const contentType = MIME[path.extname(fullPath).toLowerCase()] || 'application/octet-stream';
+                const range = req.headers.get('range');
 
-      const stat = fs.statSync(fullPath);
-      const range = req.headers.get('range');
+                if (req.method === 'HEAD') {
+                    return new Response(null, {
+                        status: 200,
+                        headers: {
+                            'Content-Type': contentType,
+                            'Content-Length': String(stat.size),
+                            'Accept-Ranges': 'bytes',
+                        },
+                    });
+                }
+                if (!range) {
+                    return new Response(fs.createReadStream(fullPath), {
+                        status: 200,
+                        headers: {
+                            'Content-Type': contentType,
+                            'Content-Length': String(stat.size),
+                            'Accept-Ranges': 'bytes',
+                        },
+                    });
+                }
 
-      const mime = {
-        '.png': 'image/png',
-        '.jpg': 'image/jpeg',
-        '.jpeg': 'image/jpeg',
-        '.svg': 'image/svg+xml',
-        '.mkv': 'video/x-matroska',
-        '.mp4': 'video/mp4'
-      };
+                const match = /bytes=(\d*)-(\d*)/.exec(range);
+                let start = match && match[1] !== '' ? Number(match[1]) : 0;
+                let end = match && match[2] !== '' ? Number(match[2]) : stat.size - 1;
+                end = Math.min(end, stat.size - 1);
 
-      const ext = path.extname(fullPath).toLowerCase();
+                if (start > end || start >= stat.size) {
+                    return new Response(null, {
+                        status: 416,
+                        headers: { 'Content-Range': `bytes */${stat.size}` },
+                    });
+                }
 
-      if (!range) {
-        const stream = fs.createReadStream(fullPath);
-
-        return new Response(stream, {
-          status: 200,
-          headers: {
-            'Content-Type': mime[ext] || 'application/octet-stream',
-            'Content-Length': stat.size,
-            'Accept-Ranges': 'bytes'
-          }
+                return new Response(fs.createReadStream(fullPath, { start, end }), {
+                    status: 206,
+                    headers: {
+                        'Content-Range': `bytes ${start}-${end}/${stat.size}`,
+                        'Accept-Ranges': 'bytes',
+                        'Content-Length': String(end - start + 1),
+                        'Content-Type': contentType,
+                    },
+                });
+                } catch (e) {
+                    console.error('documents protocol error:', e);
+                    return new Response(e.message, { status: 500 });
+                }
+            });
         });
-      }
 
-      // RANGE REQUEST
-      const match = /bytes=(\d+)-(\d*)/.exec(range);
-      const start = Number(match[1]);
-      const end = match[2] ? Number(match[2]) : stat.size - 1;
+        startFolders();
+        preloadAll();
+        createWindow();
 
-      const chunkSize = end - start + 1;
-      const stream = fs.createReadStream(fullPath, { start, end });
+        const configs = getConfig();
+        manageStartup(configs.open_on_startup);
 
-      return new Response(stream, {
-        status: 206,
-        headers: {
-          'Content-Range': `bytes ${start}-${end}/${stat.size}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': chunkSize,
-          'Content-Type': mime[ext] || 'application/octet-stream'
-        }
-      });
-    });
+        win.once('ready-to-show', async () => {
+            makeTray();
+            if (configs.maximize_on_start) { win.maximize() }
+            if (!isSilent) {
+                setTimeout(() => win.show(), 2500);
+            } else {win.hide()}
 
-    protocol.handle('documents', async (req) => {
-      let file = decodeURIComponent(req.url.replace('documents://', ''));
+            if (app.isPackaged) { autoUpdater.checkForUpdates() }
 
-      if (file.endsWith('/')) file = file.slice(0, -1);
-
-      if (file.startsWith('notes/')) file = 'Notes/' + file.slice(6);
-      if (file.startsWith('fortnite/')) file = 'Fortnite/' + file.slice(9);
-
-      const fullPath = path.join(DOCUMENTS, file);
-
-      if (!fullPath.startsWith(path.join(DOCUMENTS, path.sep))) {
-        return new Response('Forbidden', { status: 403 });
-      }
-
-      const isFortnite = file.startsWith('Fortnite/');
-
-      if (req.method === 'PUT') {
-        if (!isFortnite) return new Response('Forbidden', { status: 403 });
-        try {
-          await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-          const tmp = fullPath + '.part';
-          await fs.promises.writeFile(tmp, Buffer.from(await req.arrayBuffer()));
-          await fs.promises.rename(tmp, fullPath);
-          return new Response(null, { status: 201 });
-        } catch (e) {
-          return new Response(e.message, { status: 500 });
-        }
-      }
-
-      const stat = fs.statSync(fullPath);
-      const range = req.headers.get('range');
-
-      const mime = {
-        '.png': 'image/png',
-        '.jpg': 'image/jpeg',
-        '.jpeg': 'image/jpeg',
-        '.svg': 'image/svg+xml',
-        '.mkv': 'video/x-matroska',
-        '.mp4': 'video/mp4'
-      };
-
-      const ext = path.extname(fullPath).toLowerCase();
-
-      if (!range) {
-        const stream = fs.createReadStream(fullPath);
-
-        return new Response(stream, {
-          status: 200,
-          headers: {
-            'Content-Type': mime[ext] || 'application/octet-stream',
-            'Content-Length': stat.size,
-            'Accept-Ranges': 'bytes'
-          }
+            if (!configs.welcomed) { win.loadFile(path.join(BUNDLE, 'pages', 'welcome.html'));
+            } else { win.loadFile(path.join(BUNDLE, 'pages', 'shell.html')) }
         });
-      }
 
-      // RANGE REQUEST
-      const match = /bytes=(\d+)-(\d*)/.exec(range);
-      const start = Number(match[1]);
-      const end = match[2] ? Number(match[2]) : stat.size - 1;
-
-      const chunkSize = end - start + 1;
-      const stream = fs.createReadStream(fullPath, { start, end });
-
-      return new Response(stream, {
-        status: 206,
-        headers: {
-          'Content-Range': `bytes ${start}-${end}/${stat.size}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': chunkSize,
-          'Content-Type': mime[ext] || 'application/octet-stream'
-        }
-      });
-
-      if (!fs.existsSync(fullPath)) {
-        if (isFortnite) return new Response('', { status: 404 });
-        return new Response('', {
-          status: 200,
-          headers: { 'Content-Type': 'text/plain' },
+        win.on('maximize', () => { win.webContents.send('window-state-change', 'maximized') });
+        win.on('unmaximize', () => { win.webContents.send('window-state-change', 'normal') });
+        win.on('close', (event) => {
+            const config = getConfig();
+            if (!isQuitting && config.minimize_to_tray && win !== null) {
+                event.preventDefault();
+                win.hide();
+            }
         });
-      }
-      return net.fetch(pathToFileURL(fullPath).toString(), {
-        headers: req.headers,
-      });
     });
-
-    startFolders();
-    createWindow();
-
-    const configs = getConfig();
-    manageStartup(configs.open_on_startup);
-
-    win.once('ready-to-show', async () => {
-      makeTray();
-      if (configs.maximize_on_start) {
-        win.maximize();
-      }
-      if (!isSilent) {
-        setTimeout(() => win.show(), 2500);
-      } else win.hide();
-
-      if (app.isPackaged) {
-        autoUpdater.checkForUpdates();
-      }
-
-      if (!configs.welcomed) {
-        win.loadFile(path.join(BUNDLE, 'pages', 'welcome.html'));
-      } else {
-        win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
-      }
-    });
-
-    win.on('maximize', () => {
-      win.webContents.send('window-state-change', 'maximized');
-    });
-
-    win.on('unmaximize', () => {
-      win.webContents.send('window-state-change', 'normal');
-    });
-    win.on('close', (event) => {
-      const config = getConfig();
-      if (!isQuitting && config.minimize_to_tray && win !== null) {
-        event.preventDefault();
-        win.hide();
-      }
-    });
-  });
 }
 
-ipcMain.on('welcome:done', async () => {
-    const currentConfig = getConfig();
-    currentConfig.welcomed = true;
-    fs.writeFileSync(path.join(APPDATA, 'config.json'), JSON.stringify(currentConfig, null, 2));
-    win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
-});
-
-ipcMain.handle('assets-check-status', () => {
-    return assetsReady;
-});
-
-autoUpdater.on('checking-for-update', () => {
-    win?.webContents.send('update-status', 'Verificando atualizações...');
-});
-autoUpdater.on('update-available', (info) => {
-    win?.webContents.send('update-status', 'Atualização disponível!');
-});
-autoUpdater.on('download-progress', (progressObj) => {
-    win?.webContents.send('update-progress', progressObj.percent);
-});
+/////////////
+// UPDATES //
+/////////////
+autoUpdater.on('checking-for-update', () => { win?.webContents.send('update-status', 'Verificando atualizações...') });
+autoUpdater.on('update-available', (info) => { win?.webContents.send('update-status', 'Atualização disponível!') });
+autoUpdater.on('download-progress', (progressObj) => { win?.webContents.send('update-progress', progressObj.percent) });
 autoUpdater.on('update-downloaded', (info) => {
     updateReady = true;
     if (win && !win.isDestroyed()) {
@@ -892,46 +369,12 @@ autoUpdater.on('update-downloaded', (info) => {
         icon: path.join(__dirname, 'tray-icon.png')
     }).show();
 });
-ipcMain.handle('update:check-status', () => {
-    return updateReady;
-});
-ipcMain.on('update:restart', () => {
-    autoUpdater.quitAndInstall();
-});
+ipcMain.handle('update:check-status', () => { return updateReady });
+ipcMain.on('update:restart', () => { autoUpdater.quitAndInstall() });
 autoUpdater.on('error', (err) => {
     console.error('AutoUpdater - Erro:', err.message);
     win?.webContents.send('update-status', 'Erro na atualização: ' + err.message);
 });
-
-// Menu
-ipcMain.on('menu:maximize-app', () => {
-  if (!win) return;
-
-  if (win.isMaximized()) {
-    win.unmaximize();
-  } else {
-    win.setMaximizable(true);
-    win.maximize();
-  }
-});
-ipcMain.on('menu:minimize-app', () => { win.minimize(); });
-ipcMain.on('menu:close-app', () => {
-  const config = getConfig();
-
-  if (config.minimize_to_tray) {
-    win.hide();
-  } else {
-    isQuitting = true;
-    app.quit();
-  }
-});
-ipcMain.handle('menu:is-maximized', () => { return win.isMaximized() });
-
-// Básico
-ipcMain.on('menu:is-maximized-sync', (event) => {
-    event.returnValue = win ? win.isMaximized() : false;
-});
-
 ipcMain.handle('updates:check-update', async () => {
   if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true;
@@ -958,110 +401,102 @@ ipcMain.handle('updates:check-update', async () => {
       status: 'error'
     };
   }
-})
+});
 
+////////////////////
+// MENU FUNCTIONS //
+////////////////////
+ipcMain.on('menu:maximize-app', () => {
+  if (!win) return;
+
+  if (win.isMaximized()) {
+    win.unmaximize();
+  } else {
+    win.setMaximizable(true);
+    win.maximize();
+  }
+});
+ipcMain.on('menu:minimize-app', () => { win.minimize(); });
+ipcMain.on('menu:close-app', () => {
+  const config = getConfig();
+
+  if (config.minimize_to_tray) {
+    win.hide();
+  } else {
+    isQuitting = true;
+    app.quit();
+  }
+});
+ipcMain.on('menu:is-maximized-sync', (event) => {
+    event.returnValue = win ? win.isMaximized() : false;
+});
+
+/////////////////////
+// BASIC FUNCTIONS //
+/////////////////////
 ipcMain.on('devTools', () => {
-  if (!app.isPackaged && win && !win.isDestroyed()) {
-    win.webContents.toggleDevTools();
-  }
+    if (!app.isPackaged && win && !win.isDestroyed()) { win.webContents.toggleDevTools() }
 });
-ipcMain.handle("exists-assets", async (_, filePath) => {
-  if (filePath.startsWith('assets://')) {
-    const url = new URL(filePath);
-    const filePart = url.pathname === '/' ? url.hostname : url.hostname + url.pathname;
-    const fullPath = path.join(ASSETS_DIR, decodeURIComponent(filePart));
-    return fs.existsSync(fullPath);
-  }
-
-  const fullPath = path.join(__dirname, filePath);
-  return fs.existsSync(fullPath);
-});
-ipcMain.handle("exists", async (_, filePath) => {
-  const fullPath = path.join(BUNDLE, filePath);
-  return fs.existsSync(fullPath);
-});
-ipcMain.handle("exists-appdata", async (_, filePath) => {
-  const fullPath = path.join(APPDATA, filePath);
-  return fs.existsSync(fullPath);
-});
-ipcMain.handle('load', (_, dirPath) => {
-  const fullPath = path.join(DOCUMENTS, dirPath);
-
-  if (!fs.existsSync(fullPath)) return [];
-
-  return fs.readdirSync(fullPath);
+ipcMain.handle('i18n:get', () => {
+    const config = getConfig();
+    const locale = config.language || 'en';
+    const localePath = path.join(BUNDLE, 'locales', `${locale}.json`);
+    if (!fs.existsSync(localePath)) return {};
+    return JSON.parse(fs.readFileSync(localePath, 'utf-8'));
 });
 ipcMain.handle('open-external-link', async (event, url) => {
-  console.log("Abrindo no navegador:", url);
-  
-  const { shell } = require('electron');
-  await shell.openExternal(url);
+    const { shell } = require('electron');
+    await shell.openExternal(url);
 });
-ipcMain.handle('app-version', () => {
-  return app.getVersion();
-});
+ipcMain.handle('app-version', () => { return app.getVersion() });
 
-ipcMain.handle('info:user-data', () => {
-  return APPDATA;
-});
-ipcMain.handle('info:documents', () => {
-  return DOCUMENTS;
-});
-
-// Configurações
-ipcMain.handle('config:get', () => {
-    return getConfig();
-});
-ipcMain.on('config:get-sync', (event) => {
-  event.returnValue = getConfig();
-});
+//////////////////////
+// CONFIG FUNCTIONS //
+//////////////////////
+ipcMain.handle('config:get', () => { return getConfig() });
 ipcMain.on('config:update', (event, { key, value }) => {
-    const configPath = path.join(app.getPath('userData'),'config.json');
-    const currentConfig = getConfig();
+    const configFile = path.join(app.getPath('userData'),'config.json');
+    const config = getConfig();
 
-    currentConfig[key] = value;
+    config[key] = value;
 
     try {
-      fs.writeFileSync(configPath, JSON.stringify(currentConfig, null, 2), 'utf-8');
-      console.log(`Preferencias - "${key}" mudado para: ${value}`);
+        fs.writeFileSync(configFile, JSON.stringify(config, null, 2), 'utf-8');
+        console.log(`Config - value of "${key}" changed to: ${value}`);
 
-      if (key === 'open_on_startup') {
-          manageStartup(value);
-      }
-
-    } catch (erro) {
-      console.error("Erro ao salvar config.json:", erro);
-    }
+        if (key === 'open_on_startup') manageStartup(value);
+    } catch (erro) { console.error("Erro ao salvar config.json:", erro) }
 });
-function manageStartup(abrirComOOS) {
-  if (!app.isPackaged) return; 
 
-  const osType = process.platform;
+function manageStartup(openOSstart) {
+    if (!app.isPackaged) return; 
 
-  if (osType === 'win32') {
-    app.setLoginItemSettings({
-      openAtLogin: abrirComOOS,
-      path: app.getPath('exe')
-    });
-  } 
+    const osType = process.platform;
+
+    if (osType === 'win32') {
+        app.setLoginItemSettings({
+            openAtLogin: openOSstart,
+            path: app.getPath('exe')
+        });
+    }
   
-  else if (osType === 'linux') {
-    const homedir = os.homedir();
-    const autostartDir = path.join(homedir, '.config', 'autostart');
-    const desktopFilePath = path.join(autostartDir, 'boltnotes.desktop');
+    else if (osType === 'linux') {
+        const homeDir = os.homedir();
+        const autostartDir = path.join(homeDir, '.config', 'autostart');
+        const autostartPath = path.join(autostartDir, 'boltnotes.desktop');
 
-    if (abrirComOOS) {
-      if (!fs.existsSync(autostartDir)) {
-        fs.mkdirSync(autostartDir, { recursive: true });
-      }
+        if (openOSstart) {
+            if (!fs.existsSync(autostartDir)) {
+                fs.mkdirSync(autostartDir, { recursive: true });
+            }
 
-      const isPackaged = app.isPackaged;
-      const iconPath = isPackaged
-        ? path.join(process.resourcesPath, 'app-icon.png')
-        : path.join('build', 'icon.png');
-      const execPath = process.env.APPIMAGE || app.getPath('exe');
+            const isPackaged = app.isPackaged;
+            const iconPath = isPackaged
+                ? path.join(process.resourcesPath, 'app-icon.png')
+                : path.join('build', 'icon.png');
+            const execPath = process.env.APPIMAGE || app.getPath('exe');
 
-      const desktopContent = `[Desktop Entry]
+            const desktopEntry = `[Desktop Entry]
 Type=Application
 Name=BoltNotes
 Comment=Notes, Games Backlog and Fortnite Season Reviews
@@ -1073,697 +508,132 @@ Terminal=false
 X-GNOME-Autostart-enabled=true
 Categories=Utility;Game;
 `;
-
-      try {
-        fs.writeFileSync(desktopFilePath, desktopContent, 'utf-8');
-        console.log("Startup - Arquivo .desktop criado com sucesso no Linux.");
-      } catch (err) {
-        console.error("Erro ao criar arquivo de inicialização no Linux:", err);
-      }
-    }
-    else {
-      if (fs.existsSync(desktopFilePath)) {
-        try {
-          fs.unlinkSync(desktopFilePath);
-          console.log("Startup- Arquivo .desktop removido do autostart.");
-        } catch (err) {
-          console.error("Erro ao remover arquivo de inicialização no Linux:", err);
+            try { fs.writeFileSync(autostartPath, desktopEntry, 'utf-8');
+            } catch (err) { console.error("manageStartup error:", err) }
         }
-      }
-    }
-  }
-}
-
-function getTrayLabels() {
-    const config = getConfig();
-    const locale = config.language || 'pt-BR';
-    const localePath = path.join(BUNDLE, 'locales', `${locale}.json`);
-    
-    let t = {};
-    try {
-        t = JSON.parse(fs.readFileSync(localePath, 'utf-8'));
-    } catch (err) {
-        console.error('Erro ao carregar idioma para tray:', err);
-    }
-
-    return {
-        games: t['games-backlog'] || 'Backlog de Jogos',
-        notes: t['notes'] || 'Notas',
-        settings: t['settings'] || 'Configurações',
-        close: t['close'] || 'Fechar app'
-    };
-}
-
-function navigateTo(htmlFile) {
-    if (!win) return;
-
-    win.loadFile(path.join(BUNDLE, 'pages', htmlFile));
-    win.webContents.once('did-finish-load', () => {
-        win.show();
-        win.focus();
-    });
-}
-function buildTrayMenu(trayNameIcon) {
-    const labels = getTrayLabels();
-
-    return Menu.buildFromTemplate([
-        {
-            label: 'BoltNotes',
-            icon: trayNameIcon,
-            enabled: false,
-        },
-        { type: 'separator' },
-        { label: labels.games, click: () => navigateTo('games.html') },
-        { label: labels.notes, click: () => navigateTo('notes.html') },
-        { label: 'Fortnite', click: () => navigateTo('fortnite.html') },
-        { type: 'separator' },
-        { label: labels.settings, click: () => navigateTo('config.html') },
-        {
-            label: labels.close,
-            click: () => {
-                isQuitting = true;
-                app.quit();
+        else {
+            if (fs.existsSync(autostartPath)) {
+                try { fs.unlinkSync(autostartPath);
+                } catch (err) { console.error("manageStartup error:", err) }
             }
         }
-    ]);
+    }
 }
+
 function makeTray() {
     if (tray) return;
-
-  const isPackaged = app.isPackaged;
-
-  const iconPath = isPackaged
-      ? path.join(process.resourcesPath, 'tray-icon.png')
-      : path.join('build', 'tray-icon.png');
+    const iconPath = app.isPackaged
+        ? path.join(process.resourcesPath, 'tray-icon.png')
+        : path.join('build', 'tray-icon.png');
 
     trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
-    trayNameIcon = nativeImage.createFromPath(iconPath).resize({ width: 14, height: 14 });
+    // trayNameIcon = nativeImage.createFromPath(iconPath).resize({ width: 14, height: 14 });
 
     tray = new Tray(trayIcon);
-    if (app.isPackaged) {
-      const name = 'BoltNotes';
-      tray.setToolTip(name);
-    } else {
-      const name = 'BoltNotes (Dev)';
-      tray.setToolTip(name);
-    }
-    tray.setContextMenu(buildTrayMenu(trayNameIcon));
+    if (app.isPackaged) { const name = 'BoltNotes';
+        tray.setToolTip(name);
+    } else { const name = 'BoltNotes (Dev)';
+        tray.setToolTip(name) }
 
+    tray.setContextMenu(
+        Menu.buildFromTemplate([
+            // {
+            //   label: 'BoltNotes',
+            //   icon: trayNameIcon,
+            //   enabled: false,
+            // },
+            // { type: 'separator' },
+            {
+                label: 'Quit BoltNotes',
+                click: () => {
+                    isQuitting = true;
+                    app.quit();
+                },
+            },
+        ])
+    );
     tray.on('click', () => {
-      if (win) {
-        const configs = getConfig();
-        if (!win.isVisible() && configs.maximize_on_start) {
-          win.maximize();
+        if (win) {
+            win.show();
+            win.focus();
         }
-        win.show();
-        win.focus();
-      }
     });
 }
 
-function refreshTray() {
-    if (!tray) return;
-    tray.setContextMenu(buildTrayMenu(trayNameIcon));
-}
-ipcMain.on('language:changed', () => {
-    console.log('[Tray] Recebeu evento de mudança de idioma');
-    refreshTray();
-});
-
-// Carrgar/Salvar .JSON
-ipcMain.handle("json:load", async (_, filePath) => {
-    const fullPath = path.join(DOCUMENTS, filePath);
-
-    if (!fs.existsSync(fullPath)) return {};
-
-    const content = await fs.promises.readFile(fullPath, 'utf-8');
-    return JSON.parse(content);
-});
-let saveQueue = Promise.resolve();
-
-ipcMain.handle("json:save", async (_, { filePath, data }) => {
-    const fullPath = path.join(DOCUMENTS, filePath);
-    saveQueue = saveQueue.then(async () => {
-        await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-        await fs.promises.writeFile(fullPath, JSON.stringify(data, null, 2));
-    });
-    await saveQueue;
-    return true;
-});
-
-// Notas
-ipcMain.handle('notes:create', (_, name) => {
-  const notesDir = path.join(DOCUMENTS, 'Notes');
-  const pagesList = path.join(notesDir, '.NotesList');
-
-  const filePath = path.join(notesDir, name + '.txt');
-
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, '');
-  }
-  if (!fs.existsSync(pagesList)) {
-    fs.writeFileSync(pagesList, '');
-  }
-
-  const pagesContent = fs.readFileSync(pagesList, 'utf-8');
-  const lines = pagesContent.split('\n').filter(l => l.trim() !== '');
-
-  if (!lines.includes(name)) {
-    lines.unshift(name);
-    fs.writeFileSync(pagesList, lines.join('\n'));
-  }
-
-  return name;
-});
-ipcMain.handle('notes:select-add-image', async (event) => {
-    const result = await dialog.showOpenDialog({
-        title: 'Selecione uma imagem para a sua nota',
-        properties: ['openFile'],
-        filters: [
-            { name: 'Imagens', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'] }
-        ]
-    });
-
-    if (result.canceled || result.filePaths.length === 0) {
-        return null;
-    }
-
-    const originalPath = result.filePaths[0];
-    const fileExtension = path.extname(originalPath);
-    
-    const uniqueFileName = `img_${Date.now()}${fileExtension}`;
-    const destinationPath = path.join(MEDIA_DIR, uniqueFileName);
-
-    try {
-        fs.copyFileSync(originalPath, destinationPath);
-        
-        return uniqueFileName;
-    } catch (error) {
-        console.error('Erro ao salvar a imagem:', error);
-        return null;
-    }
-});
-ipcMain.handle('notes:delete', (_, name) => {
-  const notesDir = path.join(DOCUMENTS, 'Notes');
-  const pagesPath = path.join(notesDir, '.NotesList');
-
-  const filePath = path.join(notesDir, name + '.txt');
-
-  if (fs.existsSync(filePath)) {
-    fs.rmSync(filePath);
-  }
-  if (fs.existsSync(pagesPath)) {
-    const pagesContent = fs.readFileSync(pagesPath, 'utf-8');
-    const lines = pagesContent.split(/\r?\n/);
-    const updatedLines = lines.filter(line => line.trim() !== name.trim());
-    const newContent = updatedLines.join('\n');
-    
-    fs.writeFileSync(pagesPath, newContent, 'utf-8');
-  }
-
-  return name;
-});
-ipcMain.handle("notes:save", async (event, name, content) => {
-  const filePath = path.join(DOCUMENTS, 'Notes', `${name}.txt`);
-  fs.writeFileSync(filePath, content);
-});
-ipcMain.handle('notes:save-order', async (_, content) => {
-    fs.writeFileSync(NOTES_LIST, content);
-});
-function getPythonBinaryPath(scriptName) {
-    const ext = process.platform === 'win32' ? '.exe' : '';
-    
-    if (app.isPackaged) {
-        return path.join(process.resourcesPath, 'python-bin', `${scriptName}${ext}`);
-    }
-
-    return null;
-}
-
-ipcMain.handle('games:stats-zerados', async () => {
-    const campaignsPath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
-    
-    return new Promise((resolve, reject) => {
-        let proc;
-        
-        if (app.isPackaged) {
-            const binPath = getPythonBinaryPath('games-finished');
-            proc = spawn(binPath, [campaignsPath]);
-        } else {
-            const scriptPath = path.join(BUNDLE, 'scripts', 'games-finished.py');
-            const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
-            proc = spawn(pythonCmd, [scriptPath, campaignsPath]);
-        }
-        
-        let output = '';
-        let errorOutput = '';
-        
-        proc.stdout.on('data', d => output += d.toString());
-        proc.stderr.on('data', d => errorOutput += d.toString());
-        
-        proc.on('close', (code) => {
-            if (code === 0) {
-                try {
-                    resolve(JSON.parse(output));
-                } catch (e) {
-                    reject(new Error('Resposta inválida'));
-                }
-            } else {
-                reject(new Error(errorOutput || 'Script falhou'));
-            }
-        });
-
-        proc.on('error', (err) => {
-            reject(new Error(`Falha ao executar: ${err.message}`));
-        });
-    });
-});
-
-ipcMain.handle('notes:rename', async (event, oldName, newName) => {
-  console.log("Renomeando nota de:", oldName, "para:", newName);
-
-  const notesDir = path.join(DOCUMENTS,'Notes');
-  const pagesPath = path.join(notesDir,'.NotesList');
-
-  const cleanOldName = oldName.trim();
-  const cleanNewName = newName.trim();
-
-  const oldFilePath = path.join(notesDir, `${cleanOldName}.txt`);
-  const newFilePath = path.join(notesDir, `${cleanNewName}.txt`);
-
-  try {
-    if (fs.existsSync(oldFilePath)) {
-      fs.renameSync(oldFilePath, newFilePath);
-    } else {
-      console.log(`Tentou buscar: "${oldFilePath}" mas não existia.`);
-      throw new Error("O arquivo original da nota não foi encontrado.");
-    }
-
-    if (fs.existsSync(pagesPath)) {
-      const pagesContent = fs.readFileSync(pagesPath, 'utf-8');
-      const lines = pagesContent.split(/\r?\n/);
-      
-      const updatedLines = lines.map(line => {
-        return line.trim() === cleanOldName ? cleanNewName : line;
-      });
-      
-      fs.writeFileSync(pagesPath, updatedLines.join('\n'), 'utf-8');
-    }
-
-    return { success: true, newName: cleanNewName };
-
-  } catch (error) {
-    console.error("Erro no processo Main ao renomear:", error);
-    throw error;
-  }
-});
-
-// Jogos
-ipcMain.handle('games:add', async (_, newGameData, doHasCampaign) => {
-  const gamesPath = path.join(DOCUMENTS, 'Games', 'games.json');
-  const statusPath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
-  const achievementsPath = path.join(DOCUMENTS, 'Games', 'achievements.json');
-
-  try {
-    let hasAchievements = false;
-    let totalAchievements = 0;
-
-    if (newGameData.appid) {
-      try {
-        const cleanAppId = String(newGameData.appid).trim();
-        
-        const url = `https://store.steampowered.com/api/appdetails/?appids=${cleanAppId}`;
-        const response = await net.fetch(url);
-        
-        if (response.ok) {
-          const data = await response.json();
-          
-          if (data && data[cleanAppId] && data[cleanAppId].success) {
-            const gameDetails = data[cleanAppId].data;
-            
-            if (gameDetails.achievements) {
-              totalAchievements = Number(gameDetails.achievements.total) || 0;
-              hasAchievements = totalAchievements > 0;
-            }
-          }
-        }
-      } catch (steamError) {
-        console.error(`Erro ao buscar conquistas na API da Loja para o appid ${newGameData.appid}:`, steamError);
-      }
-    }
-
-    const gamesDir = path.dirname(gamesPath);
-    if (!fs.existsSync(gamesDir)) fs.mkdirSync(gamesDir, { recursive: true });
-
-    let gamesData = { games: [] };
-    if (fs.existsSync(gamesPath)) {
-      const content = await fs.promises.readFile(gamesPath, 'utf-8');
-      if (content.trim()) gamesData = JSON.parse(content);
-    }
-    if (!gamesData.games || !Array.isArray(gamesData.games)) gamesData.games = [];
-
-    const gameInfo = {
-      name: newGameData.name,
-      appid: newGameData.appid,
-      releaseDate: newGameData.releaseDate,
-      developer: newGameData.developer,
-      publisher: newGameData.publisher
-    };
-    gamesData.games.push(gameInfo);
-    await fs.promises.writeFile(gamesPath, JSON.stringify(gamesData, null, 2), 'utf-8');
-
-    const statusDir = path.dirname(statusPath);
-    if (!fs.existsSync(statusDir)) fs.mkdirSync(statusDir, { recursive: true });
-
-    let statusList = [];
-    if (fs.existsSync(statusPath)) {
-      const content = await fs.promises.readFile(statusPath, 'utf-8');
-      if (content.trim()) statusList = JSON.parse(content);
-    }
-    if (!Array.isArray(statusList)) statusList = [];
-
-    const statusInfo = {
-      name: newGameData.name,
-      status: "ajogar",
-      rating: "null",
-      completeDate: "",
-      hasCampaign: doHasCampaign
-    };
-    statusList.push(statusInfo);
-    await fs.promises.writeFile(statusPath, JSON.stringify(statusList, null, 2), 'utf-8');
-
-    const achievementsDir = path.dirname(achievementsPath);
-    if (!fs.existsSync(achievementsDir)) fs.mkdirSync(achievementsDir, { recursive: true });
-
-    let achievementsList = [];
-    if (fs.existsSync(achievementsPath)) {
-      const content = await fs.promises.readFile(achievementsPath, 'utf-8');
-      if (content.trim()) achievementsList = JSON.parse(content);
-    }
-    if (!Array.isArray(achievementsList)) achievementsList = [];
-
-    const achievementsInfo = {
-      name: newGameData.name,
-      appid: newGameData.appid,
-      hasAchievements: hasAchievements,
-      totalAchievements: totalAchievements,
-      unlockedAchievements: 0,
-      achieStatus: "aplatinar"
-    };
-    achievementsList.push(achievementsInfo);
-    await fs.promises.writeFile(achievementsPath, JSON.stringify(achievementsList, null, 2), 'utf-8');
-
-    return { success: true };
-  } catch (error) {
-    console.error('Erro ao adicionar o jogo globalmente:', error);
-    return { success: false, error: error.message };
-  }
-});
-ipcMain.handle('games:get-steam-data', async (_, appid) => {
-  if (!appid) return null;
-
-  const url = `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=br&l=pt`;
-
-  return new Promise((resolve) => {
-    https.get(url, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      
-      res.on('end', () => {
-        try {
-          const json = JSON.parse(data);
-          
-          if (json[appid] && json[appid].success) {
-            const gameDetails = json[appid].data;
-            
-            // 1. Trata e formata a Data de Lançamento (DD/MM/AAAA)
-            let formattedDate = gameDetails.release_date.date;
-            const parsedDate = new Date(formattedDate);
-            if (!isNaN(parsedDate.getTime())) {
-              formattedDate = parsedDate.toLocaleDateString('pt-BR');
-            }
-
-            // 2. Pega as arrays de developers e publishers e junta em texto (ex: "Valve, Hidden Path")
-            const developers = gameDetails.developers ? gameDetails.developers.join(', ') : '';
-            const publishers = gameDetails.publishers ? gameDetails.publishers.join(', ') : '';
-
-            // 3. Retorna o objeto com tudo o que precisamos
-            return resolve({
-              releaseDate: formattedDate,
-              developer: developers,
-              publisher: publishers
-            });
-          }
-          resolve(null);
-        } catch (e) {
-          resolve(null);
-        }
-      });
-    }).on('error', () => resolve(null));
-  });
-});
-ipcMain.handle('games:ensure-cover', async (_, { appid, name, cover, hero, logo }) => {
-  const https = require('https');
-  const fs = require('fs');
-  const path = require('path');
-
-  const coversDir = path.join(COVERS);
-  const herosDir = path.join(HEROS);
-  const logosDir = path.join(GAMELOGOS);
-  const userCoverDir = path.join(USER_COVERS);
-  const userHeroDir = path.join(USER_HEROS);
-  const userLogoDir = path.join(USER_LOGOS);
-  const placeholderPath = path.join(BUNDLE, 'assets', 'placeholder.png');
-
-  if (!fs.existsSync(coversDir)) fs.mkdirSync(coversDir, { recursive: true });
-  if (!fs.existsSync(herosDir)) fs.mkdirSync(herosDir, { recursive: true });
-  if (!fs.existsSync(logosDir)) fs.mkdirSync(logosDir, { recursive: true });
-
-  const safeName = name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-
-  const mimeToExt = {
-    'image/jpeg': '.jpg',
-    'image/png': '.png',
-    'image/webp': '.webp',
-    'image/gif': '.gif'
-  };
-
-  const result = { cover: null, hero: null, logo: null };
-
-  const downloadImage = (url, targetDir, baseName, fallbackExt = '.jpg') => {
-    return new Promise((resolve) => {
-      const files = fs.existsSync(targetDir) ? fs.readdirSync(targetDir) : [];
-      const existingFile = files.find(f => f.startsWith(baseName + '.'));
-      if (existingFile) {
-        return resolve(path.join(targetDir, existingFile));
-      }
-
-      https.get(url, res => {
-        if (res.statusCode !== 200) {
-          return resolve(null);
-        }
-
-        const contentType = res.headers['content-type'];
-        const ext = mimeToExt[contentType] || fallbackExt;
-        const finalPath = path.join(targetDir, baseName + ext);
-
-        const file = fs.createWriteStream(finalPath);
-        res.pipe(file);
-
-        file.on('finish', () => {
-          file.close();
-          resolve(finalPath);
-        });
-
-        file.on('error', () => {
-          file.close();
-          if (fs.existsSync(finalPath)) fs.unlinkSync(finalPath);
-          resolve(null);
-        });
-      }).on('error', () => {
-        resolve(null);
-      });
-    });
-  };
-
-  let coverUrl = cover;
-  if (!coverUrl && appid) {
-    coverUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`;
-  }
-
-  if (coverUrl && !appid) {
-    const customCover = path.join(userCoverDir, coverUrl.includes('.') ? coverUrl : `${coverUrl}.png`);
-    result.cover = fs.existsSync(customCover) ? customCover : (fs.existsSync(placeholderPath) ? placeholderPath : null);
-  } else if (!coverUrl) {
-    result.cover = fs.existsSync(placeholderPath) ? placeholderPath : null;
-  } else {
-    result.cover = await downloadImage(coverUrl, coversDir, safeName, '.jpg');
-  }
-
-  let heroUrl = hero;
-  let logoUrl = logo;
-
-  if (heroUrl && !appid) {
-    const customHero = path.join(userHeroDir, heroUrl.includes('.') ? heroUrl : `${heroUrl}.jpg`);
-    result.hero = fs.existsSync(customHero) ? customHero : null;
-  } 
-
-  if (logoUrl && !appid) {
-    const customLogo = path.join(userLogoDir, logoUrl.includes('.') ? logoUrl : `${logoUrl}.png`);
-    result.logo = fs.existsSync(customLogo) ? customLogo : null;
-  }
-
-  if (appid) {
-    const steamHeroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`;
-    result.hero = await downloadImage(steamHeroUrl, herosDir, safeName, '.jpg');
-    
-    if (!result.hero) {
-      const fallbackHeroUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/page_bg_generated_v6b.jpg`;
-      result.hero = await downloadImage(fallbackHeroUrl, herosDir, safeName, '.jpg');
-    }
-
-    const steamLogoUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/logo.png`;
-    result.logo = await downloadImage(steamLogoUrl, logosDir, safeName, '.png');
-  }
-
-  if (!result.hero && fs.existsSync(placeholderPath)) result.hero = placeholderPath;
-
-  return result;
-});
-
-// Temas
+////////////
+// THEMES //
+////////////
 const THEMES_DIR = path.join(BUNDLE, 'themes');
 const USER_THEMES_DIR = path.join(DOCUMENTS, 'Themes');
-
 function ensureThemesFolder() {
-    if (!fs.existsSync(USER_THEMES_DIR)) {
-        fs.mkdirSync(USER_THEMES_DIR, { recursive: true });
-    }
-    const defaults = fs.readdirSync(THEMES_DIR);
-    defaults.forEach(file => {
-      const srcPath = path.join(THEMES_DIR, file);
-      const destPath = path.join(USER_THEMES_DIR, file);
+    fs.mkdirSync(USER_THEMES_DIR, { recursive: true });
 
-      if (!fs.existsSync(destPath)) {
-        fs.copyFileSync(srcPath, destPath);
-      } else {
-        const srcBuffer = fs.readFileSync(srcPath);
-        const destBuffer = fs.readFileSync(destPath);
-
-        if (!srcBuffer.equals(destBuffer)) fs.copyFileSync(srcPath, destPath);
-      }
-    });
-}
-
-ipcMain.handle('themes:list', () => {
-    ensureThemesFolder();
-    return fs.readdirSync(USER_THEMES_DIR)
+    fs.readdirSync(THEMES_DIR)
         .filter(f => f.endsWith('.boltss'))
-        .map(file => {
-            const themeName = file.replace('.boltss', '');
-            const themePath = path.join(USER_THEMES_DIR, file);
+        .forEach(file =>
+            fs.copyFileSync(path.join(THEMES_DIR, file), path.join(USER_THEMES_DIR, file))
+        );
+
+    const names = fs.readdirSync(USER_THEMES_DIR)
+        .filter(f => f.endsWith('.boltss'))
+        .map(f => f.slice(0, -'.boltss'.length));
+
+    fs.writeFileSync(path.join(USER_THEMES_DIR, '.ThemeList'), names.join('\n'));
+}
+ensureThemesFolder();
+
+///////////
+// GAMES //
+///////////
+ipcMain.handle('games:steam-achievements', async (_, appid) => {
+    try {
+        const id = String(appid ?? '').trim();
+        if (!id) return { hasAchievements: false, totalAchievements: 0 };
+
+        const res = await net.fetch(`https://store.steampowered.com/api/appdetails/?appids=${id}`);
+        if (!res.ok) return { hasAchievements: false, totalAchievements: 0 };
+
+        const data = await res.json();
+        const total = Number(data?.[id]?.success && data[id].data?.achievements?.total) || 0;
+        return { hasAchievements: total > 0, totalAchievements: total };
+    } catch (e) {
+        console.error('Erro ao buscar conquistas para o appid', appid, e);
+        return { hasAchievements: false, totalAchievements: 0 };
+    }
+});
+ipcMain.handle('games:get-steam-data', async (_, appid) => {
+    if (!appid) return null;
+    const url = `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=br&l=pt`;
+    return new Promise((resolve) => {
+        https.get(url, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
             
-            try {
-                const content = fs.readFileSync(themePath, 'utf-8');
-                
-                const bgMatch = content.match(/--bg\s*:\s*([^;}\n]+)/);
-                
-                const bgColor = bgMatch ? bgMatch[1].trim() : '#050505';
-                
-                return {
-                    name: themeName,
-                    bg: bgColor
-                };
-            } catch (e) {
-                return { name: themeName, bg: '#000000' };
-            }
-        });
+            res.on('end', () => {
+                try {
+                    const json = JSON.parse(data);
+                    
+                    if (json[appid] && json[appid].success) {
+                        const gameDetails = json[appid].data;
+
+                        let formattedDate = gameDetails.release_date.date;
+                        const parsedDate = new Date(formattedDate);
+                        if (!isNaN(parsedDate.getTime())) { formattedDate = parsedDate.toLocaleDateString('pt-BR') }
+
+                        const developers = gameDetails.developers ? gameDetails.developers.join(', ') : '';
+                        const publishers = gameDetails.publishers ? gameDetails.publishers.join(', ') : '';
+
+                        return resolve({
+                            releaseDate: formattedDate,
+                            developer: developers,
+                            publisher: publishers
+                        });
+                    }
+                    resolve(null);
+                } catch (e) {
+                    resolve(null);
+                }
+            });
+        }).on('error', () => resolve(null));
+    });
 });
-
-ipcMain.handle('themes:get', (_, themeName) => {
-    const themePath = path.join(USER_THEMES_DIR, `${themeName}.boltss`);
-    if (!fs.existsSync(themePath)) return null;
-    return fs.readFileSync(themePath, 'utf-8');
-});
-
-ipcMain.handle('themes:get-current', () => {
-    const config = getConfig();
-    return config.theme || 'dark';
-});
-
-ipcMain.handle('changelog:check', () => {
-    const config = getConfig();
-    const currentVersion = app.getVersion();
-    const lastSeenVersion = config.last_seen_version || null;
-
-    return { shouldShow: lastSeenVersion !== currentVersion, version: currentVersion };
-});
-ipcMain.handle('changelog:mark-seen', async () => {
-    const configPath = path.join(app.getPath('userData'),'config.json');
-    const currentConfig = getConfig();
-    currentConfig.last_seen_version = app.getVersion();
-    
-    try {
-        await fs.promises.writeFile(configPath, JSON.stringify(currentConfig, null, 2), 'utf-8');
-        return true;
-    } catch (error) {
-        console.error("Erro ao salvar config:", error);
-        return false;
-    }
-});
-ipcMain.handle('changelog:get', async () => {
-  const changelogPath = path.join(BUNDLE, 'changelog.json');
-  try {
-    const data = await fs.promises.readFile(changelogPath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Erro ao ler changelog:", error);
-    return null;
-  }
-});
-ipcMain.handle('i18n:get', () => {
-    const config = getConfig();
-    const locale = config.language || 'en';
-    const localePath = path.join(BUNDLE, 'locales', `${locale}.json`);
-    if (!fs.existsSync(localePath)) return {};
-    return JSON.parse(fs.readFileSync(localePath, 'utf-8'));
-});
-
-ipcMain.handle('games:delete', async (_, gameName) => {
-    const gamesPath = path.join(DOCUMENTS, 'Games', 'games.json');
-    const statusPath = path.join(DOCUMENTS, 'Games', 'campaigns.json');
-    const achievementsPath = path.join(DOCUMENTS, 'Games', 'achievements.json');
-    const notesPath = path.join(DOCUMENTS, 'Games', 'notes.json');
-
-    try {
-        if (fs.existsSync(gamesPath)) {
-            const gamesData = JSON.parse(fs.readFileSync(gamesPath, 'utf-8'));
-            gamesData.games = (gamesData.games || []).filter(g => g.name !== gameName);
-            fs.writeFileSync(gamesPath, JSON.stringify(gamesData, null, 2));
-        }
-
-        if (fs.existsSync(statusPath)) {
-            let statusList = JSON.parse(fs.readFileSync(statusPath, 'utf-8'));
-            statusList = statusList.filter(g => g.name !== gameName);
-            fs.writeFileSync(statusPath, JSON.stringify(statusList, null, 2));
-        }
-
-        if (fs.existsSync(achievementsPath)) {
-            let achievementsList = JSON.parse(fs.readFileSync(achievementsPath, 'utf-8'));
-            achievementsList = achievementsList.filter(g => g.name !== gameName);
-            fs.writeFileSync(achievementsPath, JSON.stringify(achievementsList, null, 2));
-        }
-
-        if (fs.existsSync(notesPath)) {
-            const notes = JSON.parse(fs.readFileSync(notesPath, 'utf-8'));
-            delete notes[gameName];
-            fs.writeFileSync(notesPath, JSON.stringify(notes, null, 2));
-        }
-
-        return { success: true };
-    } catch (error) {
-        console.error('Erro ao deletar jogo:', error);
-        return { success: false, error: error.message };
-    }
-});
-const activeDownloads = new Set();

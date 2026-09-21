@@ -81,6 +81,180 @@ function renderContent() {
 /////////////////////////
 /// CARREGAR / SALVAR ///
 /////////////////////////
+const BASE = 'documents://Notes';
+
+const noteUrl = (name) => `${BASE}/${encodeURIComponent(name)}.txt`;
+const LIST_URL = `${BASE}/.NotesList`;
+
+async function renameNote(oldName, newName) {
+  const cleanOld = oldName.trim();
+  const cleanNew = newName.trim();
+
+  if (!cleanNew) throw new Error('O novo nome não pode ser vazio.');
+  if (cleanOld === cleanNew) return { success: true, newName: cleanNew };
+
+  // 1. Lê a nota original
+  const oldRes = await fetch(noteUrl(cleanOld));
+  if (!oldRes.ok) {
+    throw new Error('O arquivo original da nota não foi encontrado.');
+  }
+  const content = await oldRes.text();
+
+  // 2. Evita sobrescrever uma nota existente (o renameSync original sobrescrevia em silêncio)
+  const exists = await fetch(noteUrl(cleanNew));
+  if (exists.ok) {
+    throw new Error(`Já existe uma nota chamada "${cleanNew}".`);
+  }
+
+  // 3. Grava com o novo nome
+  const putRes = await fetch(noteUrl(cleanNew), { method: 'PUT', body: content });
+  if (!putRes.ok) throw new Error('Falha ao criar a nota com o novo nome.');
+
+  // 4. Atualiza o .NotesList
+  const listRes = await fetch(LIST_URL);
+  if (listRes.ok) {
+    const text = await listRes.text();
+    const updated = text
+      .split(/\r?\n/)
+      .map((line) => (line.trim() === cleanOld ? cleanNew : line))
+      .join('\n');
+
+    const listPut = await fetch(LIST_URL, { method: 'PUT', body: updated });
+    if (!listPut.ok) {
+      // desfaz para não deixar a nota duplicada
+      await fetch(noteUrl(cleanNew), { method: 'DELETE' });
+      throw new Error('Falha ao atualizar a lista de notas.');
+    }
+  }
+
+  // 5. Só apaga a antiga depois que tudo deu certo
+  await fetch(noteUrl(cleanOld), { method: 'DELETE' });
+
+  return { success: true, newName: cleanNew };
+}
+
+async function safeFetch(url, options) {
+  try {
+    return await fetch(url, options);
+  } catch {
+    return { ok: false, status: 0, text: async () => '' };
+  }
+}
+
+async function createNoteFile(name) {
+  const clean = name.trim();
+  if (!clean) throw new Error('O nome da nota não pode ser vazio.');
+
+  // 1. Cria o arquivo só se ainda não existir (não sobrescreve conteúdo)
+  const exists = await safeFetch(noteUrl(clean));
+  if (!exists.ok) {
+    const put = await safeFetch(noteUrl(clean), { method: 'PUT', body: '' });
+    if (!put.ok) throw new Error('Falha ao criar a nota.');
+  }
+
+  // 2. Lê a lista (se não existir, começa vazia)
+  const listRes = await safeFetch(LIST_URL);
+  const text = listRes.ok ? await listRes.text() : '';
+  const lines = text.split(/\r?\n/).filter((l) => l.trim() !== '');
+
+  // 3. Adiciona no topo se ainda não estiver
+  if (!lines.includes(clean)) {
+    lines.unshift(clean);
+    const listPut = await safeFetch(LIST_URL, { method: 'PUT', body: lines.join('\n') });
+    if (!listPut.ok) throw new Error('Falha ao atualizar a lista de notas.');
+  }
+
+  return clean;
+}
+async function safeFetch(url, options) {
+  try {
+    return await fetch(url, options);
+  } catch {
+    return { ok: false, status: 0, text: async () => '' };
+  }
+}
+
+async function deleteNoteFile(name) {
+  const clean = name.trim();
+
+  // 1. Remove da lista primeiro
+  const listRes = await safeFetch(LIST_URL);
+  if (listRes.ok) {
+    const text = await listRes.text();
+    const lines = text.split(/\r?\n/).filter((l) => l.trim() !== clean);
+
+    const listPut = await safeFetch(LIST_URL, { method: 'PUT', body: lines.join('\n') });
+    if (!listPut.ok) throw new Error('Falha ao atualizar a lista de notas.');
+  }
+
+  // 2. Apaga o arquivo
+  const del = await safeFetch(noteUrl(clean), { method: 'DELETE' });
+  if (!del.ok) throw new Error('Falha ao apagar a nota.');
+
+  return clean;
+}
+async function saveNoteFile(name, content) {
+  const clean = name.trim();
+  if (!clean) throw new Error('O nome da nota não pode ser vazio.');
+
+  let res;
+  try {
+    res = await fetch(noteUrl(clean), { method: 'PUT', body: content ?? '' });
+  } catch {
+    throw new Error('Falha ao salvar a nota.');
+  }
+
+  if (!res.ok) throw new Error('Falha ao salvar a nota.');
+}
+async function saveNotesOrder(content) {
+  const body = Array.isArray(content) ? content.join('\n') : (content ?? '');
+
+  let res;
+  try {
+    res = await fetch(LIST_URL, { method: 'PUT', body });
+  } catch {
+    throw new Error('Falha ao salvar a ordem das notas.');
+  }
+
+  if (!res.ok) throw new Error('Falha ao salvar a ordem das notas.');
+}
+const MEDIA_BASE = 'documents://Notes/Media';
+const mediaUrl = (fileName) => `${MEDIA_BASE}/${encodeURIComponent(fileName)}`;
+
+const ALLOWED_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+function pickImageFile() {
+  return new Promise((resolve) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = ALLOWED_EXT.map((e) => `.${e}`).join(',');
+
+    input.addEventListener('change', () => resolve(input.files?.[0] ?? null));
+    input.addEventListener('cancel', () => resolve(null));
+
+    input.click();
+  });
+}
+
+async function selectAddImage() {
+  const file = await pickImageFile();
+  if (!file) return null;
+
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (!ALLOWED_EXT.includes(ext)) return null;
+
+  const uniqueFileName = `img_${Date.now()}.${ext}`;
+
+  try {
+    const res = await fetch(mediaUrl(uniqueFileName), { method: 'PUT', body: file });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return uniqueFileName;
+  } catch (error) {
+    console.error('Erro ao salvar a imagem:', error?.message ?? error);
+    return null;
+  }
+}
+
 async function loadNotes() {
   const res = await fetch(`documents://Notes/.NotesList`);
   const data = await res.text();
@@ -102,9 +276,9 @@ async function loadNotes() {
     direction: 'vertical',
     forceFallback: true,
     fallbackOnBody: true,
-    onEnd: () => {
+    onEnd: async () => {
       const newOrder = [...tablist.querySelectorAll('.tab')].map(t => t.dataset.name).join('\n');
-      window.api.notes.saveOrder(newOrder);
+      await saveNotesOrder(newOrder);
     }
   });
 
@@ -171,14 +345,14 @@ function openFromHash() {
   return true;
 }
 
-function saveNote() {
+async function saveNote() {
   const name = tablist.querySelector(".tab.active")?.dataset.name;
   if (!name) return;
-  window.api.notes.save(name, rawContent);
+  await saveNoteFile(name, rawContent);
 }
 
 async function deleteNote(name) {
-  window.api.notes.delete(name);
+  await deleteNoteFile(name);
   await loadNotes();
 
   if (!tablist.querySelector('.tab')) {
@@ -201,7 +375,7 @@ async function createNote() {
   content.innerHTML = '';
 
   try {
-    await window.api.notes.create(name);
+    await createNoteFile(name);
     await loadNotes();
 
     // requestAnimationFrame(() => {
@@ -224,21 +398,23 @@ function exitNote() {
 //////////////
 /// EDIÇÃO ///
 //////////////
-function editToggle() {
+async function editToggle() {
   editing = !editing;
   if (!editing) {
     rawContent = getTextFromEditor();
-    saveNote();
+    await saveNote();
   }
   editBtn.className = editing ? "normal-btn fa-solid fa-floppy-disk" : "normal-btn fa-solid fa-pen-to-square";
   renderContent();
 }
 
-content.addEventListener("input", () => {
+content.addEventListener("input", async () => {
   if (!editing) return;
   rawContent = getTextFromEditor();
   clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(saveNote, 500);
+  saveTimeout = setTimeout(async () => {
+    await saveNote();
+  }, 500);
 });
 
 content.addEventListener("click", (e) => {
@@ -246,16 +422,16 @@ content.addEventListener("click", (e) => {
   if (!link) return;
   e.preventDefault();
   const url = link.getAttribute('href');
-  if (url) window.api.openLink(url);
+  if (url) window.electronAPI.openLink(url);
 });
 
 async function triggerImageUpload() {
-  const imageProtocolPath = await window.api.notes.selectAndImage();
+  const imageProtocolPath = await selectAddImage();
   if (!imageProtocolPath) return;
 
   rawContent = rawContent.replace('/img/', `{image=${imageProtocolPath}}`);
   renderContent();
-  saveNote();
+  await saveNote();
 }
 
 //////////////
@@ -302,7 +478,7 @@ async function finishTitleEdit() {
   }
 
   try {
-    await window.api.notes.rename(cleanOldName, newName);
+    await renameNote(cleanOldName, newName);
     window.location.hash = encodeURIComponent(newName);
     await loadNotes();
   } catch (err) {
@@ -315,7 +491,9 @@ async function finishTitleEdit() {
 ///////////////
 /// ATALHOS ///
 ///////////////
-editBtn.addEventListener('click', editToggle);
+editBtn.addEventListener('click', async (event) => {
+    await editToggle(event);
+});
 newBtn.addEventListener('click', createNote);
 
 toggleDeleteBtn.addEventListener('click', () => {
@@ -324,10 +502,10 @@ toggleDeleteBtn.addEventListener('click', () => {
   deleteBtns.forEach(btn => { btn.style.display = isVisible ? 'none' : 'block'; });
 });
 
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', async (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
     e.preventDefault();
-    if (editing) editToggle();
+    if (editing) await editToggle();
   }
 });
 

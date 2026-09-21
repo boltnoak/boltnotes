@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function inicializarDados() {
     try {
         const cloudData = await loadCloudSeasonInfo();
-        const localData = await window.electronAPI.json.load(REVIEWS_FILE);
-        const statsData = await window.electronAPI.json.load(STATS_FILE);
+        const localData = await loadJson(REVIEWS_FILE);
+        const statsData = await loadJson(STATS_FILE);
         window.reviews = (localData && typeof localData === 'object') ? localData : {};
         window.stats = (statsData && typeof statsData === 'object') ? statsData : {};
 
@@ -161,13 +161,13 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (card) card.dataset.code = code;
 
         const bg = clone.querySelector('.banner');
-        if (bg) bg.style.backgroundImage = `url('assets://fortnite-${code}-assets/${code}.jpg')`;
+        if (bg) bg.style.backgroundImage = `url('documents://Fortnite/Assets/fortnite-${code}-assets/${code}.jpg')`;
 
         const character = clone.querySelector('.season-character');
-        if (character) character.src = `assets://fortnite-${code}-assets/${code}-character.png`;
+        if (character) character.src = `documents://Fortnite/Assets/fortnite-${code}-assets/${code}-character.png`;
 
         const seasonMap = clone.querySelector('.season-map');
-        if (seasonMap) seasonMap.src = `assets://fortnite-${code}-assets/${code}-map.jpg`;
+        if (seasonMap) seasonMap.src = `documents://Fortnite/Assets/fortnite-${code}-assets/${code}-map.jpg`;
 
         const seasonDiv = clone.querySelector('.season');
         const isLocked = currentStats.locked ?? false;
@@ -212,7 +212,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                 }
 
                 try {
-                    await window.electronAPI.json.save(STATS_FILE, window.stats);
+                    await saveJson(STATS_FILE, window.stats);
                 } catch (error) {
                     console.error("Erro ao salvar o estado do cadeado:", error);
                 }
@@ -298,7 +298,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         }
 
         const trailerBtn = clone.querySelector('.season-trailers');
-        if (trailerBtn) trailerBtn.onclick = () => typeof openTrailer === "function" && openTrailer(trailerBtn);
+        if (trailerBtn) trailerBtn.onclick = async () => typeof await openTrailer === "function" && await openTrailer(trailerBtn);
 
         const listaDeEventos = info.events || info.event;
 
@@ -328,7 +328,7 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                     const newEvent = templateEvent.cloneNode(true);
                     newEvent.style.display = 'flex';
                     
-                    newEvent.querySelector('.event-img').src = `assets://fortnite-${code}-assets/${evt.img}` || '';
+                    newEvent.querySelector('.event-img').src = `documents://Fortnite/Assets/fortnite-${code}-assets/${evt.img}` || '';
                     newEvent.querySelector('.event-title').textContent = evt.title || '';
                     newEvent.querySelector('.event-type').textContent = evt.type || '';
                     newEvent.querySelector('.event-date').textContent = evt.date || '';
@@ -357,8 +357,8 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         container.appendChild(clone);
     }
 
-    if (localDataUpdated) await window.electronAPI.json.save(REVIEWS_FILE, window.reviews);
-    if (localStatsUpdated) await window.electronAPI.json.save(STATS_FILE, window.stats);
+    if (localDataUpdated) await saveJson(REVIEWS_FILE, window.reviews);
+    if (localStatsUpdated) await saveJson(STATS_FILE, window.stats);
 
     await preencherValores();
 }
@@ -408,7 +408,7 @@ function openMap(el) {
     if (mapPopup && mapImage && code) {
         mapPopup.style.display = "flex";
         
-        mapImage.style.backgroundImage = `url('assets://fortnite-${code}-assets/${code}-map.jpg')`;
+        mapImage.style.backgroundImage = `url('documents://Fortnite/Assets/fortnite-${code}-assets/${code}-map.jpg')`;
         
         configurarZoomMapa(); 
         resetarZoomMapa();    

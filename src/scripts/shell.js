@@ -132,12 +132,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.electronAPI.onWindowStateChange((state) => {
-  if (state === 'maximized') {
-    document.documentElement.classList.add('window-maximized');
-    document.documentElement.classList.remove('window-normal');
-  } else {
-    document.documentElement.classList.add('window-normal');
-    document.documentElement.classList.remove('window-maximized');
-  }
-  sessionStorage.setItem('windowState', state);
+    document.documentElement.classList.toggle('window-maximized', state === 'maximized');
 });

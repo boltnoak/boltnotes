@@ -21,11 +21,10 @@ async function getLatestSeason() {
 }
 
 async function loadBanner() {
-        const latest = await getLatestSeason();
-        if (!latest) return;
+    const latest = await getLatestSeason() || {key: 'c4s1', data: { name: 'Assuma o controle', releaseDate: '20/08/2026' }};
 
-        console.log(`Temporada mais recente: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
-        document.getElementById("latestSeasonBG").style.backgroundImage = `url('assets://fortnite-${latest.key}-assets/${latest.key}.jpg')`;
+    console.log(`Temporada mais recente: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
+    document.getElementById("latestSeasonBG").style.backgroundImage = `url('documents://Fortnite/Assets/fortnite-${latest.key}-assets/${latest.key}.jpg')`;
 }
 async function loadSidebarChapters() {
     const data = await loadCloudSeasonInfo();
@@ -71,7 +70,7 @@ async function loadChapters() {
         const number = e.replace('c', '');
         return `<a id="chapter" data-chapter="${number}" href="pages/fortnite-chapter.html?num=${number}">
                     <div class="chapter-image-div">
-                        <img class="chapter-image" src="assets://fn-chapter-covers/chapter${number}-cover.jpg">
+                        <img class="chapter-image" src="documents://Fortnite/Assets/fn-chapter-covers/chapter${number}-cover.jpg">
                     </div>
                     <p class="title"><span data-i18n="fn-chapter">Capítulo</span> ${number}</p>
                 </a>`;

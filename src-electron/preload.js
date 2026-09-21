@@ -1,131 +1,47 @@
 const {contextBridge,ipcRenderer} = require('electron');
 
 window.addEventListener('DOMContentLoaded', () => {
-  try {
-    const isMaximized = ipcRenderer.sendSync('menu:is-maximized-sync');
-    
-    if (isMaximized) {
-  document.documentElement.classList.add('window-maximized');
-  document.documentElement.classList.remove('window-normal');
-  window.sessionStorage.setItem('windowState', 'maximized');
-} else {
-  document.documentElement.classList.add('window-normal');
-  document.documentElement.classList.remove('window-maximized');
-  window.sessionStorage.setItem('windowState', 'normal');
-}
-  } catch (err) {
-    document.documentElement.classList.add('window-normal');
-    window.sessionStorage.setItem('windowState', 'normal');
-  }
+    let isMaximized = false;
+    try { isMaximized = ipcRenderer.sendSync('menu:is-maximized-sync');
+    } catch {}
+    document.documentElement.classList.toggle('window-maximized', !!isMaximized);
 });
 
 const isDev = process.argv.includes('--development');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  onWindowStateChange: (callback) => ipcRenderer.on('window-state-change', (event, state) => callback(state)),
-  existsAssets: (filePath) => ipcRenderer.invoke('exists-assets',filePath),
-  exists: (filePath) => ipcRenderer.invoke('exists',filePath),
-  existsAppdata: (filePath) => ipcRenderer.invoke('exists-appdata',filePath),
-  devTools: () => ipcRenderer.send('devTools'),
-  isDev: isDev,
-  welcomeDone: () => ipcRenderer.send('welcome:done'),
-  notifyLanguageChanged: () => ipcRenderer.send('language:changed'),
+    onWindowStateChange: (callback) => ipcRenderer.on('window-state-change', (event, state) => callback(state)),
+    devTools: () => ipcRenderer.send('devTools'),
+    isDev: isDev,
 
-  i18n: {
-    get: () => ipcRenderer.invoke('i18n:get')
-  },
+    get_i18n: () => ipcRenderer.invoke('i18n:get'),
+    openLink: (url) => ipcRenderer.invoke('open-external-link', url),
+    getAppVersion: () => ipcRenderer.invoke('app-version'),
 
-  // video: {
-  //   downloadOnDemand: (data) => ipcRenderer.invoke('video:download-on-demand', data),
-  //   onProgress: (callback) => {
-  //     const listener = (_event, progressData) => callback(progressData);
-  //     ipcRenderer.on('video:download-progress', listener);
-  //     return () => ipcRenderer.removeListener('video:download-progress', listener);
-  //   }
-  // },
+    getSteamAchievements: (appid) => ipcRenderer.invoke('games:steam-achievements', appid),
 
-  backup: {
-    export: () => ipcRenderer.invoke('backup:export'),
-    import: () => ipcRenderer.invoke('backup:import')
-  },
+    menu: {
+        maximizeApp: () => ipcRenderer.send('menu:maximize-app'),
+        minimizeApp: () => ipcRenderer.send('menu:minimize-app'),
+        closeApp: () => ipcRenderer.send('menu:close-app')
+    },
 
-  menu: { maximizeApp: () => ipcRenderer.send('menu:maximize-app'),
-    minimizeApp: () => ipcRenderer.send('menu:minimize-app'),
-    closeApp: () => ipcRenderer.send('menu:close-app'),
-    isMaximized: () => ipcRenderer.invoke('menu:is-maximized'),
-    dragWindow: (delta) => ipcRenderer.send('drag-window', delta)},
+    config: {
+        getConfig: () => ipcRenderer.invoke('config:get'),
+        updateConfig: (key,value) => ipcRenderer.send('config:update',{key,value})
+    },
 
-  json: { load: (filePath) => ipcRenderer.invoke('json:load',filePath),
-    save: (filePath,data) => ipcRenderer.invoke('json:save',{filePath,data}) },
-
-  config: { getConfig: () => ipcRenderer.invoke('config:get'),
-    updateConfig: (key,value) => ipcRenderer.send('config:update',{key,value}) },
-
-  themes: {
-      list: () => ipcRenderer.invoke('themes:list'),
-      get: (name) => ipcRenderer.invoke('themes:get', name),
-      getCurrent: () => ipcRenderer.invoke('themes:get-current')
-  },
-
-  checkAssetsStatus: () => ipcRenderer.invoke('assets-check-status'),
-  onAssetsProgress: (callback) => {
-    const listener = (_, data) => callback(data);
-    ipcRenderer.on('assets-progress', listener);
-    return () => ipcRenderer.removeListener('assets-progress', listener);
-  },
-  onAssetsReady: (callback) => {
-    ipcRenderer.on('assets-ready', () => callback());
-  },
-  onAssetsError: (callback) => {
-    ipcRenderer.on('assets-error', (event, errorMessage) => callback(errorMessage));
-  },
-
-  changelog: {
-    check: () => ipcRenderer.invoke('changelog:check'),
-    markSeen: () => ipcRenderer.invoke('changelog:mark-seen'),
-    get: () => ipcRenderer.invoke('changelog:get')
-  },
-
-  updates: {
-    checkUpdates: () => ipcRenderer.invoke('updates:check-update')
-  },
-
-  onUpdateStatus: (callback) => ipcRenderer.on('update-status', (event, msg) => callback(msg)),
-  onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, percent) => callback(percent)),
-
-  onUpdateReady: (callback) => ipcRenderer.on('update-ready-to-install', callback),
-  restartAndInstall: () => ipcRenderer.send('update:restart'),
-  checkUpdateStatus: () => ipcRenderer.invoke('update:check-status'),
-
-  syncAssets: () => ipcRenderer.invoke('sync-assets')
+    updates: {
+        checkUpdates: () => ipcRenderer.invoke('updates:check-update'),
+        onUpdateStatus: (callback) => ipcRenderer.on('update-status', (event, msg) => callback(msg)),
+        onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, percent) => callback(percent)),
+        onUpdateReady: (callback) => ipcRenderer.on('update-ready-to-install', callback),
+        restartAndInstall: () => ipcRenderer.send('update:restart'),
+        checkUpdateStatus: () => ipcRenderer.invoke('update:check-status')
+    }
 });
 contextBridge.exposeInMainWorld('api', {
-  load: (path) => ipcRenderer.invoke('load',path),
-
-  notes: {
-    create: (name) => ipcRenderer.invoke('notes:create',name),
-    rename: (oldName, newName) => ipcRenderer.invoke('notes:rename', oldName, newName),
-    delete: (name) => ipcRenderer.invoke('notes:delete',name),
-    save: (name,content) => ipcRenderer.invoke('notes:save',name,content),
-    saveOrder: (content) => ipcRenderer.invoke('notes:save-order', content),
-    selectAndImage: () => ipcRenderer.invoke('notes:select-add-image')
-  },
-  
-  games: {
-    ensureCover: (data) => ipcRenderer.invoke('games:ensure-cover',data),
-    getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
-    addGame: (gameData, hasCampaign) => ipcRenderer.invoke('games:add', gameData, hasCampaign),
-    statsZerados: () => ipcRenderer.invoke('games:stats-zerados'),
-    deleteGame: (name) => ipcRenderer.invoke('games:delete', name)
-  },
-
-  openLink: (url) => ipcRenderer.invoke('open-external-link', url),
-  getAppVersion: () => ipcRenderer.invoke('app-version'),
-
-  restartApp: () => ipcRenderer.send('update:restart')
-});
-
-contextBridge.exposeInMainWorld('info', {
-  getUserData: () => ipcRenderer.invoke('info:user-data'),
-  getDocuments: () => ipcRenderer.invoke('info:documents')
+    games: {
+        getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid)
+    }
 });

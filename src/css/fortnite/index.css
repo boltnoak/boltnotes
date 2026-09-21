@@ -1,7 +1,7 @@
 @import url(../basics.css);
 
 .banner-bg {
-    background-position: top;
+    background-position: 0 25%;
     background-size: cover;
     height: 80%;
     opacity: 0;

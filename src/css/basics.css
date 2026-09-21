@@ -460,7 +460,7 @@ header {
     left: 0;
     right: 0;
     position: absolute;
-    padding: .45rem .45rem;
+    padding: .45rem .45rem .625rem .45rem;
     /* margin: 0 0 0 .55vw; */
     z-index: 99;
     display: flex;
@@ -615,7 +615,7 @@ html.sidebar-expanded header .sidebar-btn-number {
     height: fit-content;
     gap: 1.35vh;
     justify-content: end;
-    margin-bottom: .25rem;
+    /* margin-bottom: .25rem; */
 }
 html, body {
     height: 100%;
@@ -855,8 +855,8 @@ footer {
     content: '';
     position: absolute;
     left: 0;
-    bottom: -1vh;
-    height: .55vh;
+    bottom: -.5vh;
+    height: .5vh;
     background-color: transparent;
     width: 100%;
     border-radius: 1vh;

@@ -44,18 +44,18 @@ function closeApp() { window.electronAPI.menu.closeApp() }
 async function updateCheckInit() {
     const updateBtn = window.parent ? window.parent.document.getElementById('update-btn') : null;
     if (updateBtn) {
-        const isUpdate = await window.electronAPI.checkUpdateStatus();
+        const isUpdate = await window.electronAPI.updates.checkUpdateStatus();
 
         if (isUpdate) {
             updateBtn.style.display = 'flex';
             console.log('Atualização encontrada!');
         }
-        window.electronAPI.onUpdateReady(() => {
+        window.electronAPI.updates.onUpdateReady(() => {
             console.log('Atualização pronta.');
             updateBtn.style.display = 'flex';
         });
         updateBtn.addEventListener('click', () => {
-            window.electronAPI.restartAndInstall();
+            window.electronAPI.updates.restartAndInstall();
         });
     }
     applyLocale();
@@ -67,99 +67,6 @@ requestAnimationFrame(() => {
         document.documentElement.classList.add('sidebar-color-ready');
     });
 });
-
-////////////////////////
-/// ESTADO DA JANELA ///
-////////////////////////
-// window.electronAPI.onWindowStateChange((state) => {
-//     sessionStorage.setItem('windowState', state);
-//     applyWindowState(state);
-// });
-// function applyWindowState(state) {
-//   const menuMax = document.getElementById('menuMax');
-//   const isNormal = state === 'normal';
-
-//   document.documentElement.classList.toggle('window-normal', isNormal);
-//   document.documentElement.classList.toggle('window-maximized', !isNormal);
-
-//   if (menuMax) {
-//     menuMax.className = isNormal
-//       ? 'fa-regular fa-window-maximize'
-//       : 'fa-regular fa-window-restore';
-//   }
-// }
-async function updateMaximizeIcon() {
-    const menuMax = document.getElementById('menuMax');
-    const isMaximized = await window.electronAPI.menu.isMaximized();
-    menuMax.className = isMaximized
-        ? 'fa-regular fa-window-restore'
-        : 'fa-regular fa-window-maximize';
-}
-
-async function checkChangelog() {
-    const { shouldShow, version } = await window.electronAPI.changelog.check();
-    if (!shouldShow) return;
-
-    const changes = await window.electronAPI.changelog.get();
-    
-    if (changes && changes.length > 0) {
-        const popup = document.getElementById('changelog-popup');
-        const list = document.getElementById('changelog-list');
-        const title = document.getElementById('changelog-version');
-        const closeBtn = document.getElementById('close-changelog-btn');
-
-        title.innerHTML = `<i class="fa-solid fa-rectangle-list"></i>Mudanças da versão ${version}${title.textContent}`;
-        list.innerHTML = changes.map(line => {
-            if (line.trim().startsWith('#')) {
-                const topicName = line.replace('#', '').trim();
-                return `<div class="changelog-category">
-                    <i class="fa-solid fa-circle-dot"></i>
-                    <h4 class="changelog-category-text">${topicName}:</h4>
-                </div>`;
-            }
-            return `<div class="changelog-topic"><li><i class="fa-solid fa-caret-right"></i>${line}</li></div>`;
-        }).join('');
-        popup.style.display = 'flex';
-
-        closeBtn.addEventListener('click', async () => {
-            popup.style.display = 'none';
-            await window.electronAPI.changelog.markSeen(); 
-        }, { once: true });
-    }
-}
-
-checkChangelog();
-
-// async function openChangelog() {
-//     const { shouldShow, version } = await window.electronAPI.changelog.check();
-
-//     const changes = await window.electronAPI.changelog.get();
-    
-//     if (changes && changes.length > 0) {
-//         const popup = document.getElementById('changelog-popup');
-//         const list = document.getElementById('changelog-list');
-//         const title = document.getElementById('changelog-version');
-//         const closeBtn = document.getElementById('close-changelog-btn');
-
-//         if (title && !title.length > 0) title.innerHTML = `<i class="fa-solid fa-rectangle-list"></i>Mudanças da versão ${version}${title.textContent}`;
-//         if (list && !list.length > 0) list.innerHTML = changes.map(line => {
-//             if (line.trim().startsWith('#')) {
-//                 const topicName = line.replace('#', '').trim();
-//                 return `<div class="changelog-category">
-//                     <i class="fa-solid fa-circle-dot"></i>
-//                     <h4 class="changelog-category-text">${topicName}:</h4>
-//                 </div>`;
-//             }
-//             return `<div class="changelog-topic"><li><i class="fa-solid fa-caret-right"></i>${line}</li></div>`;
-//         }).join('');
-//         popup.style.display = 'flex';
-
-//         closeBtn.addEventListener('click', async () => {
-//             popup.style.display = 'none';
-//             await window.electronAPI.changelog.markSeen(); 
-//         }, { once: true });
-//     }
-// }
 
 async function viewDownloadPackage(packageName) {
     const name = document.querySelector('.download-status-name');
@@ -286,4 +193,43 @@ async function fetchWithCache(url, cacheKeyName) {
         console.warn(`Falha ao buscar online e sem cache disponível: ${cacheKeyName}`);
         return null;
     }
+}
+
+const THEMES_URL = 'documents://Themes';
+
+async function getTheme(themeName) {
+  const name = String(themeName ?? '').replace(/[\\/]/g, '').trim();
+  if (!name) return null;
+
+  try {
+    const res = await fetch(`${THEMES_URL}/${encodeURIComponent(name)}.boltss`);
+    if (!res.ok) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
+}
+async function listThemes() {
+  let names;
+  try {
+    const res = await fetch(`${THEMES_URL}/.ThemeList`);
+    if (!res.ok) return [];
+    names = (await res.text()).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  } catch {
+    return [];
+  }
+
+  return Promise.all(
+    names.map(async (name) => {
+      try {
+        const res = await fetch(`${THEMES_URL}/${encodeURIComponent(name)}.boltss`);
+        if (!res.ok) throw new Error();
+        const css = await res.text();
+        const bg = css.match(/--bg\s*:\s*([^;}\n]+)/)?.[1].trim() ?? '#050505';
+        return { name, bg };
+      } catch {
+        return { name, bg: '#000000' };
+      }
+    })
+  );
 }

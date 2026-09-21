@@ -76,6 +76,7 @@ body {
 }
 .fa-chart-pie {
     height: fit-content;
+    padding: 0 0 .175vh 0;
 }
 /* .mode-btn.active {
     background-color: var(--text);
@@ -1443,7 +1444,7 @@ body {
     display: flex;
     align-items: center;
     background-color: var(--bg);
-    padding: 1.25vh .65vw;
+    padding: .75vh .65vw;
     padding-left: .15vw;
     flex-direction: row;
     justify-content: space-between;

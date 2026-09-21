@@ -18,9 +18,6 @@
     width: 100%;
     border-radius: 0;
     background-color: var(--bg);
-    background-image: url(../assets/welcome-start-screen.png);
-    background-size: cover;
-    background-repeat: no-repeat;
 }
 .next-btn {
     position: absolute;
@@ -151,10 +148,10 @@ body {
   to { opacity: 1; }
 }
 .fadeOut {
-  animation: fadeOut 0s ease-in-out forwards !important;
+  animation: fadeOut .25s ease-in-out forwards !important;
 }
 .fadeIn {
-  animation: fadeIn 0s ease-in-out forwards !important;
+  animation: fadeIn .25s ease-in-out forwards !important;
 }
 .mark {
     display: inline-block;
@@ -238,6 +235,9 @@ body {
     opacity: 0;
     flex-direction: column;
     justify-content: center;
+    background-image: url(../assets/welcome-start-screen.png);
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 .logo {
     height: 30vh;

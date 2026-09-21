@@ -1,5 +1,5 @@
 async function applyLocale() {
-    const t = await window.electronAPI.i18n.get();
+    const t = await window.electronAPI.get_i18n();
     window._t = t;
 
     document.querySelectorAll('[data-i18n]').forEach(el => {

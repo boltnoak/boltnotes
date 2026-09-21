@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             langSelect.classList.remove('active');
 
             await window.electronAPI.config.updateConfig('language', lang);
-            if (window.electronAPI.notifyLanguageChanged) window.electronAPI.notifyLanguageChanged()
 
             if (typeof applyLocale === 'function') applyLocale();
 
@@ -67,8 +66,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themeContainers = document.querySelectorAll('.theme-selector-div');
 
     if (themeContainers.length > 0) {
-        const themesList = await window.electronAPI.themes.list();
-        const currentTheme = await window.electronAPI.themes.getCurrent();
+        const config = await window.electronAPI.config.getConfig();
+        const themesList = await listThemes();
+        const currentTheme = config.theme;
 
         themeContainers.forEach(container => {
             const themeSelector = container.querySelector('select');
@@ -273,16 +273,6 @@ function tabSwitch(el) {
     }
 }
 
-async function loadInfo() {
-    const userData = await window.info.getUserData();
-    const documents = await window.info.getDocuments();
-
-    document.getElementById('documents').textContent = documents;
-    //document.getElementById('user-config').textContent = userData + '/config.json';
-    //document.getElementById('assets-folder').textContent = userData + '/assets';
-    //document.getElementById('themes-folder').textContent = documents + '/Themes';
-}
-
 async function selectNewTheme(themeName) {
     localStorage.removeItem('cached-theme-css');
     localStorage.removeItem('cached-theme-name');
@@ -311,7 +301,6 @@ async function changeFeatured(selectEl) {
     window.electronAPI.config.updateConfig('featured', selectedFeatured);
 }
 
-loadInfo();
 
 async function checkUpdates() {
     const text = document.querySelectorAll('#checkUpdates-text');
@@ -322,12 +311,12 @@ async function checkUpdates() {
 
     showMessage(text, `${window._t['check-updates-verify']}`, 'var(--text-light-gray)');
 
-    window.electronAPI.onUpdateProgress((percent) => {
+    window.electronAPI.updates.onUpdateProgress((percent) => {
         downloadIniciado = true;
         showMessage(text, `${window._t['downloading']}... ${Math.round(percent)}%`, 'var(--text)');
     });
 
-    window.electronAPI.onUpdateReady(() => {
+    window.electronAPI.updates.onUpdateReady(() => {
         showMessage(text, `${window._t['check-updates-done']}`, 'var(--blue)');
         if (btn) btn.style.display = 'flex';
     });
@@ -349,49 +338,6 @@ async function checkUpdates() {
 }
 let listenersRegistrados = false;
 
-async function syncAssets() {
-  const text = document.querySelectorAll('#syncAssets-text');
-  if (!text) return;
-
-  showMessage(text, `${window._t['sync-assets-verify']}`, 'var(--text-light-gray)');
-
-  if (!listenersRegistrados) {
-    window.electronAPI.onAssetsProgress((() => {
-      let lastUpdate = 0;
-      return (data) => {
-            const now = Date.now();
-            if (data.percent !== 100 && (now - lastUpdate < 200)) return;
-            lastUpdate = now;
-
-            const mb = (data.downloaded / 1024 / 1024).toFixed(1);
-            const totalMb = data.total ? (data.total / 1024 / 1024).toFixed(1) : '?';
-
-            showMessage(text, `${window._t['downloading']} ${data.package} (${data.percent ?? '...'}%) — ${mb} MB / ${totalMb} MB`), 'var(--text)';
-      };
-    })());
-
-    window.electronAPI.onAssetsReady(() => {
-      setTimeout(() => {
-          showMessage(text, `${window._t['sync-assets-done']}`, 'var(--blue)')
-      }, 400);
-    });
-
-    listenersRegistrados = true;
-  }
-
-  try {
-    const result = await window.electronAPI.syncAssets();
-    if (result && result.success) {
-      showMessage(text, `${window._t['sync-assets-done']}`, 'var(--blue)');
-    } else {
-      const erroMsg = result && result.error ? result.error : 'Erro ao sincronizar.';
-      showMessage(text, erroMsg, 'var(--red)');
-    }
-  } catch (err) {
-    showMessage(text, 'Erro de comunicação com o sistema.', 'var(--red)');
-  }
-}
-
 function showMessage(element, msg, color) {
     const elementList = element instanceof NodeList || Array.isArray(element) 
         ? element 
@@ -412,25 +358,3 @@ function showMessage(element, msg, color) {
         }, 3500);
     });
 }
-
-// document.getElementById('export-backup-btn').addEventListener('click', async () => {
-//     const result = await window.electronAPI.backup.export();
-//     if (result.success) {
-//         alert(`Backup exportado com sucesso!\n${result.path}`);
-//     } else if (!result.canceled) {
-//         alert(`Erro ao exportar: ${result.error}`);
-//     }
-// });
-
-// document.getElementById('import-backup-btn').addEventListener('click', async () => {
-//     const confirmed = confirm('Importar um backup vai substituir todos os seus dados atuais. Deseja continuar?');
-//     if (!confirmed) return;
-
-//     const result = await window.electronAPI.backup.import();
-//     if (result.success) {
-//         alert('Backup importado com sucesso! O app vai reiniciar.');
-//         window.electronAPI.restartApp?.(); // ou window.location.reload()
-//     } else if (!result.canceled) {
-//         alert(`Erro ao importar: ${result.error}`);
-//     }
-// });

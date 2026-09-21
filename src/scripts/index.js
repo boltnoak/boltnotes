@@ -180,14 +180,14 @@ async function initFeaturedFortnite() {
     const code = latest.key;
 
     const cloudData = await loadCloudSeasonInfo();
-    const statsData = window.electronAPI.json.load(FORTNITE_STATS);
+    const statsData = await loadJson(FORTNITE_STATS);
     const stats = (statsData && typeof statsData === 'object' && !Array.isArray(statsData)) ? statsData : {};
 
     const codeTranslated = document.querySelector('.recent-season-name-span').textContent.replace(/^(.).*/, "$1") || 'S';
     const infoTemporada = cloudData[code] || stats[code] || {};
     const seasonName = `${code.toUpperCase().replace(/S/, codeTranslated)} | ${infoTemporada.name}` || "Temporada Atual";
 
-    document.getElementById('recentSeason-image').style.backgroundImage = `url(assets://fortnite-${code}-assets/${code}.jpg)`;
+    document.getElementById('recentSeason-image').style.backgroundImage = `url(documents://Fortnite/Assets/fortnite-${code}-assets/${code}.jpg)`;
     document.querySelector('.shine-effect-v-latest-season').style.display = 'none';
 
     document.getElementById('recent-season-name').textContent = seasonName;
@@ -205,7 +205,7 @@ async function preencherValores() {
 
     const code = latest.key;
 
-    const statsData = await window.electronAPI.json.load(FORTNITE_STATS);
+    const statsData = await loadJson(FORTNITE_STATS);
     const stats = (statsData && typeof statsData === 'object' && !Array.isArray(statsData)) ? statsData : {};
     const data = stats[code] || {};
 
@@ -271,7 +271,7 @@ async function preencherValores() {
                 wins
             };
             try {
-                await window.electronAPI.json.save(FORTNITE_STATS, stats);
+                await saveJson(FORTNITE_STATS, stats);
                 console.log(`Fortnite - Dados da temporada ${code.toUpperCase().replace('S', 'T')} salvos com sucesso!`);
             } catch (err) {
                 console.error(`Fortnite - Erro ao salvar dados da temporada ${code}:`, err);
@@ -298,7 +298,7 @@ async function loadGamesDB() {
         return cachedGamesDB;
     }
     try {
-        const content = await window.electronAPI.json.load(FILE);
+        const content = await loadJson(FILE);
         cachedGamesDB = Array.isArray(content.games) ? content.games : (Array.isArray(content) ? content : []);
         return cachedGamesDB;
     } catch (e) {
@@ -311,7 +311,7 @@ async function loadStatusAchie() {
         return cachedAchieStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(ACHIEVEMENTS_FILE);
+        const content = await loadJson(ACHIEVEMENTS_FILE);
         cachedAchieStatus = Array.isArray(content) ? content : [];
         return cachedAchieStatus;
     } catch (e) {
@@ -324,7 +324,7 @@ async function loadStatus() {
         return cachedCampaignStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(`Games/campaigns.json`);
+        const content = await loadJson(`Games/campaigns.json`);
         cachedCampaignStatus = content || {};
         return cachedCampaignStatus;
     } catch (e) {
@@ -372,7 +372,7 @@ async function toggleNoteEdit(el) {
 
 async function loadGames() {
     const [data, stats] = await Promise.all([
-        window.electronAPI.json.load(FILE),
+        loadJson(FILE),
         loadStatus()
     ]);
 
@@ -459,13 +459,13 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const img = document.createElement("img");
     img.className = "game-cover";
 
-    const { cover: localPath } = await window.api.games.ensureCover({
+    const { cover: localPath } = await ensureCover({
         appid: game.appid,
         name: game.name,
         cover: game.cover
     });
 
-    img.src = localPath ? `file://${localPath}` : 'assets://placeholder.png';
+    img.src = localPath ? `${localPath}` : 'assets/placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -564,7 +564,7 @@ const gameCardObserver = new IntersectionObserver((entries, observer) => {
             const game = card.gameData;
 
             if (!game._cachedCover) {
-                const result = await window.api.games.ensureCover({
+                const result = await ensureCover({
                     appid: game.appid,
                     name: game.name,
                     cover: game.cover,
@@ -580,7 +580,7 @@ const gameCardObserver = new IntersectionObserver((entries, observer) => {
             
             if (img && game._cachedCover) {
                 const preloader = new Image();
-                preloader.src = `file://${game._cachedCover}`;
+                preloader.src = `${game._cachedCover}`;
 
                 preloader.onload = () => {
                     img.src = preloader.src;
@@ -607,7 +607,7 @@ async function loadGamesDB() {
         return cachedGamesDB;
     }
     try {
-        const content = await window.electronAPI.json.load(FILE);
+        const content = await loadJson(FILE);
         cachedGamesDB = Array.isArray(content.games) ? content.games : (Array.isArray(content) ? content : []);
         return cachedGamesDB;
     } catch (e) {
@@ -621,7 +621,7 @@ async function loadStatus() {
         return cachedCampaignStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(`Games/campaigns.json`);
+        const content = await loadJson(`Games/campaigns.json`);
         cachedCampaignStatus = content || {};
         return cachedCampaignStatus;
     } catch (e) {
@@ -635,9 +635,9 @@ async function loadGamesAchie() {
     const myRenderId = renderIdAchie;
 
     const [data, stats, cStatus] = await Promise.all([
-        window.electronAPI.json.load(FILE),
+        loadJson(FILE),
         loadStatusAchie(),
-        window.electronAPI.json.load(CAMPAIGNS_FILE)
+        loadJson(CAMPAIGNS_FILE)
     ]);
 
     if (myRenderId !== renderIdAchie) return;
@@ -783,7 +783,7 @@ async function createGameAchieCard(game, completedIndex = null) {
         div.classList.add("no-achie");
     }
 
-    img.src = 'assets://basics/placeholder.png';
+    img.src = '../assets/placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -876,7 +876,7 @@ async function loadNotes() {
         return cachedNotes;
     }
     try {
-        const content = await window.electronAPI.json.load(NOTES_FILE);
+        const content = await loadJson(NOTES_FILE);
         cachedNotes = (typeof content === 'object' && content !== null) ? content : {};
         return cachedNotes;
     } catch (e) {
@@ -889,7 +889,7 @@ async function loadStatusAchie() {
         return cachedAchieStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(ACHIEVEMENTS_FILE);
+        const content = await loadJson(ACHIEVEMENTS_FILE);
         cachedAchieStatus = Array.isArray(content) ? content : [];
         return cachedAchieStatus;
     } catch (e) {
@@ -923,7 +923,7 @@ function updateAchie(element, statusClass, text) {
 async function changeAchieProgress(el, isAdd = true) {
     const title = el.dataset.id;
     const [data, stats] = await Promise.all([
-        window.electronAPI.json.load(ACHIEVEMENTS_FILE),
+        loadJson(ACHIEVEMENTS_FILE),
         loadStatusAchie()
     ]);
 
@@ -961,7 +961,7 @@ async function changeAchieProgress(el, isAdd = true) {
     }
 
     if (jogoEncontrado) {
-        await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listaStats);
+        await saveJson(ACHIEVEMENTS_FILE, listaStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1106,7 +1106,7 @@ async function openGamePopup(el) {
         cover: localCoverPath,
         hero: localHeroPath,
         logo: localLogoPath
-    } = await window.api.games.ensureCover({
+    } = await ensureCover({
         appid: gamesDB.appid,
         name: gamesDB.name,
         cover: gamesDB.cover,
@@ -1125,12 +1125,12 @@ async function openGamePopup(el) {
     const mainBG = document.querySelector('.game-maincontent');
     const normalizedPath = localHeroPath ? localHeroPath.replace(/\\/g, '/') : null;
     const bgValue = normalizedPath 
-        ? `url("file://${normalizedPath}")` 
+        ? `url("${normalizedPath}")` 
         : 'url("assets/placeholder.png")';
 
     mainBG.style.setProperty('--bg-image', bgValue);
-    banner.src = localCoverPath ? `file://${localCoverPath}` : 'assets/placeholder.png';
-    // logo.src = localLogoPath ? `file://${localLogoPath}` : '';
+    banner.src = localCoverPath ? `${localCoverPath}` : 'assets/placeholder.png';
+    // logo.src = localLogoPath ? `${localLogoPath}` : '';
 
     logo.alt = el.dataset.id;
     devText.textContent = gamesDB.developer || "Erro";
@@ -1350,7 +1350,7 @@ gamePopupDiv.addEventListener('click', (e) => {
 
 async function updateStatusJSON(game, statusClass) {
     const [data, stats] = await Promise.all([
-        window.electronAPI.json.load(CAMPAIGNS_FILE),
+        loadJson(CAMPAIGNS_FILE),
         loadStatus()
     ]);
 
@@ -1371,7 +1371,7 @@ async function updateStatusJSON(game, statusClass) {
             delete jogoEncontrado.completeDate; 
         }
         
-        await window.electronAPI.json.save(CAMPAIGNS_FILE, listaStats);
+        await saveJson(CAMPAIGNS_FILE, listaStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1392,7 +1392,7 @@ async function updateCampaignJSON(game, statusClass) {
     if (gameFound) {
         gameFound.hasCampaign = statusClass;
         
-        await window.electronAPI.json.save(CAMPAIGNS_FILE, listStats);
+        await saveJson(CAMPAIGNS_FILE, listStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1420,7 +1420,7 @@ async function updateAchieJSON(game, statusClass) {
             gameFoundAchie.unlockedAchievements = gameFoundAchie.totalAchievements;
         }
         
-        await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listStats);
+        await saveJson(ACHIEVEMENTS_FILE, listStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1646,7 +1646,7 @@ async function changeRatingBtn(el) {
 
 async function changeRatingJSON(game, ratingEl) {
     const [data, stats] = await Promise.all([
-        window.electronAPI.json.load(CAMPAIGNS_FILE),
+        loadJson(CAMPAIGNS_FILE),
         loadStatus()
     ]);
 
@@ -1660,7 +1660,7 @@ async function changeRatingJSON(game, ratingEl) {
     if (jogoEncontrado) {
         jogoEncontrado.rating = selectedRating;
         
-        await window.electronAPI.json.save(CAMPAIGNS_FILE, listaStats);
+        await saveJson(CAMPAIGNS_FILE, listaStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1705,7 +1705,7 @@ async function updateNotesJSON(game) {
     dataToSave[game].note = updatedNote;
 
     try {
-        await window.electronAPI.json.save(NOTES_FILE, dataToSave);
+        await saveJson(NOTES_FILE, dataToSave);
         console.log(`Nota de ${game} atualizada com sucesso!`);
         return true;
     } catch (erro) {

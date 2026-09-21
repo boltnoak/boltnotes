@@ -1,3 +1,42 @@
+const THEMES_URL = 'documents://Themes';
+
+async function getTheme(themeName) {
+  const name = String(themeName ?? '').replace(/[\\/]/g, '').trim();
+  if (!name) return null;
+
+  try {
+    const res = await fetch(`${THEMES_URL}/${encodeURIComponent(name)}.boltss`);
+    if (!res.ok) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
+}
+async function listThemes() {
+  let names;
+  try {
+    const res = await fetch(`${THEMES_URL}/.ThemeList`);
+    if (!res.ok) return [];
+    names = (await res.text()).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  } catch {
+    return [];
+  }
+
+  return Promise.all(
+    names.map(async (name) => {
+      try {
+        const res = await fetch(`${THEMES_URL}/${encodeURIComponent(name)}.boltss`);
+        if (!res.ok) throw new Error();
+        const css = await res.text();
+        const bg = css.match(/--bg\s*:\s*([^;}\n]+)/)?.[1].trim() ?? '#050505';
+        return { name, bg };
+      } catch {
+        return { name, bg: '#000000' };
+      }
+    })
+  );
+}
+
 // Ferramentas de dev
 window.addEventListener('keydown', (e) => {
   if (!window.electronAPI || !window.electronAPI.isDev) {
@@ -41,16 +80,6 @@ function applyWindowState(state) {
 
   document.documentElement.classList.toggle('window-normal', isNormal);
   document.documentElement.classList.toggle('window-maximized', !isNormal);
-}
-
-async function updateMaximizeIcon() {
-    const menuMax = document.getElementById('menuMax');
-
-    const isMaximized = await window.electronAPI.menu.isMaximized();
-
-    menuMax.className = isMaximized
-        ? 'fa-regular fa-window-restore'
-        : 'fa-regular fa-window-maximize';
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -152,7 +181,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             langSelect.classList.remove('active');
             
             await window.electronAPI.config.updateConfig('language', lang);
-            await window.electronAPI.notifyLanguageChanged();
             
             await applyLocale(); 
             changeLangSelect.style.display = 'none';
@@ -185,77 +213,78 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     const themeContainers = document.querySelectorAll('.theme-selector-div');
 
-    if (themeContainers.length > 0) {
-        const themesList = await window.electronAPI.themes.list();
-        const currentTheme = await window.electronAPI.themes.getCurrent();
+    // if (themeContainers.length > 0) {
+    //     const config = await window.electronAPI.config.getConfig();
+    //     const themesList = await listThemes();
+    //     const currentTheme = config.theme;
 
-        themeContainers.forEach(container => {
-            const themeSelector = container.querySelector('select');
-            const customBtn = container.querySelector('.themeSelector-btn');
-            const customSpan = customBtn ? customBtn.querySelector('span') : null;
-            const customUl = container.querySelector('.themeSelector-select');
+    //     themeContainers.forEach(container => {
+    //         const themeSelector = container.querySelector('select');
+    //         const customBtn = container.querySelector('.themeSelector-btn');
+    //         const customSpan = customBtn ? customBtn.querySelector('span') : null;
+    //         const customUl = container.querySelector('.themeSelector-select');
 
-            if (themeSelector && customUl && customSpan) {
-                themeSelector.innerHTML = '';
-                customUl.innerHTML = '';
+    //         if (themeSelector && customUl && customSpan) {
+    //             themeSelector.innerHTML = '';
+    //             customUl.innerHTML = '';
 
-                const formattedCurrentName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
-                customSpan.textContent = formattedCurrentName;
+    //             const formattedCurrentName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
+    //             customSpan.textContent = formattedCurrentName;
 
-                themesList.forEach(themeObj => {
-                    const themeName = themeObj.name;
-                    const themeBg = themeObj.bg; 
-                    const formattedName = themeName.charAt(0).toUpperCase() + themeName.slice(1);
+    //             themesList.forEach(themeObj => {
+    //                 const themeName = themeObj.name;
+    //                 const themeBg = themeObj.bg; 
+    //                 const formattedName = themeName.charAt(0).toUpperCase() + themeName.slice(1);
 
-                    const option = document.createElement('option');
-                    option.value = themeName;
-                    option.textContent = formattedName;
-                    if (themeName === currentTheme) option.selected = true;
-                    themeSelector.appendChild(option);
+    //                 const option = document.createElement('option');
+    //                 option.value = themeName;
+    //                 option.textContent = formattedName;
+    //                 if (themeName === currentTheme) option.selected = true;
+    //                 themeSelector.appendChild(option);
 
-                    const li = document.createElement('li');
+    //                 const li = document.createElement('li');
                     
-                    const colorCircle = document.createElement('span');
-                    colorCircle.className = 'theme-color-preview';
-                    colorCircle.style.backgroundColor = themeBg;
+    //                 const colorCircle = document.createElement('span');
+    //                 colorCircle.className = 'theme-color-preview';
+    //                 colorCircle.style.backgroundColor = themeBg;
                     
-                    const textSpan = document.createElement('span');
-                    textSpan.textContent = formattedName;
+    //                 const textSpan = document.createElement('span');
+    //                 textSpan.textContent = formattedName;
 
-                    li.appendChild(colorCircle);
-                    li.appendChild(textSpan);
-                    li.dataset.value = themeName;
+    //                 li.appendChild(colorCircle);
+    //                 li.appendChild(textSpan);
+    //                 li.dataset.value = themeName;
                     
-                    if (themeName === currentTheme) {
-                        li.classList.add('active-config');
-                    }
+    //                 if (themeName === currentTheme) {
+    //                     li.classList.add('active-config');
+    //                 }
                     
-                    li.addEventListener('click', async () => {
-                        document.querySelectorAll('.theme-selector-div').forEach(syncContainer => {
-                            const syncSelect = syncContainer.querySelector('select');
-                            const syncSpan = syncContainer.querySelector('.themeSelector-btn span');
-                            const syncUl = syncContainer.querySelector('.themeSelector-select');
+    //                 li.addEventListener('click', async () => {
+    //                     document.querySelectorAll('.theme-selector-div').forEach(syncContainer => {
+    //                         const syncSelect = syncContainer.querySelector('select');
+    //                         const syncSpan = syncContainer.querySelector('.themeSelector-btn span');
+    //                         const syncUl = syncContainer.querySelector('.themeSelector-select');
 
-                            if (syncSelect) syncSelect.value = themeName;
-                            if (syncSpan) syncSpan.textContent = formattedName;
+    //                         if (syncSelect) syncSelect.value = themeName;
+    //                         if (syncSpan) syncSpan.textContent = formattedName;
                             
-                            if (syncUl) {
-                                syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active-config'));
-                                const matchingLi = Array.from(syncUl.querySelectorAll('li')).find(el => el.dataset.value === themeName);
-                                if (matchingLi) matchingLi.classList.add('active-config');
-                            }
-                        });
+    //                         if (syncUl) {
+    //                             syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active-config'));
+    //                             const matchingLi = Array.from(syncUl.querySelectorAll('li')).find(el => el.dataset.value === themeName);
+    //                             if (matchingLi) matchingLi.classList.add('active-config');
+    //                         }
+    //                     });
 
-                        customUl.classList.remove('active');
+    //                     customUl.classList.remove('active');
                         
-                        await changeTheme(themeSelector); 
-                    });
+    //                     await changeTheme(themeSelector); 
+    //                 });
 
-                    customUl.appendChild(li);
-                });
-            }
-        });
-    }
+    //                 customUl.appendChild(li);
+    //             });
+    //         }
+    //     });
+    // }
 
     const buttonsConfig = document.querySelectorAll('a[data-code]');
     buttonsConfig.forEach(button => {
@@ -344,15 +373,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-async function updateNoteCount() {
-  const count = await window.api.notes.count();
-  const el = document.getElementById("note-count");
-
-  if (el) {
-    el.textContent = `${count} Notas`;
-  }
-}
-
 let cachedSeasons = null;
 
 function parseBRDate(dateStr) {
@@ -367,8 +387,9 @@ const playingNowTitle = document.getElementById('featured-title');
 let steps = 0;
 let canClick = false;
 
-function finish() {
-  window.electronAPI.welcomeDone();
+async function finish() {
+    await window.electronAPI.config.updateConfig("welcomed", true);
+    window.location.href = 'pages/shell.html';
 }
 
 
@@ -493,18 +514,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
-
-const FILE_STATS = "Fortnite/stats.json";
-
-async function loadCloudSeasonInfo() {
-    if (cachedSeasons) return cachedSeasons;
-
-    const config = await window.electronAPI.config.getConfig();
-    const language = config.language || "pt-BR";
-
-    const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`;
-
-    const content = await fetchWithCache(url, `fn-seasons-${language}`);
-    cachedSeasons = content || {};
-    return cachedSeasons;
-}

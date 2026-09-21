@@ -113,7 +113,7 @@ async function loadLocalReviews() {
         return cachedReviews;
     }
     try {
-        const content = await window.electronAPI.json.load(`Fortnite/reviews.json`);
+        const content = await loadJson(`Fortnite/reviews.json`);
         cachedReviews = content || {};
         return cachedReviews;
     } catch (e) {
@@ -534,11 +534,11 @@ async function openLiveEvent(el, fileCode, eventTitle, author, authorId) {
             chooseDiv.innerHTML = `
                 <div class="team-options">
                     <div class="team-option" onclick="chooseTeam('ice-king')">
-                        <img src="assets://fortnite-c7s2-assets/team-ice-king.png">
+                        <img src="documents://Fortnite/Assets/fortnite-c7s2-assets/team-ice-king.png">
                         <p class="team-option-text" data-i18n="ice-king"></p>
                     </div>
                     <div class="team-option" onclick="chooseTeam('foundation')">
-                        <img src="assets://fortnite-c7s2-assets/team-foundation.png">
+                        <img src="documents://Fortnite/Assets/fortnite-c7s2-assets/team-foundation.png">
                         <p class="team-option-text" data-i18n="foundation"></p>
                     </div>
                 </div>`;
@@ -612,8 +612,8 @@ async function changeVideo(src) {
     };
     try {
         await video.play();
-    } catch {
-        console.warn("Autoplay bloqueado");
+    } catch (e) {
+        console.warn('Falha no play():', e.name, e.message);
     }
 }
 
@@ -654,7 +654,7 @@ function closeVideo() {
 }
 
 function openLinkOnBrowser(link) {
-    window.api.openLink(link)
+    window.electronAPI.openLink(link)
 }
 
 function removeCreatedEspecialDivs() {

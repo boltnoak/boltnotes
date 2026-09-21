@@ -82,7 +82,7 @@ const gameCardObserver = new IntersectionObserver((entries, observer) => {
             const game = card.gameData;
 
             if (!game._cachedCover) {
-                const result = await window.api.games.ensureCover({
+                const result = await ensureCover({
                     appid: game.appid,
                     name: game.name,
                     cover: game.cover,
@@ -98,7 +98,7 @@ const gameCardObserver = new IntersectionObserver((entries, observer) => {
             
             if (img && game._cachedCover) {
                 const preloader = new Image();
-                preloader.src = `file://${game._cachedCover}`;
+                preloader.src = `${game._cachedCover}`;
 
                 preloader.onload = () => {
                     img.src = preloader.src;
@@ -125,7 +125,7 @@ async function loadGames() {
     const myRenderId = renderIdGames;
 
     const [data, stats] = await Promise.all([
-        window.electronAPI.json.load(FILE),
+        loadJson(FILE),
         loadStatus()
     ]);
 
@@ -455,7 +455,7 @@ async function loadGamesDB() {
         return cachedGamesDB;
     }
     try {
-        const content = await window.electronAPI.json.load(FILE);
+        const content = await loadJson(FILE);
         cachedGamesDB = Array.isArray(content.games) ? content.games : (Array.isArray(content) ? content : []);
         return cachedGamesDB;
     } catch (e) {
@@ -469,7 +469,7 @@ async function loadStatus() {
         return cachedCampaignStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(`Games/campaigns.json`);
+        const content = await loadJson(`Games/campaigns.json`);
         cachedCampaignStatus = content || {};
         return cachedCampaignStatus;
     } catch (e) {
@@ -494,9 +494,9 @@ async function loadGamesAchie() {
     const myRenderId = renderIdAchie;
 
     const [data, stats, cStatus] = await Promise.all([
-        window.electronAPI.json.load(FILE),
+        loadJson(FILE),
         loadStatusAchie(),
-        window.electronAPI.json.load(CAMPAIGNS_FILE)
+        loadJson(CAMPAIGNS_FILE)
     ]);
 
     if (myRenderId !== renderIdAchie) return;
@@ -768,7 +768,7 @@ async function loadNotes() {
         return cachedNotes;
     }
     try {
-        const content = await window.electronAPI.json.load(NOTES_FILE);
+        const content = await loadJson(NOTES_FILE);
         cachedNotes = (typeof content === 'object' && content !== null) ? content : {};
         return cachedNotes;
     } catch (e) {
@@ -781,7 +781,7 @@ async function loadStatusAchie() {
         return cachedAchieStatus;
     }
     try {
-        const content = await window.electronAPI.json.load(ACHIEVEMENTS_FILE);
+        const content = await loadJson(ACHIEVEMENTS_FILE);
         cachedAchieStatus = Array.isArray(content) ? content : [];
         return cachedAchieStatus;
     } catch (e) {
@@ -789,15 +789,6 @@ async function loadStatusAchie() {
         return {};
     }
 }
-
-const steamDbBtn = document.querySelector('.steamdb-btn');
-steamDbBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    const url = steamDbBtn.getAttribute('href');
-    if (url) {
-      window.api.openLink(url); 
-    }
-});
 
 const viewGridBtn = document.getElementById("view-grid");
 const viewListBtn = document.getElementById("view-list");
@@ -977,7 +968,7 @@ document.getElementById('steamdb-btn').addEventListener('click', () => {
 
     const url = `https://steamdb.info/search/?a=all&q=${searchName}`;
 
-    window.api.openLink(url);
+    window.electronAPI.openLink(url);
 });
 
 let addGameHasCampaignTag = true;
@@ -1013,7 +1004,7 @@ document.getElementById('addGameBtn').addEventListener('click', async () => {
         }
     }
 
-    const response = await window.api.games.addGame(newGame, addGameHasCampaignTag);
+    const response = await addGame(newGame, addGameHasCampaignTag);
 
     if (response.success) {
         window.location.reload();
@@ -1056,7 +1047,7 @@ function updateAchie(element, statusClass, text) {
 async function changeAchieProgress(el, isAdd = true) {
     const title = el.dataset.id;
     const [data, stats] = await Promise.all([
-        window.electronAPI.json.load(ACHIEVEMENTS_FILE),
+        loadJson(ACHIEVEMENTS_FILE),
         loadStatusAchie()
     ]);
 
@@ -1095,7 +1086,7 @@ async function changeAchieProgress(el, isAdd = true) {
     }
 
     if (jogoEncontrado) {
-        await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listaStats);
+        await saveJson(ACHIEVEMENTS_FILE, listaStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1240,7 +1231,7 @@ async function openGamePopup(el) {
         cover: localCoverPath,
         hero: localHeroPath,
         logo: localLogoPath
-    } = await window.api.games.ensureCover({
+    } = await ensureCover({
         appid: gamesDB.appid,
         name: gamesDB.name,
         cover: gamesDB.cover,
@@ -1259,11 +1250,11 @@ async function openGamePopup(el) {
     const mainBG = document.querySelector('.game-maincontent');
     const normalizedPath = localHeroPath ? localHeroPath.replace(/\\/g, '/') : null;
     const bgValue = normalizedPath 
-        ? `url("file://${normalizedPath}")` 
+        ? `url("${normalizedPath}")` 
         : 'url("assets/placeholder.png")';
 
     mainBG.style.setProperty('--bg-image', bgValue);
-    banner.src = localCoverPath ? `file://${localCoverPath}` : 'assets/placeholder.png';
+    banner.src = localCoverPath ? `${localCoverPath}` : 'assets/placeholder.png';
     // logo.src = localLogoPath ? `file://${localLogoPath}` : '';
 
     logo.alt = el.dataset.id;
@@ -1496,7 +1487,7 @@ const achieBtn = document.querySelector('.achie-status-tag');
 
 async function updateStatusJSON(game, statusClass) {
     const [data, stats] = await Promise.all([
-        window.electronAPI.json.load(CAMPAIGNS_FILE),
+        loadJson(CAMPAIGNS_FILE),
         loadStatus()
     ]);
 
@@ -1517,7 +1508,7 @@ async function updateStatusJSON(game, statusClass) {
             delete jogoEncontrado.completeDate; 
         }
         
-        await window.electronAPI.json.save(CAMPAIGNS_FILE, listaStats);
+        await saveJson(CAMPAIGNS_FILE, listaStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1538,7 +1529,7 @@ async function updateCampaignJSON(game, statusClass) {
     if (gameFound) {
         gameFound.hasCampaign = statusClass;
         
-        await window.electronAPI.json.save(CAMPAIGNS_FILE, listStats);
+        await saveJson(CAMPAIGNS_FILE, listStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1566,7 +1557,7 @@ async function updateAchieJSON(game, statusClass) {
             gameFoundAchie.unlockedAchievements = gameFoundAchie.totalAchievements;
         }
         
-        await window.electronAPI.json.save(ACHIEVEMENTS_FILE, listStats);
+        await saveJson(ACHIEVEMENTS_FILE, listStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1816,7 +1807,7 @@ async function changeRatingBtn(el) {
 
 async function changeRatingJSON(game, ratingEl) {
     const [data, stats] = await Promise.all([
-        window.electronAPI.json.load(CAMPAIGNS_FILE),
+        loadJson(CAMPAIGNS_FILE),
         loadStatus()
     ]);
 
@@ -1830,7 +1821,7 @@ async function changeRatingJSON(game, ratingEl) {
     if (jogoEncontrado) {
         jogoEncontrado.rating = selectedRating;
         
-        await window.electronAPI.json.save(CAMPAIGNS_FILE, listaStats);
+        await saveJson(CAMPAIGNS_FILE, listaStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1876,7 +1867,7 @@ async function updateNotesJSON(game) {
     dataToSave[game].note = updatedNote;
 
     try {
-        await window.electronAPI.json.save(NOTES_FILE, dataToSave);
+        await saveJson(NOTES_FILE, dataToSave);
         console.log(`Nota de ${game} atualizada com sucesso!`);
         return true;
     } catch (erro) {
@@ -1921,8 +1912,25 @@ function gerarCoresInterpoladas(corInicial, corFinal, passos) {
     }
     return resultado;
 }
+async function getFinishedStats() {
+  const campaigns = await loadJson('Games/campaigns.json');
+  if (!Array.isArray(campaigns)) return {};
+
+  const counts = {};
+  for (const game of campaigns) {
+    if (String(game.status ?? '').toLowerCase() !== 'zerado' || !game.completeDate) continue;
+
+    const year = String(game.completeDate).split('/').pop().trim();
+    if (!year) continue;
+    counts[year] = (counts[year] || 0) + 1;
+  }
+
+  return Object.fromEntries(
+    Object.entries(counts).sort(([a], [b]) => a.localeCompare(b))
+  );
+}
 async function renderChart() {
-    const stats = await window.api.games.statsZerados();
+    const stats = await getFinishedStats();
     const anos = Object.keys(stats);
     const valores = Object.values(stats);
     const total = valores.reduce((a, b) => a + b, 0);
@@ -2055,10 +2063,39 @@ function askDeleteConfirmation(game, cardEl) {
     confirmPopup.style.display = 'flex';
 }
 
+async function deleteGame(gameName) {
+  try {
+    const name = String(gameName);
+
+    const gamesData = await loadJson('Games/games.json');
+    if (Array.isArray(gamesData.games)) {
+      gamesData.games = gamesData.games.filter((g) => g.name !== name);
+      await saveJson('Games/games.json', gamesData);
+    }
+
+    for (const file of ['Games/campaigns.json', 'Games/achievements.json']) {
+      const list = await loadJson(file);
+      if (Array.isArray(list)) {
+        await saveJson(file, list.filter((g) => g.name !== name));
+      }
+    }
+
+    const notes = await loadJson('Games/notes.json');
+    if (notes && typeof notes === 'object' && !Array.isArray(notes) && name in notes) {
+      delete notes[name];
+      await saveJson('Games/notes.json', notes);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Erro ao deletar jogo:', error);
+    return { success: false, error: error.message };
+  }
+}
 document.getElementById('delete-confirm-yes').addEventListener('click', async () => {
     if (!gameToDelete) return;
     
-    await window.api.games.deleteGame(gameToDelete.name);
+    await deleteGame(gameToDelete.name);
     
     document.getElementById('delete-confirm-popup').style.display = 'none';
     gameToDelete = null;
