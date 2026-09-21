@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getAppVersion: () => ipcRenderer.invoke('app-version'),
 
     getSteamAchievements: (appid) => ipcRenderer.invoke('games:steam-achievements', appid),
+    getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
 
     menu: {
         maximizeApp: () => ipcRenderer.send('menu:maximize-app'),
@@ -38,10 +39,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
         onUpdateReady: (callback) => ipcRenderer.on('update-ready-to-install', callback),
         restartAndInstall: () => ipcRenderer.send('update:restart'),
         checkUpdateStatus: () => ipcRenderer.invoke('update:check-status')
-    }
-});
-contextBridge.exposeInMainWorld('api', {
-    games: {
-        getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid)
     }
 });

@@ -995,8 +995,7 @@ document.getElementById('addGameBtn').addEventListener('click', async () => {
     addBtn.style.opacity = '0.25';
 
     if (newGame.appid) {
-        const steamData = await window.api.games.getSteamData(newGame.appid);
-        
+        const steamData = await window.electronAPI.getSteamData(newGame.appid);
         if (steamData) {
             newGame.releaseDate = steamData.releaseDate;
             newGame.developer = steamData.developer;

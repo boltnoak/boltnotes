@@ -148,12 +148,15 @@ async function addGame(newGameData, doHasCampaign) {
     let totalAchievements = 0;
 
     if (newGameData.appid) {
-      try {
-        ({ hasAchievements, totalAchievements } =
-          await window.electronAPI.getSteamAchievements(newGameData.appid));
-      } catch (e) {
-        console.error('Erro ao buscar conquistas:', e);
-      }
+        try {
+            const steam = await window.electronAPI.getSteamData(newGameData.appid);
+            if (steam) {
+                hasAchievements = steam.hasAchievements;
+                totalAchievements = steam.totalAchievements;
+            }
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     const asList = (v) => (Array.isArray(v) ? v : []);

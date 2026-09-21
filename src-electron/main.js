@@ -1,24 +1,10 @@
 const {app, BrowserWindow, dialog, ipcMain, Menu, Tray, protocol, net, nativeImage, screen} = require('electron');
 const { autoUpdater } = require('electron-updater');
-const { pathToFileURL } = require('url');
-const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const log = require('electron-log');
-const extract = require('extract-zip');
-const AdmZip = require('adm-zip');
-const { XMLParser } = require('fast-xml-parser');
-const { spawn } = require('child_process');
 const { URL } = require('url');
-
-process.on('uncaughtException', (err) => {
-    if (err.message?.includes('ReadableStream is already closed')) {
-        console.warn('[Ignorado] ReadableStream já fechado:', err.message);
-        return;
-    }
-    console.error('Uncaught Exception:', err);
-});
 
 const isSilent = process.argv.includes('--silent');
 if (isSilent) console.log('Iniciando silenciosamente...');
@@ -31,47 +17,6 @@ const DOCUMENTS = path.join(
     app.getPath('documents'),
     'BoltNotes'
 );
-
-const APPDATA = path.join(
-    app.getPath('userData')
-);
-
-const COVERS = path.join(
-    DOCUMENTS,
-    'Games',
-    'Covers'
-);
-
-const GAMELOGOS = path.join(
-    DOCUMENTS,
-    'Games',
-    'Logos'
-);
-
-const HEROS = path.join(
-    DOCUMENTS,
-    'Games',
-    'Heros'
-);
-
-const USER_COVERS = path.join(
-    DOCUMENTS,
-    'Games',
-    'Covers'
-);
-
-const USER_HEROS = path.join(
-    DOCUMENTS,
-    'Games',
-    'Heros'
-);
-
-const USER_LOGOS = path.join(
-    DOCUMENTS,
-    'Games',
-    'Logos'
-);
-
 const BUNDLE = path.join(
     __dirname,
     '..',
@@ -106,7 +51,7 @@ let tray = null;
 let trayIcon;
 let isQuitting = false;
 let updateReady = false;
-let trayNameIcon;
+// let trayNameIcon;
 
 function getConfig() {
     const configPath = path.join(app.getPath('userData'),'config.json');
@@ -134,9 +79,7 @@ function getConfig() {
     return defaults;
 }
 
-app.on('before-quit', () => {
-  isQuitting = true;
-});
+app.on('before-quit', () => { isQuitting = true });
 process.on('SIGTERM', () => {
   isQuitting = true;
   app.quit();
@@ -188,21 +131,18 @@ const preloaded = {};
 const PAGES = ['fortnite', 'fortnite-chapter', 'games'];
 
 function createHiddenWindow(name) {
-  const win = new BrowserWindow({
-    show: false,
-    webPreferences: {
-      backgroundThrottling: false,
-      preload: path.join(__dirname, 'preload.js')
-    }
-  });
-  win.loadFile(path.join(BUNDLE, 'pages', `${name}.html`));
-  preloaded[name] = win;
-  return win;
+    const win = new BrowserWindow({
+        show: false,
+        webPreferences: {
+            backgroundThrottling: false,
+            preload: path.join(__dirname, 'preload.js')
+        }
+    });
+    win.loadFile(path.join(BUNDLE, 'pages', `${name}.html`));
+    preloaded[name] = win;
+    return win;
 }
-
-function preloadAll() {
-  PAGES.forEach(name => createHiddenWindow(name));
-}
+function preloadAll() { PAGES.forEach(name => createHiddenWindow(name)) }
 
 const MIME = {
     '.png': 'image/png',
@@ -585,55 +525,36 @@ ensureThemesFolder();
 ///////////
 // GAMES //
 ///////////
-ipcMain.handle('games:steam-achievements', async (_, appid) => {
-    try {
-        const id = String(appid ?? '').trim();
-        if (!id) return { hasAchievements: false, totalAchievements: 0 };
-
-        const res = await net.fetch(`https://store.steampowered.com/api/appdetails/?appids=${id}`);
-        if (!res.ok) return { hasAchievements: false, totalAchievements: 0 };
-
-        const data = await res.json();
-        const total = Number(data?.[id]?.success && data[id].data?.achievements?.total) || 0;
-        return { hasAchievements: total > 0, totalAchievements: total };
-    } catch (e) {
-        console.error('Erro ao buscar conquistas para o appid', appid, e);
-        return { hasAchievements: false, totalAchievements: 0 };
-    }
-});
 ipcMain.handle('games:get-steam-data', async (_, appid) => {
-    if (!appid) return null;
-    const url = `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=br&l=pt`;
-    return new Promise((resolve) => {
-        https.get(url, (res) => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            
-            res.on('end', () => {
-                try {
-                    const json = JSON.parse(data);
-                    
-                    if (json[appid] && json[appid].success) {
-                        const gameDetails = json[appid].data;
+    const id = String(appid ?? '').trim();
+    if (!id) return null;
 
-                        let formattedDate = gameDetails.release_date.date;
-                        const parsedDate = new Date(formattedDate);
-                        if (!isNaN(parsedDate.getTime())) { formattedDate = parsedDate.toLocaleDateString('pt-BR') }
+    try {
+        const res = await net.fetch(
+            `https://store.steampowered.com/api/appdetails?appids=${id}&cc=br&l=pt`
+        );
+        if (!res.ok) return null;
 
-                        const developers = gameDetails.developers ? gameDetails.developers.join(', ') : '';
-                        const publishers = gameDetails.publishers ? gameDetails.publishers.join(', ') : '';
+        const json = await res.json();
+        if (!json?.[id]?.success) return null;
 
-                        return resolve({
-                            releaseDate: formattedDate,
-                            developer: developers,
-                            publisher: publishers
-                        });
-                    }
-                    resolve(null);
-                } catch (e) {
-                    resolve(null);
-                }
-            });
-        }).on('error', () => resolve(null));
-    });
+        const d = json[id].data;
+
+        let releaseDate = d.release_date?.date ?? '';
+        const parsed = new Date(releaseDate);
+        if (!isNaN(parsed.getTime())) releaseDate = parsed.toLocaleDateString('pt-BR');
+
+        const totalAchievements = Number(d.achievements?.total) || 0;
+
+        return {
+            releaseDate,
+            developer: (d.developers ?? []).join(', '),
+            publisher: (d.publishers ?? []).join(', '),
+            hasAchievements: totalAchievements > 0,
+            totalAchievements,
+        };
+    } catch (e) {
+        console.error('Erro ao buscar dados da Steam para o appid', appid, e);
+        return null;
+    }
 });
