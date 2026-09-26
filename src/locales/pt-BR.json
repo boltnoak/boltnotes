@@ -128,8 +128,10 @@
   "and": "e",
   "delete-confirm-title": "Remover",
   "cancel": "Cancelar",
-  "delete-confirm-warning": "Essa ação não pode ser desfeita.",
+  "delete-confirm-warning": "Essa ação não pode ser desfeita",
   "by": "Por",
   "back": "Voltar",
-  "has": "Possui"
+  "has": "Possui",
+  "system": "Sistema",
+  "app": "Aplicativo"
 }

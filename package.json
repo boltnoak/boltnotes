@@ -46,23 +46,11 @@
         }
       },
       "icon": "build/icons",
-      "extraResources": [
-        {
-          "from": "scripts/dist/linux/games-finished",
-          "to": "python-bin/games-finished"
-        }
-      ],
       "artifactName": "${name}-linux-${arch}.${ext}"
     },
     "win": {
       "target": "nsis",
       "icon": "build/icons/icon.ico",
-      "extraResources": [
-        {
-          "from": "scripts/dist/win/games-finished.exe",
-          "to": "python-bin/games-finished.exe"
-        }
-      ],
       "artifactName": "${name}-windows-${arch}-setup.${ext}"
     },
     "publish": [

@@ -569,8 +569,8 @@ body {
 }
 #recent-season-name {
     margin: 0;
-    font-size: 4.5vh;
-    font-weight: 900;
+    font-size: 1.9325rem;
+    font-weight: 1000;
     font-family: 'Montserrat';
     text-wrap: wrap;
 }

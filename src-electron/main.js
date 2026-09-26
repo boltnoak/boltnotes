@@ -92,7 +92,9 @@ process.on('SIGINT', () => {
 Menu.setApplicationMenu(null);
 app.commandLine.appendSwitch('enable-smooth-scrolling');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
-app.commandLine.appendSwitch('disable-renderer-backgrounding');
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('disable-features', 'WaylandWpColorManagerV1')
+}
 
 function createWindow() {
     const display = screen.getPrimaryDisplay();
@@ -116,6 +118,7 @@ function createWindow() {
         transparent: true,
         backgroundColor: '#00000000',
         webPreferences: {
+            backgroundThrottling: true,
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
@@ -265,11 +268,13 @@ if (!gotTheLock && app.isPackaged) {
         const configs = getConfig();
         manageStartup(configs.open_on_startup);
 
+        if (configs.maximize_on_start) {
+            win.maximize();
+        }
         win.once('ready-to-show', async () => {
             makeTray();
-            if (configs.maximize_on_start) { win.maximize() }
             if (!isSilent) {
-                setTimeout(() => win.show(), 2500);
+                win.show();
             } else {win.hide()}
 
             if (app.isPackaged) { autoUpdater.checkForUpdates() }

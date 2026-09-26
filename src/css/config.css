@@ -34,6 +34,7 @@ body {
     padding: 2vh 1vw;
     height: 3vh;
     border-radius: 1.25vh;
+    font-weight: 550;
     cursor: pointer;
     display: flex;
     transition: background .2s, border .2s;
@@ -81,6 +82,7 @@ body {
 .toggle {
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 6.5vh;
     height: 3.5vh;
     background-color: var(--tab-hover);
@@ -97,20 +99,21 @@ body {
 .toggle::after {
     content: '';
     position: absolute;
-    padding: 1.3vh;
-    top: 0;
+    padding: .5rem 0;
+    width: 38%;
+    left: .225rem;
+    right: auto;
     border-radius: 2vh;
     background-color: var(--text-dark-gray);
     transition: background .15s, border .2s;
     object-fit: cover;
-    left: 0;
-    border: solid .5vh var(--tab-hover);
+    /* border: solid .5vh var(--tab-hover); */
 }
 .toggle.active::after {
     /* transform: translateX(1.65vw); */
     border-color: var(--btn-hover-color);
     background-color: var(--btn-text-color);
-    right: 0;
+    right: .225rem;
     left: auto;
 }
 .mark {
@@ -344,7 +347,7 @@ body {
     font-weight: 625;
     background-color: var(--btn);
     color: var(--text);
-    padding: 1.25vh .6vw;
+    padding: 1.25vh .75vw;
     margin: .15vh 0;
     border-radius: 1vh;
     cursor: pointer;

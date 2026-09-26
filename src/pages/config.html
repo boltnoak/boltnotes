@@ -13,10 +13,11 @@
         <div class="tabs">
             <div data-code="fast-config" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-gauge-high"></i><span data-i18n="settings-tab-quick">Configurações rápidas</span></div>
             <p class="sep-bar"></p>
-            <div data-code="basics" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-diamond"></i><span data-i18n="settings-tab-general">Geral</span></div>
             <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i><span data-i18n="settings-tab-home">Página inicial</span></div>
+            <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-palette"></i><span data-i18n="settings-tab-appearance">Aparência</span></div>
+            <div data-code="lang" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-language"></i><span data-i18n="language">Geral</span></div>
+            <div data-code="basics" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-window-maximize"></i><span data-i18n="app">Geral</span></div>
             <div data-code="updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i><span data-i18n="settings-tab-updates">Atualizações</span></div>
-            <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-half-stroke"></i><span data-i18n="settings-tab-appearance">Aparência</span></div>
             <!-- <p class="sep-bar"></p> -->
             <!-- <div data-code="about" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-info"></i><span data-i18n="settings-tab-locations">Locais</span></div> -->
         </div>
@@ -25,7 +26,7 @@
             <p class="tab-configs-title" data-i18n="settings-tab-quick">Configurações rápidas</p>
             <div class="sep-bar"></div>
             <div id="fast-config" class="tab-configs active">
-                <p class="sep" data-i18n="show-hide-pages">Mostrar/ocultar páginas</p>
+                <!-- <p class="sep" data-i18n="show-hide-pages">Mostrar/ocultar páginas</p>
                 <div class="config-item">
                     <p><span data-i18n="backlogof">Backlog de</span> <span data-i18n="games">Jogos</span></p>
                     <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
@@ -37,7 +38,7 @@
                 <div class="config-item">
                     <p>Fortnite</p>
                     <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
-                </div>
+                </div> -->
                 <p class="sep" data-i18n="featured">Destaque</p>
                 <div class="config-item featured">
                     <div class="featured-selector-div">
@@ -69,30 +70,17 @@
             <div id="basics" class="tab-configs">
                 <p class="sep" data-i18n="on-startup">Inicialização</p>
                 <div class="config-item">
-                    <p data-i18n="maximize-app-startup">Maximizar ao iniciar</p>
-                    <a class="toggle" data-code="maximize_on_start" onclick="toggleConfig(this)"></a>
-                </div>
-                <div class="config-item">
                     <p data-i18n="launch-on-startup">Iniciar junto com o sistema operacional</p>
                     <a class="toggle" data-code="open_on_startup" onclick="toggleConfig(this)"></a>
+                </div>
+                <div class="config-item">
+                    <p data-i18n="maximize-app-startup">Maximizar ao iniciar</p>
+                    <a class="toggle" data-code="maximize_on_start" onclick="toggleConfig(this)"></a>
                 </div>
                 <p class="sep" data-i18n="when-closing">Ao fechar</p>
                 <div class="config-item">
                     <p data-i18n="minimize-to-tray">Minimizar para a bandeja do sistema</p>
                     <a class="toggle" data-code="minimize_to_tray" onclick="toggleConfig(this)"></a>
-                </div>
-                <p class="sep" data-i18n="language">Idioma</p>
-                <div class="config-item">
-                    <p data-i18n="language_select"></p>
-                    <div class="custom-select">
-                        <div class="change-lang-btn" id="lang-btn">
-                            <span>Português</span>
-                        </div>
-                        <ul class="change-lang-drop-select" id="lang-select">
-                            <li data-value="pt-BR"><span>Português Brasil</span></li>
-                            <li data-value="en"><span>English</span></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
             <div id="features" class="tab-configs">
@@ -155,6 +143,20 @@
             </div>
             <div id="fortnite" class="tab-configs">
                 <p class="sep">Banner</p>
+            </div>
+            <div id="lang" class="tab-configs">
+                <div class="config-item">
+                    <p data-i18n="language_select"></p>
+                    <div class="custom-select">
+                        <div class="change-lang-btn" id="lang-btn">
+                            <span>Português</span>
+                        </div>
+                        <ul class="change-lang-drop-select" id="lang-select">
+                            <li data-value="pt-BR"><span>Português Brasil</span></li>
+                            <li data-value="en"><span>English</span></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div id="about" class="tab-configs">
                 <p class="sep"><span data-i18n="backlogof">Backlog de</span> <span data-i18n="games">Jogos</span>, <span data-i18n="notes">Notas</span>, Fortnite <span data-i18n="and">e</span> <span data-i18n="themes">Temas</span></p>

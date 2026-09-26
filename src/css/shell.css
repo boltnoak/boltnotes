@@ -127,7 +127,7 @@ body {
     object-fit: cover;
 }
 .sidebar-space {
-    width: 3.56vw;
+    width: 3.5vw;
     padding: .45rem .45rem;
     background-color: var(--tab);
 }

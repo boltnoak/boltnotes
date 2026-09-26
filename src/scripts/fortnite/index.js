@@ -154,55 +154,71 @@ async function installPackage(pkg) {
   }
 }
 
-async function syncFortniteAssets(onProgress) {
-  let remote;
+async function fetchWithTimeout(url, options = {}, ms = 5000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
   try {
-    const res = await fetch(`${REMOTE_BASE}/manifest.json`, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    remote = await res.json();
-    if (!Array.isArray(remote?.packages)) throw new Error('Manifest remoto inválido.');
-  } catch (err) {
-    console.warn('Assets - manifest remoto indisponível:', err.message);
-    if (await readLocalManifest()) return { offline: true };
-    throw new Error('Sem conexão e sem assets locais do Fortnite.');
+    return await fetch(url, { ...options, signal: ctrl.signal });
+  } finally {
+    clearTimeout(t);
   }
+}
 
-  const local = (await readLocalManifest()) || { version: 0, packages: [] };
-  const localHash = new Map(local.packages.map((p) => [p.name, p.hash]));
-  const pending = remote.packages.filter((p) => localHash.get(p.name) !== p.hash);
-  if (!pending.length) return { updated: false };
+async function syncFortniteAssets(onProgress) {
+    const localManifest = await readLocalManifest();
 
-  const totalBytes = pending.reduce((n, p) => n + p.size, 0);
-  let doneBytes = 0;
-  onProgress?.({ done: 0, total: totalBytes, count: pending.length });
-
-  const installed = new Map(localHash);
-  const failed = [];
-
-  for (const pkg of pending) {
-    try {
-      await installPackage(pkg);
-      installed.set(pkg.name, pkg.hash);
-      // salva a cada pacote: se fechar no meio, retoma de onde parou
-      await writeDoc('manifest.json', JSON.stringify({
-        version: local.version,
-        packages: [...installed].map(([name, hash]) => ({ name, hash })),
-      }));
-    } catch (err) {
-      console.error(`Assets - ${pkg.name}:`, err.message);
-      failed.push(pkg.name);
+    if (!navigator.onLine) {
+        if (localManifest) return { offline: true };
+        throw new Error('Sem conexão e sem assets locais do Fortnite.');
     }
-    doneBytes += pkg.size;
-    onProgress?.({ done: doneBytes, total: totalBytes, count: pending.length });
-  }
 
-  if (failed.length) throw new Error(`Falha ao baixar: ${failed.join(', ')}`);
+    let remote;
+    try {
+        const res = await fetchWithTimeout(`${REMOTE_BASE}/manifest.json`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        remote = await res.json();
+        if (!Array.isArray(remote?.packages)) throw new Error('Manifest remoto inválido.');
+    } catch (err) {
+        console.warn('Assets - manifest remoto indisponível:', err.message);
+        if (await readLocalManifest()) return { offline: true };
+        throw new Error('Sem conexão e sem assets locais do Fortnite.');
+    }
 
-  await writeDoc('manifest.json', JSON.stringify({
-    version: remote.version,
-    packages: remote.packages.map(({ name, hash }) => ({ name, hash })),
-  }));
-  return { updated: true };
+    const local = (await readLocalManifest()) || { version: 0, packages: [] };
+    const localHash = new Map(local.packages.map((p) => [p.name, p.hash]));
+    const pending = remote.packages.filter((p) => localHash.get(p.name) !== p.hash);
+    if (!pending.length) return { updated: false };
+
+    const totalBytes = pending.reduce((n, p) => n + p.size, 0);
+    let doneBytes = 0;
+    onProgress?.({ done: 0, total: totalBytes, count: pending.length });
+
+    const installed = new Map(localHash);
+    const failed = [];
+
+    for (const pkg of pending) {
+        try {
+        await installPackage(pkg);
+        installed.set(pkg.name, pkg.hash);
+        await writeDoc('manifest.json', JSON.stringify({
+            version: local.version,
+            packages: [...installed].map(([name, hash]) => ({ name, hash })),
+        }));
+        } catch (err) {
+            console.error(`Assets - ${pkg.name}:`, err.message);
+            failed.push(pkg.name);
+        }
+        doneBytes += pkg.size;
+        onProgress?.({ done: doneBytes, total: totalBytes, count: pending.length });
+    }
+
+    if (failed.length) throw new Error(`Falha ao baixar: ${failed.join(', ')}`);
+
+    await writeDoc('manifest.json', JSON.stringify({
+        version: remote.version,
+        packages: remote.packages.map(({ name, hash }) => ({ name, hash })),
+    }));
+    return { updated: true };
 }
 
 async function initFortnitePage() {

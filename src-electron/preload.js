@@ -18,7 +18,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     openLink: (url) => ipcRenderer.invoke('open-external-link', url),
     getAppVersion: () => ipcRenderer.invoke('app-version'),
 
-    getSteamAchievements: (appid) => ipcRenderer.invoke('games:steam-achievements', appid),
     getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
 
     menu: {

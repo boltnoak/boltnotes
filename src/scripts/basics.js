@@ -1,14 +1,9 @@
-// const basePagePathLog = document.querySelector('base').href
-//     .replace(/.*(?=BoltNotes\/)/, 'Documentos/')
-//     .replace('file://', '')
-
-// console.log(`Local: ${basePagePathLog}`);
-
 document.addEventListener('DOMContentLoaded', async () => {
-  const version = await window.api.getAppVersion();
-  const versionEl = document.getElementById('app-version');
+    const versionEl = document.getElementById('app-version');
+    if (!versionEl) return
 
-  if (versionEl) versionEl.innerText = `v${version}`;
+    const version = await window.electronAPI.getAppVersion();
+    if (versionEl) versionEl.innerText = `v${version}`;
 });
 
 const DOCS = 'documents://';
@@ -19,8 +14,8 @@ const docUrl = (filePath) =>
 async function safeFetch(url, options) {
   try {
     return await fetch(url, options);
-  } catch {
-    return { ok: false, status: 0, text: async () => '' };
+  } catch (err) {
+    return { ok: false, status: 0, error: err, text: async () => '' };
   }
 }
 
@@ -48,14 +43,14 @@ function saveJson(filePath, data) {
   return result;
 }
 
-const IMG_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+const IMG_EXTS = ['.jpg', '.png'];
 const EXT_BY_MIME = {
   'image/jpeg': '.jpg',
   'image/png': '.png',
   'image/webp': '.webp',
   'image/gif': '.gif',
 };
-const PLACEHOLDER = '../assets/placeholder.png';
+const PLACEHOLDER = 'assets/placeholder.png';
 
 const gameImgUrl = (folder, file) => docUrl(`Games/${folder}/${file}`);
 const cleanFile = (f) => String(f).replace(/[\\/]/g, '');
@@ -65,11 +60,20 @@ async function fileExists(url) {
   return res.ok;
 }
 
+const findExistingCache = {}; // variável simples, não é função
+
 async function findExisting(folder, baseName) {
-  const urls = IMG_EXTS.map((ext) => gameImgUrl(folder, baseName + ext));
-  const found = await Promise.all(urls.map(fileExists));
-  const i = found.indexOf(true);
-  return i === -1 ? null : urls[i];
+  const key = folder + '/' + baseName;
+  if (key in findExistingCache) return findExistingCache[key];
+
+  let result = null;
+  for (const ext of IMG_EXTS) {
+    const url = gameImgUrl(folder, baseName + ext);
+    if (await fileExists(url)) { result = url; break; }
+  }
+
+  findExistingCache[key] = result;
+  return result;
 }
 
 async function downloadImage(url, folder, baseName, fallbackExt = '.jpg') {
@@ -120,7 +124,7 @@ async function ensureCover({ appid, name, cover, hero, logo }) {
   const safeName = String(name).replace(/[^a-z0-9]/gi, '_').toLowerCase();
   const steam = appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}` : null;
 
-  const [coverRes, heroRes, logoRes] = await Promise.all([
+  const [coverRes, heroRes, logoRes] = await Promise.allSettled([
     resolveImage({
       folder: 'Covers', custom: cover, baseName: safeName, defaultExt: '.jpg',
       fallbackUrls: steam ? [`${steam}/header.jpg`] : [],
@@ -133,12 +137,12 @@ async function ensureCover({ appid, name, cover, hero, logo }) {
       folder: 'Logos', custom: logo, baseName: safeName, defaultExt: '.png',
       fallbackUrls: steam ? [`${steam}/logo.png`] : [],
     }),
-  ]);
+  ]).then(results => results.map(r => (r.status === 'fulfilled' ? r.value : null)));
 
   return {
     cover: coverRes ?? PLACEHOLDER,
     hero: heroRes ?? PLACEHOLDER,
-    logo: logoRes,
+    logo: logoRes ?? null,
   };
 }
 

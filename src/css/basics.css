@@ -260,6 +260,7 @@ body {
     height: 100vh;
     z-index: 0;
     width: 100vw;
+    font-size: 1rem;
     overflow: hidden;
     /* background: var(--bg); */
     font-family: 'Montserrat';
@@ -455,7 +456,7 @@ select:focus {
 }
 
 header {
-    width: 3.56vw;
+    width: 3.5vw;
     bottom: 0;
     left: 0;
     right: 0;
@@ -627,7 +628,7 @@ html, body {
 }
 .sidebar-btn i {
     color: transparent;
-    font-size: 3.5vh;
+    font-size: 1.5rem;
     cursor: pointer;
     transition: color .3s ease;
 }
@@ -844,9 +845,9 @@ footer {
     padding: 0;
     border-radius: 3vh;
     gap: .35vw;
-    font-size: 3vh;
+    font-size: 1.35rem;
     color: var(--text);
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: background .1s linear;
     position: relative;
