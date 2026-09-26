@@ -168,6 +168,7 @@ async function openTrailer(el) {
         const code = container?.dataset.code;
 
         removeCreatedEspecialDivs();
+        document.querySelector('.video-popup').classList.add('trailers');
 
         const isListContainerDiv = document.querySelector('.moreVideos-section');
         if (!isListContainerDiv) {
@@ -665,4 +666,5 @@ function removeCreatedEspecialDivs() {
     if (moreVideos) moreVideos.remove();
     if (chooseTeam) chooseTeam.remove();
     if (author) author.remove();
+    document.querySelector('.video-popup').classList.remove('trailers');
 }
