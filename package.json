@@ -1,7 +1,7 @@
 {
   "name": "boltnotes",
   "productName": "BoltNotes",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "description": "Notes, Games Backlog and Fortnite Season Reviews",
   "main": "src-electron/main.js",
   "private": true,
