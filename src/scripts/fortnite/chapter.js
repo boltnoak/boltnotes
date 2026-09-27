@@ -220,8 +220,14 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         }
 
         const ratingSpan = clone.querySelector('.status-rating');
+        const levelsSpan = clone.querySelector('.status-level');
+        const winsSpan = clone.querySelector('.status-win');
         const ratingContainer = clone.querySelector('.rating-container');
         const ratingOptionsContainer = clone.querySelector('.rating-options');
+
+        if (ratingSpan) ratingSpan.id = `${code}-rating`;
+        if (levelsSpan) levelsSpan.id = `${code}-levels`;
+        if (winsSpan) winsSpan.id = `${code}-wins`;
 
         if (isLocked && ratingContainer) {
             ratingContainer.classList.add('disabled');
@@ -265,9 +271,6 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         const winAdd = clone.querySelector('.statusWin-add');
         const winMinus = clone.querySelector('.statusWin-minus');
 
-        const levelsSpan = clone.querySelector('.status-level');
-        const winsSpan = clone.querySelector('.status-win');
-
         function updateStat(statKey, increment, displaySpan) {
             let currentValue = parseInt(currentStats[statKey]) || 0;
             if (currentValue + increment >= 0) {
@@ -282,10 +285,6 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (levelMinus) levelMinus.onclick = () => updateStat('levels', -1, levelsSpan);
         if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);
         if (winMinus) winMinus.onclick = () => updateStat('wins', -1, winsSpan);
-
-        if (ratingSpan) ratingSpan.id = `${code}-rating`;
-        if (levelsSpan) levelsSpan.id = `${code}-levels`;
-        if (winsSpan) winsSpan.id = `${code}-wins`;
 
         const releaseDateSpan = clone.querySelector('.releaseDate');
         if (releaseDateSpan) releaseDateSpan.id = `${code}-releaseDate`;

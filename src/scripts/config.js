@@ -8,26 +8,15 @@ function toggleConfig(el) {
     window.electronAPI.config.updateConfig(option, isActive);
 }
 
-function toggleAssetsConfig(el) {
-    const mark = document.querySelector('.fortnite-mark');
-    const option = mark.dataset.assetsCode;
-
-    mark.classList.toggle('active');
-    
-    const isActive = mark.classList.contains('active');
-
-    window.api.assetsConfig.update(option, isActive);
-}
-
 const changeLangBtn = document.querySelector('.change-lang-btn');
 const changeLangSelect = document.querySelector('.change-lang-drop-select');
-changeLangBtn.addEventListener('click', () => {
-    if (changeLangSelect.style.display === 'none' || changeLangSelect.style.display === '') {
-        changeLangSelect.style.display = 'flex';
-    } else {
-        changeLangSelect.style.display = 'none';
-    }
-})
+// changeLangBtn.addEventListener('click', () => {
+//     if (changeLangSelect.style.display === 'none' || changeLangSelect.style.display === '') {
+//         changeLangSelect.style.display = 'flex';
+//     } else {
+//         changeLangSelect.style.display = 'none';
+//     }
+// })
 
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await window.electronAPI.config.getConfig();
@@ -40,26 +29,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     const langNames = { 'pt-BR': 'Português Brasil', 'en': 'English' };
     langSpan.textContent = langNames[currentLang] || 'Português Brasil';
 
-    langBtn.addEventListener('click', () => {
-        langSelect.classList.toggle('active');
+    langSelect.querySelectorAll('li').forEach(li => {
+        li.classList.toggle('active', li.dataset.value === currentLang);
     });
 
     langSelect.querySelectorAll('li').forEach(li => {
         li.addEventListener('click', async () => {
             const lang = li.dataset.value;
             langSpan.textContent = li.querySelector('span').textContent;
-            langSelect.classList.remove('active');
+            langSelect.classList.add('active');
+
+            langSelect.querySelectorAll('li').forEach(item => item.classList.remove('active'));
+            li.classList.add('active');
 
             await window.electronAPI.config.updateConfig('language', lang);
 
             if (typeof applyLocale === 'function') applyLocale();
-
             if (window.parent && typeof window.parent.applyLocale === 'function') {
                 if (typeof window.parent.loadLanguage === 'function') await window.parent.loadLanguage(lang);
                 window.parent.applyLocale();
             }
 
-            changeLangSelect.style.display = 'none';
+            // changeLangSelect.style.display = 'none';
         });
     });
     
@@ -118,6 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     li.appendChild(colorCircle);
                     li.appendChild(textSpan);
+                    textSpan.classList.add('theme-name')
                     li.dataset.value = themeName;
                     
                     if (themeName === currentTheme) {
@@ -255,9 +247,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function tabSwitch(el) {
     const code = el.dataset.code;
-    const title = el.querySelector('span').textContent;
     const mainTitle = document.querySelector('.tab-configs-title');
-    mainTitle.textContent = title
+    mainTitle.setAttribute('data-i18n', code);
+    applyLocale();
 
     const tabs = document.querySelectorAll('.tab');
     const configs = document.querySelectorAll('.tab-configs');

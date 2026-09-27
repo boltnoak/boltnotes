@@ -11,21 +11,21 @@
 </head>
 <body>
         <div class="tabs">
-            <div data-code="fast-config" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-gauge-high"></i><span data-i18n="settings-tab-quick">Configurações rápidas</span></div>
-            <p class="sep-bar"></p>
-            <div data-code="features" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i><span data-i18n="settings-tab-home">Página inicial</span></div>
-            <div data-code="aparencia" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-palette"></i><span data-i18n="settings-tab-appearance">Aparência</span></div>
-            <div data-code="lang" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-language"></i><span data-i18n="language">Geral</span></div>
-            <div data-code="basics" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-window-maximize"></i><span data-i18n="app">Geral</span></div>
-            <div data-code="updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i><span data-i18n="settings-tab-updates">Atualizações</span></div>
+            <p class="sidebar-title">Configurações</p>
+            <div data-code="settings-tab-quick" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-gauge-high"></i><span data-i18n="settings-tab-quick">Configurações rápidas</span></div>
+            <!-- <p class="sep-bar"></p> -->
+            <div data-code="settings-tab-home" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i><span data-i18n="settings-tab-home">Página inicial</span></div>
+            <div data-code="settings-tab-appearance" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-palette"></i><span data-i18n="settings-tab-appearance">Aparência</span></div>
+            <div data-code="language" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-language"></i><span data-i18n="language">Idioma</span></div>
+            <div data-code="app" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-window-maximize"></i><span data-i18n="app">Aplicativo</span></div>
+            <div data-code="settings-tab-updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i><span data-i18n="settings-tab-updates">Atualizações</span></div>
             <!-- <p class="sep-bar"></p> -->
             <!-- <div data-code="about" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-info"></i><span data-i18n="settings-tab-locations">Locais</span></div> -->
         </div>
-        <div class="sep-bar-v"></div>
         <div class="tab-configs-div">
             <p class="tab-configs-title" data-i18n="settings-tab-quick">Configurações rápidas</p>
             <div class="sep-bar"></div>
-            <div id="fast-config" class="tab-configs active">
+            <div id="settings-tab-quick" class="tab-configs active">
                 <!-- <p class="sep" data-i18n="show-hide-pages">Mostrar/ocultar páginas</p>
                 <div class="config-item">
                     <p><span data-i18n="backlogof">Backlog de</span> <span data-i18n="games">Jogos</span></p>
@@ -53,10 +53,11 @@
                         <ul class="featuredSelector-select"></ul>
                     </div>
                 </div>
-                <div class="config-item">
+                <!-- <div class="config-item">
                     <p data-i18n="show-featured-changer">Mais de um destaque</p>
                     <a class="toggle" data-code="show_featured_changer" onclick="toggleConfig(this)"></a>
-                </div>
+                </div> -->
+                <div class="sep-space"></div>
                 <div class="config-item themes">
                     <div class="theme-selector-div">
                         <select id="theme-selector"></select>
@@ -67,7 +68,7 @@
                     </div>
                 </div>
             </div>
-            <div id="basics" class="tab-configs">
+            <div id="app" class="tab-configs">
                 <p class="sep" data-i18n="on-startup">Inicialização</p>
                 <div class="config-item">
                     <p data-i18n="launch-on-startup">Iniciar junto com o sistema operacional</p>
@@ -77,13 +78,14 @@
                     <p data-i18n="maximize-app-startup">Maximizar ao iniciar</p>
                     <a class="toggle" data-code="maximize_on_start" onclick="toggleConfig(this)"></a>
                 </div>
+                <div class="sep-space"></div>
                 <p class="sep" data-i18n="when-closing">Ao fechar</p>
                 <div class="config-item">
                     <p data-i18n="minimize-to-tray">Minimizar para a bandeja do sistema</p>
                     <a class="toggle" data-code="minimize_to_tray" onclick="toggleConfig(this)"></a>
                 </div>
             </div>
-            <div id="features" class="tab-configs">
+            <div id="settings-tab-home" class="tab-configs">
                 <!-- <div class="config-item">
                     <p data-i18n="show-version-home">Mostrar versão do app na página inicial</p>
                     <a class="toggle" data-code="show_version" onclick="toggleConfig(this)"></a>
@@ -101,6 +103,7 @@
                     <p>Fortnite</p>
                     <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
                 </div>
+                <div class="sep-space"></div>
                 <p class="sep" data-i18n="featured">Destaque</p>
                 <div class="config-item featured">
                     <div class="featured-selector-div">
@@ -120,7 +123,7 @@
                     <a class="toggle" data-code="show_featured_changer" onclick="toggleConfig(this)"></a>
                 </div>
             </div>
-            <div id="aparencia" class="tab-configs">
+            <div id="settings-tab-appearance" class="tab-configs">
                 <div class="config-item themes">
                     <div class="theme-selector-div">
                         <select id="theme-selector"></select>
@@ -131,7 +134,7 @@
                     </div> 
                 </div>
             </div>
-            <div id="updates" class="tab-configs">
+            <div id="settings-tab-updates" class="tab-configs">
                 <p class="sep" data-i18n="current-version">Versão atual</p>
                 <div class="config-item version">
                     <span id="app-version"></span>
@@ -144,7 +147,7 @@
             <div id="fortnite" class="tab-configs">
                 <p class="sep">Banner</p>
             </div>
-            <div id="lang" class="tab-configs">
+            <div id="language" class="tab-configs">
                 <div class="config-item">
                     <p data-i18n="language_select"></p>
                     <div class="custom-select">

@@ -37,7 +37,7 @@
         </div>
         <div class="season-tags">
             <div class="status rating-container">
-                <div>
+                <div class="status-name-div">
                     <i class="fa-solid fa-star"></i>
                     <span data-i18n="rating">Nota:</span>
                 </div>
@@ -45,29 +45,29 @@
             </div>
             <div class="sep-bar-status"></div>
             <div class="status">
-                <div>
+                <div class="status-name-div">
                     <i class="fa-solid fa-square-caret-up"></i>
                     <span data-i18n="levels">Níveis:</span>
                 </div>
-                <div>
+                <div class="status-div">
                     <i class="statusLevel-add fa-solid fa-plus"></i> <span class="status-level"></span>
                     <i class="statusLevel-minus fa-solid fa-minus"></i>
                 </div>
             </div>
             <div class="sep-bar-status"></div>
             <div class="status">
-                <div>
+                <div class="status-name-div">
                     <i class="fa-solid fa-trophy"></i>
                     <span data-i18n="wins">Vitórias:</span>
                 </div>
-                <div>
+                <div class="status-div">
                     <i class="statusWin-add fa-solid fa-plus"></i> <span class="status-win"></span>
                     <i class="statusWin-minus fa-solid fa-minus"></i>
                 </div>
             </div>
             <div class="sep-bar-status"></div>
             <div class="status">
-                <div>
+                <div class="status-name-div">
                     <i class="fa-solid fa-calendar-day"></i>
                     <span data-i18n="release-date">Lançado em:</span>
                 </div>
