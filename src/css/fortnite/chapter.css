@@ -5,6 +5,9 @@
 body {
     overflow-x: hidden;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
 }
 
 #fnSeason, .fn-season {
@@ -87,6 +90,7 @@ body {
     cursor: pointer;
     padding: 0;
     font-size: 3.8vh;
+    display: none;
 }
 .season-trailers[data-tooltip]::after {
     transform: translate(22%, -50%);
@@ -309,7 +313,7 @@ body {
     display: none;
 }
 #seasons-list-container {
-    margin: 2vh 0;
+    margin: 2vh 0 5vh 0;
 }
 .season-status {
     margin: 0;
@@ -449,13 +453,11 @@ body {
     left: 0;
     z-index: 99;
     width: 100vw;
-    height: 100vh;
+    height: 95.1vh;
     overflow: hidden;
     background: rgba(0,0,0,.6);
     display: flex;
     align-items: center;
-    height: 100vh;
-    width: 100%;
     /* margin: 0 0 0 4.7vw; */
     justify-content: center;
     backdrop-filter: blur(4px);
@@ -474,8 +476,8 @@ body {
 .mapPopup-div {
     background: var(--bg);
     padding: 1.5vh;width: 74vw;
-    height: 75%;
-    width: 39.4%;
+    height: 86vh;
+    width: 45vw;
     border-radius: 2.3vh;
     animation: popupIn .15s ease forwards;
     overflow: hidden;
@@ -532,7 +534,7 @@ body {
 .season-events {
     transition: transform .1s linear;
     cursor: pointer;
-    display: flex;
+    display: none;
     flex-direction: row;
     margin: 0;
     flex: content;
@@ -541,6 +543,31 @@ body {
     flex: 1;
     background-color: var(--tab-hover);
     transition: background .1s linear;
+}
+.fortnite-w {
+    padding: 1.25vh 0;
+    margin: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 2vh;
+    font-weight: 550;
+    color: var(--text-light-gray);
+    background-color: var(--bg);
+    position: fixed;
+    z-index: 199;
+    bottom: 0;
+}
+.fortnite-w-space {
+    padding: 1.25vh 0;
+    margin: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 2vh;
+    font-weight: 550;
+    color: var(--text-light-gray);
+    background-color: var(--bg);
+    z-index: 199;
+    bottom: 0;
 }
 .event-img {
     height: 100%;

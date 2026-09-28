@@ -204,13 +204,13 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
         if (card) card.dataset.code = code;
 
         const bg = clone.querySelector('.banner');
-        if (bg) bg.style.backgroundImage = `url('documents://Fortnite/Assets/fortnite-${code}-assets/${code}.jpg')`;
+        if (bg) bg.style.backgroundImage = `url('documents://Fortnite/Assets/${code}.jpg')`;
 
         const character = clone.querySelector('.season-character');
-        if (character) character.src = `documents://Fortnite/Assets/fortnite-${code}-assets/${code}-character.png`;
+        if (character) character.src = `documents://Fortnite/Assets/${code}-character.png`;
 
         const seasonMap = clone.querySelector('.season-map');
-        if (seasonMap) seasonMap.src = `documents://Fortnite/Assets/fortnite-${code}-assets/${code}-map.jpg`;
+        if (seasonMap) seasonMap.src = `documents://Fortnite/Assets/${code}-map.jpg`;
 
         const seasonDiv = clone.querySelector('.season');
         const isLocked = currentStats.locked ?? false;
@@ -359,35 +359,35 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
             }
         }
 
-        if (listaDeEventos && Array.isArray(listaDeEventos)) {
-            const eventsContainer = clone.querySelector('.season-contents');
-            const templateEvent = clone.querySelector('.season-events');
+        // if (listaDeEventos && Array.isArray(listaDeEventos)) {
+        //     const eventsContainer = clone.querySelector('.season-contents');
+        //     const templateEvent = clone.querySelector('.season-events');
 
-            if (templateEvent) {
-                templateEvent.remove(); 
+        //     if (templateEvent) {
+        //         templateEvent.remove(); 
 
-                listaDeEventos.forEach(evt => {
-                    const newEvent = templateEvent.cloneNode(true);
-                    newEvent.style.display = 'flex';
+        //         listaDeEventos.forEach(evt => {
+        //             const newEvent = templateEvent.cloneNode(true);
+        //             newEvent.style.display = 'flex';
                     
-                    newEvent.querySelector('.event-img').src = `documents://Fortnite/Assets/fortnite-${code}-assets/${evt.img}` || '';
-                    newEvent.querySelector('.event-title').textContent = evt.title || '';
-                    newEvent.querySelector('.event-type').textContent = evt.type || '';
-                    newEvent.querySelector('.event-date').textContent = evt.date || '';
+        //             newEvent.querySelector('.event-img').src = `documents://Fortnite/Assets/fortnite-${code}-assets/${evt.img}` || '';
+        //             newEvent.querySelector('.event-title').textContent = evt.title || '';
+        //             newEvent.querySelector('.event-type').textContent = evt.type || '';
+        //             newEvent.querySelector('.event-date').textContent = evt.date || '';
                     
-                    eventsContainer.insertBefore(newEvent, eventsContainer.firstChild);
-                    newEvent.onclick = function() {
-                        openLiveEvent(
-                            this,
-                            evt.img.replace(/-cover.*$/, ''),
-                            evt.title || 'Evento',
-                            evt.author || null,
-                            evt.authorId || null
-                        )
-                    }
-                });
-            }
-        }
+        //             eventsContainer.insertBefore(newEvent, eventsContainer.firstChild);
+        //             newEvent.onclick = function() {
+        //                 openLiveEvent(
+        //                     this,
+        //                     evt.img.replace(/-cover.*$/, ''),
+        //                     evt.title || 'Evento',
+        //                     evt.author || null,
+        //                     evt.authorId || null
+        //                 )
+        //             }
+        //         });
+        //     }
+        // }
 
         const titleEl = clone.querySelector('.season-title');
         if (titleEl) {
@@ -450,10 +450,10 @@ function openMap(el) {
     if (mapPopup && mapImage && code) {
         mapPopup.style.display = "flex";
         
-        mapImage.style.backgroundImage = `url('documents://Fortnite/Assets/fortnite-${code}-assets/${code}-map.jpg')`;
+        mapImage.style.backgroundImage = `url('documents://Fortnite/Assets/${code}-map.jpg')`;
         
-        configurarZoomMapa(); 
-        resetarZoomMapa();    
+        configurarZoomMapa();
+        resetarZoomMapa();
     }
 }
 

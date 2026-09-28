@@ -207,15 +207,17 @@
     </div>
 
 <div id="addGame-popup">
-    <div class="add-game-form">
-        <div class="add-game-form-title top-tab active"><p data-i18n="add-steam-game">Adicionar novo jogo</p></div>
-        <div class="add-game-form-div">
+    <div class="add-game-form" data-mode="steam">
+        <div class="addGame-alternatives">
+            <div class="add-game-form-mode top-tab active" data-code="steam"><i class="fa-brands fa-steam"></i><p data-i18n="add-new-steamgame">Jogo Steam</p></div>
+            <!-- <div class="add-game-form-mode top-tab" data-code="custom"><i class="fa-solid fa-file-pen"></i><p data-i18n="add-new-customgame">Jogo Customizado</p></div> -->
+        </div>
+        <div class="sep-bar"></div>
+        <div class="add-game-form-div active" data-code="steam">
             <div class="add-game-basics">
                 <input type="text" id="gameName" data-i18n-placeholder="name" placeholder="Nome">
                 <div class="appid-div">
                     <input type="text" id="gameAppId" placeholder="AppID">
-                    <!-- <a class="steamdb-btn" id="steamdb-btn" onclick="searchAppID()" target="_blank">
-                        <i class="fa-solid fa-folder-open"></i></a> -->
                     <i class="steamdb-btn fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
                 </div>
             </div>
@@ -227,9 +229,21 @@
                 </div>
             </div>
         </div>
-                <div class="add-game-form-options">
-                    <a id="addGameBtn"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
+        <!-- <div class="add-game-form-div" data-code="custom">
+            <div class="add-game-basics">
+                <input type="text" id="gameName" data-i18n-placeholder="name" placeholder="Nome">
+            </div>
+            <div class="add-game-extra">
+                <div class="add-game-form-tags-title"><p data-i18n="has">Possui</p></div>
+                <div class="addGame-type type-mark-campaign active">
+                    <div class="addGame-type-mark"></div>
+                    <span data-campaign="true" data-i18n="campaign">Campanha</span>
                 </div>
+            </div>
+        </div> -->
+        <div class="add-game-form-options">
+            <a id="addGameBtn"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
+        </div>
     </div>
 </div>
 

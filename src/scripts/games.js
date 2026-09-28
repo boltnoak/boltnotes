@@ -2212,4 +2212,21 @@ const addGameHasCampaignBtn = document.querySelector('.addGame-type.type-mark-ca
 addGameHasCampaignBtn.addEventListener('click', () => {
     addGameHasCampaignTag = !addGameHasCampaignTag;
     addGameHasCampaignBtn.classList.toggle('active');
+});
+
+const addGameSwitches = document.querySelectorAll('.add-game-form-mode');
+const addGameTabs = document.querySelectorAll('.add-game-form-div');
+
+addGameSwitches.forEach((el) => {
+    el.addEventListener('click', () => {
+        const code = el.dataset.code;
+        addGamePopupDiv.dataset.mode = code;
+
+        const addGameTab = document.querySelector(`.add-game-form-div[data-code="${code}"]`);
+        addGameTabs.forEach((e) => e.classList.remove('active'));
+
+        addGameTab.classList.add('active');
+        addGameSwitches.forEach((e) => e.classList.remove('active'));
+        el.classList.add('active');
+    })
 })

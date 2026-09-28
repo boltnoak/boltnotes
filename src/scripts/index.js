@@ -187,7 +187,7 @@ async function initFeaturedFortnite() {
     const infoTemporada = cloudData[code] || stats[code] || {};
     const seasonName = `${code.toUpperCase().replace(/S/, codeTranslated)} | ${infoTemporada.name}` || "Temporada Atual";
 
-    document.getElementById('recentSeason-image').style.backgroundImage = `url(documents://Fortnite/Assets/fortnite-${code}-assets/${code}.jpg)`;
+    document.getElementById('recentSeason-image').style.backgroundImage = `url(documents://Fortnite/Assets/${code}.jpg)`;
     document.querySelector('.shine-effect-v-latest-season').style.display = 'none';
 
     document.getElementById('recent-season-name').textContent = seasonName;
@@ -370,6 +370,9 @@ async function toggleNoteEdit(el) {
 }
 
 async function loadGames() {
+    renderIdGames++;
+    const myRenderId = renderIdGames;
+
     const [data, stats] = await Promise.all([
         loadJson(FILE),
         loadStatus()
@@ -439,7 +442,9 @@ async function loadGames() {
     }
 
     const toPlayFragment = document.createDocumentFragment();
-    for (const card of toPlayCards) toPlayFragment.appendChild(card);
+    for (const card of toPlayCards) {
+        toPlayFragment.appendChild(card);
+    }
 
      if (toPlayFragment.childElementCount === 0) {
         const noGames = document.createElement("div");

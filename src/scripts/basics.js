@@ -120,24 +120,46 @@ async function resolveImage({ folder, custom, fallbackUrls = [], baseName, defau
   return null;
 }
 
+const steamCache = new Map();
+
+async function getSteamAssets(appid) {
+  if (!appid) return null;
+  if (steamCache.has(appid)) return steamCache.get(appid);
+
+  const promise = fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&filters=basic,background`)
+    .then(res => res.json())
+    .then(data => data[appid]?.success ? data[appid].data : null)
+    .catch(() => null);
+
+  steamCache.set(appid, promise);
+  return promise;
+}
+
 async function ensureCover({ appid, name, cover, hero, logo }) {
   const safeName = String(name).replace(/[^a-z0-9]/gi, '_').toLowerCase();
-  const steam = appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}` : null;
+  const legacyCdn = appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}` : null;
 
-  const [coverRes, heroRes, logoRes] = await Promise.allSettled([
+  const steamData = await getSteamAssets(appid);
+  
+  const headerUrl = steamData?.header_image;
+  const bgUrl = steamData?.background_raw || steamData?.background;
+
+  const [coverRes, heroRes, logoRes] = await Promise.all([
     resolveImage({
       folder: 'Covers', custom: cover, baseName: safeName, defaultExt: '.jpg',
-      fallbackUrls: steam ? [`${steam}/header.jpg`] : [],
-    }),
+      fallbackUrls: [headerUrl, legacyCdn ? `${legacyCdn}/library_600x900.jpg` : null, legacyCdn ? `${legacyCdn}/header.jpg` : null].filter(Boolean),
+    }).catch(() => null),
+
     resolveImage({
       folder: 'Heros', custom: hero, baseName: safeName, defaultExt: '.jpg',
-      fallbackUrls: steam ? [`${steam}/library_hero.jpg`, `${steam}/page_bg_generated_v6b.jpg`] : [],
-    }),
+      fallbackUrls: [bgUrl, legacyCdn ? `${legacyCdn}/library_hero.jpg` : null, legacyCdn ? `${legacyCdn}/page_bg_generated_v6b.jpg` : null].filter(Boolean),
+    }).catch(() => null),
+
     resolveImage({
       folder: 'Logos', custom: logo, baseName: safeName, defaultExt: '.png',
-      fallbackUrls: steam ? [`${steam}/logo.png`] : [],
-    }),
-  ]).then(results => results.map(r => (r.status === 'fulfilled' ? r.value : null)));
+      fallbackUrls: legacyCdn ? [`${legacyCdn}/logo.png`] : [],
+    }).catch(() => null),
+  ]);
 
   return {
     cover: coverRes ?? PLACEHOLDER,

@@ -25,9 +25,9 @@ body {
 .sidebar {
     width: 100%;
     flex: 1;
-    padding: 0 .65vw 1.5vh .65vw;
+    padding: 0 .65vw 1.5vh 1vw;
     padding-top: 1.55vh;
-    /* margin: 0 0 1.55vh 0; */
+    margin: 0;
     justify-content: start;
     display: flex;
     flex-direction: column;
@@ -36,7 +36,6 @@ body {
     height: 100%;
     border-right: solid .38vw var(--tab-active);
     background-image: linear-gradient(to right, transparent 0%, var(--tab) 80%);
-    
 }
 .sidebar-sep-bar {
     margin: 0;
@@ -160,21 +159,17 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1vh;
-    height: 52.4vh;
+    height: 53vh;
 }
 #toPlaySection-title {
     display: flex;
     justify-content: center;
-    text-align: center;
     color: var(--text-gray);
     font-size: 2.65vh;
     font-weight: 700;
     margin: 0;
     padding: 0;
     width: 100%;
-    user-select: none;
-    position: relative;
-    text-wrap: nowrap;
     background-color: var(--btn);
     padding: 1vh 0;
     border-radius: 1vh;
@@ -193,7 +188,7 @@ body {
     display: none;
     flex-direction: column;
     gap: 1vh;
-    height: 52.5vh;
+    height: 53vh;
 }
 #toPlatinarSection-title {
     display: flex;
@@ -792,7 +787,7 @@ body {
     border-radius: .5vh;
     overflow: hidden;
     padding: 0;
-    height: 1.15vh;
+    height: 1vh;
     background-color: var(--tab);
     margin: 0;
 }
@@ -995,21 +990,35 @@ body {
 #addGame-close:hover {
     border: solid .6vh var(--text);
 }
+.addGame-alternatives {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: .85vw;
+    margin: 0 0 0 .85vw;
+}
+
 .add-game-form {
     display: flex;
     flex-direction: column;
     gap: 1.45vh;
     font-family: 'Montserrat';
     margin: 0;
-    width: 30vw;
+    width: 34vw;
     background-color: var(--bg);
     border-radius: 2.15vh;
     overflow: hidden;
 }
+.add-game-form .sep-bar {
+    margin: 0 .75vw;
+}
 .add-game-form-div {
-    display: flex;
+    display: none;
     flex-direction: row;
     gap: .85vw;
+}
+.add-game-form-div.active {
+    display: flex;
 }
 .add-game-basics {
     height: fit-content;
@@ -1068,12 +1077,12 @@ body {
     backdrop-filter: blur(4px);
 }
 .add-game-form input {
-    font-size: 2vh;
+    font-size: 2.35vh;
     font-weight: 600;
     font-family: 'Montserrat';
     background-color: var(--tab);
     color: var(--text);
-    padding: 1.8vh .95vw;
+    padding: 2vh 1vw;
     margin: 0;
     border-radius: 1.3vh;
     border: solid .3vh transparent;
@@ -1126,8 +1135,8 @@ body {
 .no-achie {
     display: none;
 }
-.add-game-form-title {
-    margin: 1.25vh .8vw;
+.add-game-form-mode {
+    margin: 1.45vh 0 .5vh 0;
     /* font-size: 3vh; */
     /* font-weight: 600; */
     height: fit-content;
@@ -1138,7 +1147,7 @@ body {
     justify-content: center;
     /* background-color: var(--tab); */
 }
-.add-game-form-title p {
+.add-game-form-mode p {
     margin: 0;
 }
 .add-game-form-tags-title {
@@ -1171,12 +1180,14 @@ body {
     transition: background .1s linear, color .1s linear;
     text-decoration: none;
     margin: 0 .65vw 1.5vh .65vw;
-    font-weight: 700;
+    font-weight: 750;
+    font-size: 2.75vh;
     width: 100%;
 }
 #addGameBtn i {
     color: var(--btn-text-color);
-    margin-right: .25vw;
+    font-weight: 1000;
+    font-size: 3vh;
 }
 #addGameBtn:hover {
     background-color: var(--btn-hover-color);
@@ -2416,7 +2427,8 @@ body.delete-mode-active .game:hover::after {
     transform: translate(-52.5%, -200%);
 }
 .addGame-type span {
-    font-size: 2.25vh;
+    font-size: 2.65vh;
+    font-weight: 700;
 }
 .addGame-type {
     font-weight: 600;
@@ -2453,7 +2465,7 @@ body.delete-mode-active .game:hover::after {
     justify-content: center;
     align-items: center;
     margin: 0;
-    padding: .65vh .45vw;
+    padding: .75vh .5vw;
 }
 .game.zerado .status-text {
     color: var(--text-light-gray);

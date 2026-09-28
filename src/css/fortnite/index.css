@@ -21,6 +21,14 @@
     height: 100%;
     flex: 1;
 }
+.fortnite-w {
+    margin: 1.5vh 0 1.25vh 0;
+    width: 100%;
+    text-align: center;
+    font-size: 2vh;
+    font-weight: 550;
+    color: var(--text-light-gray);
+}
 .banner-bg.visible { opacity: 1; }
 .sep-bar-v {
     margin: 1.5vh 1.5vw .5vh 1.5vw;

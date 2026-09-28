@@ -546,8 +546,29 @@ ipcMain.handle('games:get-steam-data', async (_, appid) => {
         const d = json[id].data;
 
         let releaseDate = d.release_date?.date ?? '';
-        const parsed = new Date(releaseDate);
-        if (!isNaN(parsed.getTime())) releaseDate = parsed.toLocaleDateString('pt-BR');
+
+        const meses = {
+            jan: '01', fev: '02', mar: '03', abr: '04',
+            mai: '05', jun: '06', jul: '07', ago: '08',
+            set: '09', out: '10', nov: '11', dez: '12',
+        };
+
+        const match = releaseDate.match(/(\d{1,2})\D+([a-zç]{3})\D+(\d{4})/i);
+        if (match) {
+            const [, dia, mesAbrev, ano] = match;
+            const mes = meses[mesAbrev.toLowerCase()];
+            if (mes) {
+                releaseDate = `${dia.padStart(2, '0')}/${mes}/${ano}`;
+            }
+        } else {
+            const parsed = new Date(releaseDate);
+            if (!isNaN(parsed.getTime())) {
+                const dia = String(parsed.getDate()).padStart(2, '0');
+                const mes = String(parsed.getMonth() + 1).padStart(2, '0');
+                const ano = parsed.getFullYear();
+                releaseDate = `${dia}/${mes}/${ano}`;
+            }
+        }
 
         const totalAchievements = Number(d.achievements?.total) || 0;
 

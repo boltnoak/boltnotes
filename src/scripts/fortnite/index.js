@@ -24,7 +24,7 @@ async function loadBanner() {
     const latest = await getLatestSeason() || {key: 'c4s1', data: { name: 'Assuma o controle', releaseDate: '20/08/2026' }};
 
     console.log(`Temporada mais recente: ${latest.key.toUpperCase().replace('S','T')} — ${latest.data.name}`);
-    document.getElementById("latestSeasonBG").style.backgroundImage = `url('documents://Fortnite/Assets/fortnite-${latest.key}-assets/${latest.key}.jpg')`;
+    document.getElementById("latestSeasonBG").style.backgroundImage = `url('documents://Fortnite/Assets/${latest.key}.jpg')`;
 }
 async function loadSidebarChapters() {
     const data = await loadCloudSeasonInfo();
@@ -70,7 +70,7 @@ async function loadChapters() {
         const number = e.replace('c', '');
         return `<a id="chapter" data-chapter="${number}" href="pages/fortnite-chapter.html?num=${number}">
                     <div class="chapter-image-div">
-                        <img class="chapter-image" src="documents://Fortnite/Assets/fn-chapter-covers/chapter${number}-cover.jpg">
+                        <img class="chapter-image" src="documents://Fortnite/Assets/chapter${number}-cover.jpg">
                     </div>
                     <p class="title"><span data-i18n="fn-chapter">Capítulo</span> ${number}</p>
                 </a>`;
@@ -125,7 +125,7 @@ function readZipEntries(buf) {
     const off = v.getUint32(p + 42, true);
     const name = td.decode(bytes.subarray(p + 46, p + 46 + nlen));
     p += 46 + nlen + elen + clen;
-    if (name.endsWith('/')) continue; // pasta
+    if (name.endsWith('/')) continue;
 
     const start = off + 30 + v.getUint16(off + 26, true) + v.getUint16(off + 28, true);
     entries.push({ name, method, raw: bytes.subarray(start, start + csize) });
@@ -148,9 +148,7 @@ async function installPackage(pkg) {
   const folder = pkg.name.replace(/\.zip$/, '');
   for (const f of readZipEntries(buf)) {
     const data = f.method === 0 ? f.raw : await inflateRaw(f.raw);
-    // se o zip já vier com a pasta raiz, não duplica
-    const rel = f.name.startsWith(`${folder}/`) ? f.name : `${folder}/${f.name}`;
-    await writeDoc(rel, data);
+    await writeDoc(f.name, data);
   }
 }
 

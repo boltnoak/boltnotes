@@ -404,7 +404,7 @@ body {
     white-space: nowrap;
     opacity: 0;
     top: 50%;
-    z-index: 99;
+    z-index: 299;
     pointer-events: none;
     transform: translate(-50%, -180%);
     background-color: var(--tab-hover);
@@ -461,7 +461,7 @@ header {
     left: 0;
     right: 0;
     position: absolute;
-    padding: .45rem .45rem .625rem .45rem;
+    padding: .45rem .55rem .625rem .45rem;
     /* margin: 0 0 0 .55vw; */
     z-index: 99;
     display: flex;
@@ -476,6 +476,10 @@ header {
     background-color: var(--tab);
     transition: width .125s ease-out;
     box-shadow: 0 0 1vw rgba(0, 0, 0, .1);
+}
+.sidebar-space {
+    width: 3.5vw;
+    padding: .45rem .55rem .625rem .45rem;
 }
 .header-sep-bar {
     margin: 0;

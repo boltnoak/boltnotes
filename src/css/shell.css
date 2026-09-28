@@ -20,7 +20,7 @@ body {
     display: none;
 }
 .sidebar-chapter-section {
-    max-height: 42.55vh;
+    max-height: 43vh;
     border-radius: 1vh;
     display: flex;
     flex-direction: column;

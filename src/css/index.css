@@ -111,10 +111,7 @@ body {
     height: 94.3vh;
     flex: 1;
 }
-.sidebar-space {
-    width: 3.56vw;
-    padding: 0 .55vw;
-}
+#fortnite 
 .boltnotes-logo {
     height: 11.5vh;
     width: 100vw;
@@ -424,12 +421,22 @@ body {
     /* flex: 1 0 calc(100% - .525vh); */
     padding: .9vh;
     border: .6vh solid var(--blue);
-    transition: transform .1s ease-in-out, background .1s linear;
+    transition: transform .1s ease-in-out, opacity .1s ease-in-out, background .1s linear;
     scroll-snap-align: start;
     scroll-snap-stop: always;
     margin: 0;
     position: relative;
     z-index: 1;
+    /* opacity: 0; */
+    animation: fadeInUp .35s ease forwards;
+}
+@keyframes fadeInUp {
+    from { opacity: 0 }
+    to { opacity: 1 }
+}
+.game.fade-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 .game.ajogar {
     border: none;
@@ -611,10 +618,25 @@ body {
     width: 100%;
     overflow: hidden;
     background-size: cover;
-    background-position: 0 -3vh;
+    background-position: 0 -6vh;
     transform: translateY(0);
-    border-radius: 1.5vh;
     background-color: rgba(30,30,30,.1);
+}
+.recentSeason-image-div {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1vh;
+    height: 100%;
+    width: 100%;
+    border-radius: 1.25vh;
+    background-color: var(--btn);
+    overflow: hidden;
+}
+.recentSeason-image-div p {
+    margin: 0 .55vw 1.325vh .55vw;
+    font-size: 2vh;
+    font-weight: 550;
+    color: var(--text-light-gray);
 }
 .level-progress-text {
     font-family: 'Montserrat';
@@ -1276,20 +1298,6 @@ body {
 }
 .game-note-title {
     margin: 0;
-}
-.game-note-title-div i{
-    background-color: transparent;
-    padding: 1vh .6vw;
-    border-radius: 1vh;
-    text-align: center;
-    transition: background .15s linear;
-    color: var(--text);
-    cursor: pointer;
-    z-index: 98;
-    font-size: 2vh;
-}
-.game-note-title-div i:hover {
-    background-color: var(--tab-hover);
 }
 
 .sep-bar {
@@ -2055,19 +2063,22 @@ body {
 .game-note-title {
     margin: 0;
 }
-.game-note-title-div i{
+
+#editNote {
     background-color: transparent;
-    padding: 1vh .6vw;
-    border-radius: 1vh;
+    padding: 1vh 1vw;
+    width: 1.75vw;
+    border-radius: .8vh;
     text-align: center;
     transition: background .15s linear;
     color: var(--text);
+    background-color: var(--btn);
     cursor: pointer;
     z-index: 98;
     font-size: 2vh;
 }
-.game-note-title-div i:hover {
-    background-color: var(--tab-hover);
+#editNote:hover {
+    background-color: var(--btn-hover);
 }
 
 .sep-bar {
