@@ -969,12 +969,6 @@ body {
 .is-closing {
     animation: popupOut .2s ease forwards;
 }
-.game-banner-div {
-    overflow: hidden;
-    height: 33vh;
-    width: 100%;
-    border-radius: 1.3vh 1.3vh 0 0;
-}
 .game-banner {
     object-fit: cover;
     width: 100%;
@@ -1016,53 +1010,10 @@ body {
     flex-direction: row;
     gap: 2.6vw;
 }
-.achie-add-minus {
-    width: fit-content;
-    display: flex;
-    flex-direction: column;
-    border-radius: 1vh;
-    align-items: center;
-    overflow: hidden;
-    height: fit-content;
-}
-#achie-add {
-    font-size: 1.8vh;
-    display: flex;
-    height: fit-content;
-    padding: .8vh .7vw .5vh .7vw;
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    background-color: var(--btn);
-    cursor: pointer;
-    color: var(--text);
-}
-#achie-minus {
-    font-size: 1.8vh;
-    display: flex;
-    height: fit-content;
-    padding: .5vh .7vw .5vh .7vw;
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    background-color: var(--btn);
-    cursor: pointer;
-    color: var(--text);
-}
-#achie-minus:hover,
-#achie-add:hover {
-    background-color: var(--btn-hover);
-}
-.achie-info {
-    width: 21.3vw;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: .4vw;
-}
-.achie-info p {
+.achie-percentage {
     margin: 0;
-    font-weight: 700;
+    font-size: 2.5vh;
+    font-weight: 800;
     color: var(--blue);
 }
 .game-rating-div {
@@ -1103,23 +1054,6 @@ body {
     font-size: 2vh;
     color: var(--text);
 }
-.achie-bar {
-    width: 18vw;
-    flex: 1;
-    display: flex;
-    height: 1vh;
-    background-color: var(--tag);
-    margin: 0;
-    overflow: hidden;
-    border-radius: 1vh;
-}
-.achie-bar-fill {
-    width: 100%;
-    height: 1vh;
-    background-color: var(--blue);
-    margin: 0;
-    transition: width .1s linear;
-}
 .game-popup-status {
     display: flex;
     flex-direction: row;
@@ -1150,14 +1084,6 @@ body {
     font-size: 4.7vh;
     font-weight: 600;
     color: var(--text-dark-gray);
-}
-.achie-info-title-text {
-    margin: 0;
-    font-weight: 900;
-    font-size: 3vh;
-    width: fit-content;
-    color: var(--text-light-gray);
-    text-transform: uppercase;
 }
 .achie-info-title-numbers {
     margin: 0;
@@ -1438,8 +1364,8 @@ body {
 .game-popup {
     background: var(--bg);
     border-radius: 1.3vh;
-    width: 80vw;
-    height: 75vh;
+    width: 85vw;
+    height: 85vh;
     z-index: 99;
     animation: popupIn .2s ease forwards;
     display: flex;
@@ -1457,7 +1383,7 @@ body {
     animation: popupOut .2s ease forwards;
 }
 .game-banner-div {
-    height: 25vh;
+    height: auto;
     width: 100%;
     border-radius: .8vh;
     overflow: hidden;
@@ -1544,40 +1470,30 @@ body {
     display: flex;
     align-items: center;
     background-color: var(--bg);
-    padding: .75vh .65vw;
+    padding: 1.25vh .65vw;
     padding-left: .15vw;
     flex-direction: row;
     justify-content: space-between;
 }
+
 .achie-add-minus {
     width: fit-content;
     display: flex;
-    flex-direction: column;
-    border-radius: 1vh;
-    align-items: center;
-    overflow: hidden;
-    height: fit-content;
+    flex-direction: row;
+    gap: .65vw;
+    align-items: stretch;
+    align-self: stretch;
 }
-#achie-add {
-    font-size: 1.8vh;
-    display: flex;
-    height: fit-content;
-    padding: .8vh .7vw .5vh .7vw;
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    background-color: var(--btn);
-    cursor: pointer;
-    color: var(--text);
-}
-#achie-minus {
-    font-size: 1.8vh;
-    display: flex;
-    height: fit-content;
-    padding: .5vh .7vw .5vh .7vw;
-    width: fit-content;
+#achie-add, #achie-minus {
+    font-size: 2.5vh;
+    font-weight: 700;
+    height: 100%;
+    padding: 0 .75vw;
+    border-radius: .8vh;
+    width: 2vw;
     display: flex;
     align-items: center;
+    justify-content: center;
     background-color: var(--btn);
     cursor: pointer;
     color: var(--text);
@@ -1589,14 +1505,9 @@ body {
 .achie-info {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    gap: .4vw;
+    align-items: end;
+    gap: .5vw;
     width: 100%;
-}
-.achie-info p {
-    margin: 0;
-    font-weight: 700;
-    color: var(--blue);
 }
 .game-rating-div {
     display: flex;
@@ -1652,15 +1563,17 @@ body {
     width: 100%;
     display: flex;
     flex: 1;
-    height: 1vh;
+    height: 1.15vh;
     background-color: var(--tag);
     margin: 0;
+    /* margin: 0 0 .5vh 0; */
     overflow: hidden;
+    align-self: center;
     border-radius: 1vh;
 }
 .achie-bar-fill {
     width: 100%;
-    height: 1vh;
+    height: 1.15vh;
     background-color: var(--blue);
     margin: 0;
     transition: width .1s linear;
@@ -1802,18 +1715,29 @@ body {
 .achie-info-title-text {
     margin: 0;
     font-weight: 900;
-    font-size: 3vh;
+    font-size: 4vh;
     width: fit-content;
-    color: var(--text-light-gray);
+    color: var(--text);
     text-transform: uppercase;
+}
+.achie-info-title-numbers-div {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: .35vw;
 }
 .achie-info-title-numbers {
     margin: 0;
     font-weight: 600;
     font-size: 2.25vh;
-    align-self: flex-end;
-    overflow: hidden;
     color: var(--text-gray);
+}
+.achie-info-title-numbers-unlocked {
+    margin: 0;
+    font-weight: 700;
+    font-size: 4.5vh;
+    color: var(--text);
+    /* caret-color: var(--text); */
 }
 .campaign-info-title {
     display: flex;
@@ -2513,4 +2437,16 @@ body.ui-ready .app-version {
     font-weight: 700;
     font-size: 2vh;
     color: var(--text);
+}
+.game-note {
+    position: relative;
+}
+
+.game-note.is-empty::before {
+    content: attr(placeholder);
+    position: absolute;
+    left: 0;
+    top: .1rem;
+    color: var(--text-dark-gray);
+    pointer-events: none;
 }

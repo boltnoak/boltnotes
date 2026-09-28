@@ -67,6 +67,49 @@ document.addEventListener('DOMContentLoaded', async () => {
 //     document.querySelector('.pageBody').scrollTo({ top: 0 });
 // }
 
+
+
+function debouncedSave(code) {
+    clearTimeout(saveTimeout);
+    
+    saveTimeout = setTimeout(async () => {
+        const rating = document.getElementById(`${code}-rating`)?.textContent || "0";
+        const levels = document.getElementById(`${code}-levels`)?.textContent || "0";
+        const wins = document.getElementById(`${code}-wins`)?.textContent || "0";
+
+        const gameplay = document.getElementById(`${code}-gameplay`)?.innerText || "";
+        const loot = document.getElementById(`${code}-loot`)?.innerText || "";
+        const mapa = document.getElementById(`${code}-mapa`)?.innerText || "";
+        const passe = document.getElementById(`${code}-passe`)?.innerText || "";
+        const story = document.getElementById(`${code}-story`)?.innerText || "";
+
+        window.reviews[code] = { 
+            ...window.reviews[code], 
+            gameplay,
+            loot,
+            mapa,
+            passe,
+            story
+        };
+
+        window.stats[code] = {
+            ...window.stats[code],
+            rating, 
+            levels, 
+            wins
+        };
+
+        try {
+            await saveJson(REVIEWS_FILE, window.reviews);
+            await saveJson(STATS_FILE, window.stats);
+            
+            console.log(`Fortnite - Dados da temporada ${code.toUpperCase().replace('S', 'T')} salvos com sucesso!`);
+        } catch (err) {
+            console.error(`${code}:`, err);
+        }
+    }, 200);
+}
+
 async function inicializarDados() {
     try {
         const cloudData = await loadCloudSeasonInfo();

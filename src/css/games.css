@@ -792,7 +792,7 @@ body {
     border-radius: .5vh;
     overflow: hidden;
     padding: 0;
-    height: 1.25vh;
+    height: 1.15vh;
     background-color: var(--tab);
     margin: 0;
 }
@@ -877,9 +877,7 @@ body {
     font-size: 2.5vh;
     padding: 0;
 }
-.toPlay-panel .game.no-campaign.ajogar {
-    display: none;
-}
+.toPlay-panel .game.no-campaign.ajogar,
 .toPlatinar-panel .game.no-campaign.ajogar {
     display: none;
 }
@@ -1338,8 +1336,8 @@ body {
 .game-popup {
     background: var(--bg);
     border-radius: 1.3vh;
-    width: 80vw;
-    height: 75vh;
+    width: 85vw;
+    height: 85vh;
     z-index: 99;
     animation: popupIn .2s ease forwards;
     display: flex;
@@ -1351,13 +1349,13 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1.5vh;
-    padding: 1.35vh .65vw;
+    padding: 1.5vh;
 }
 .is-closing {
     animation: popupOut .2s ease forwards;
 }
 .game-banner-div {
-    height: 25vh;
+    height: auto;
     width: 100%;
     border-radius: .8vh;
     overflow: hidden;
@@ -1444,7 +1442,7 @@ body {
     display: flex;
     align-items: center;
     background-color: var(--bg);
-    padding: .75vh .65vw;
+    padding: 1.25vh .65vw;
     padding-left: .15vw;
     flex-direction: row;
     justify-content: space-between;
@@ -1458,32 +1456,21 @@ body {
 .achie-add-minus {
     width: fit-content;
     display: flex;
-    flex-direction: column;
-    border-radius: 1vh;
-    align-items: center;
-    overflow: hidden;
-    height: fit-content;
+    flex-direction: row;
+    gap: .65vw;
+    align-items: stretch;
+    align-self: stretch;
 }
-#achie-add {
-    font-size: 1.8vh;
-    display: flex;
-    height: fit-content;
-    padding: .8vh .7vw .5vh .7vw;
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    background-color: var(--btn);
-    cursor: pointer;
-    color: var(--text);
-}
-#achie-minus {
-    font-size: 1.8vh;
-    display: flex;
-    height: fit-content;
-    padding: .5vh .7vw .5vh .7vw;
-    width: fit-content;
+#achie-add, #achie-minus {
+    font-size: 2.5vh;
+    font-weight: 700;
+    height: 100%;
+    padding: 0 .75vw;
+    border-radius: .8vh;
+    width: 2vw;
     display: flex;
     align-items: center;
+    justify-content: center;
     background-color: var(--btn);
     cursor: pointer;
     color: var(--text);
@@ -1495,13 +1482,14 @@ body {
 .achie-info {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    gap: .4vw;
+    align-items: end;
+    gap: .5vw;
     width: 100%;
 }
-.achie-info p {
+.achie-percentage {
     margin: 0;
-    font-weight: 700;
+    font-size: 2.5vh;
+    font-weight: 800;
     color: var(--blue);
 }
 .game-rating-div {
@@ -1546,15 +1534,17 @@ body {
     width: 100%;
     display: flex;
     flex: 1;
-    height: 1vh;
+    height: 1.15vh;
     background-color: var(--tag);
     margin: 0;
+    /* margin: 0 0 .5vh 0; */
     overflow: hidden;
+    align-self: center;
     border-radius: 1vh;
 }
 .achie-bar-fill {
     width: 100%;
-    height: 1vh;
+    height: 1.15vh;
     background-color: var(--blue);
     margin: 0;
     transition: width .1s linear;
@@ -1659,6 +1649,19 @@ body {
     line-height: 1;
     display: inline-flex;
     align-items: center;
+    transition: color .15s linear;
+}
+.game-note {
+    position: relative;
+}
+
+.game-note.is-empty::before {
+    content: attr(placeholder);
+    position: absolute;
+    left: 0;
+    top: .1rem;
+    color: var(--text-dark-gray);
+    pointer-events: none;
 }
 .game-popup-rating.no-rating {
     margin: 0;
@@ -1673,7 +1676,7 @@ body {
     align-items: center;
     gap: .75vw;
     height: 76.5%;
-    transition: background .1s linear;
+    transition: all .15s linear;
     padding: 1vh .6vw;
     border-radius: 1.1vh;
     backdrop-filter: blur(8px);
@@ -1681,29 +1684,47 @@ body {
     box-shadow: 0 0 1vh var(--shadow-color);
 }
 .game-rating-title:hover {
-    background-color: var(--sep-bar);
+    backdrop-filter: blur(18px);
+    background-color: var(--shadow-color);
+    box-shadow: 0 0 0 #00000000;
 }
 .game-rating-title-text {
     margin: 0;
     font-weight: 700;
     font-size: 3vh;
     text-transform: uppercase;
+    transition: color .15s linear;
+}
+.game-rating-title:hover .game-popup-rating,
+.game-rating-title:hover .game-rating-title-text {
+    color: #050505 !important;
 }
 .achie-info-title-text {
     margin: 0;
     font-weight: 900;
-    font-size: 3vh;
+    font-size: 4vh;
     width: fit-content;
     color: var(--text);
     text-transform: uppercase;
+}
+.achie-info-title-numbers-div {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: .35vw;
 }
 .achie-info-title-numbers {
     margin: 0;
     font-weight: 600;
     font-size: 2.25vh;
-    align-self: flex-end;
-    overflow: hidden;
     color: var(--text-gray);
+}
+.achie-info-title-numbers-unlocked {
+    margin: 0;
+    font-weight: 700;
+    font-size: 4.5vh;
+    color: var(--text);
+    /* caret-color: var(--text); */
 }
 .campaign-info-title {
     display: flex;
@@ -1993,17 +2014,29 @@ body {
     background-color: var(--text-yellow);
 }
 
-.rating-change {
+.rating-change-div {
     position: absolute;
-    top: 10.4vh;
-    right: -13vw;
-    z-index: 99;
-    display: none; 
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background: rgba(0,0,0,.45);
+    margin: 0;
+    transition: background 1s linear;
+    animation: popupBGIn .5s ease forwards;
+    backdrop-filter: blur(4px);
+}
+.rating-change {
+    /* position: relative; */
+    z-index: 199;
+    display: flex;
     flex-direction: row;
     gap: 1vh;
     padding: 1vh;
     margin: 0;
-    list-style-type: none;
+    /* list-style-type: none; */
     border-radius: 1vh;
     background-color: var(--tab-hover);
     box-shadow: 0 0 .5vh var(--text-dark-gray);
@@ -2048,19 +2081,21 @@ body {
 .game-note-title {
     margin: 0;
 }
-.game-note-title-div i{
+#editNote {
     background-color: transparent;
-    padding: 1vh .6vw;
-    border-radius: 1vh;
+    padding: 1vh 1vw;
+    width: 1.75vw;
+    border-radius: .8vh;
     text-align: center;
     transition: background .15s linear;
     color: var(--text);
+    background-color: var(--btn);
     cursor: pointer;
     z-index: 98;
     font-size: 2vh;
 }
-.game-note-title-div i:hover {
-    background-color: var(--tab-hover);
+#editNote:hover {
+    background-color: var(--btn-hover);
 }
 
 .sep-bar {
@@ -2074,7 +2109,7 @@ body {
     user-select: text;
     height: 80%;
     border-radius: 1vh;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     cursor: default;
 }
 .game-note[contenteditable="true"] {
@@ -2522,6 +2557,10 @@ body.delete-mode-active .game:hover::after {
     overflow: hidden;
     overflow-y: auto;
     position: relative;
+}
+.toPlatinar-panel .game-title,
+.toPlay-panel .game-title {
+    max-height: 6.225vh;
 }
 .toPlay-panel {
     display: grid;
