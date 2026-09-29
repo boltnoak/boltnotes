@@ -121,6 +121,27 @@ async function resolveImage({ folder, custom, fallbackUrls = [], baseName, defau
 }
 
 const steamCache = new Map();
+const scoreCache = new Map();
+
+async function detailScore(url) {
+    if (scoreCache.has(url)) return scoreCache.get(url);
+    const res = await fetch(url);
+    const bmp = await createImageBitmap(await res.blob(), {
+        resizeWidth: 80, resizeHeight: 45,
+    });
+    const ctx = new OffscreenCanvas(80, 45).getContext('2d');
+    ctx.drawImage(bmp, 0, 0);
+    const d = ctx.getImageData(0, 0, 80, 45).data;
+
+    let diff = 0, n = 0;
+    for (let i = 0; i < d.length - 4; i += 4) {
+        diff += Math.abs(d[i] - d[i + 4]) + Math.abs(d[i + 1] - d[i + 5]) + Math.abs(d[i + 2] - d[i + 6]);
+        n++;
+    }
+    const s = diff / n;
+    scoreCache.set(url, s);
+    return s;
+}
 
 async function getSteamAssets(appid) {
   if (!appid) return null;
@@ -134,41 +155,55 @@ async function getSteamAssets(appid) {
   steamCache.set(appid, promise);
   return promise;
 }
-
-async function ensureCover({ appid, name, cover, hero, logo }) {
-  const safeName = String(name).replace(/[^a-z0-9]/gi, '_').toLowerCase();
-  const legacyCdn = appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}` : null;
-
-  const steamData = await getSteamAssets(appid);
-  
-  const headerUrl = steamData?.header_image;
-  const bgUrl = steamData?.background_raw || steamData?.background;
-
-  const [coverRes, heroRes, logoRes] = await Promise.all([
-    resolveImage({
-      folder: 'Covers', custom: cover, baseName: safeName, defaultExt: '.jpg',
-      fallbackUrls: [headerUrl, legacyCdn ? `${legacyCdn}/library_600x900.jpg` : null, legacyCdn ? `${legacyCdn}/header.jpg` : null].filter(Boolean),
-    }).catch(() => null),
-
-    resolveImage({
-      folder: 'Heros', custom: hero, baseName: safeName, defaultExt: '.jpg',
-      fallbackUrls: [bgUrl, legacyCdn ? `${legacyCdn}/library_hero.jpg` : null, legacyCdn ? `${legacyCdn}/page_bg_generated_v6b.jpg` : null].filter(Boolean),
-    }).catch(() => null),
-
-    resolveImage({
-      folder: 'Logos', custom: logo, baseName: safeName, defaultExt: '.png',
-      fallbackUrls: legacyCdn ? [`${legacyCdn}/logo.png`] : [],
-    }).catch(() => null),
-  ]);
-
-  return {
-    cover: coverRes ?? PLACEHOLDER,
-    hero: heroRes ?? PLACEHOLDER,
-    logo: logoRes ?? null,
-  };
+async function pickBg(bgUrl) {
+  if (!bgUrl || bgUrl.includes('generated')) return null;
+  try {
+    return (await detailScore(bgUrl)) < 6 ? null : bgUrl;
+  } catch {
+    return bgUrl;
+  }
 }
 
-async function addGame(newGameData, doHasCampaign) {
+async function ensureCover({ appid, name, cover, hero, logo }) {
+    const safeName = String(name).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const legacyCdn = appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}` : null;
+
+    const [cachedCover, cachedHero] = await Promise.all([
+        cover ? null : window.electronAPI.findCachedImage('Covers', safeName),
+        hero ? null : window.electronAPI.findCachedImage('Backgrounds', safeName),
+    ]);
+
+    const getSteam = () => getSteamAssets(appid);
+
+    const coverP = cachedCover ? Promise.resolve(cachedCover) : (async () => {
+        const steam = cover ? null : await getSteam();
+        return resolveImage({
+        folder: 'Covers', custom: cover, baseName: safeName, defaultExt: '.jpg',
+        fallbackUrls: [
+            steam?.header_image,
+            legacyCdn && `${legacyCdn}/library_600x900.jpg`,
+            legacyCdn && `${legacyCdn}/header.jpg`,
+        ].filter(Boolean),
+        }).catch(() => null);
+    })();
+
+    const heroP = cachedHero ? Promise.resolve(cachedHero) : (async () => {
+        let bgCandidate = null;
+        if (!hero) {
+        const steam = await getSteam();
+        bgCandidate = await pickBg(steam?.background_raw || steam?.background);
+        }
+        return resolveImage({
+            folder: 'Backgrounds', custom: hero, baseName: safeName, defaultExt: '.jpg',
+            fallbackUrls: [bgCandidate, legacyCdn && `${legacyCdn}/library_hero.jpg`].filter(Boolean),
+        }).catch(() => null);
+    })();
+
+    const [coverRes, heroRes] = await Promise.all([coverP, heroP]);
+    return { cover: coverRes ?? PLACEHOLDER, hero: heroRes ?? PLACEHOLDER, logo: null };
+}
+
+async function addGame(newGameData, doHasCampaign, doHasAchievements, achieTotalCount) {
   try {
     let hasAchievements = false;
     let totalAchievements = 0;
@@ -190,11 +225,14 @@ async function addGame(newGameData, doHasCampaign) {
     const gamesData = await loadJson('Games/games.json');
     const games = asList(gamesData.games);
     games.push({
-      name: newGameData.name,
-      appid: newGameData.appid,
-      releaseDate: newGameData.releaseDate,
-      developer: newGameData.developer,
-      publisher: newGameData.publisher,
+        name: newGameData.name,
+        appid: newGameData.appid || "",
+        releaseDate: newGameData.releaseDate,
+        developer: newGameData.developer,
+        publisher: newGameData.publisher,
+        ...(newGameData.cover && { cover: newGameData.cover }),
+        ...(newGameData.hero && { hero: newGameData.hero }),
+        ...(newGameData.custom && { custom: newGameData.custom }),
     });
     await saveJson('Games/games.json', { ...gamesData, games });
 
@@ -209,14 +247,21 @@ async function addGame(newGameData, doHasCampaign) {
     await saveJson('Games/campaigns.json', statusList);
 
     const achievementsList = asList(await loadJson('Games/achievements.json'));
-    achievementsList.push({
-      name: newGameData.name,
-      appid: newGameData.appid,
-      hasAchievements,
-      totalAchievements,
-      unlockedAchievements: 0,
-      achieStatus: 'aplatinar',
-    });
+    const entry = {
+        name: newGameData.name,
+        appid: newGameData.appid,
+        hasAchievements,
+        totalAchievements,
+        unlockedAchievements: 0,
+        achieStatus: 'aplatinar',
+    };
+    if (doHasAchievements) entry.hasAchievements = true;
+    if (doHasAchievements && achieTotalCount) {
+        entry.hasAchievements = true;
+        entry.totalAchievements = achieTotalCount;
+    }
+
+    achievementsList.push(entry);
     await saveJson('Games/achievements.json', achievementsList);
 
     return { success: true };

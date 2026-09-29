@@ -69,7 +69,7 @@
             <div class="status">
                 <div class="status-name-div">
                     <i class="fa-solid fa-calendar-day"></i>
-                    <span data-i18n="release-date">Lançado em:</span>
+                    <span data-i18n="release-date-">Lançado em:</span>
                 </div>
                 <span class="releaseDate"></span>
             </div>

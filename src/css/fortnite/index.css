@@ -115,9 +115,9 @@ body {
     display: grid;
     height: 100%;
     margin: 0;
-    padding: 2vh 1vw;
+    padding: 2vh 1vw 0 1vw;
     grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
-    grid-auto-rows: 25.55vh;
+    grid-auto-rows: 24.85vh;
     gap: 2vh 1vw;
     will-change: transform;
     position: relative;

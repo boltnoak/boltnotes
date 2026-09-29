@@ -584,3 +584,13 @@ ipcMain.handle('games:get-steam-data', async (_, appid) => {
         return null;
     }
 });
+const IMAGES_ROOT = path.join(DOCUMENTS, 'Games');
+const EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
+
+ipcMain.handle('find-cached-image', (_e, { folder, baseName }) => {
+  for (const ext of EXTS) {
+    const p = path.join(IMAGES_ROOT, folder, baseName + ext);
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+});

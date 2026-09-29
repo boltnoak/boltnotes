@@ -450,6 +450,7 @@ body {
 }
 .game.ajogar .game-cover {
     border-radius: .8vh;
+    max-height: 18vh;
 }
 .game:hover {
     transform: scale(1.015);
@@ -1896,15 +1897,15 @@ body {
     position: absolute;
     transform: translateY(6.5vh);
     margin: 0;
-    width: 27.1vw;
+    width: 28.7vw;
     display: flex;
     flex-direction: column;
     list-style-type: none;
     gap: 1vh;
     left: .65vw;
-    border-radius: 1vh;
+    border-radius: 1.25vh;
     background-color: var(--tab-hover);
-    padding: .8vh;
+    padding: 1vh .5vw;
     z-index: 1;
 }
 .campaign-status-change.noAchie {
@@ -1915,10 +1916,9 @@ body {
     font-size: 2.5vh;
     font-weight: 700;
     border-radius: .8vh;
-    width: fit-content;
-    width: 94.25%;
-    align-self: flex-end;
+    width: 100%;
     cursor: pointer;
+    box-sizing: border-box;
 }
 .campaign-status-change li::before {
     content: '';
@@ -1957,25 +1957,26 @@ body {
     position: absolute;
     transform: translateY(6.5vh);
     margin: 0;
-    width: 27.1vw;
+    width: 28.7vw;
     display: flex;
     flex-direction: column;
     list-style-type: none;
     gap: 1vh;
     left: .65vw;
-    border-radius: 1vh;
+    border-radius: 1.25vh;
     background-color: var(--tab-hover);
-    padding: .8vh;
+    padding: 1vh .5vw;
     z-index: 1;
 }
 .achie-status-change li {
+    box-sizing: border-box;
     padding: .75vh 0 .75vh 1.6vw;
     font-size: 2.5vh;
     font-weight: 700;
     border-radius: .8vh;
-    width: fit-content;
-    width: 94.25%;
-    align-self: flex-end;
+    display: flex;
+    width: 100%;
+    flex: 1;
     cursor: pointer;
 }
 .achie-status-change li::before {
@@ -2346,8 +2347,8 @@ body.delete-mode-active .game:hover::after {
     bottom: 1.5vh;
     bottom: 2vh;
     */
-    bottom: 1.25vh;
-    width: 34.915%;
+    bottom: 1.45vh;
+    width: 35%;
     justify-content: center;
     display: flex;
     flex-direction: row;

@@ -576,6 +576,14 @@ async function loadGamesAchie() {
         return 0;
     });
 
+    const achiePercent = (g) => {
+        const total = Number(g.totalAchievements) || 0;
+        const unlocked = Number(g.unlockedAchievements) || 0;
+        return total > 0 ? unlocked / total : 0;
+    };
+
+    toPlatinar.sort((a, b) => achiePercent(b) - achiePercent(a));
+
     const totalCompleted = completed.length;
 
     completed.forEach((game, idx) => {
@@ -659,15 +667,6 @@ async function loadGamesAchie() {
         }}, index * 40);
     });
     enableWheelScroll('.platinandoNow-panel');
-
-    // list.classList.remove('noGames');
-    // document.querySelector('.view-options').classList.remove('noGames');
-
-    // const validZerado = list.querySelectorAll(".game:not(.no-campaign)").length;
-    // if (validZerado === 0) {
-    //     list.classList.add('noGames');
-    //     document.querySelector('.view-options').classList.add('noGames');
-    // }
 }
 async function createGameAchieCard(game, completedIndex = null) {
     const div = document.createElement("div");
@@ -980,13 +979,14 @@ document.getElementById('steamdb-btn').addEventListener('click', () => {
 });
 
 let addGameHasCampaignTag = true;
+let addGameHasAchieTag = true;
 
 document.getElementById('addGameBtn').addEventListener('click', async () => {
     const nameInput = document.getElementById('gameName').value.trim();
     const appIdInput = document.getElementById('gameAppId').value.trim();
 
     if (!nameInput) {
-        alert('AppID não definido.');
+        alert('Name undefined');
         return;
     }
 
@@ -1023,6 +1023,65 @@ document.getElementById('addGameBtn').addEventListener('click', async () => {
     addBtn.style.opacity = '1';
 });
 
+document.getElementById('addCustomGameBtn').addEventListener('click', async () => {
+    const nameInput = document.getElementById('customGameName').value.trim();
+    const releaseDateInput = document.getElementById('gameReleaseDate').value;
+    const releaseDateInputEl = document.getElementById('gameReleaseDate');
+    const developerInput = document.getElementById('gameDeveloper').value.trim();
+    const publisherInput = document.getElementById('gamePublisher').value.trim();
+    const achieTotalInput = document.getElementById('gameAchievementsTotal').value.trim();
+    const achieTotalValue = Number(achieTotalInput);
+    const coverInput = document.getElementById('gameCover').value.trim();
+    const heroInput = document.getElementById('gameHero').value.trim();
+
+    if (!nameInput) {
+        alert('Name undefined');
+        return;
+    }
+    if (!releaseDateInput) {
+        alert('Release date undefined');
+        return;
+    }
+    // if (releaseDateInput.validity.badInput) {
+    //     alert('Incomplete release date');
+    //     return;
+    // }
+
+    let formatedDate = '';
+    if (releaseDateInput) {
+        const dataObj = new Date(releaseDateInput + 'T00:00:00');
+        formatedDate = new Intl.DateTimeFormat('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).format(dataObj);
+    }
+
+    const newGame = {
+        name: nameInput,
+        releaseDate: formatedDate || "",
+        developer: developerInput || "",
+        publisher: publisherInput || "",
+        cover: coverInput || "",
+        hero: heroInput || "",
+        custom: true,
+    };
+
+    const addBtn = document.getElementById('addCustomGameBtn');
+    addBtn.style.pointerEvents = 'none';
+    addBtn.style.opacity = '0.25';
+
+    const response = await addGame(newGame, addGameHasCampaignTag, addGameHasAchieTag, achieTotalValue);
+
+    if (response.success) {
+        window.location.reload();
+    } else {
+        alert('Erro ao salvar o jogo: ' + response.error);
+    }
+
+    addBtn.style.pointerEvents = 'auto';
+    addBtn.style.opacity = '1';
+});
 
 document.getElementById('reload-btn').addEventListener('click', () => {
     loadGames();
@@ -1162,6 +1221,7 @@ async function openGamePopup(el) {
 
     const banner = document.querySelector('.game-banner');
     const logo = document.querySelector('.game-logo');
+    const gameName = document.querySelector('.game-popup-gamename');
     const devText = document.querySelector('.dev-name');
     const pubText = document.querySelector('.pub-name');
     const releaseDateTitle = document.querySelector('.game-releaseDate-title');
@@ -1262,6 +1322,8 @@ async function openGamePopup(el) {
         document.querySelector('.achie-percentage').style.color = 'var(--blue)';
     }
 
+    if (gameName) gameName.textContent = gamesDB.name;
+
     const mainBG = document.querySelector('.game-maincontent');
     const normalizedPath = localHeroPath ? localHeroPath.replace(/\\/g, '/') : null;
     const bgValue = normalizedPath 
@@ -1273,9 +1335,9 @@ async function openGamePopup(el) {
     // logo.src = localLogoPath ? `file://${localLogoPath}` : '';
 
     logo.alt = el.dataset.id;
-    devText.textContent = gamesDB.developer || "Erro";
-    pubText.textContent = gamesDB.publisher || "Erro";
-    releaseDateText.textContent = gamesDB.releaseDate || "Erro";
+    devText.textContent = gamesDB.developer || "Not Found";
+    pubText.textContent = gamesDB.publisher || "Not Found";
+    releaseDateText.textContent = gamesDB.releaseDate || "Not Found";
 
     if (releaseDateTitle) {
         const observer = new MutationObserver(() => {
@@ -2207,11 +2269,23 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-const addGameHasCampaignBtn = document.querySelector('.addGame-type.type-mark-campaign');
-
-addGameHasCampaignBtn.addEventListener('click', () => {
-    addGameHasCampaignTag = !addGameHasCampaignTag;
-    addGameHasCampaignBtn.classList.toggle('active');
+const addGameHasCampaignBtn = document.querySelectorAll('.addGame-type.type-mark-campaign');
+addGameHasCampaignBtn.forEach((el) => {
+    el.addEventListener('click', () => {
+        addGameHasCampaignTag = !addGameHasCampaignTag;
+        console.log(addGameHasCampaignTag)
+        addGameHasCampaignBtn.forEach((e) => e.classList.toggle('active'));
+    })
+});
+const addGameHasAchieBtn = document.querySelectorAll('.addGame-type.type-mark-achievements');
+addGameHasAchieBtn.forEach((el) => {
+    el.addEventListener('click', () => {
+        addGameHasAchieTag = !addGameHasAchieTag;
+        console.log(addGameHasAchieTag)
+        addGameHasAchieBtn.forEach((e) => e.classList.toggle('active'));
+        const totalAchieInput = document.getElementById('gameAchievementsTotal');
+        totalAchieInput.style.display = addGameHasAchieTag ? 'flex' : 'none';
+    })
 });
 
 const addGameSwitches = document.querySelectorAll('.add-game-form-mode');

@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getAppVersion: () => ipcRenderer.invoke('app-version'),
 
     getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),
+    findCachedImage: (folder, baseName) => ipcRenderer.invoke('find-cached-image', { folder, baseName }),
 
     menu: {
         maximizeApp: () => ipcRenderer.send('menu:maximize-app'),

@@ -38,8 +38,10 @@
   "date-old": "Oldest Completed",
   "rating-high": "High Rating",
   "rating-low": "Low Rating",
+  "add-new-game": "Add new game",
   "add-new-steamgame": "Steam Game",
   "add-new-customgame": "Custom Game",
+  "remove-game": "Delete a game",
   "fortnite": "Fortnite",
   "fn-chapters": "Chapters",
   "fn-seasons": "Seasons",
@@ -49,7 +51,8 @@
   "rating": "Rating:",
   "levels": "Levels:",
   "wins": "Wins:",
-  "release-date": "Release date:",
+  "release-date-": "Release date:",
+  "release-date": "Release date",
   "gameplay": "Gameplay",
   "loot-pool": "Loot Pool",
   "story": "Story",
@@ -134,5 +137,7 @@
   "back": "Return",
   "has": "Has",
   "system": "System",
-  "app": "App"
+  "app": "App",
+  "game-cover": "Cover",
+  "game-hero": "Background"
 }
