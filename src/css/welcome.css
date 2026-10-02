@@ -52,6 +52,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-top: 0;
+    gap: 0;
 }
 
 .page {
@@ -303,8 +304,35 @@ body {
     background-image: linear-gradient(to left, transparent 0%, var(--tab) 80%);
 }
 .recentSeason-panel {
-    margin: 0 0 2.5vh 0;
+    margin: 0 0 2.38vh 0;
 }
 .featuredSelector-select li {
     width: 90%;
+}
+
+.recentSeason-image {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-size: cover;
+    background-position: 0 -6vh;
+    transform: translateY(0);
+    background-color: rgba(30,30,30,.1);
+    border-radius: 0;
+}
+.recentSeason-image-div {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    height: 100%;
+    width: 100%;
+    border-radius: 1.25vh;
+    background-color: var(--btn);
+    overflow: hidden;
+}
+.recentSeason-image-div p {
+    margin: 0 .55vw 1.15vh .55vw;
+    font-size: 1.75vh;
+    font-weight: 550;
+    color: var(--text-light-gray);
 }
