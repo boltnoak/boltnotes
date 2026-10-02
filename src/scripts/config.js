@@ -5,7 +5,7 @@ function toggleConfig(el) {
     
     const isActive = el.classList.contains('active');
 
-    window.electronAPI.config.updateConfig(option, isActive);
+    updateConfig(option, isActive);
 }
 
 const changeLangBtn = document.querySelector('.change-lang-btn');
@@ -19,7 +19,7 @@ const changeLangSelect = document.querySelector('.change-lang-drop-select');
 // })
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const config = await window.electronAPI.config.getConfig();
+    const config = await getConfig();
 
     const langBtn = document.getElementById('lang-btn');
     const langSelect = document.getElementById('lang-select');
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             langSelect.querySelectorAll('li').forEach(item => item.classList.remove('active'));
             li.classList.add('active');
 
-            await window.electronAPI.config.updateConfig('language', lang);
+            await updateConfig('language', lang);
 
             if (typeof applyLocale === 'function') applyLocale();
             if (window.parent && typeof window.parent.applyLocale === 'function') {
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themeContainers = document.querySelectorAll('.theme-selector-div');
 
     if (themeContainers.length > 0) {
-        const config = await window.electronAPI.config.getConfig();
+        const config = await getConfig();
         const themesList = await listThemes();
         const currentTheme = config.theme;
 
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const config = await window.electronAPI.config.getConfig();
+    const config = await getConfig();
     const currentFeatured = config.featured;
 
     const selectorsContainers = document.querySelectorAll('.featured-selector-div');
@@ -283,14 +283,14 @@ async function selectNewTheme(themeName) {
 async function changeTheme(selectEl) {
     const selectedTheme = selectEl.value;
 
-    window.electronAPI.config.updateConfig('theme', selectedTheme);
+    updateConfig('theme', selectedTheme);
 
     await selectNewTheme(selectedTheme);
 }
 async function changeFeatured(selectEl) {
     const selectedFeatured = selectEl.value;
 
-    window.electronAPI.config.updateConfig('featured', selectedFeatured);
+    updateConfig('featured', selectedFeatured);
 }
 
 

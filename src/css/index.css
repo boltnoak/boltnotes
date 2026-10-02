@@ -574,6 +574,7 @@ body {
     overflow: hidden;
     height: 100%;
     width: 100%;
+    animation: fadeInUp .35s ease forwards;
 }
 #recent-season-name {
     margin: 0;
@@ -582,6 +583,7 @@ body {
     font-family: 'Montserrat';
     text-wrap: wrap;
 }
+.recent-season-name-span { display: none; }
 .recentSeason-panel img {
     width: 22vw;
     height: 25vh;
@@ -676,6 +678,15 @@ body {
     display: flex;
     justify-content: center;
     flex: 1;
+    pointer-events: none;
+    opacity: .5;
+}
+.status.ready .statusLevel-add,
+.status.ready .statusLevel-minus,
+.status.ready .statusWin-add,
+.status.ready .statusWin-minus {
+    pointer-events: auto;
+    opacity: 1;
 }
 .statusLevel-add:hover,
 .statusLevel-minus:hover,
@@ -710,6 +721,7 @@ body {
     height: 100%;
     width: 100%;
     gap: .4vw;
+    animation: fadeInUp .35s ease forwards;
 }
 .playingNow-div span {
     background-color: var(--blue);

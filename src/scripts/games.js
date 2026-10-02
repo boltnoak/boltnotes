@@ -332,6 +332,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     if (game.hasCampaign === false) div.classList.add("no-campaign");
 
     img.src = 'assets/placeholder.png';
+    img.loading = 'lasy';
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
     const title = document.createElement("p");

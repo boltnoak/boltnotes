@@ -90,7 +90,7 @@ async function formatDate(dataStr, style = 'default') {
     const dataObj = new Date(Number(year), Number(month) - 1, Number(day));
     if (isNaN(dataObj)) return dataStr;
 
-    const config = await window.electronAPI.config.getConfig();
+    const config = await getConfig();
     let locale = config?.language || 'pt-BR';
     if (locale === 'en') locale = 'en-US';
 

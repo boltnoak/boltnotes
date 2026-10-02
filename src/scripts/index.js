@@ -14,7 +14,6 @@ function changeFeatured(el) {
     const gamesFeatured = document.querySelector('.featured-games');
 
     if (code == 'playing-now') {
-        loadGames();
         playingNow.style.display = 'flex';
         fnQuickEdit.style.display = 'none';
         gamesFeatured.style.display = 'flex';
@@ -44,7 +43,7 @@ function changeFeaturedView(el) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const config = await window.electronAPI.config.getConfig();
+    const config = await getConfig();
     const currentFeatured = config.featured;
 
     if (config.show_featured_changer === false) {
@@ -73,7 +72,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.featured-change-div').style.display = 'none';
     }
     else if (currentFeatured === 'fn_fast_edit') {
-        initFeaturedFortnite();
         document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.add('active');
         document.querySelector('.featured-option[data-value="playing-now"]').classList.remove('active');
         document.querySelector('#featured-title i').classList.remove('fa-gamepad');
@@ -83,7 +81,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.recentSeason-panel').style.display = 'flex';
         document.querySelector('.featured-games').style.display = 'none';
     } else if (currentFeatured === 'playing_now') {
-        loadGames();
         document.querySelector('.featured-option[data-value="playing-now"]').classList.add('active');
         document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.remove('active');
         document.querySelector('#featured-title i').classList.remove('fa-square-poll-horizontal');
@@ -130,7 +127,7 @@ const FORTNITE_STATS = "Fortnite/stats.json";
 async function loadCloudSeasonInfo() {
     if (cachedSeasons) return cachedSeasons;
 
-    const config = await window.electronAPI.config.getConfig();
+    const config = await getConfig();
     const language = config.language || "pt-BR";
 
     const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`;
@@ -192,9 +189,13 @@ async function initFeaturedFortnite() {
 
     document.getElementById('recent-season-name').textContent = seasonName;
 
-    document.querySelector('.status-level').id = `${code}-levels`;
-    document.querySelector('.status-win').id = `${code}-wins`;
+    const level = document.querySelector('.status-level').id = `${code}-levels`;
+    const wins = document.querySelector('.status-win').id = `${code}-wins`;
+    level.id = `${code}-levels`;
+    wins.id = `${code}-wins`;
     preencherValores();
+    const status = document.querySelectorAll('.status');
+    status.forEach((e) => e.classList.add('ready'));
 }
 
 async function preencherValores() {
@@ -463,14 +464,8 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const img = document.createElement("img");
     img.className = "game-cover";
 
-    const { cover: localPath } = await ensureCover({
-        appid: game.appid,
-        name: game.name,
-        cover: game.cover
-    });
-
-    img.src = localPath ? `${localPath}` : 'assets/placeholder.png';
-    
+    img.src = 'assets/placeholder.png';
+    img.loading = 'lasy';
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
     const title = document.createElement("p");
@@ -488,6 +483,18 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     div.dataset.id = game.name;
 
     div.addEventListener('click', () => openGamePopup(div));
+
+    div.gameData = game;
+
+    div.addEventListener('mouseenter', () => {
+        const hero = game._cachedHero;
+        console.log('Preload - ', game.name, { hero, jaCarregado: game._heroPreloaded });
+        if (hero && !game._heroPreloaded) {
+            game._heroPreloaded = true;
+            new Image().src = hero.replace(/\\/g, '/');
+        }
+    });
+    gameCardObserver.observe(div);
 
     return div;
 }
@@ -787,7 +794,7 @@ async function createGameAchieCard(game, completedIndex = null) {
         div.classList.add("no-achie");
     }
 
-    img.src = '../assets/placeholder.png';
+    img.src = 'assets/placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -1801,3 +1808,6 @@ async function toggleNoteEdit(el) {
         await updateNotesJSON(name); 
     }
 }
+
+loadGames();
+initFeaturedFortnite();

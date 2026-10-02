@@ -1,3 +1,7 @@
+// function getTauri() {
+//     return window.__TAURI__ || window.parent?.__TAURI__;
+// }
+
 document.addEventListener('DOMContentLoaded', async () => {
     const versionEl = document.getElementById('app-version');
     if (!versionEl) return
@@ -5,6 +9,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const version = await window.electronAPI.getAppVersion();
     if (versionEl) versionEl.innerText = `v${version}`;
 });
+
+async function getConfig() {
+    return await window.electronAPI.config.getConfig();
+}
+async function updateConfig(config, value) {
+    await window.electronAPI.config.updateConfig(config, value);
+}
+
+async function getSteamData(appid) {
+    await window.electronAPI.getSteamData(appid);
+}
+async function findCachedImage(folder, name) {
+    await window.electronAPI.findCachedImage(folder, name)
+}
 
 const DOCS = 'documents://';
 
@@ -169,8 +187,8 @@ async function ensureCover({ appid, name, cover, hero, logo }) {
     const legacyCdn = appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}` : null;
 
     const [cachedCover, cachedHero] = await Promise.all([
-        cover ? null : window.electronAPI.findCachedImage('Covers', safeName),
-        hero ? null : window.electronAPI.findCachedImage('Backgrounds', safeName),
+        cover ? null : findCachedImage('Covers', safeName),
+        hero ? null : findCachedImage('Backgrounds', safeName),
     ]);
 
     const getSteam = () => getSteamAssets(appid);
@@ -210,7 +228,7 @@ async function addGame(newGameData, doHasCampaign, doHasAchievements, achieTotal
 
     if (newGameData.appid) {
         try {
-            const steam = await window.electronAPI.getSteamData(newGameData.appid);
+            const steam = await getSteamData(newGameData.appid);
             if (steam) {
                 hasAchievements = steam.hasAchievements;
                 totalAchievements = steam.totalAchievements;

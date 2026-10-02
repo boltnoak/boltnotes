@@ -301,7 +301,7 @@ body {
     margin: 0 .5vw 0 0;
 }
 .featuredSelector-select {
-    margin: 0 1.5vw 0 0;
+    margin: 0 1.5vw .25vh 0;
     padding: 0;
     left: 0;
     display: flex;
@@ -309,7 +309,7 @@ body {
     align-items: start;
     width: 100%;
     border-radius: 1vh;
-    justify-content: center;
+    justify-content: start;
     height: fit-content;
     gap: .65vw;
 }
@@ -346,7 +346,8 @@ body {
     background-color: var(--btn);
     padding: .5vh .5vw;
     border-radius: .75vh;
-    width: 100%;
+    width: fit-content;
+    min-width: 16vw;
     height: 3.65vh;
     gap: .5vw;
     font-weight: 650;

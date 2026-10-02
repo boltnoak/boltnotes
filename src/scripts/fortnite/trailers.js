@@ -141,7 +141,7 @@ function formatTime(seconds) {
 async function loadCloudTrailers() {
     if (cachedTrailers) return cachedTrailers;
 
-    const config = await window.electronAPI.config.getConfig();
+    const config = await getConfig();
     const language = config.language || "pt-BR";
 
     const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-trailers-${language}.json`;
@@ -195,7 +195,7 @@ async function openTrailer(el) {
         let firstVideoToPlay = null;
         let firstVideoTitle = null;
 
-        const config = await window.electronAPI.config.getConfig();
+        const config = await getConfig();
         const language = config.language;
 
         for (const tipo of tipos) {

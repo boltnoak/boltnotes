@@ -3,7 +3,7 @@ let cachedSeasons = null;
 async function loadCloudSeasonInfo() {
     if (cachedSeasons) return cachedSeasons;
 
-    const config = await window.electronAPI.config.getConfig();
+    const config = await getConfig();
     const language = config.language || "pt-BR";
 
     const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`;

@@ -52,7 +52,7 @@ async function applyTheme() {
     }
 
     try {
-        const config = await window.electronAPI.config.getConfig();
+        const config = await getConfig();
         const currentTheme = config.theme;
         const cachedThemeName = localStorage.getItem('cached-theme-name');
 
