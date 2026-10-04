@@ -182,6 +182,33 @@ async function pickBg(bgUrl) {
   }
 }
 
+let jsonQueue = Promise.resolve();
+
+function updateImagesJSON(game, { cover, hero }) {
+    const FILE = "Games/games.json";
+    jsonQueue = jsonQueue.then(async () => {
+        const data = await loadJson(FILE);
+        const lista = Array.isArray(data) ? data : (data.games || []);
+
+        const jogoEncontrado = lista.find(j => j.name === game);
+        if (!jogoEncontrado) {
+            console.warn(`Jogo ${game} não encontrado em FILE.`);
+            return false;
+        }
+
+        if (cover) jogoEncontrado.cover = cover;
+        if (hero)  jogoEncontrado.hero  = hero;
+
+        await saveJson(FILE, data);
+        return true;
+    }).catch(e => {
+        console.error('Erro ao salvar imagens no JSON:', e);
+        return false;
+    });
+
+    return jsonQueue;
+}
+
 async function ensureCover({ appid, name, cover, hero, logo }) {
     const safeName = String(name).replace(/[^a-z0-9]/gi, '_').toLowerCase();
     const legacyCdn = appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}` : null;
@@ -196,20 +223,19 @@ async function ensureCover({ appid, name, cover, hero, logo }) {
     const coverP = cachedCover ? Promise.resolve(cachedCover) : (async () => {
         const steam = cover ? null : await getSteam();
         return resolveImage({
-        folder: 'Covers', custom: cover, baseName: safeName, defaultExt: '.jpg',
-        fallbackUrls: [
-            steam?.header_image,
-            legacyCdn && `${legacyCdn}/library_600x900.jpg`,
-            legacyCdn && `${legacyCdn}/header.jpg`,
-        ].filter(Boolean),
+            folder: 'Covers', custom: cover, baseName: safeName, defaultExt: '.jpg',
+            fallbackUrls: [
+                steam?.header_image,
+                legacyCdn && `${legacyCdn}/header.jpg`,
+            ].filter(Boolean),
         }).catch(() => null);
     })();
 
     const heroP = cachedHero ? Promise.resolve(cachedHero) : (async () => {
         let bgCandidate = null;
+        const steam = hero ? null : await getSteam();
         if (!hero) {
-        const steam = await getSteam();
-        bgCandidate = await pickBg(steam?.background_raw || steam?.background);
+            bgCandidate = await pickBg(steam?.background_raw || steam?.background);
         }
         return resolveImage({
             folder: 'Backgrounds', custom: hero, baseName: safeName, defaultExt: '.jpg',
@@ -217,7 +243,15 @@ async function ensureCover({ appid, name, cover, hero, logo }) {
         }).catch(() => null);
     })();
 
+    const onlyFileName = v => v ? String(v).split(/[\\/]/).pop() : null;
+
     const [coverRes, heroRes] = await Promise.all([coverP, heroP]);
+
+    await updateImagesJSON(name, {
+        cover: !cover && coverRes && coverRes !== PLACEHOLDER ? onlyFileName(coverRes) : null,
+        hero:  !hero  && heroRes  && heroRes  !== PLACEHOLDER ? onlyFileName(heroRes)  : null,
+    });
+
     return { cover: coverRes ?? PLACEHOLDER, hero: heroRes ?? PLACEHOLDER, logo: null };
 }
 

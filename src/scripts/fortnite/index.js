@@ -78,10 +78,6 @@ async function loadChapters() {
     applyLocale();
 }
 
-// loadBanner();
-// loadChapters();
-// loadSidebarChapters();
-
 const DOCS_BASE = 'documents://Fortnite/Assets';
 const REMOTE_BASE = 'https://github.com/boltnoak/boltnotes-assets/releases/download/assets';
 const docsUrl = (p) => `${DOCS_BASE}/${p}`;
@@ -90,7 +86,7 @@ async function readLocalManifest() {
   try {
     const res = await fetch(docsUrl('manifest.json'), { cache: 'no-store' });
     return res.ok ? await res.json() : null;
-  } catch { return null; } // na primeira vez não existe
+  } catch { return null; }
 }
 
 async function writeDoc(path, data) {
@@ -152,7 +148,7 @@ async function installPackage(pkg) {
   }
 }
 
-async function fetchWithTimeout(url, options = {}, ms = 5000) {
+async function fetchWithTimeout(url, options = {}, ms = 2000) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try {

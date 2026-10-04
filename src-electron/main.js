@@ -54,20 +54,18 @@ let updateReady = false;
 // let trayNameIcon;
 
 function getConfig() {
-    const configPath = path.join(app.getPath('userData'),'config.json');
+    const configPath = path.join(app.getPath('userData'),'settings.json');
     const defaults = {
-        language: 'en',
+        welcomed: false,
         maximize_on_start: false,
         open_on_startup: false,
         minimize_to_tray: false,
-        backlog_on_home: false,
-        notes_on_home: true,
-        fortnite_on_home: true,
-        show_version: true,
-        last_seen_version: null,
+        language: 'en',
         theme: 'dark',
         featured: 'playing_now',
-        welcomed: false,
+        backlog_on_home: true,
+        notes_on_home: true,
+        fortnite_on_home: true,
         show_featured_changer: false
     };
     try {
@@ -79,21 +77,27 @@ function getConfig() {
     return defaults;
 }
 
-app.on('before-quit', () => { isQuitting = true });
+app.on('before-quit', async () => {
+    isQuitting = true
+    if (win && win.webContents) {
+        await win.webContents.session.clearCache();
+        await win.webContents.session.clearCodeCaches({});
+    }
+});
 process.on('SIGTERM', () => {
-  isQuitting = true;
-  app.quit();
+    isQuitting = true;
+    app.quit();
 });
 process.on('SIGINT', () => {
-  isQuitting = true;
-  app.quit();
+    isQuitting = true;
+    app.quit();
 });
 
 Menu.setApplicationMenu(null);
 app.commandLine.appendSwitch('enable-smooth-scrolling');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 if (process.platform === 'linux') {
-  app.commandLine.appendSwitch('disable-features', 'WaylandWpColorManagerV1')
+    app.commandLine.appendSwitch('disable-features', 'WaylandWpColorManagerV1')
 }
 
 function createWindow() {
@@ -400,7 +404,7 @@ ipcMain.handle('app-version', () => { return app.getVersion() });
 //////////////////////
 ipcMain.handle('config:get', () => { return getConfig() });
 ipcMain.on('config:update', (event, { key, value }) => {
-    const configFile = path.join(app.getPath('userData'),'config.json');
+    const configFile = path.join(app.getPath('userData'),'settings.json');
     const config = getConfig();
 
     config[key] = value;
@@ -410,7 +414,7 @@ ipcMain.on('config:update', (event, { key, value }) => {
         console.log(`Config - value of "${key}" changed to: ${value}`);
 
         if (key === 'open_on_startup') manageStartup(value);
-    } catch (erro) { console.error("Erro ao salvar config.json:", erro) }
+    } catch (erro) { console.error("Error on saving setting:", erro) }
 });
 
 function manageStartup(openOSstart) {

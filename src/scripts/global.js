@@ -2,22 +2,22 @@
 /// DEV TOOLS ///
 /////////////////
 window.addEventListener('keydown', (e) => {
-  if (!window.electronAPI || !window.electronAPI.isDev) {
-    if (e.code === "F5" || e.code === "F12") {
-      e.preventDefault();
+    if (!window.electronAPI || !window.electronAPI.isDev) {
+        if (e.code === "F5" || e.code === "F12") {
+            e.preventDefault();
+        }
+        return;
     }
-    return;
-  }
-  if (e.code == "F5") {
-    const bodyElement = document.querySelector('.pageBody');
-    if (bodyElement) {
-      sessionStorage.setItem('pageBodyScroll', bodyElement.scrollTop);
+    if (e.code == "F5") {
+        const bodyElement = document.querySelector('.pageBody');
+        if (bodyElement) {
+            sessionStorage.setItem('pageBodyScroll', bodyElement.scrollTop);
+        }
+        window.location.reload();
     }
-    window.location.reload();
-  }
-  if (e.code == "F12") {
-    window.electronAPI.devTools();
-  }
+    if (e.code == "F12") {
+        window.electronAPI.devTools();
+    }
 });
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;

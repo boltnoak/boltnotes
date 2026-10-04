@@ -1,6 +1,4 @@
-////////////////
-/// ARQUIVOS ///
-////////////////
+// JSON FILES
 const REVIEWS_FILE = "Fortnite/reviews.json";
 const STATS_FILE = "Fortnite/stats.json";
 
@@ -11,10 +9,8 @@ const urlParams = new URLSearchParams(window.location.search);
 /////////////////
 let reviews = {};
 let stats = {};
-
 let cachedSeasons = null;
 let seasonTemplateHTML = null;
-
 let chapterNum = parseInt(urlParams.get('num'), 10) || 3;
 let currentChapter = `c${chapterNum}`;
 let chaptersMax = null;
@@ -45,30 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     chaptersMin = Math.min(...chaptersCount);
 });
 
-
-// const before = document.getElementById('before-chapter');
-// const next = document.getElementById('next-chapter');
-
-// async function mudarCapitulo(chapter) {
-//     chapterNum = chapter;
-//     currentChapter = `c${chapterNum}`;
-
-//     const titleText = `${window._t['fn-chapter']} ${chapterNum}`;
-//     document.title = `BoltNotes | Fortnite — ${titleText}`;
-    
-//     const chapterName = document.getElementById('chapter-name');
-//     chapterName.textContent = titleText;
-
-//     before.style.visibility = (chapterNum - 1) >= chaptersMin ? "visible" : "hidden";
-//     next.style.visibility = (chapterNum + 1) <= chaptersMax ? "visible" : "hidden";
-
-//     if (cachedSeasons) await renderizarCapitulo(currentChapter, cachedSeasons);
-
-//     document.querySelector('.pageBody').scrollTo({ top: 0 });
-// }
-
-
-
 function debouncedSave(code) {
     clearTimeout(saveTimeout);
     
@@ -77,11 +49,11 @@ function debouncedSave(code) {
         const levels = document.getElementById(`${code}-levels`)?.textContent || "0";
         const wins = document.getElementById(`${code}-wins`)?.textContent || "0";
 
-        const gameplay = document.getElementById(`${code}-gameplay`)?.innerText || "";
-        const loot = document.getElementById(`${code}-loot`)?.innerText || "";
-        const mapa = document.getElementById(`${code}-mapa`)?.innerText || "";
-        const passe = document.getElementById(`${code}-passe`)?.innerText || "";
-        const story = document.getElementById(`${code}-story`)?.innerText || "";
+        const gameplay = document.getElementById(`${code}-gameplay`)?.innerHTML.replace(/<br>/, "") || "";
+        const loot = document.getElementById(`${code}-loot`)?.innerHTML.replace(/<br>/, "") || "";
+        const mapa = document.getElementById(`${code}-mapa`)?.innerHTML.replace(/<br>/, "") || "";
+        const passe = document.getElementById(`${code}-passe`)?.innerHTML.replace(/<br>/, "") || "";
+        const story = document.getElementById(`${code}-story`)?.innerHTML.replace(/<br>/, "") || "";
 
         window.reviews[code] = { 
             ...window.reviews[code], 
@@ -110,31 +82,16 @@ function debouncedSave(code) {
     }, 200);
 }
 
-async function inicializarDados() {
+async function initData() {
     try {
-        const cloudData = await loadCloudSeasonInfo();
+        const data = await loadCloudSeasonInfo();
         const localData = await loadJson(REVIEWS_FILE);
         const statsData = await loadJson(STATS_FILE);
+
         window.reviews = (localData && typeof localData === 'object') ? localData : {};
         window.stats = (statsData && typeof statsData === 'object') ? statsData : {};
 
-        const data = await loadCloudSeasonInfo();
-        const keys = Object.keys(data);
-
-        // const beforeBtn = document.getElementById('before-chapter');
-        // const nextBtn = document.getElementById('next-chapter');
-        
-        // if (beforeBtn) {
-        //     beforeBtn.onclick = () => { if (chapterNum - 1 >= chaptersMin) mudarCapitulo(chapterNum - 1); };
-        // }
-        // if (nextBtn) {
-        //     nextBtn.onclick = () => { if (chapterNum + 1 <= chaptersMax) mudarCapitulo(chapterNum + 1); };
-        // }
-
-        // await mudarCapitulo(chapterNum);
-        await renderizarCapitulo(currentChapter, cloudData);
-
-        if (typeof initVideoEvents === "function") initVideoEvents();
+        await renderChapter(data);
     } catch (err) {
         console.error("Erro ao inicializar:", err);
     }
@@ -142,7 +99,6 @@ async function inicializarDados() {
 
 async function getSeasonTemplate() {
     if (document.getElementById('season-template')) return;
-
     try {
         const res = await fetch('components/fortnite/seasons-template.bolt');
         const data = await res.text();
@@ -152,23 +108,18 @@ async function getSeasonTemplate() {
     }
 }
 
-async function renderizarCapitulo(prefixoCapitulo, cloudData) {
-    const container = document.getElementById('seasons-list-container');
+async function renderChapter(seasonsData) {
+    const listContainer = document.getElementById('seasons-list-container');
     let localDataUpdated = false;
     let localStatsUpdated = false;
 
-    if (!container) return;  
-    container.innerHTML = '';
+    if (!listContainer) return;  
+    listContainer.innerHTML = '';
 
     if (window.parent) {
-        // Remove active de todos para evitar múltiplos selecionados
         window.parent.document.querySelectorAll('.sidebar-btn-chapter').forEach(btn => btn.classList.remove('active'));
-        
-        // Adiciona active no capítulo atual da página
         const activeSidebarBtn = window.parent.document.querySelector(`.sidebar-btn-chapter[data-chapter="${currentChapter.replace('c','')}"]`);
-        if (activeSidebarBtn) {
-            activeSidebarBtn.classList.add('active');
-        }
+        if (activeSidebarBtn) { activeSidebarBtn.classList.add('active'); }
     }
 
     await getSeasonTemplate();
@@ -176,110 +127,123 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
 
     const template = document.getElementById('season-template');
     if (!template) {
-        console.error("Erro: O template #season-template não foi encontrado no DOM.");
+        console.error("Seasons template not found");
         return;
     }
 
-    const keys = Object.keys(cloudData).filter(code => code.startsWith(prefixoCapitulo)).reverse();
+    const keys = Object.keys(seasonsData).filter(code => code.startsWith(currentChapter)).reverse();
 
     for (const code of keys) {
-        const info = cloudData[code];
+        const info = seasonsData[code];
 
         if (!window.reviews[code]) {
             window.reviews[code] = { loot: "", mapa: "", passe: "", story: "" };
             localDataUpdated = true;
         }
-
         if (!window.stats[code]) {
             window.stats[code] = { levels: "0", wins: "0", rating: "N/A", locked: false };
             localStatsUpdated = true;
         }
 
-        const data = window.reviews[code];
-        const currentStats = window.stats[code];
-
+        const stats = window.stats[code];
         const clone = template.content.cloneNode(true);
-        
+
+        ///////////////////////
+        /// SEASON ELEMENTS ///
+        ///////////////////////
         const card = clone.querySelector('.fn-season');
-        if (card) card.dataset.code = code;
-
-        const bg = clone.querySelector('.banner');
-        if (bg) bg.style.backgroundImage = `url('documents://Fortnite/Assets/${code}.jpg')`;
-
-        const character = clone.querySelector('.season-character');
-        if (character) character.src = `documents://Fortnite/Assets/${code}-character.png`;
-
-        const seasonMap = clone.querySelector('.season-map');
-        if (seasonMap) seasonMap.src = `documents://Fortnite/Assets/${code}-map.jpg`;
-
         const seasonDiv = clone.querySelector('.season');
-        const isLocked = currentStats.locked ?? false;
-        if (seasonDiv) seasonDiv.dataset.locked = isLocked;
-
+        const titleEl = clone.querySelector('.season-title');
         const lockIcon = clone.getElementById('lock-unlock');
 
-        if (lockIcon) {
-            lockIcon.className = currentStats.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
-            
-            lockIcon.onclick = async (e) => {
-                e.stopPropagation();
-
-                currentStats.locked = !currentStats.locked;
-                
-                lockIcon.className = currentStats.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
-                
-                const parentSeason = lockIcon.closest('.season') || lockIcon.closest('.fn-season').querySelector('.season');
-                if (parentSeason) parentSeason.dataset.locked = currentStats.locked;
-
-                const currentCard = lockIcon.closest('.fn-season');
-                if (currentCard) {
-                    const displayStyle = currentStats.locked ? 'none' : 'inline-block';
-                    currentCard.querySelectorAll('.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus')
-                        .forEach(btn => btn.style.display = displayStyle);
-
-                    currentCard.querySelectorAll('.review-topictext')
-                        .forEach(p => p.contentEditable = !currentStats.locked);
-                }
-
-                const rContainer = currentCard.querySelector('.rating-container');
-                const rOptions = currentCard.querySelector('.rating-options');
-                if (rContainer) {
-                    if (currentStats.locked) {
-                        rContainer.classList.add('disabled');
-                        rContainer.classList.remove('enabled');
-                        if (rOptions) rOptions.classList.remove('active');
-                    } else {
-                        rContainer.classList.remove('disabled');
-                        rContainer.classList.add('enabled');
-                    }
-                }
-
-                try {
-                    await saveJson(STATS_FILE, window.stats);
-                } catch (error) {
-                    console.error("Erro ao salvar o estado do cadeado:", error);
-                }
-            }
-        }
+        const bg = clone.querySelector('.banner');
+        const character = clone.querySelector('.season-character');
+        const seasonMap = clone.querySelector('.season-map');
 
         const ratingSpan = clone.querySelector('.status-rating');
         const levelsSpan = clone.querySelector('.status-level');
         const winsSpan = clone.querySelector('.status-win');
         const ratingContainer = clone.querySelector('.rating-container');
         const ratingOptionsContainer = clone.querySelector('.rating-options');
+        const levelAdd = clone.querySelector('.statusLevel-add');
+        const levelMinus = clone.querySelector('.statusLevel-minus');
+        const winAdd = clone.querySelector('.statusWin-add');
+        const winMinus = clone.querySelector('.statusWin-minus');
+        const releaseDateSpan = clone.querySelector('.releaseDate');
+
+        if (card) card.dataset.code = code;
+        if (titleEl) {
+            titleEl.id = `${code}-name`;
+            const m = code.match(/^c\d+s(\d+)$/);
+            titleEl.textContent = m ? `${window._t['fn-season']} ${m[1]} - ${info.name || ""}` : `${window._t['fn-season']} ${info.name || ""}`;
+        }
+
+        if (releaseDateSpan) releaseDateSpan.id = `${code}-releaseDate`;
+        if (bg) bg.style.backgroundImage = `url('documents://Fortnite/Assets/${code}.jpg')`;
+        if (character) character.src = `documents://Fortnite/Assets/${code}-character.png`;
+        if (seasonMap) seasonMap.src = `documents://Fortnite/Assets/${code}-map.jpg`;
 
         if (ratingSpan) ratingSpan.id = `${code}-rating`;
         if (levelsSpan) levelsSpan.id = `${code}-levels`;
         if (winsSpan) winsSpan.id = `${code}-wins`;
 
-        if (isLocked && ratingContainer) {
-            ratingContainer.classList.add('disabled');
+        function updateStat(statKey, increment, displaySpan) {
+            let currentValue = parseInt(stats[statKey]) || 0;
+            if (currentValue + increment >= 0) {
+                currentValue += increment;
+                stats[statKey] = currentValue.toString(); 
+                if (displaySpan) displaySpan.textContent = stats[statKey];
+                if (typeof debouncedSave === "function") debouncedSave(code);
+            }
         }
 
-        else if (!isLocked && ratingContainer) {
-            ratingContainer.classList.add('enabled');
+        if (levelAdd) levelAdd.onclick = () => updateStat('levels', 1, levelsSpan);
+        if (levelMinus) levelMinus.onclick = () => updateStat('levels', -1, levelsSpan);
+        if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);
+        if (winMinus) winMinus.onclick = () => updateStat('wins', -1, winsSpan);
+
+
+        const isLocked = stats.locked ?? false;
+        if (seasonDiv) seasonDiv.dataset.locked = isLocked;
+
+        if (!isLocked) {
+            if (levelAdd) levelAdd.style.display = 'inline-block';
+            if (levelMinus) levelMinus.style.display = 'inline-block';
+            if (winAdd) winAdd.style.display = 'inline-block';
+            if (winMinus) winMinus.style.display = 'inline-block';
         }
 
+        if (lockIcon) {
+            lockIcon.className = stats.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+            lockIcon.onclick = async (e) => {
+                e.stopPropagation();
+                stats.locked = !stats.locked;
+
+                seasonDiv.dataset.locked = stats.locked;
+                lockIcon.className = stats.locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+
+                const display = stats.locked ? 'none' : 'inline-block';
+                seasonDiv.querySelectorAll('.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus')
+                    .forEach(btn => btn.style.display = display);
+                seasonDiv.querySelectorAll('.review-topictext')
+                    .forEach(p => p.contentEditable = !stats.locked);
+
+                if (stats.locked === true) {
+                    ratingContainer.classList.remove('enabled');
+                } else { ratingContainer.classList.add('enabled'); }
+                ratingOptionsContainer.classList.remove('active');
+
+                try { await saveJson(STATS_FILE, window.stats);
+                } catch (error) { console.error(error); }
+            }
+        }
+
+        if (!isLocked) {ratingContainer.classList.add('enabled');}
+        ratingContainer.addEventListener('click', () => {
+            if (ratingContainer.classList.contains('enabled')) {
+                ratingOptionsContainer.classList.toggle('active');
+            }
+        });
         if (ratingOptionsContainer) {
             const ratingOptions = Array.from(ratingOptionsContainer.querySelectorAll('.rating-option'));
             ratingOptions.sort((a, b) => parseFloat(b.getAttribute('data-value')) - parseFloat(a.getAttribute('data-value')));
@@ -291,129 +255,31 @@ async function renderizarCapitulo(prefixoCapitulo, cloudData) {
                 option.addEventListener('click', (e) => {
                     e.stopPropagation(); 
                     const selectedRating = e.target.getAttribute('data-value');
-                    
-                    currentStats.rating = selectedRating;
-                    if (ratingSpan) ratingSpan.textContent = selectedRating;
+
+                    stats.rating = selectedRating;
+                    ratingSpan.textContent = selectedRating;
+
                     if (typeof debouncedSave === "function") debouncedSave(code);
-                    
                     ratingOptionsContainer.classList.remove('active');
                 });
             });
         }
 
-        if (ratingContainer && ratingOptionsContainer) {
-            ratingContainer.addEventListener('click', (e) => {
-                if (!ratingContainer.classList.contains('disabled')) {
-                    ratingOptionsContainer.classList.toggle('active');
-                }
-            });
-        }
-
-        const levelAdd = clone.querySelector('.statusLevel-add');
-        const levelMinus = clone.querySelector('.statusLevel-minus');
-        const winAdd = clone.querySelector('.statusWin-add');
-        const winMinus = clone.querySelector('.statusWin-minus');
-
-        function updateStat(statKey, increment, displaySpan) {
-            let currentValue = parseInt(currentStats[statKey]) || 0;
-            if (currentValue + increment >= 0) {
-                currentValue += increment;
-                currentStats[statKey] = currentValue.toString(); 
-                if (displaySpan) displaySpan.textContent = currentStats[statKey];
-                if (typeof debouncedSave === "function") debouncedSave(code);
-            }
-        }
-
-        if (levelAdd) levelAdd.onclick = () => updateStat('levels', 1, levelsSpan);
-        if (levelMinus) levelMinus.onclick = () => updateStat('levels', -1, levelsSpan);
-        if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);
-        if (winMinus) winMinus.onclick = () => updateStat('wins', -1, winsSpan);
-
-        const releaseDateSpan = clone.querySelector('.releaseDate');
-        if (releaseDateSpan) releaseDateSpan.id = `${code}-releaseDate`;
-
-        if (!isLocked) {
-            if (levelAdd) levelAdd.style.display = 'inline-block';
-            if (levelMinus) levelMinus.style.display = 'inline-block';
-            if (winAdd) winAdd.style.display = 'inline-block';
-            if (winMinus) winMinus.style.display = 'inline-block';
-        }
-
-        const trailerBtn = clone.querySelector('.season-trailers');
-        if (trailerBtn) trailerBtn.onclick = async () => typeof await openTrailer === "function" && await openTrailer(trailerBtn);
-
-        const listaDeEventos = info.events || info.event;
-
-        const listEventsMap = clone.querySelector('.seasonContents-title');
-
-        if (listEventsMap) {
-            if (listaDeEventos && listaDeEventos.length == 1) {
-                listEventsMap.textContent = 'Mapa e Evento';
-                listEventsMap.setAttribute('data-i18n', 'map-event');
-            } else if (listaDeEventos && listaDeEventos.length > 1) {
-                listEventsMap.textContent = 'Mapa e Eventos';
-                listEventsMap.setAttribute('data-i18n', 'map-events');
-            } else {
-                listEventsMap.textContent = 'Mapa';
-                listEventsMap.setAttribute('data-i18n', 'map');
-            }
-        }
-
-        // if (listaDeEventos && Array.isArray(listaDeEventos)) {
-        //     const eventsContainer = clone.querySelector('.season-contents');
-        //     const templateEvent = clone.querySelector('.season-events');
-
-        //     if (templateEvent) {
-        //         templateEvent.remove(); 
-
-        //         listaDeEventos.forEach(evt => {
-        //             const newEvent = templateEvent.cloneNode(true);
-        //             newEvent.style.display = 'flex';
-                    
-        //             newEvent.querySelector('.event-img').src = `documents://Fortnite/Assets/fortnite-${code}-assets/${evt.img}` || '';
-        //             newEvent.querySelector('.event-title').textContent = evt.title || '';
-        //             newEvent.querySelector('.event-type').textContent = evt.type || '';
-        //             newEvent.querySelector('.event-date').textContent = evt.date || '';
-                    
-        //             eventsContainer.insertBefore(newEvent, eventsContainer.firstChild);
-        //             newEvent.onclick = function() {
-        //                 openLiveEvent(
-        //                     this,
-        //                     evt.img.replace(/-cover.*$/, ''),
-        //                     evt.title || 'Evento',
-        //                     evt.author || null,
-        //                     evt.authorId || null
-        //                 )
-        //             }
-        //         });
-        //     }
-        // }
-
-        const titleEl = clone.querySelector('.season-title');
-        if (titleEl) {
-            titleEl.id = `${code}-name`;
-            const m = code.match(/^c\d+s(\d+)$/);
-            titleEl.textContent = m ? `${window._t['fn-season']} ${m[1]} - ${info.name || ""}` : `${window._t['fn-season']} ${info.name || ""}`;
-        }
-
-        container.appendChild(clone);
+        listContainer.appendChild(clone);
     }
 
     if (localDataUpdated) await saveJson(REVIEWS_FILE, window.reviews);
     if (localStatsUpdated) await saveJson(STATS_FILE, window.stats);
 
-    await preencherValores();
+    await fillValues();
 }
 
-async function preencherValores() {
-    const allCodes = new Set([...Object.keys(window.reviews), ...Object.keys(window.stats)]);
+async function fillValues() {
+    const seasons = new Set([...Object.keys(window.reviews), ...Object.keys(window.stats)]);
 
-    for (const code of allCodes) {
+    for (const code of seasons) {
         const info = cachedSeasons[code] || {};
-        const reviewData = window.reviews[code] || {};
         const statsData = window.stats[code] || {};
-
-        const releaseDateFormated = await formatDate(info.releaseDate, 'ordinal');
 
         const rating = document.getElementById(`${code}-rating`);
         const levels = document.getElementById(`${code}-levels`);
@@ -424,13 +290,12 @@ async function preencherValores() {
         if (levels) levels.textContent = statsData.levels || "0";
         if (wins) wins.textContent = statsData.wins || "0";
         if (releaseDate) {
+            const releaseDateFormated = await formatDate(info.releaseDate, 'ordinal');
             releaseDate.textContent = releaseDateFormated ? ` ${releaseDateFormated}` : "Sem data";
         }
     };
 
-    if (typeof initReviews === "function") {
-        initReviews();
-    }
+    if (typeof initReviews === "function") { initReviews(); }
 }
 
 addEventListener('click', (e) => {
@@ -452,8 +317,8 @@ function openMap(el) {
         
         mapImage.style.backgroundImage = `url('documents://Fortnite/Assets/${code}-map.jpg')`;
         
-        configurarZoomMapa();
-        resetarZoomMapa();
+        prepZoom();
+        resetMapZoom();
     }
 }
 
@@ -468,7 +333,7 @@ function closeMap(el) {
         mapPopup.addEventListener("animationend", function handler() {
             mapPopup.style.display = "none";
             mapPopup.classList.remove("close");
-            resetarZoomMapa();
+            resetMapZoom();
             mapPopup.removeEventListener("animationend", handler);
             mapImage.classList.remove("close");
         });
@@ -481,13 +346,11 @@ let startX, startY;
 let translateX = 0, translateY = 0;
 let isZoomInitialized = false;
 
-function configurarZoomMapa() {
-    if (isZoomInitialized) return;
-
+function prepZoom() {
     const mapImageEl = document.getElementById("mapPopup-image");
     const container = document.querySelector(".mapPopup-content");
-    
-    if (!mapImageEl || !container) return;
+
+    if (isZoomInitialized || !mapImageEl || !container) return;
 
     mapImageEl.addEventListener("wheel", (e) => {
         e.preventDefault();
@@ -495,11 +358,8 @@ function configurarZoomMapa() {
         const zoomSpeed = 0.2;
         const oldScale = scale;
 
-        if (e.deltaY < 0) {
-            scale += zoomSpeed;
-        } else {
-            scale -= zoomSpeed;
-        }
+        if (e.deltaY < 0) { scale += zoomSpeed;
+        } else { scale -= zoomSpeed; }
         scale = Math.min(Math.max(1, scale), 10);
 
         const rect = container.getBoundingClientRect();
@@ -509,8 +369,8 @@ function configurarZoomMapa() {
         translateX = mouseX - (mouseX - translateX) * (scale / oldScale);
         translateY = mouseY - (mouseY - translateY) * (scale / oldScale);
 
-        aplicarRestricoesBorda(container);
-        atualizarTransform();
+        applyBorderRestrictions(container);
+        updateTransform();
     }, { passive: false });
 
     mapImageEl.addEventListener("mousedown", (e) => {
@@ -518,21 +378,17 @@ function configurarZoomMapa() {
         isDragging = true;
 
         mapImageEl.classList.add("dragging"); 
-        
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
     });
-
     window.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
-
         translateX = e.clientX - startX;
         translateY = e.clientY - startY;
 
-        aplicarRestricoesBorda(container);
-        atualizarTransform();
+        applyBorderRestrictions(container);
+        updateTransform();
     });
-
     window.addEventListener("mouseup", () => {
         if (isDragging) {
             isDragging = false;
@@ -540,15 +396,12 @@ function configurarZoomMapa() {
             mapImageEl.classList.remove("dragging"); 
         }
     });
-
-    window.addEventListener("mouseup", () => {
-        isDragging = false;
-    });
+    window.addEventListener("mouseup", () => { isDragging = false; });
 
     isZoomInitialized = true;
 }
 
-function aplicarRestricoesBorda(container) {
+function applyBorderRestrictions(container) {
     const cw = container.clientWidth;
     const ch = container.clientHeight;
 
@@ -557,7 +410,6 @@ function aplicarRestricoesBorda(container) {
 
     const minX = cw - larguraZoom;
     const maxX = 0;
-
     const minY = ch - alturaZoom;
     const maxY = 0;
 
@@ -565,35 +417,22 @@ function aplicarRestricoesBorda(container) {
     translateY = Math.min(Math.max(translateY, minY), maxY);
 }
 
-function atualizarTransform() {
+function updateTransform() {
     const mapImageEl = document.getElementById("mapPopup-image");
     if (mapImageEl) {
         mapImageEl.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
     }
 }
 
-function resetarZoomMapa() {
+function resetMapZoom() {
     scale = 1;
     translateX = 0;
     translateY = 0;
-    atualizarTransform();
+    updateTransform();
 }
 
-if (document.querySelector('.back')) document.querySelector('.back').href = `pages/fortnite.html`;
-
-if (document.readyState === "complete" || document.readyState === "interactive") {
-    inicializarDados();
-} else {
-    document.addEventListener("DOMContentLoaded", inicializarDados);
-}
-
-window.electronAPI.onCacheUpdated?.((info) => {
-    if (info.fileName.startsWith('fn-seasons')) {
-        cachedSeasons = info.data;
-    }
-});
-
-fetchVideoPopup();
+if (document.readyState === "complete" || document.readyState === "interactive") { initData();
+} else { document.addEventListener("DOMContentLoaded", initData); }
 
 async function loadChapters() {
     const data = await loadCloudSeasonInfo();
@@ -629,14 +468,13 @@ async function loadChapters() {
 loadChapters();
 
 const noteTexts = document.querySelectorAll('.review-topictext');
-
 function updatePlaceholder(el) {
   const isEmpty = el.textContent.trim() === "";
   el.classList.toggle("is-empty", isEmpty);
 }
-
-noteTexts.forEach(el => updatePlaceholder(el)); 
-
+noteTexts.forEach(el => { 
+    noteText.addEventListener("input", updatePlaceholder);
+});
 document.addEventListener("input", (e) => {
   const el = e.target.closest('.review-topictext');
   if (el) updatePlaceholder(el);

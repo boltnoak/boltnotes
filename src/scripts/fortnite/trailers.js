@@ -668,3 +668,46 @@ function removeCreatedEspecialDivs() {
     if (author) author.remove();
     document.querySelector('.video-popup').classList.remove('trailers');
 }
+        // if (trailerBtn) trailerBtn.onclick = async () => typeof await openTrailer === "function" && await openTrailer(trailerBtn);
+
+        // const listaDeEventos = info.events || info.event;
+        // if (listEventsMap) {
+        //     if (listaDeEventos && listaDeEventos.length == 1) {
+        //         listEventsMap.textContent = 'Mapa e Evento';
+        //         listEventsMap.setAttribute('data-i18n', 'map-event');
+        //     } else if (listaDeEventos && listaDeEventos.length > 1) {
+        //         listEventsMap.textContent = 'Mapa e Eventos';
+        //         listEventsMap.setAttribute('data-i18n', 'map-events');
+        //     } else {
+        //         listEventsMap.textContent = 'Mapa';
+        //         listEventsMap.setAttribute('data-i18n', 'map');
+        //     }
+        // }
+
+        // if (listaDeEventos && Array.isArray(listaDeEventos)) {
+
+        //     if (templateEvent) {
+        //         templateEvent.remove(); 
+
+        //         listaDeEventos.forEach(evt => {
+        //             const newEvent = templateEvent.cloneNode(true);
+        //             newEvent.style.display = 'flex';
+                    
+        //             newEvent.querySelector('.event-img').src = `documents://Fortnite/Assets/fortnite-${code}-assets/${evt.img}` || '';
+        //             newEvent.querySelector('.event-title').textContent = evt.title || '';
+        //             newEvent.querySelector('.event-type').textContent = evt.type || '';
+        //             newEvent.querySelector('.event-date').textContent = evt.date || '';
+                    
+        //             eventsContainer.insertBefore(newEvent, eventsContainer.firstChild);
+        //             newEvent.onclick = function() {
+        //                 openLiveEvent(
+        //                     this,
+        //                     evt.img.replace(/-cover.*$/, ''),
+        //                     evt.title || 'Evento',
+        //                     evt.author || null,
+        //                     evt.authorId || null
+        //                 )
+        //             }
+        //         });
+        //     }
+        // }
