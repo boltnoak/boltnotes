@@ -37,8 +37,7 @@
     "linux": {
       "target": [
         "AppImage",
-        "flatpak",
-        "rpm"
+        "flatpak"
       ],
       "flatpak": {
         "filesystem": [
