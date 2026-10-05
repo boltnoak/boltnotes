@@ -136,26 +136,26 @@ async function inflateRaw(raw) {
 // ------------------------------------------------------
 
 async function installPackage(pkg) {
-  const res = await fetch(`${REMOTE_BASE}/${pkg.name}`);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const buf = await res.arrayBuffer();
-  if ((await sha256(buf)) !== pkg.hash) throw new Error('hash não confere');
+    const res = await fetch(`${REMOTE_BASE}/${pkg.name}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const buf = await res.arrayBuffer();
+    if ((await sha256(buf)) !== pkg.hash) throw new Error('hash dont match');
 
-  const folder = pkg.name.replace(/\.zip$/, '');
-  for (const f of readZipEntries(buf)) {
-    const data = f.method === 0 ? f.raw : await inflateRaw(f.raw);
-    await writeDoc(f.name, data);
-  }
+    const folder = pkg.name.replace(/\.zip$/, '');
+    for (const f of readZipEntries(buf)) {
+        const data = f.method === 0 ? f.raw : await inflateRaw(f.raw);
+        await writeDoc(f.name, data);
+    }
 }
 
 async function fetchWithTimeout(url, options = {}, ms = 2000) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), ms);
-  try {
-    return await fetch(url, { ...options, signal: ctrl.signal });
-  } finally {
-    clearTimeout(t);
-  }
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), ms);
+    try {
+        return await fetch(url, { ...options, signal: ctrl.signal });
+    } finally {
+        clearTimeout(t);
+    }
 }
 
 async function syncFortniteAssets(onProgress) {
