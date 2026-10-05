@@ -27,7 +27,7 @@ jobs:
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npx electron-builder --linux AppImage flatpak --publish always
+        run: npx electron-builder --linux AppImage --linux flatpak --publish always
 
       - name: Publish Flatpak repo to GitHub Pages
         run: |
