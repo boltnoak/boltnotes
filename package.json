@@ -1,7 +1,7 @@
 {
   "name": "boltnotes",
   "productName": "BoltNotes",
-  "version": "1.9.10",
+  "version": "1.9.11",
   "description": "Notes, Games Backlog and Fortnite Season Reviews",
   "main": "src-electron/main.js",
   "private": true,
@@ -40,7 +40,11 @@
         "flatpak",
         "rpm"
       ],
-      "flatpak": { "filesystem": ["home"] },
+      "flatpak": {
+        "filesystem": [
+          "home"
+        ]
+      },
       "category": "Utility",
       "desktop": {
         "entry": {
