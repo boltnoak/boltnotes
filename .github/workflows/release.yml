@@ -22,32 +22,31 @@ jobs:
       - run: npm ci
 
       - name: Install Linux dependencies
-        run: sudo apt-get update && sudo apt-get install -y libopenjp2-tools rpm createrepo-c
+        run: sudo apt-get update && sudo apt-get install -y libopenjp2-tools flatpak ostree
 
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npx electron-builder --linux AppImage rpm --publish always
+        run: npx electron-builder --linux AppImage flatpak --publish always
 
-      - name: Publish RPM repo metadata to GitHub Pages
+      - name: Publish Flatpak repo to GitHub Pages
         run: |
           git clone --branch gh-pages https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/boltnoak/boltnotes.git gh-pages-repo
 
-          mkdir -p gh-pages-repo/rpm/x86_64
-          cp dist/boltnotes-linux-x86_64.rpm /tmp/boltnotes-linux-x86_64.rpm
-          cp /tmp/boltnotes-linux-x86_64.rpm gh-pages-repo/rpm/x86_64/
+          mkdir -p gh-pages-repo/flatpak
+          if [ ! -d "gh-pages-repo/flatpak/objects" ]; then
+            ostree init --mode=archive-z2 --repo=gh-pages-repo/flatpak
+          fi
 
-          createrepo_c \
-            --location-prefix "https://github.com/boltnoak/boltnotes/releases/download/${{ github.ref_name }}/" \
-            gh-pages-repo/rpm/x86_64
+          flatpak build-import-bundle gh-pages-repo/flatpak dist/*.flatpak
 
-          rm gh-pages-repo/rpm/x86_64/boltnotes-linux-x86_64.rpm
+          flatpak build-update-repo --title="BoltNotes Flatpak" gh-pages-repo/flatpak
 
           cd gh-pages-repo
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add rpm/x86_64
-          git commit -m "Update RPM repo metadata for ${{ github.ref_name }}" || echo "Nada para commitar"
+          git add flatpak
+          git commit -m "Update Flatpak repo for ${{ github.ref_name }}" || echo "nothing to commit"
           git push
 
   windows:

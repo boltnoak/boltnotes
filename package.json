@@ -37,8 +37,10 @@
     "linux": {
       "target": [
         "AppImage",
+        "flatpak",
         "rpm"
       ],
+      "flatpak": { "filesystem": ["home"] },
       "category": "Utility",
       "desktop": {
         "entry": {
