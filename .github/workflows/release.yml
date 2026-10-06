@@ -57,6 +57,7 @@ jobs:
 
           flatpak build-update-repo --title="BoltNotes Flatpak" flatpak
 
+          # CRIA O FICHEIRO .flatpakrepo COM VÍNCULO DE DEPENDÊNCIA
           cat <<EOF > boltnotes.flatpakrepo
           [Flatpak Repo]
           Title=BoltNotes
