@@ -12,14 +12,8 @@ Availabe on Windows 10/11 and Linux
 # **Installation**
 **Windows 10/11 —** [Download](https://github.com/boltnoak/boltnotes/releases/latest/download/boltnotes-windows-x64-setup.exe)
 
-**AppImage —** [Download](https://github.com/boltnoak/boltnotes/releases/latest/download/boltnotes-linux-x86_64.AppImage)
-
-**Fedora:**
-```bash
-sudo curl -o /etc/yum.repos.d/boltnotes.repo https://boltnoak.github.io/boltnotes/rpm/boltnotes.repo
-sudo dnf install boltnotes
-```
-
+**Linux Flatpak —**
+ [![Install](https://dl.flathub.org/assets/badges/flathub-badge-i.svg)](https://boltnoak.github.io/boltnotes/flatpak/boltnotes.flatpakrepo)
 # **Features**
 
 * **Notes:** Criação e edição de notas de forma simples e rápida.
