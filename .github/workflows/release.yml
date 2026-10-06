@@ -26,7 +26,7 @@ jobs:
 
       - name: Configure Flathub remote
         run: |
-          flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
       - name: Build Linux
         env:
