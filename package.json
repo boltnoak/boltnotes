@@ -47,6 +47,8 @@
             "artifactName": "${name}-linux-${arch}.${ext}"
         },
         "flatpak": {
+            "runtimeVersion": "24.08",
+            "baseVersion": "24.08",
             "finishArgs": [
                 "--filesystem=home",
                 "--share=network",
