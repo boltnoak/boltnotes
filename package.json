@@ -47,6 +47,7 @@
             "artifactName": "${name}-linux-${arch}.${ext}"
         },
         "flatpak": {
+            "baseVersion": "24.08",
             "runtimeVersion": "24.08",
             "finishArgs": [
                 "--socket=x11",
