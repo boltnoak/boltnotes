@@ -55,7 +55,7 @@ jobs:
 
           flatpak build-import-bundle flatpak ../dist/*.flatpak
 
-          flatpak build-update-repo --generate-static-deltas --title="BoltNotes Flatpak" flatpak
+          flatpak build-update-repo --title="BoltNotes Flatpak" flatpak
 
           cat <<EOF > boltnotes.flatpakrepo
           [Flatpak Repo]
