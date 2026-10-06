@@ -27,6 +27,7 @@ jobs:
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          DEBUG: electron-builder,electron-compile,@malept/flatpak-bundler
         run: npx electron-builder --linux AppImage flatpak --publish always
 
       - name: Publish Flatpak repo to GitHub Pages
