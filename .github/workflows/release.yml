@@ -28,6 +28,10 @@ jobs:
         run: |
           sudo flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
+      - name: Install Flatpak Runtime and BaseApp
+        run: |
+          sudo flatpak install --system -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.electronjs.Electron2.BaseApp//24.08
+
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
