@@ -68,7 +68,7 @@ jobs:
           Comment[en]=BoltNotes Flatpak Repository
           Comment[pt_BR]=Repositório Flatpak do BoltNotes
           NoGPGVerify=true
-          Depends=https://dl.flathub.org/repo/flathub.flatpakrepo
+          Depends=flathub;https://dl.flathub.org/repo/flathub.flatpakrepo
           EOF
 
           git add flatpak/ boltnotes.flatpakrepo
