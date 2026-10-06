@@ -55,7 +55,7 @@ jobs:
 
           flatpak build-import-bundle flatpak ../dist/*.flatpak
 
-          flatpak build-update-repo --title="BoltNotes Flatpak" flatpak
+          flatpak build-update-repo --generate-static-deltas --title="BoltNotes Flatpak" flatpak
 
           cat <<EOF > boltnotes.flatpakrepo
           [Flatpak Repo]
@@ -70,8 +70,8 @@ jobs:
           NoGPGVerify=true
           EOF
 
-          git add flatpak
-          git commit -m "Update Flatpak repo for ${{ github.ref_name }}" || echo "nothing to commit"
+          git add flatpak/ boltnotes.flatpakrepo
+          git commit -m "Update Flatpak repo and .flatpakrepo for ${{ github.ref_name }}" || echo "nothing to commit"
           git push origin gh-pages --force
 
   windows:
