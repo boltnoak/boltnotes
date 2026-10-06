@@ -54,7 +54,9 @@
                 "--socket=wayland",
                 "--share=ipc",
                 "--share=network",
-                "--filesystem=home"
+                "--filesystem=home",
+                "--filesystem=xdg-documents",
+                "--device=dri"
             ]
         },
         "win": {
