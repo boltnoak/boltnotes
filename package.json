@@ -57,7 +57,8 @@
                 "--filesystem=home",
                 "--filesystem=xdg-documents",
                 "--device=dri"
-            ]
+            ],
+            "icon": "build/icon.png"
         },
         "win": {
             "target": "nsis",

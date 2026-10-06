@@ -469,29 +469,27 @@ Categories=Utility;Game;
     }
 }
 
+const TRAY_ICON_PATH = app.isPackaged
+    ? path.join(__dirname, 'tray-icon.png')
+    : path.join(__dirname, '..', 'build', 'tray-icon.png');
+
 function makeTray() {
     if (tray) return;
-    const iconPath = app.isPackaged
-        ? path.join(process.resourcesPath, 'tray-icon.png')
-        : path.join('build', 'tray-icon.png');
 
-    trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
-    // trayNameIcon = nativeImage.createFromPath(iconPath).resize({ width: 14, height: 14 });
+    if (fs.existsSync(TRAY_ICON_PATH)) {
+        trayIcon = nativeImage.createFromPath(TRAY_ICON_PATH).resize({ width: 22, height: 22 });
+    } else {
+        console.error('Ícone do tray não encontrado no caminho:', TRAY_ICON_PATH);
+        trayIcon = nativeImage.createEmpty();
+    }
 
     tray = new Tray(trayIcon);
-    if (app.isPackaged) { const name = 'BoltNotes';
-        tray.setToolTip(name);
-    } else { const name = 'BoltNotes (Dev)';
-        tray.setToolTip(name) }
+    
+    const name = app.isPackaged ? 'BoltNotes' : 'BoltNotes (Dev)';
+    tray.setToolTip(name);
 
     tray.setContextMenu(
         Menu.buildFromTemplate([
-            // {
-            //   label: 'BoltNotes',
-            //   icon: trayNameIcon,
-            //   enabled: false,
-            // },
-            // { type: 'separator' },
             {
                 label: 'Quit BoltNotes',
                 click: () => {
