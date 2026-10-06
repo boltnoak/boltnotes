@@ -40,23 +40,29 @@ jobs:
 
       - name: Publish Flatpak repo to GitHub Pages
         run: |
-          git clone --branch gh-pages https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/boltnoak/boltnotes.git gh-pages-repo
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
 
-          mkdir -p gh-pages-repo/flatpak
-          if [ ! -d "gh-pages-repo/flatpak/objects" ]; then
-            ostree init --mode=archive-z2 --repo=gh-pages-repo/flatpak
-          fi
-
-          flatpak build-import-bundle gh-pages-repo/flatpak dist/*.flatpak
-
-          flatpak build-update-repo --title="BoltNotes Flatpak" gh-pages-repo/flatpak
+          # Clona a branch gh-pages (ou cria se não existir)
+          git clone --branch gh-pages https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/boltnoak/boltnotes.git gh-pages-repo || \
+          (git init gh-pages-repo && cd gh-pages-repo && git checkout -b gh-pages && git remote add origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/boltnoak/boltnotes.git)
 
           cd gh-pages-repo
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+
+          mkdir -p flatpak
+          if [ ! -d "flatpak/objects" ]; then
+            ostree init --mode=archive-z2 --repo=flatpak
+          fi
+
+          # Importa o flatpak gerado pelo electron-builder para dentro da pasta flatpak
+          flatpak build-import-bundle flatpak ../dist/*.flatpak
+
+          # Atualiza o repositório e gera o summary necessário
+          flatpak build-update-repo --title="BoltNotes Flatpak" flatpak
+
           git add flatpak
           git commit -m "Update Flatpak repo for ${{ github.ref_name }}" || echo "nothing to commit"
-          git push
+          git push origin gh-pages --force
 
   windows:
     runs-on: windows-latest
