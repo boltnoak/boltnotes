@@ -1,103 +1,99 @@
 {
-  "name": "boltnotes",
-  "productName": "BoltNotes",
-  "version": "1.9.14",
-  "description": "Notes, Games Backlog and Fortnite Season Reviews",
-  "main": "src-electron/main.js",
-  "private": true,
-  "build": {
-    "appId": "com.boltnoak.boltnotes",
+    "name": "boltnotes",
     "productName": "BoltNotes",
-    "compression": "normal",
-    "extraResources": [
-      {
-        "from": "build/icons/tray-512x512.png",
-        "to": "tray-icon.png"
-      },
-      {
-        "from": "build/icons/app-512x512.png",
-        "to": "app-icon.png"
-      }
-    ],
-    "files": [
-      "src-electron/**/*",
-      "src/**/*",
-      "build/**/*",
-      "package.json",
-      "!scripts/**",
-      "!*.zip",
-      "!manifest.json"
-    ],
-    "directories": {
-      "output": "dist"
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "flatpak"
-      ],
-      "flatpak": {
-        "filesystem": [
-          "home"
+    "version": "1.9.14",
+    "description": "Notes, Games Backlog and Fortnite Season Reviews",
+    "main": "src-electron/main.js",
+    "private": true,
+    "build": {
+        "appId": "com.boltnoak.boltnotes",
+        "productName": "BoltNotes",
+        "compression": "normal",
+        "extraResources": [
+            {
+                "from": "build/icons/tray-512x512.png",
+                "to": "tray-icon.png"
+            },
+            {
+                "from": "build/icons/app-512x512.png",
+                "to": "app-icon.png"
+            }
+        ],
+        "files": [
+            "src-electron/**/*",
+            "src/**/*",
+            "build/**/*",
+            "package.json",
+            "node_modules/**/*",
+            "!scripts/**",
+            "!*.zip",
+            "!manifest.json"
+        ],
+        "directories": {
+            "output": "dist"
+        },
+        "linux": {
+            "target": [
+                "AppImage",
+                "flatpak"
+            ],
+            "category": "Utility",
+            "desktop": {
+                "entry": {
+                    "Categories": "Utility;Game;"
+                }
+            },
+            "icon": "build/icons",
+            "artifactName": "${name}-linux-${arch}.${ext}"
+        },
+        "flatpak": {
+            "finishArgs": [
+                "--filesystem=home",
+                "--share=network",
+                "--socket=wayland"
+            ]
+        },
+        "win": {
+            "target": "nsis",
+            "icon": "build/icons/icon.ico",
+            "artifactName": "${name}-windows-${arch}-setup.${ext}"
+        },
+        "publish": [
+            {
+                "provider": "github",
+                "owner": "boltnoak",
+                "repo": "boltnotes",
+                "releaseType": "release"
+            }
         ]
-      },
-      "category": "Utility",
-      "desktop": {
-        "entry": {
-          "Categories": "Utility;Game;"
-        }
-      },
-      "icon": "build/icons",
-      "artifactName": "${name}-linux-${arch}.${ext}"
     },
-    "win": {
-      "target": "nsis",
-      "icon": "build/icons/icon.ico",
-      "artifactName": "${name}-windows-${arch}-setup.${ext}"
+    "scripts": {
+        "start": "electron . 2>/dev/null",
+        "dist": "electron-builder",
+        "release:patch": "git add . && git commit -m \"patch release\" && npm version patch && git push && git push --tags",
+        "release:minor": "git add . && git commit -m \"minor release\" && npm version minor && git push && git push --tags",
+        "release:major": "git add . && git commit -m \"major release\" && npm version major && git push && git push --tags"
     },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "boltnoak",
-        "repo": "boltnotes",
-        "releaseType": "release"
-      }
-    ]
-  },
-  "scripts": {
-    "start": "electron . 2>/dev/null",
-    "dist": "electron-builder",
-    "build-assets": "node scripts/build-assets.js",
-    "build-assets:publish": "node scripts/build-assets.js",
-    "build-assets:debug": "node scripts/build-assets.js 2>&1 | tee build-assets.log",
-    "release:patch": "git add . && git commit -m \"patch release\" && npm version patch && git push && git push --tags",
-    "release:minor": "git add . && git commit -m \"minor release\" && npm version minor && git push && git push --tags",
-    "release:major": "git add . && git commit -m \"major release\" && npm version major && git push && git push --tags"
-  },
-  "keywords": [],
-  "author": {
-    "name": "BoltUO",
-    "email": "miguelbelmonte018@gmail.com"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "adm-zip": "^0.6.0",
-    "electron-log": "^5.4.4",
-    "electron-squirrel-startup": "^1.0.1",
-    "electron-updater": "^6.8.3",
-    "extract-zip": "^2.0.1",
-    "fast-xml-parser": "^5.9.3",
-    "fflate": "^0.8.3",
-    "music-metadata": "^11.12.3",
-    "open-graph-scraper": "^6.11.0"
-  },
-  "devDependencies": {
-    "archiver": "^6.0.2",
-    "concurrently": "^10.0.3",
-    "electron": "^41.2.1",
-    "electron-builder": "^26.8.1",
-    "electron-reloader": "^1.2.3",
-    "vite-plugin-electron-renderer": "^1.0.0",
-    "wait-on": "^9.0.10"
-  }
+    "keywords": [],
+    "author": {
+        "name": "BoltUO",
+        "email": "miguelbelmonte018@gmail.com"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "electron-log": "^5.4.4",
+        "electron-squirrel-startup": "^1.0.1",
+        "electron-updater": "^6.8.3",
+        "fast-xml-parser": "^5.9.3",
+        "fflate": "^0.8.3",
+        "open-graph-scraper": "^6.11.0"
+    },
+    "devDependencies": {
+        "archiver": "^6.0.2",
+        "concurrently": "^10.0.3",
+        "electron": "^41.2.1",
+        "electron-builder": "^26.8.1",
+        "electron-reloader": "^1.2.3",
+        "wait-on": "^9.0.10"
+    }
 }
