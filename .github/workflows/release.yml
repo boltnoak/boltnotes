@@ -59,12 +59,15 @@ jobs:
 
           cat <<EOF > boltnotes.flatpakrepo
           [Flatpak Repo]
-          Title=BoltNotes Flatpak
+          Title=BoltNotes
+          Title[en]=BoltNotes
+          Title[pt_BR]=BoltNotes
           Url=https://boltnoak.github.io/boltnotes/flatpak
           Homepage=https://github.com/boltnoak/boltnotes
-          Comment=BoltNotes Flatpak Repository
+          Comment=Repositório Flatpak do BoltNotes
           Comment[en]=BoltNotes Flatpak Repository
           Comment[pt_BR]=Repositório Flatpak do BoltNotes
+          NoGPGVerify=true
           EOF
 
           git add flatpak
