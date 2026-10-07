@@ -469,17 +469,17 @@ Categories=Utility;Game;
     }
 }
 
-const TRAY_ICON_PATH = app.isPackaged
-    ? path.join(__dirname, 'tray-icon.png')
-    : path.join(__dirname, '..', 'build', 'tray-icon.png');
-
 function makeTray() {
     if (tray) return;
 
-    if (fs.existsSync(TRAY_ICON_PATH)) {
-        trayIcon = nativeImage.createFromPath(TRAY_ICON_PATH).resize({ width: 22, height: 22 });
+    const iconPath = app.isPackaged
+        ? path.join(process.resourcesPath, 'tray-icon.png')
+        : path.join(__dirname, '..', 'build', 'icons', 'tray-512x512.png');
+
+    if (fs.existsSync(iconPath)) {
+        trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 22, height: 22 });
     } else {
-        console.error('Ícone do tray não encontrado no caminho:', TRAY_ICON_PATH);
+        console.error('Icon tray not found - ', iconPath);
         trayIcon = nativeImage.createEmpty();
     }
 
