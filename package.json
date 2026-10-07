@@ -56,7 +56,9 @@
                 "--share=network",
                 "--filesystem=home",
                 "--filesystem=xdg-documents",
-                "--device=dri"
+                "--device=dri",
+                "--talk-name=org.kde.StatusNotifierWatcher",
+                "--talk-name=org.freedesktop.Notifications"
             ]
         },
         "win": {
