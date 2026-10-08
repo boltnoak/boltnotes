@@ -62,7 +62,7 @@
                 "--socket=wayland",
                 "--share=ipc",
                 "--share=network",
-                "--filesystem=home",
+                "--filesystem=xdg-config/autostart:create",
                 "--filesystem=xdg-documents",
                 "--device=dri",
                 "--talk-name=org.kde.StatusNotifierWatcher",

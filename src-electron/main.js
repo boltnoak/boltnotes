@@ -440,18 +440,30 @@ function manageStartup(openOSstart) {
     else if (osType === 'linux') {
         const homeDir = os.homedir();
         const autostartDir = path.join(homeDir, '.config', 'autostart');
-        const autostartPath = path.join(autostartDir, 'boltnotes.desktop');
+
+        const flatpakId = process.env.FLATPAK_ID;
+        const isFlatpak = !!flatpakId || fs.existsSync('/.flatpak-info');
+        const appId = flatpakId || 'com.boltnoak.boltnotes';
+
+        const autostartPath = path.join(
+            autostartDir,
+            isFlatpak ? `${appId}.desktop` : 'boltnotes.desktop'
+        );
 
         if (openOSstart) {
             if (!fs.existsSync(autostartDir)) {
                 fs.mkdirSync(autostartDir, { recursive: true });
             }
 
-            const isPackaged = app.isPackaged;
-            const iconPath = isPackaged
-                ? path.join(process.resourcesPath, 'app-icon.png')
-                : path.join('build', 'icon.png');
-            const execPath = process.env.APPIMAGE || app.getPath('exe');
+            let execLine, iconLine;
+            if (isFlatpak) {
+                execLine = `flatpak run ${appId}`;
+                iconLine = appId;
+            } else {
+                const execPath = process.env.APPIMAGE || app.getPath('exe');
+                execLine = `"${execPath}"`;
+                iconLine = path.join(process.resourcesPath, 'app-icon.png');
+            }
 
             const desktopEntry = `[Desktop Entry]
 Type=Application
@@ -459,19 +471,18 @@ Name=BoltNotes
 Comment=Notes, Games Backlog and Fortnite Season Reviews
 Comment[en]=Notes, Games Backlog and Fortnite Season Reviews
 Comment[pt_BR]=Notas, Backlog de Jogos e Reviews de Temporada do Fortnite
-Exec="${execPath}"
-Icon=${iconPath}
+Exec=${execLine}
+Icon=${iconLine}
 Terminal=false
 X-GNOME-Autostart-enabled=true
-Categories=Utility;Game;
+${isFlatpak ? `X-Flatpak=${appId}\n` : ''}Categories=Utility;Game;
 `;
-            try { fs.writeFileSync(autostartPath, desktopEntry, 'utf-8');
-            } catch (err) { console.error("manageStartup error:", err) }
-        }
-        else {
+            try { fs.writeFileSync(autostartPath, desktopEntry, 'utf-8'); }
+            catch (err) { console.error("manageStartup error:", err); }
+        } else {
             if (fs.existsSync(autostartPath)) {
-                try { fs.unlinkSync(autostartPath);
-                } catch (err) { console.error("manageStartup error:", err) }
+                try { fs.unlinkSync(autostartPath); }
+                catch (err) { console.error("manageStartup error:", err); }
             }
         }
     }
