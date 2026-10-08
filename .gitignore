@@ -2,7 +2,6 @@
 logs
 *.log
 npm-debug.log*
-yarn-debug.log*
 .stfolder*
 .Android_a97515df71467a1d
 yarn-error.log*
@@ -87,9 +86,6 @@ typings/
 # Webpack
 .webpack/
 
-# Vite
-.vite/
-
 # Electron-Forge
 out/
 
@@ -101,11 +97,7 @@ release
 # Package files
 *.AppImage
 *.rpm
+*.flatpak
 *.deb
 *.exe
 *.nupkg
-
-# Assets
-dist-assets
-/assets
-open-fortnite-yt.sh
