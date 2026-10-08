@@ -2,6 +2,10 @@
 //     return window.__TAURI__ || window.parent?.__TAURI__;
 // }
 
+window.electronAPI.isFlatpak().then(flatpak => {
+    if (flatpak) document.documentElement.classList.add('is-flatpak');
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
     const versionEl = document.getElementById('app-version');
     if (!versionEl) return

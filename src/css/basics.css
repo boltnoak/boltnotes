@@ -875,3 +875,8 @@ footer {
     height: fit-content;
     width: fit-content;
 }
+
+.is-flatpak #checkUpdates-btn,
+.is-flatpak #update-btn {
+    display: none !important;
+}

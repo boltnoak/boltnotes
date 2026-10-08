@@ -13,6 +13,10 @@ autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 autoUpdater.autoInstallOnAppQuit = false;
 
+const isFlatpak = process.platform === 'linux' &&
+    (!!process.env.FLATPAK_ID || fs.existsSync('/.flatpak-info'));
+ipcMain.handle('app:is-flatpak', () => isFlatpak);
+
 const DOCUMENTS = path.join(
     app.getPath('documents'),
     'BoltNotes'
@@ -281,7 +285,7 @@ if (!gotTheLock && app.isPackaged) {
                 win.show();
             } else {win.hide()}
 
-            if (app.isPackaged) { autoUpdater.checkForUpdates() }
+            if (app.isPackaged && !isFlatpak) { autoUpdater.checkForUpdates() }
 
             if (!configs.welcomed) { win.loadFile(path.join(BUNDLE, 'pages', 'welcome.html'));
             } else { win.loadFile(path.join(BUNDLE, 'pages', 'shell.html')) }
@@ -319,62 +323,66 @@ autoUpdater.on('update-downloaded', (info) => {
     }).show();
 });
 ipcMain.handle('update:check-status', () => { return updateReady });
-ipcMain.on('update:restart', () => { autoUpdater.quitAndInstall() });
+ipcMain.on('update:restart', () => {
+    if (isFlatpak) return;
+    autoUpdater.quitAndInstall();
+});
 autoUpdater.on('error', (err) => {
     console.error('AutoUpdater - Erro:', err.message);
     win?.webContents.send('update-status', 'Erro na atualização: ' + err.message);
 });
 ipcMain.handle('updates:check-update', async () => {
-  if (!app.isPackaged) {
-    autoUpdater.forceDevUpdateConfig = true;
-  }
-
-  try {
-    const result = await autoUpdater.checkForUpdates();
-    const currentVersion = app.getVersion();
-    const latestVersion = result?.updateInfo?.version;
-
-    if (latestVersion && latestVersion !== currentVersion) {
-      return {
-        status: 'available',
-        version: latestVersion
-      };
+    if (isFlatpak) return { status: 'disabled' };
+    if (!app.isPackaged) {
+        autoUpdater.forceDevUpdateConfig = true;
     }
 
-    return {
-      status: 'up-to-date'
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      status: 'error'
-    };
-  }
+    try {
+        const result = await autoUpdater.checkForUpdates();
+        const currentVersion = app.getVersion();
+        const latestVersion = result?.updateInfo?.version;
+
+        if (latestVersion && latestVersion !== currentVersion) {
+        return {
+            status: 'available',
+            version: latestVersion
+        };
+        }
+
+        return {
+            status: 'up-to-date'
+        };
+    } catch (error) {
+            console.error(error);
+            return {
+            status: 'error'
+        };
+    }
 });
 
 ////////////////////
 // MENU FUNCTIONS //
 ////////////////////
 ipcMain.on('menu:maximize-app', () => {
-  if (!win) return;
+    if (!win) return;
 
-  if (win.isMaximized()) {
-    win.unmaximize();
-  } else {
-    win.setMaximizable(true);
-    win.maximize();
-  }
+    if (win.isMaximized()) {
+        win.unmaximize();
+    } else {
+        win.setMaximizable(true);
+        win.maximize();
+    }
 });
 ipcMain.on('menu:minimize-app', () => { win.minimize(); });
 ipcMain.on('menu:close-app', () => {
-  const config = getConfig();
+    const config = getConfig();
 
-  if (config.minimize_to_tray) {
-    win.hide();
-  } else {
-    isQuitting = true;
-    app.quit();
-  }
+    if (config.minimize_to_tray) {
+        win.hide();
+    } else {
+        isQuitting = true;
+        app.quit();
+    }
 });
 ipcMain.on('menu:is-maximized-sync', (event) => {
     event.returnValue = win ? win.isMaximized() : false;
@@ -590,9 +598,9 @@ const IMAGES_ROOT = path.join(DOCUMENTS, 'Games');
 const EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
 
 ipcMain.handle('find-cached-image', (_e, { folder, baseName }) => {
-  for (const ext of EXTS) {
-    const p = path.join(IMAGES_ROOT, folder, baseName + ext);
-    if (fs.existsSync(p)) return p;
-  }
-  return null;
+    for (const ext of EXTS) {
+        const p = path.join(IMAGES_ROOT, folder, baseName + ext);
+        if (fs.existsSync(p)) return p;
+    }
+    return null;
 });

@@ -12,6 +12,7 @@ const isDev = process.argv.includes('--development');
 contextBridge.exposeInMainWorld('electronAPI', {
     onWindowStateChange: (callback) => ipcRenderer.on('window-state-change', (event, state) => callback(state)),
     devTools: () => ipcRenderer.send('devTools'),
+    isFlatpak: () => ipcRenderer.invoke('app:is-flatpak'),
     isDev: isDev,
 
     get_i18n: () => ipcRenderer.invoke('i18n:get'),
