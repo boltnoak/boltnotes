@@ -15,8 +15,7 @@ Availabe on Windows 10/11 and Linux
 
 **Linux Flatpak:**
 ```bash
-flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-flatpak remote-add --user --if-not-exists boltnotes-repo https://boltnoak.github.io/boltnotes/boltnotes.flatpak
+sudo flatpak remote-add --system boltnotes https://boltnoak.github.io/boltnotes/boltnotes.flatpakrepo
 flatpak install boltnotes-repo com.boltnoak.boltnotes
 ```
 
