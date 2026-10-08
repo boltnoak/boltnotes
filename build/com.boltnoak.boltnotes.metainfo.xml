@@ -13,6 +13,26 @@
         <p>Notes, Games Backlog and Fortnite Season Reviews</p>
         <p xml:lang="pt_BR">Notas, Backlog de Jogos e Reviews de Temporada do Fortnite</p>
     </description>
+    <screenshots>
+        <screenshot type="default">
+            <image type="source" width="1280" height="800">https://raw.githubusercontent.com/boltnoak/boltnotes/main/screenshots/img1.png</image>
+        </screenshot>
+        <screenshot>
+            <image type="source" width="1280" height="800">https://raw.githubusercontent.com/boltnoak/boltnotes/main/screenshots/img2.png</image>
+        </screenshot>
+        <screenshot>
+            <image type="source" width="1280" height="800">https://raw.githubusercontent.com/boltnoak/boltnotes/main/screenshots/img3.png</image>
+        </screenshot>
+        <screenshot>
+            <image type="source" width="1280" height="800">https://raw.githubusercontent.com/boltnoak/boltnotes/main/screenshots/img4.png</image>
+        </screenshot>
+        <screenshot>
+            <image type="source" width="1280" height="800">https://raw.githubusercontent.com/boltnoak/boltnotes/main/screenshots/img5.png</image>
+        </screenshot>
+        <screenshot>
+            <image type="source" width="1280" height="800">https://raw.githubusercontent.com/boltnoak/boltnotes/main/screenshots/img6.png</image>
+        </screenshot>
+    </screenshots>
     <launchable type="desktop-id">com.boltnoak.boltnotes.desktop</launchable>
     <url type="homepage">https://github.com/boltnoak/boltnotes</url>
     <categories><category>Utility</category></categories>

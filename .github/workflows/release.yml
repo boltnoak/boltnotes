@@ -32,6 +32,13 @@ jobs:
         run: |
           sudo flatpak install --system -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.electronjs.Electron2.BaseApp//24.08
 
+      - name: Update AppStream release
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          DATE=$(date -u +%Y-%m-%d)
+          sed -i -E "s|<release version=\"[^\"]*\" date=\"[^\"]*\"/>|<release version=\"$VERSION\" date=\"$DATE\"/>|" build/com.boltnoak.boltnotes.metainfo.xml
+          grep "<release" build/com.boltnoak.boltnotes.metainfo.xml
+
       - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
