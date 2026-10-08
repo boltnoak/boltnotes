@@ -26,7 +26,6 @@
             "build/**/*",
             "package.json",
             "node_modules/**/*",
-            "!scripts/**",
             "!*.zip",
             "!manifest.json"
         ],
