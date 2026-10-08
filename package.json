@@ -3,6 +3,7 @@
     "productName": "BoltNotes",
     "version": "1.11.9",
     "description": "Notes, Games Backlog and Fortnite Season Reviews",
+    "desktopName": "com.boltnoak.boltnotes.desktop",
     "main": "src-electron/main.js",
     "private": true,
     "build": {
@@ -38,6 +39,7 @@
                 "flatpak"
             ],
             "category": "Utility",
+            "syncDesktopName": true,
             "desktop": {
                 "entry": {
                     "Categories": "Utility;Game;"
@@ -49,6 +51,9 @@
         "flatpak": {
             "baseVersion": "24.08",
             "runtimeVersion": "24.08",
+            "files": [
+                ["build/com.boltnoak.boltnotes.metainfo.xml", "share/metainfo/com.boltnoak.boltnotes.metainfo.xml"]
+            ],
             "finishArgs": [
                 "--socket=x11",
                 "--socket=wayland",

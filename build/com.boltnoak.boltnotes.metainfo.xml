@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.boltnoak.boltnotes</id>
+    <name>BoltNotes</name>
+    <summary>Notes, Games Backlog and Fortnite Season Reviews</summary>
+    <summary xml:lang="pt_BR">Notas, Backlog de Jogos e Reviews de Temporada do Fortnite</summary>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>MIT</project_license>
+    <developer id="com.boltnoak">
+        <name>BoltUO</name>
+    </developer>
+    <description>
+        <p>Notes, Games Backlog and Fortnite Season Reviews</p>
+        <p xml:lang="pt_BR">Notas, Backlog de Jogos e Reviews de Temporada do Fortnite</p>
+    </description>
+    <launchable type="desktop-id">com.boltnoak.boltnotes.desktop</launchable>
+    <url type="homepage">https://github.com/boltnoak/boltnotes</url>
+    <categories><category>Utility</category></categories>
+    <content_rating type="oars-1.1"/>
+    <releases>
+        <release version="1.11.9" date="2026-10-07"/>
+    </releases>
+</component>
