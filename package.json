@@ -1,7 +1,7 @@
 {
     "name": "boltnotes",
     "productName": "BoltNotes",
-    "version": "1.11.10",
+    "version": "1.11.11",
     "description": "Notes, Games Backlog and Fortnite Season Reviews",
     "desktopName": "com.boltnoak.boltnotes.desktop",
     "main": "src-electron/main.js",
