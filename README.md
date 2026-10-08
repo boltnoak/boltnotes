@@ -16,7 +16,7 @@ Availabe on Windows 10/11 and Linux
 **Linux Flatpak:**
 ```bash
 sudo flatpak remote-add --system boltnotes https://boltnoak.github.io/boltnotes/boltnotes.flatpakrepo
-flatpak install boltnotes-repo com.boltnoak.boltnotes
+flatpak install boltnotes com.boltnoak.boltnotes
 ```
 
 **Linux AppImage —** [Download](https://github.com/boltnoak/boltnotes/releases/latest/download/boltnotes-linux-x86_64.AppImage)
