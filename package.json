@@ -16,7 +16,7 @@
                 "to": "tray-icon.png"
             },
             {
-                "from": "build/icons/app-512x512.png",
+                "from": "build/icons/512x512.png",
                 "to": "app-icon.png"
             }
         ],

@@ -57,10 +57,11 @@ jobs:
           if [ ! -d "flatpak/objects" ]; then
             ostree init --mode=archive-z2 --repo=flatpak
           fi
+          mkdir -p flatpak/refs/remotes
 
           flatpak build-import-bundle --gpg-sign="$KEYID" flatpak ../dist/*.flatpak
 
-          flatpak build-update-repo --gpg-sign="$KEYID" --generate-static-deltas \
+          flatpak build-update-repo --gpg-sign="$KEYID" \
             --prune --prune-depth=2 --title="BoltNotes Flatpak" flatpak
 
           echo "--- refs no repo ---"
