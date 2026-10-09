@@ -89,7 +89,20 @@ jobs:
           RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
           EOF
 
-          git add .nojekyll flatpak/ boltnotes.flatpakrepo
+          cat <<EOF > com.boltnoak.boltnotes.flatpakref
+          [Flatpak Ref]
+          Name=com.boltnoak.boltnotes
+          Branch=master
+          Title=BoltNotes
+          IsRuntime=false
+          Url=https://boltnoak.github.io/boltnotes/flatpak
+          SuggestRemoteName=boltnotes
+          Homepage=https://github.com/boltnoak/boltnotes
+          GPGKey=$(gpg --export "$KEYID" | base64 -w0)
+          RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
+          EOF
+
+          git add .nojekyll flatpak/ boltnotes.flatpakrepo com.boltnoak.boltnotes.flatpakref
           git commit -m "Update Flatpak repo and .flatpakrepo for ${{ github.ref_name }}" || echo "nothing to commit"
           git push origin gh-pages --force
 
