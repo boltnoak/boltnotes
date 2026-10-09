@@ -13,7 +13,9 @@ Availabe on Windows 10/11 and Linux
 **Windows 10/11 —** [Download](https://github.com/boltnoak/boltnotes/releases/latest/download/boltnotes-windows-x64-setup.exe)
 
 
-**Linux Flatpak:**
+**Linux Flatpak:** [Install](https://boltnoak.github.io/boltnotes/com.boltnoak.boltnotes.flatpakref)
+
+
 ```bash
 sudo flatpak remote-add --system boltnotes https://boltnoak.github.io/boltnotes/boltnotes.flatpakrepo
 flatpak install boltnotes com.boltnoak.boltnotes
