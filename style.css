@@ -1,0 +1,193 @@
+:root {
+    --bg: rgba(5, 5, 5);
+
+    --sep-bar: rgba(20, 20, 20, 0.4);
+
+    --text: rgba(255, 255, 255);
+    --text-dark-gray: rgba(80,80,80);
+    --text-gray: rgba(150, 150, 150);
+    --text-light-gray: rgba(210, 210, 210);
+    --text-green: rgba(0, 70, 30);
+    --text-blue: rgb(0, 90, 150);
+    --text-yellow: rgb(200, 140, 0);
+    --text-orange: rgb(160, 70, 0);
+    --text-red: rgb(155, 35, 35);
+
+    --green: rgba(0, 150, 70);
+    --blue: rgba(20, 150, 255);
+    --yellow: rgba(250, 190, 0);
+    --orange: rgba(250, 130, 50);
+    --red: rgba(255, 70, 70);
+
+    --chart-1: rgba(0, 150, 70);
+    --chart-2: rgba(20, 150, 255);
+    --chart-3: rgb(0, 50, 170);
+    --chart-4: rgba(250, 190, 0);
+    --chart-5: rgba(250, 130, 50);
+    --chart-6: rgba(255, 70, 70);
+
+    --green-light: rgba(0, 200, 90);
+    --blue-light: rgba(20, 180, 255);
+    --yellow-light: rgb(255, 215, 50);
+    --orange-light: rgba(250, 165, 50);
+    --red-light: rgba(255, 90, 90);
+
+    --tab: rgba(8,8,8);
+    --tab-hover: rgba(12,12,12);
+    --tab-active: rgba(14,14,14);
+
+    --btn: rgba(20,20,20);
+    --btn-hover-glow: rgba(45, 45, 45);
+    --btn-hover: rgba(25,25,25);
+    --btn-color: rgba(20, 150, 255);
+    --btn-hover-color: rgba(20, 170, 255);
+    --btn-hover-glow-color: rgba(50, 175, 255);
+    --btn-text-color: rgba(0, 75, 120);
+
+    --tag: rgba(25, 25, 25, 0.75);
+
+    --more-video-active: rgba(10,10,10);
+    --more-video-hover: rgba(9,9,9);
+
+    --fortnite-season-tags: rgba(11,11,11);
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    background-color: var(--bg);
+    -webkit-user-select: none;
+    user-select: none;
+    color: var(--text);
+    width: 100%;
+    height: 100%;
+}
+
+a {
+    background: linear-gradient(to bottom, var(--btn-color), var(--btn-hover-glow-color));
+    padding: 1.525vh .95vw 1.675vh .8vw;
+    text-decoration: none;
+    border-radius: 1.25vh;
+    font-size: 2.5vh;
+    color: var(--btn-text-color);
+    font-weight: 750;
+    transition: scale .1s ease-in-out;
+    height: fit-content;
+    scale: 1;
+    border-top: .455vh solid var(--btn-hover-glow-color);
+    cursor: pointer;
+    position: relative;
+}
+
+#linux-options {
+    display: none;
+    position: absolute;
+    /* top: 62.45vh; */
+    flex-direction: row-reverse;
+    gap: 1vh;
+    padding: 1vh;
+    transform: translateX(-.75vw);
+    background-color: var(--btn);
+    border-radius: 2.25vh;
+    margin: 19.25vh 0 0 0;
+    border: solid .175rem var(--btn-hover);
+    background-image: linear-gradient(to bottom, var(--btn) 0%, var(--tab-active) 80%);
+}
+.linux-option {
+    background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
+    padding: 1.425vh .95vw 1.475vh .8vw;
+    text-decoration: none;
+    border-radius: .5rem;
+    color: var(--text);
+    font-weight: 750;
+    height: fit-content;
+    scale: 1;
+    border-top: .455vh solid var(--btn-hover-glow);
+    transition: background .2s linear;
+    cursor: pointer;
+    position: relative;
+}
+.linux-option:hover {
+    scale: 1;
+}
+
+.home-main {
+    height: 100vh;
+    display: flex;
+    gap: 3vh;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 0 3.5vw;
+}
+.home-main-downloads {
+    display: flex;
+    flex-direction: row;
+    gap: 1.2vh;
+    justify-content: start;
+    align-items: center;
+}
+.info {
+    font-weight: 525;
+    margin: 0;
+    font-size: 2.35vh;
+    width: 20vw;
+    display: flex;
+}
+.name {
+    font-weight: 1000;
+    font-size: 6vh;
+    margin: 0;
+    display: flex;
+}
+.home-main-left {
+    width: fit-content;
+    display: flex;
+    gap: 1.5vh;
+    flex-direction: column;
+}
+.home-main img {
+    height: 62vh;
+    width: auto;
+    box-shadow: 0 0 150rem rgba(255, 255, 255, .075);
+    border-radius: 1.75vh;
+    border: solid .425vh var(--btn);
+}
+
+header {
+    box-shadow: 0 1vh 2vh rgba(0,0,0,.5);
+    padding: .75rem 1rem;
+    position: fixed;
+    width: 100%;
+    border-bottom: solid .76vh var(--tab-active);
+    background-image: linear-gradient(to bottom, var(--btn) 0%, var(--tab) 80%);
+}
+header p {
+    background: linear-gradient(to bottom, var(--text), var(--text-gray));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    display: inline-block;
+    font-weight: 1000;
+    font-size: 1.75rem;
+    margin: 0;
+}
+
+@media (max-width: 767px) {
+    .home-main img {
+        height: auto;
+        width: 100%;
+    }
+    .home-main {
+        flex-direction: column;
+    }
+    .home-main-downloads,
+    .name,
+    .info {
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+    }
+}
