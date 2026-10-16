@@ -32,7 +32,7 @@ function parseIMG(text) {
   text = text.replace(/\/img\//g,
     () => `<div class="image-uploader-placeholder" onclick="triggerImageUpload()"><p>Escolher imagem</p></div>`);
   return text.replace(/\{image=([^}]+)\}/g,
-    (_, url) => `<img src="documents://Notes/Media/${url}" class="image">`);
+    (_, url) => `<img loading="lazy" src="documents://Notes/Media/${url}" class="image">`);
 }
 function parseMarkdown(text) {
   return text
@@ -320,7 +320,7 @@ async function loadNote(tab, edit = false) {
 
     rawContent = decodeHtml(data);
     editing = edit;
-    editBtn.className = editing ? "normal-btn fa-solid fa-floppy-disk" : "normal-btn fa-solid fa-pen-to-square";
+    editBtn.className = editing ? "button normal-btn fa-solid fa-floppy-disk" : "button normal-btn fa-solid fa-pen-to-square";
 
     renderContent();
     noteTitleElement.textContent = name;

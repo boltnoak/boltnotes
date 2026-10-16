@@ -17,6 +17,7 @@
     --blue: rgba(20, 150, 255);
     --yellow: rgba(250, 190, 0);
     --orange: rgba(250, 130, 50);
+    --orange-glow: rgb(255, 175, 80);
     --red: rgba(255, 70, 70);
 
     --chart-1: rgba(0, 150, 70);
@@ -37,9 +38,13 @@
     --tab-active: rgba(14,14,14);
 
     --btn: rgba(20,20,20);
+    --btn-glow: rgba(32.5, 32.5, 32.5);
     --btn-hover: rgba(25,25,25);
+    --btn-hover-glow: rgba(40, 40, 40);
     --btn-color: rgba(20, 150, 255);
+    --btn-glow-color: rgba(50, 180, 255);
     --btn-hover-color: rgba(20, 170, 255);
+    --btn-hover-glow-color: rgba(70, 190, 255);
     --btn-text-color: rgba(0, 75, 120);
 
     --tag: rgba(25, 25, 25, 0.75);

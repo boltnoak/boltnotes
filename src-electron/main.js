@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const log = require('electron-log');
-const { URL } = require('url');
+const { URL, pathToFileURL } = require('url');
 
 const isSilent = process.argv.includes('--silent');
 if (isSilent) console.log('Iniciando silenciosamente...');
@@ -192,76 +192,43 @@ if (!gotTheLock && app.isPackaged) {
         app.whenReady().then(() => {
             protocol.handle('documents', async (req) => {
                 try {
-                const url = new URL(req.url);
-                let file = decodeURIComponent(url.hostname + url.pathname);
+                    const url = new URL(req.url);
+                    let file = decodeURIComponent(url.hostname + url.pathname);
 
-                if (file.endsWith('/')) file = file.slice(0, -1);
-                const [first, ...rest] = file.split('/');
-                file = [ROOT_MAP[first.toLowerCase()] ?? first, ...rest].join('/');
+                    if (file.endsWith('/')) file = file.slice(0, -1);
+                    const [first, ...rest] = file.split('/');
+                    file = [ROOT_MAP[first.toLowerCase()] ?? first, ...rest].join('/');
 
-                const fullPath = path.join(DOCUMENTS, file);
-                if (!fullPath.startsWith(path.join(DOCUMENTS, path.sep))) return new Response('Forbidden', { status: 403 });
-                if (req.method === 'PUT') {
-                    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-                    const tmp = fullPath + '.part';
-                    await fs.promises.writeFile(tmp, Buffer.from(await req.arrayBuffer()));
-                    await fs.promises.rename(tmp, fullPath);
-                    return new Response(null, { status: 201 });
-                }
-                if (req.method === 'DELETE') {
-                    await fs.promises.rm(fullPath, { force: true });
-                    return new Response(null, { status: 204 });
-                }
-                if (req.method !== 'GET' && req.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
+                    const fullPath = path.join(DOCUMENTS, file);
+                    if (!fullPath.startsWith(path.join(DOCUMENTS, path.sep))) {
+                        return new Response('Forbidden', { status: 403 });
+                    }
 
-                const stat = await fs.promises.stat(fullPath).catch(() => null);
-                if (!stat || !stat.isFile()) return new Response('Not found', { status: 404 });
+                    if (req.method === 'PUT') {
+                        await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+                        const tmp = fullPath + '.part';
+                        await fs.promises.writeFile(tmp, Buffer.from(await req.arrayBuffer()));
+                        await fs.promises.rename(tmp, fullPath);
+                        return new Response(null, { status: 201 });
+                    }
 
-                const contentType = MIME[path.extname(fullPath).toLowerCase()] || 'application/octet-stream';
-                const range = req.headers.get('range');
+                    if (req.method === 'DELETE') {
+                        await fs.promises.rm(fullPath, { force: true });
+                        return new Response(null, { status: 204 });
+                    }
 
-                if (req.method === 'HEAD') {
-                    return new Response(null, {
-                        status: 200,
-                        headers: {
-                            'Content-Type': contentType,
-                            'Content-Length': String(stat.size),
-                            'Accept-Ranges': 'bytes',
-                        },
+                    if (req.method !== 'GET' && req.method !== 'HEAD') {
+                        return new Response('Method not allowed', { status: 405 });
+                    }
+
+                    const stat = await fs.promises.stat(fullPath).catch(() => null);
+                    if (!stat || !stat.isFile()) return new Response('Not found', { status: 404 });
+
+                    return net.fetch(pathToFileURL(fullPath).toString(), {
+                        method: req.method,
+                        headers: req.headers,
+                        bypassCustomProtocolHandlers: true,
                     });
-                }
-                if (!range) {
-                    return new Response(fs.createReadStream(fullPath), {
-                        status: 200,
-                        headers: {
-                            'Content-Type': contentType,
-                            'Content-Length': String(stat.size),
-                            'Accept-Ranges': 'bytes',
-                        },
-                    });
-                }
-
-                const match = /bytes=(\d*)-(\d*)/.exec(range);
-                let start = match && match[1] !== '' ? Number(match[1]) : 0;
-                let end = match && match[2] !== '' ? Number(match[2]) : stat.size - 1;
-                end = Math.min(end, stat.size - 1);
-
-                if (start > end || start >= stat.size) {
-                    return new Response(null, {
-                        status: 416,
-                        headers: { 'Content-Range': `bytes */${stat.size}` },
-                    });
-                }
-
-                return new Response(fs.createReadStream(fullPath, { start, end }), {
-                    status: 206,
-                    headers: {
-                        'Content-Range': `bytes ${start}-${end}/${stat.size}`,
-                        'Accept-Ranges': 'bytes',
-                        'Content-Length': String(end - start + 1),
-                        'Content-Type': contentType,
-                    },
-                });
                 } catch (e) {
                     console.error('documents protocol error:', e);
                     return new Response(e.message, { status: 500 });

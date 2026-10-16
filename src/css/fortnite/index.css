@@ -158,10 +158,10 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--tab-hover);
+    /* background: var(--tab-hover); */
     padding: 1vh;
     gap: 1vh;
-    transition: background .1s linear;
+    /* transition: background .1s linear; */
     text-decoration: none;
 }
 @keyframes fadeInEase {
@@ -182,9 +182,9 @@ body {
 #chapter:active {
     transform: scale(0.95);
 }
-#chapter:hover {
+/* #chapter:hover {
     background: var(--btn);
-}
+} */
 .chapter-image-div {
     height: 100%;
     width: 100%;
@@ -214,11 +214,6 @@ body {
     padding: 0;
     z-index: 2;
     position: relative;
-    transition: background .1s linear;
-}
-#chapter:hover .title {
-    background: var(--btn);
-    backdrop-filter: blur(15px);
 }
 
 #loading-screen {

@@ -469,13 +469,13 @@ loadChapters();
 
 const noteTexts = document.querySelectorAll('.review-topictext');
 function updatePlaceholder(el) {
-  const isEmpty = el.textContent.trim() === "";
-  el.classList.toggle("is-empty", isEmpty);
+    const isEmpty = el.textContent.trim() === "";
+    el.classList.toggle("is-empty", isEmpty);
 }
 noteTexts.forEach(el => { 
     noteText.addEventListener("input", updatePlaceholder);
 });
 document.addEventListener("input", (e) => {
-  const el = e.target.closest('.review-topictext');
-  if (el) updatePlaceholder(el);
+    const el = e.target.closest('.review-topictext');
+    if (el) updatePlaceholder(el);
 });

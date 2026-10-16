@@ -464,8 +464,8 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const img = document.createElement("img");
     img.className = "game-cover";
 
+    img.loading = 'lazy';
     img.src = 'assets/placeholder.png';
-    img.loading = 'lasy';
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
     const title = document.createElement("p");
@@ -794,6 +794,7 @@ async function createGameAchieCard(game, completedIndex = null) {
         div.classList.add("no-achie");
     }
 
+    img.loading = 'lazy';
     img.src = 'assets/placeholder.png';
     
     const gameInfo = document.createElement("div");

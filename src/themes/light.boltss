@@ -34,8 +34,10 @@
 
     --btn: rgba(225,225,225);
     --btn-hover: rgba(230,230,230);
+    --btn-hover-glow: rgba(45, 45, 45);
     --btn-color: rgba(20, 150, 255);
     --btn-hover-color: rgba(20, 170, 255);
+    --btn-hover-glow-color: rgba(60, 185, 255);
     --btn-text-color: rgba(0, 75, 127.5);
 
     --tag: rgba(220,220,220,.75);

@@ -40,8 +40,8 @@
                 <div class="toPlatinar-panel"></div>
             </div>
             <div class="manage-games">
-                <p class="addGameOpen"><span data-i18n="add-new-game">Adicionar novo jogo</span></p>
-                <i id="delete-games" class="fa-solid fa-trash tooltip" data-i18n-tooltip="remove-game" data-tooltip="Remover jogo"></i>
+                <p class="button addGameOpen"><span data-i18n="add-new-game">Adicionar novo jogo</span></p>
+                <i id="delete-games" class="button fa-solid fa-trash tooltip" data-i18n-tooltip="remove-game" data-tooltip="Remover jogo"></i>
             </div>
         </div>
         <!-- <p class="sidebar-sep-bar"></p> -->
@@ -56,11 +56,11 @@
             </div>
             <div class="view-bar">
                 <div class="view-options">
-                    <i id="view-grid" data-i18n-tooltip="change-grid" class="fa-solid fa-grip"></i>
-                    <i id="view-list" data-i18n-tooltip="change-list" class="fa-solid fa-bars active"></i>
+                    <i id="view-grid" data-i18n-tooltip="change-grid" class="button fa-solid fa-grip"></i>
+                    <i id="view-list" data-i18n-tooltip="change-list" class="button fa-solid fa-bars active"></i>
                 </div>
                 <div class="sorting-addGame">
-                <i id="reload-btn" class="fa-solid fa-rotate" data-i18n-tooltip="reload" data-tooltip="Recarregar"></i>
+                <i id="reload-btn" class="button fa-solid fa-rotate" data-i18n-tooltip="reload" data-tooltip="Recarregar"></i>
                     <div class="sorting-options">
                         <select id="realSorting-options">
                             <option value="date-recent" data-i18n="date-recent">Mais recente</option>
@@ -68,7 +68,7 @@
                             <option value="rating-high" data-i18n="rating-high">Maior nota</option>
                             <option value="rating-low" data-i18n="rating-low">Menor nota</option>
                         </select>
-                        <div class="sortingOptions-trigger">
+                        <div class="button sortingOptions-trigger">
                             <span data-i18n="date-recent">Mais recente</span>
                             <i class="fa-solid fa-angle-down"></i>
                         </div>
@@ -81,10 +81,12 @@
                     </div>
                 </div>
             </div>
-            <div id="view-campaigns" class="main-view grid active"></div>
-            <div id="view-achievements" class="main-view grid" style="display: none;"></div>
-            <div id="view-charts" class="main-view">
-                <canvas id="zerados-chart" width="5vw" height="5vh"></canvas>
+            <div class="views-div">
+                <div id="view-campaigns" class="main-view grid active"></div>
+                <div id="view-achievements" class="main-view grid" style="display: none;"></div>
+                <div id="view-charts" class="main-view">
+                    <canvas id="zerados-chart" width="5vw" height="5vh"></canvas>
+                </div>
             </div>
         </div>
 
@@ -172,8 +174,8 @@
                             </div>
                         </div>
                         <div class="achie-add-minus">
-                            <i id="achie-add" onclick="changeAchieProgress(this, true)" class="fa-solid fa-plus"></i>
-                            <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="fa-solid fa-minus"></i>
+                            <i id="achie-add" onclick="changeAchieProgress(this, true)" class="button fa-solid fa-plus"></i>
+                            <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="button fa-solid fa-minus"></i>
                         </div>
                     </div>
                 </div>
@@ -199,7 +201,7 @@
                     <!-- <div class="sep-bar"></div> -->
                     <div class="game-note-title-div">
                         <p class="game-note-title">REVIEW</p>
-                        <i id="editNote" class="fa-solid fa-pen" onclick="toggleNoteEdit(this)"></i>
+                        <i id="editNote" class="button fa-solid fa-pen" onclick="toggleNoteEdit(this)"></i>
                         <div class="sep-bar"></div>
                     </div>
                     <p class="game-note" data-i18n-placeholder="game-note-placeholder" placeholder="Vazio" contenteditable="false"></p>
@@ -221,7 +223,7 @@
                     <input type="text" id="gameName" data-i18n-placeholder="name" placeholder="Nome">
                     <div class="appid-div">
                         <input type="text" id="gameAppId" placeholder="AppID">
-                        <i class="steamdb-btn fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
+                        <i class="steamdb-btn button fa-solid fa-magnifying-glass" id="steamdb-btn" onclick="searchAppID()" target="_blank"></i></a>
                     </div>
                     <div class="add-game-form-tags-title"><p data-i18n="has">Possui</p></div>
                     <div class="addGame-type type-mark-campaign active">
@@ -231,7 +233,7 @@
                 </div>
             </div>
             <div class="add-game-form-options">
-                <a id="addGameBtn"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
+                <a id="addGameBtn" class="button-color"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
             </div>
         </div>
         <div class="add-game-form-div" data-code="custom">
@@ -261,7 +263,7 @@
                 </div>
             </div>
             <div class="add-game-form-options">
-                <a id="addCustomGameBtn"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
+                <a id="addCustomGameBtn" class="button-color"><i class="fa-solid fa-plus"></i><span data-i18n="add">Adicionar</span></a>
             </div>
         </div>
     </div>

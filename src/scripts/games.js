@@ -331,8 +331,8 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     if (game.isPreOrder === true) div.classList.add("pre-order");
     if (game.hasCampaign === false) div.classList.add("no-campaign");
 
+    img.loading = 'lazy';
     img.src = 'assets/placeholder.png';
-    img.loading = 'lasy';
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
     const title = document.createElement("p");
@@ -403,10 +403,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     title.textContent = game.name;
     div.dataset.id = game.name;
 
-    const listElement = document.getElementById("view-campaigns");
-    const isListView = listElement ? listElement.classList.contains("list") : false;
-
-    if (completedIndex !== null && isListView) {
+    if (status === 'zerado') {
         const index = document.createElement("span");
         index.className = "sort-number";
         index.textContent = `#${completedIndex}`;
@@ -684,6 +681,7 @@ async function createGameAchieCard(game, completedIndex = null) {
         div.classList.add("no-achie");
     }
 
+    img.loading = 'lazy';
     img.src = 'assets/placeholder.png';
     
     const gameInfo = document.createElement("div");
@@ -739,15 +737,10 @@ async function createGameAchieCard(game, completedIndex = null) {
 
     title.textContent = game.name;
 
-    const listElement = document.getElementById("view-achievements");
-    const isListView = listElement ? listElement.classList.contains("list") : false;
-
-    if (completedIndex !== null && isListView) {
-        const index = document.createElement("span");
-        index.className = "sort-number";
-        index.textContent = `#${completedIndex}`;
-        title.prepend(index);
-    }
+    const index = document.createElement("span");
+    index.className = "sort-number";
+    index.textContent = `#${completedIndex}`;
+    title.prepend(index);
 
     const completedDateFormated = await formatDate(game.completeDate, 'default');
     if (status === "platinado") {
@@ -848,7 +841,6 @@ function toggleViewMode(mode) {
         toPlatinarSection.style.display = 'none';
         playingNowSection.style.display = 'flex';
         toPlaySection.style.display = 'grid';
-        loadGames();
     } else if (currentMode === 'achievements') {
         if (sortRatingHigh) sortRatingHigh.style.display = 'none';
         if (sortRatingLow) sortRatingLow.style.display = 'none';
@@ -862,7 +854,6 @@ function toggleViewMode(mode) {
         toPlaySection.style.display = 'none';
         platinandoNowSection.style.display = 'flex';
         toPlatinarSection.style.display = 'grid';
-        loadGamesAchie();
     } else if (currentMode === 'charts') {
         document.querySelector('.view-bar').style.display = 'none';
     }
@@ -1624,7 +1615,7 @@ gamePopupDiv.addEventListener('click', (e) => {
         const editBtn = document.getElementById('editNote');
 
         text.contentEditable = "false";
-        editBtn.className = 'fa-solid fa-pen';
+        editBtn.className = 'button fa-solid fa-pen';
         
         gamePopup.addEventListener('animationend', () => {
             gamePopupDiv.style.display = 'none';
@@ -1693,10 +1684,7 @@ async function updateAchieJSON(game, statusClass) {
     const stats = await loadStatusAchie();
 
     const listStats = Array.isArray(stats) ? stats : (stats.games || []);
-
     const nomeDoJogoProcurado = game;
-    const novoStatus = statusClass;
-
     const gameFoundAchie = listStats.find(jogo => jogo.name === nomeDoJogoProcurado);
 
     if (gameFoundAchie) {
@@ -1884,9 +1872,14 @@ optionPlatinado.addEventListener('click', async () => {
     numberU.textContent = numberText;
     numberU.contentEditable = 'false';
     achieStatusDiv.style.display = 'flex';
-
     await updateAchieJSON(game, "platinado")
-    updateAchie(statusText, "platinado", "Platinado")
+    updateAchie(statusText, "platinado", "Platinado");
+
+    const completeDateText = document.querySelector('.achie-popup-completeDate');
+    if (completeDateText) {
+        completeDateText.textContent = new Date().toLocaleDateString('pt-BR');
+    }
+
     await loadGames();
     await loadGamesAchie();
 })
@@ -2022,10 +2015,10 @@ async function toggleNoteEdit(el) {
 
     if (!isEditable) {
         text.contentEditable = "true";
-        noteEditBtn.className = 'fa-solid fa-floppy-disk';
+        noteEditBtn.className = 'button fa-solid fa-floppy-disk';
     } else {
         text.contentEditable = "false";
-        noteEditBtn.className = 'fa-solid fa-pen';
+        noteEditBtn.className = 'button fa-solid fa-pen';
         await updateNotesJSON(name); 
     }
 }

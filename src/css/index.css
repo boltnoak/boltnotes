@@ -5,7 +5,7 @@ body {
     flex-direction: column;
     gap: 1.6vh;
     justify-content: center;
-    background-color: var(--bg);
+    /* background-color: var(--bg); */
 }
 .app-version {
     color: var(--text-dark-gray);
@@ -74,7 +74,7 @@ body {
     /* background-color: var(--tab); */
     margin: 0 1vw;
     border-radius: 1vh;
-    padding: 1vh 0;
+    /* padding: 1vh 0; */
 }
 .featured-change {
     display: flex;
@@ -85,7 +85,7 @@ body {
     border-radius: 4vh;
     gap: 1.5vw;
     width: fit-content;
-    margin-bottom: .7vh;
+    /* margin-bottom: .7vh; */
 }
 .boltnotes-logo-div {
     display: flex;
@@ -147,13 +147,15 @@ body {
     scale: 1;
     transition: scale .1s linear !important;
     will-change: scale;
+    /* border-top: .455vh solid var(--tab-active); */
+    background-image: linear-gradient(to bottom, var(--tab), var(--btn));
 }
 .page:hover {
     scale: 1.02;
 }
 .page-infos {
     height: 46vh;
-    margin: 0 1vw 1.8vh 1vw;
+    margin: 0 1vw .3vh 1vw;
     display: flex;
     flex-direction: column;
     gap: 1.5vh;
@@ -162,7 +164,7 @@ body {
     height: 40vh;
     overflow: hidden;
     transform: translateY(0);
-    background: linear-gradient(to bottom, var(--tab-hover), var(--tab-active));
+    /* background: linear-gradient(to bottom, var(--tab-hover), var(--tab-active)); */
     display: flex;
     width: 100%;
     flex-direction: row;
@@ -268,10 +270,10 @@ body {
 }
 .text-notes {
     font-family: 'Vazirmatn';
-    font-weight: 200;
+    font-weight: 250;
     color: var(--text);
     margin: 0;
-    font-size: 7.5vh;
+    font-size: 9vh;
     width: 100%;
     height: 100%;
     display: flex;
@@ -381,6 +383,7 @@ body {
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
     position: relative;
+    box-sizing: border-box;
 }
 .playingNow-no-games {
     color: var(--text-dark-gray);
@@ -410,24 +413,25 @@ body {
 /* Jogos */
 .game {
     width: 100%;
-    border-radius: 2vh;
+    height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    height: 100%;
     gap: 0;
     display: flex;
     flex-direction: column;
     flex: none;
-    /* flex: 1 0 calc(100% - .525vh); */
     padding: .9vh;
-    border: .6vh solid var(--blue);
-    transition: transform .1s ease-in-out, opacity .1s ease-in-out, background .1s linear;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
     margin: 0;
     position: relative;
     z-index: 1;
-    /* opacity: 0; */
+    border: .6vh solid transparent;
+    border-radius: 2vh;
+    background:
+        linear-gradient(var(--bg), var(--bg)) padding-box,
+        linear-gradient(to top, var(--btn-glow-color), var(--text-blue), var(--btn-glow-color)) border-box;
+    transition: transform .1s ease-in-out, opacity .1s ease-in-out;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
     animation: fadeInUp .35s ease forwards;
 }
 @keyframes fadeInUp {
@@ -441,7 +445,7 @@ body {
 .game.ajogar {
     border: none;
     gap: 1.2vh;
-    background-color: var(--tab-hover);
+    background-image: linear-gradient(to top, var(--btn), var(--tab), var(--btn));
 }
 .game.ajogar .game-cover,
 .game.ajogar .game-info {
@@ -569,9 +573,8 @@ body {
     justify-content: start;
     align-items: center;
     width: max-content;
-    gap: 1.3vw;
-    margin: 0 .25vw 0 .25vw;
-    overflow: hidden;
+    gap: .85vw;
+    margin: 0 .25vw;
     height: 100%;
     width: 100%;
     animation: fadeInUp .35s ease forwards;
@@ -597,6 +600,11 @@ body {
     height: 100%;
     width: 50vw;
     justify-content: space-between;
+    border: solid .25rem var(--btn-hover);
+    background-image: linear-gradient(to bottom, var(--tab), var(--btn));
+    padding: 1.25vh .65vw;
+    border-radius: 1.5vh;
+    box-sizing: border-box;
 }
 
 .status {
@@ -673,8 +681,6 @@ body {
     padding: 1.25vh .8vw;
     width: fit-content;
     border-radius: .8vh;
-    background-color: var(--tab);
-    transition: background .15s linear;
     display: flex;
     justify-content: center;
     flex: 1;
@@ -692,7 +698,6 @@ body {
 .statusLevel-minus:hover,
 .statusWin-add:hover,
 .statusWin-minus:hover {
-    background: var(--tab-hover);
     cursor: pointer;
 }
 .status-level, .status-win {
@@ -724,13 +729,14 @@ body {
     animation: fadeInUp .35s ease forwards;
 }
 .playingNow-div span {
-    background-color: var(--blue);
-    padding: .65vh .75vw .65vh 2.25vw;
+    padding: .65vh .75vw 1vh 2.25vw;
     border-radius: 1vh;
     color: var(--text-blue);
     font-weight: 665;
     font-size: 2.8vh;
     margin: 0 .25vw;
+    border-top: .455vh solid var(--btn-hover-glow-color);
+    background-image: linear-gradient(to bottom, var(--btn-hover-color), var(--btn-hover-glow-color));
 }
 .playingNow-div span::before {
     content: '';
@@ -747,7 +753,7 @@ body {
     position: absolute;
     border-radius: 50%;
     padding: 1vh;
-    background-color: var(--text-dark-gray);
+    background-color: var(--text-gray);
     object-fit: cover;
     align-self: center;
     transform: translateX(-1.5vw);
@@ -767,13 +773,14 @@ body {
     flex: 1;
 }
 .toPlay-div span {
-    background-color: var(--btn);
-    padding: .65vh .75vw .65vh 2.25vw;
+    padding: .65vh .75vw 1vh 2.25vw;
     border-radius: 1vh;
-    color: var(--text-dark-gray);
+    color: var(--text-gray);
     font-weight: 665;
     font-size: 2.8vh;
-    margin: 0 0 0 .25vw;
+    margin: 0 .25vw;
+    border-top: .455vh solid var(--btn-hover-glow);
+    background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
 }
 .toPlay-panel {
     display: grid;
@@ -794,7 +801,7 @@ body {
     border-radius: 1.3vh;
 }
 .level-progress-bar {
-    background-color: color-mix(in srgb, var(--text-blue) 50%, transparent);
+    background-image: linear-gradient(to left, color-mix(in srgb, var(--text-blue) 50%, transparent), var(--text-blue));
     height: 1.4vh;
     width: 100%;
     overflow: hidden;
@@ -804,7 +811,8 @@ body {
     transition: width .1s linear;
 }
 .level-progress-bar-fill {
-    background-color: var(--btn-hover-color);
+    background-image: linear-gradient(to left, var(--btn-hover-color), var(--btn-color));
+    box-shadow: 4vw 0 4vw var(--btn-hover-glow-color);
     width: 0%;
     padding: 0;
     height: 100%;
@@ -2409,7 +2417,6 @@ body.delete-mode-active .game:hover::after {
     transition: opacity 0.25s ease;
 }
 
-/* Classe que o JS adiciona no body quando tudo está pronto */
 body.ui-ready .featured-change-div,
 body.ui-ready #featured-title,
 body.ui-ready .page-infos,
