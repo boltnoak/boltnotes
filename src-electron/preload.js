@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     get_i18n: () => ipcRenderer.invoke('i18n:get'),
     openLink: (url) => ipcRenderer.invoke('open-external-link', url),
+    openFile: (url) => ipcRenderer.invoke('open-file', url),
     getAppVersion: () => ipcRenderer.invoke('app-version'),
 
     getSteamData: (appid) => ipcRenderer.invoke('games:get-steam-data', appid),

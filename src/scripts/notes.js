@@ -404,7 +404,7 @@ async function editToggle() {
     rawContent = getTextFromEditor();
     await saveNote();
   }
-  editBtn.className = editing ? "normal-btn fa-solid fa-floppy-disk" : "normal-btn fa-solid fa-pen-to-square";
+  editBtn.className = editing ? "button normal-btn fa-solid fa-floppy-disk" : "button normal-btn fa-solid fa-pen-to-square";
   renderContent();
 }
 

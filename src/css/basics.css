@@ -45,6 +45,9 @@ i {
 #loading-screen.hidden {
     visibility: hidden;
 } */
+p {
+    margin: 0;
+}
 .spinner {
     border: 1.75vh solid var(--btn-color);
     width: 11vh;
@@ -855,7 +858,7 @@ footer {
     color: var(--text);
     font-weight: 700;
     cursor: pointer;
-    transition: background .1s linear;
+    transition: background .15s linear;
     position: relative;
 }
 .top-tab:hover {
@@ -941,4 +944,62 @@ input:hover {
     border: .455vh solid var(--btn);
     border-top: .455vh solid var(--text);
     background: linear-gradient(to bottom, var(--tab), var(--tab-hover));
+}
+
+.file-link {
+    color: var(--btn-color);
+    text-decoration: none;
+    font-weight: 400;
+    margin: 0;
+    transition: opacity .1s;
+    opacity: .75;
+    cursor: pointer;
+}
+.file-link:hover {
+    color: var(--btn-hover-color);
+    text-decoration: underline;
+    opacity: 1;
+}
+
+.list-toggle {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border-radius: 1vh;
+    padding: .75vh .65vw;
+    gap: .45vw;
+    font-size: 1.35rem;
+    color: var(--text);
+    font-weight: 700;
+    cursor: pointer;
+    width: fit-content;
+    transition: background .1s linear;
+    position: relative;
+}
+.list-toggle:after {
+    content: "\f078";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: transform .15s ease;
+}
+.list-toggle.open:after {
+    transform: rotate(180deg);
+}
+.list-toggle:hover {
+    background-color: var(--btn);
+}
+.list-toggle-list {
+    display: none;
+    flex-direction: column;
+    margin: .5vh;
+    margin-left: 1vw;
+    gap: .25vh;
+}
+.list-toggle-list.open {
+    display: flex;
 }

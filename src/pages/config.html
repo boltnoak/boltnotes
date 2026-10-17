@@ -14,32 +14,18 @@
         <div class="tabs">
             <p class="sidebar-title">Configurações</p>
             <div data-code="settings-tab-quick" class="tab active" onclick="tabSwitch(this)"><i class="fa-solid fa-gauge-high"></i><span data-i18n="settings-tab-quick">Configurações rápidas</span></div>
-            <!-- <p class="sep-bar"></p> -->
             <div data-code="settings-tab-home" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-house"></i><span data-i18n="settings-tab-home">Página inicial</span></div>
             <div data-code="settings-tab-appearance" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-palette"></i><span data-i18n="settings-tab-appearance">Aparência</span></div>
             <div data-code="language" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-language"></i><span data-i18n="language">Idioma</span></div>
             <div data-code="app" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-window-maximize"></i><span data-i18n="app">Aplicativo</span></div>
             <div data-code="settings-tab-updates" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-arrow-rotate-right"></i><span data-i18n="settings-tab-updates">Atualizações</span></div>
-            <!-- <p class="sep-bar"></p> -->
+            <div data-code="settings-tab-advanced" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-code"></i><span data-i18n="settings-tab-advanced">Avançado</span></div>
             <!-- <div data-code="about" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-info"></i><span data-i18n="settings-tab-locations">Locais</span></div> -->
         </div>
         <div class="tab-configs-div">
             <p class="tab-configs-title" data-i18n="settings-tab-quick">Configurações rápidas</p>
             <div class="sep-bar"></div>
             <div id="settings-tab-quick" class="tab-configs active">
-                <!-- <p class="sep" data-i18n="show-hide-pages">Mostrar/ocultar páginas</p>
-                <div class="config-item">
-                    <p><span data-i18n="backlogof">Backlog de</span> <span data-i18n="games">Jogos</span></p>
-                    <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
-                </div>
-                <div class="config-item">
-                    <p data-i18n="notes">Notas</p>
-                    <a class="toggle" data-code="notes_on_home" onclick="toggleConfig(this)"></a>
-                </div>
-                <div class="config-item">
-                    <p>Fortnite</p>
-                    <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
-                </div> -->
                 <p class="sep" data-i18n="featured">Destaque</p>
                 <div class="config-item featured">
                     <div class="featured-selector-div">
@@ -54,10 +40,6 @@
                         <ul class="featuredSelector-select"></ul>
                     </div>
                 </div>
-                <!-- <div class="config-item">
-                    <p data-i18n="show-featured-changer">Mais de um destaque</p>
-                    <a class="toggle" data-code="show_featured_changer" onclick="toggleConfig(this)"></a>
-                </div> -->
                 <div class="sep-space"></div>
                 <div class="config-item themes">
                     <div class="theme-selector-div">
@@ -93,7 +75,7 @@
                 </div> -->
                 <p class="sep" data-i18n="show-hide-pages">Mostrar/ocultar páginas</p>
                 <div class="config-item">
-                    <p><span data-i18n="backlogof">Backlog de</span> <span data-i18n="games">Jogos</span></p>
+                    <p><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span></p>
                     <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
                 </div>
                 <div class="config-item">
@@ -163,10 +145,24 @@
                 </div>
             </div>
             <div id="about" class="tab-configs">
-                <p class="sep"><span data-i18n="backlogof">Backlog de</span> <span data-i18n="games">Jogos</span>, <span data-i18n="notes">Notas</span>, Fortnite <span data-i18n="and">e</span> <span data-i18n="themes">Temas</span></p>
+                <p class="sep"><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span>, <span data-i18n="notes">Notas</span>, Fortnite <span data-i18n="and">e</span> <span data-i18n="themes">Temas</span></p>
                 <p class="path" id="documents"></p>
                 <!-- <p class="sep">Arquivo de configurações</p>
                 <p class="path" id="user-config"></p> -->
+            </div>
+            <div id="settings-tab-advanced" class="tab-configs">
+                <p class="sep" data-i18n="files-json">Arquivos JSON</p>
+                <p class="list-toggle"><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span></p>
+                <div class="list-toggle-list">
+                    <a class="file-link" onclick="openFile(this)" data-url="Games/games.json" data-i18n="games">Games</a>
+                    <a class="file-link" onclick="openFile(this)" data-url="Games/campaigns.json" data-i18n="campaigns">Campaigns</a>
+                    <a class="file-link" onclick="openFile(this)" data-url="Games/achievements.json" data-i18n="achievements">Achievements</a>
+                </div>
+                <p class="list-toggle">Fortnite</p>
+                <div class="list-toggle-list">
+                    <a class="file-link" onclick="openFile(this)" data-url="Fortnite/reviews.json" data-i18n="">Reviews</a>
+                    <a class="file-link" onclick="openFile(this)" data-url="Fortnite/stats.json" data-i18n=""><span data-i18n="levels">Níveis</span>, <span data-i18n="wins">Vitórias</span> <span data-i18n="and">e</span> <span data-i18n="rating"></span>s</a>
+                </div>
             </div>
         </div>
 

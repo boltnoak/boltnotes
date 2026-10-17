@@ -124,7 +124,7 @@ function createWindow() {
         maximizable: !isWindows,
         titleBarStyle: 'hidden',
         transparent: true,
-        backgroundColor: '#00000000',
+        backgroundColor: '#050505',
         webPreferences: {
             backgroundThrottling: true,
             preload: path.join(__dirname, 'preload.js'),
@@ -371,6 +371,12 @@ ipcMain.handle('i18n:get', () => {
 ipcMain.handle('open-external-link', async (event, url) => {
     const { shell } = require('electron');
     await shell.openExternal(url);
+});
+ipcMain.handle('open-file', async (event, url) => {
+    const { shell } = require('electron');
+    const file = path.resolve(DOCUMENTS, url);
+
+    await shell.openPath(file);
 });
 ipcMain.handle('app-version', () => { return app.getVersion() });
 

@@ -39,7 +39,7 @@
             <div class="status rating-container">
                 <div class="status-name-div">
                     <i class="fa-solid fa-star"></i>
-                    <span data-i18n="rating">Nota:</span>
+                    <span data-i18n="rating-">Nota:</span>
                 </div>
                 <span class="status-rating"></span>
             </div>
@@ -47,7 +47,7 @@
             <div class="status">
                 <div class="status-name-div">
                     <i class="fa-solid fa-square-caret-up"></i>
-                    <span data-i18n="levels">Níveis:</span>
+                    <span data-i18n="levels-">Níveis:</span>
                 </div>
                 <div class="status-div">
                     <i class="statusLevel-add fa-solid fa-plus"></i> <span class="status-level"></span>
@@ -58,7 +58,7 @@
             <div class="status">
                 <div class="status-name-div">
                     <i class="fa-solid fa-trophy"></i>
-                    <span data-i18n="wins">Vitórias:</span>
+                    <span data-i18n="wins-">Vitórias:</span>
                 </div>
                 <div class="status-div">
                     <i class="statusWin-add fa-solid fa-plus"></i> <span class="status-win"></span>

@@ -25,7 +25,7 @@
                 <div class="text">
                     <i class="games-backlog-icon fa-solid fa-gamepad"></i>
                     <p class="text-backlog" data-i18n="backlogof">BACKLOG DE</p>
-                    <p class="text-games" data-i18n="games">JOGOS</p>
+                    <p class="text-games" data-i18n="ofgames">JOGOS</p>
                 </div>
             </div>
         </a>
@@ -92,14 +92,14 @@
                         <div class="season-status-div">
                             <p class="status">
                                 <i class="fa-solid fa-square-caret-up"></i>
-                                <span data-i18n="levels">Níveis:</span>
+                                <span data-i18n="levels-">Níveis:</span>
                                 <i class="statusLevel-minus button fa-solid fa-minus"></i>
                                 <span class="status-level">~</span>
                                 <i class="statusLevel-add button fa-solid fa-plus"></i>
                             </p>
                             <p class="status">
                                 <i class="fa-solid fa-trophy"></i>
-                                <span data-i18n="wins">Vitórias:</span>
+                                <span data-i18n="wins-">Vitórias:</span>
                                 <i class="statusWin-minus button fa-solid fa-minus"></i>
                                 <span class="status-win">~</span>
                                 <i class="statusWin-add button fa-solid fa-plus"></i>
@@ -229,8 +229,8 @@
                             </div>
                         </div>
                         <div class="achie-add-minus">
-                            <i id="achie-add" onclick="changeAchieProgress(this, true)" class="fa-solid fa-plus"></i>
-                            <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="fa-solid fa-minus"></i>
+                            <i id="achie-add" onclick="changeAchieProgress(this, true)" class="button fa-solid fa-plus"></i>
+                            <i id="achie-minus" onclick="changeAchieProgress(this, false)" class="button fa-solid fa-minus"></i>
                         </div>
                     </div>
                 </div>
@@ -256,7 +256,7 @@
                     <!-- <div class="sep-bar"></div> -->
                     <div class="game-note-title-div">
                         <p class="game-note-title">REVIEW</p>
-                        <i id="editNote" class="fa-solid fa-pen" onclick="toggleNoteEdit(this)"></i>
+                        <i id="editNote" class="button fa-solid fa-pen" onclick="toggleNoteEdit(this)"></i>
                         <div class="sep-bar"></div>
                     </div>
                     <p class="game-note" data-i18n-placeholder="game-note-placeholder" placeholder="Vazio" contenteditable="false"></p>

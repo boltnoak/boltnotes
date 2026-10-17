@@ -326,3 +326,17 @@ async function addGame(newGameData, doHasCampaign, doHasAchievements, achieTotal
     return { success: false, error: error.message };
   }
 }
+
+async function openFile(el) {
+    const fileUrl = el.dataset.url;
+    await window.electronAPI.openFile(fileUrl);
+}
+
+document.addEventListener('click', (e) => {
+    const el = e.target.closest('.list-toggle');
+    if (el) {
+        const elList = el.nextElementSibling.closest('.list-toggle-list');
+        el.classList.toggle('open');
+        elList.classList.toggle('open');
+    }
+});

@@ -83,7 +83,7 @@ body {
     padding: 0;
     margin: 0;
     border-radius: 4vh;
-    gap: 1.5vw;
+    gap: .8vw;
     width: fit-content;
     /* margin-bottom: .7vh; */
 }
@@ -378,7 +378,10 @@ body {
     margin: 0;
     user-select: none;
     height: 100%;
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
     padding: .5vh .25vw;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
@@ -428,7 +431,7 @@ body {
     border-radius: 2vh;
     background:
         linear-gradient(var(--bg), var(--bg)) padding-box,
-        linear-gradient(to top, var(--btn-glow-color), var(--text-blue), var(--btn-glow-color)) border-box;
+        linear-gradient(to top, var(--blue-light), var(--text-blue), var(--blue-light)) border-box;
     transition: transform .1s ease-in-out, opacity .1s ease-in-out;
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -581,8 +584,10 @@ body {
 }
 #recent-season-name {
     margin: 0;
-    font-size: 1.9325rem;
+    font-size: 2rem;
     font-weight: 1000;
+    text-align: center;
+    width: 100%;
     font-family: 'Montserrat';
     text-wrap: wrap;
 }
@@ -599,9 +604,11 @@ body {
     width: fit-content;
     height: 100%;
     width: 50vw;
+    overflow: clip;
+    overflow-clip-margin: border-box;
     justify-content: space-between;
-    border: solid .25rem var(--btn-hover);
-    background-image: linear-gradient(to bottom, var(--tab), var(--btn));
+    border: solid .25rem var(--btn);
+    background-image: linear-gradient(to bottom, var(--btn), var(--tab-active), var(--btn));
     padding: 1.25vh .65vw;
     border-radius: 1.5vh;
     box-sizing: border-box;
@@ -715,7 +722,8 @@ body {
     left: 0;
     bottom: 0;
     height: .55vh;
-    background-color: var(--btn);
+    opacity: .5;
+    background-color: var(--btn-hover-glow);
     width: 100%;
     border-radius: 1vh;
     transition: all .1s linear;
@@ -735,8 +743,8 @@ body {
     font-weight: 665;
     font-size: 2.8vh;
     margin: 0 .25vw;
-    border-top: .455vh solid var(--btn-hover-glow-color);
-    background-image: linear-gradient(to bottom, var(--btn-hover-color), var(--btn-hover-glow-color));
+    border-top: .455vh solid var(--blue-light);
+    background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
 }
 .playingNow-div span::before {
     content: '';
@@ -801,7 +809,7 @@ body {
     border-radius: 1.3vh;
 }
 .level-progress-bar {
-    background-image: linear-gradient(to left, color-mix(in srgb, var(--text-blue) 50%, transparent), var(--text-blue));
+    background-color: var(--tab);
     height: 1.4vh;
     width: 100%;
     overflow: hidden;
@@ -809,10 +817,11 @@ body {
     margin: 0;
     border-radius: 1vh;
     transition: width .1s linear;
+    box-shadow: 0 0 16vh 5vh color-mix(in srgb, var(--btn-hover-color) 15%, transparent);
 }
 .level-progress-bar-fill {
     background-image: linear-gradient(to left, var(--btn-hover-color), var(--btn-color));
-    box-shadow: 4vw 0 4vw var(--btn-hover-glow-color);
+    box-shadow: 1vw 0 4.5vw var(--btn-hover-color);
     width: 0%;
     padding: 0;
     height: 100%;
@@ -1100,7 +1109,13 @@ body {
 .game-popup-status {
     display: flex;
     flex-direction: row;
-    gap: .6vw;
+    gap: .65vw;
+    margin: 0;
+    justify-content: center;
+    padding: 1.25vh 0;
+    border-radius: 1vh;
+    border: solid .1865rem var(--btn-hover);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-hover) 80%);
 }
 .game-popup-info {
     display: flex;
@@ -1494,7 +1509,7 @@ body {
     width: 100%;
     border-color: var(--text);
 }
-.game-status-div{
+.game-status-div {
     height: fit-content;
     display: flex;
     align-items: center;
@@ -1510,6 +1525,7 @@ body {
     display: flex;
     flex-direction: row;
     gap: .65vw;
+    width: 9vw;
     align-items: stretch;
     align-self: stretch;
 }
@@ -1526,10 +1542,8 @@ body {
     background-color: var(--btn);
     cursor: pointer;
     color: var(--text);
-}
-#achie-minus:hover,
-#achie-add:hover {
-    background-color: var(--btn-hover);
+    flex: 1;
+    box-sizing: border-box;
 }
 .achie-info {
     display: flex;
@@ -2085,21 +2099,16 @@ body {
     margin: 0;
 }
 
+
 #editNote {
-    background-color: transparent;
     padding: 1vh 1vw;
     width: 1.75vw;
     border-radius: .8vh;
     text-align: center;
-    transition: background .15s linear;
     color: var(--text);
-    background-color: var(--btn);
     cursor: pointer;
     z-index: 98;
     font-size: 2vh;
-}
-#editNote:hover {
-    background-color: var(--btn-hover);
 }
 
 .sep-bar {

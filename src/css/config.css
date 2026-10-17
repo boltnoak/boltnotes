@@ -3,7 +3,6 @@
 body {
     display: flex;
     flex-direction: row;
-    margin-top: 1.55vh;
     gap: .8vw;
 }
 
@@ -170,7 +169,7 @@ body {
     flex-direction: column;
     gap: .65vh;
     width: 75%;
-    margin: 0 .75vw 0 0;
+    margin: 1.55vh .75vw 0 0;
 }
 .version {
     margin: 0;

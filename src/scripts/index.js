@@ -355,21 +355,6 @@ const optionsRating = document.querySelector('.rating-change');
 
 const noteEditBtn = document.getElementById('editNote');
 
-async function toggleNoteEdit(el) {
-    const name = el.dataset.id;
-    const text = document.querySelector('.game-note');
-    const isEditable = text.contentEditable === "true";
-
-    if (!isEditable) {
-        text.contentEditable = "true";
-        noteEditBtn.className = 'fa-solid fa-floppy-disk';
-    } else {
-        text.contentEditable = "false";
-        noteEditBtn.className = 'fa-solid fa-pen';
-        await updateNotesJSON(name); 
-    }
-}
-
 async function loadGames() {
     renderIdGames++;
     const myRenderId = renderIdGames;
@@ -1443,7 +1428,7 @@ gamePopupDiv.addEventListener('click', (e) => {
         const editBtn = document.getElementById('editNote');
 
         text.contentEditable = "false";
-        editBtn.className = 'fa-solid fa-pen';
+        editBtn.className = 'button fa-solid fa-pen';
         
         gamePopup.addEventListener('animationend', () => {
             gamePopupDiv.style.display = 'none';
@@ -1802,10 +1787,10 @@ async function toggleNoteEdit(el) {
 
     if (!isEditable) {
         text.contentEditable = "true";
-        noteEditBtn.className = 'fa-solid fa-floppy-disk';
+        noteEditBtn.className = 'button fa-solid fa-floppy-disk';
     } else {
         text.contentEditable = "false";
-        noteEditBtn.className = 'fa-solid fa-pen';
+        noteEditBtn.className = 'button fa-solid fa-pen';
         await updateNotesJSON(name); 
     }
 }

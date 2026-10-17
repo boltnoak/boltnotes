@@ -59,7 +59,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin: 0 .5vw 1.5vh .5vw;
-    margin: 0 .5vw .75vh .5vw;
+    margin: 0 .5vw 1vh .5vw;
     padding: 0;
     gap: 1vw;
 }
@@ -140,8 +140,8 @@ body {
     text-wrap: nowrap;
     padding: 1vh 0 .6vh 0;
     border-radius: 1vh;
-    border-bottom: .455vh solid var(--btn-hover-glow-color);
-    background-image: linear-gradient(to top, var(--btn-hover-color), var(--btn-hover-glow-color));
+    border-bottom: .455vh solid var(--blue-light);
+    background-image: linear-gradient(to top, var(--blue), var(--blue-light));
 }
 #playingNowSection-title p {
     margin: 0 .5vw 0 0;
@@ -218,7 +218,10 @@ body {
     user-select: none;
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
     padding: .5vh .25vw;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
@@ -234,6 +237,7 @@ body {
     display: flex;
     flex-direction: column;
     flex: none;
+    transform-origin: center;
     padding: .455vh .9vh .9vh .9vh;
     transition: scale .1s ease-in-out, background .1s linear;
     scroll-snap-align: start;
@@ -242,8 +246,8 @@ body {
     position: relative;
     z-index: 1;
     border-radius: 1vh;
-    border-top: .455vh solid var(--btn-hover-glow-color);
-    background-image: linear-gradient(to bottom, var(--btn-hover-color), var(--btn-hover-glow-color));
+    border-top: .455vh solid var(--blue-light);
+    background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
 }
 .playingNow-games {
     padding: 1.5vh;
@@ -1505,7 +1509,7 @@ body {
     width: 100%;
     border-color: var(--text);
 }
-.game-status-div{
+.game-status-div {
     height: fit-content;
     display: flex;
     align-items: center;
@@ -1624,7 +1628,7 @@ body {
     justify-content: center;
     padding: 1.25vh 0;
     border-radius: 1vh;
-    border: solid .175rem var(--btn-hover);
+    border: solid .1865rem var(--btn-hover);
     background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-hover) 80%);
 }
 .game-popup-info {
@@ -1745,7 +1749,7 @@ body {
     gap: .75vw;
     height: 76.5%;
     transition: all .15s linear;
-    padding: 1vh .6vw;
+    padding: 1vh .75vw;
     border-radius: 1.1vh;
     backdrop-filter: blur(8px);
     --shadow-color: rgba(255, 255, 255, 1);
