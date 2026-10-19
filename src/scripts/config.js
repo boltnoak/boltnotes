@@ -190,6 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 li.appendChild(textSpan);
                 li.dataset.value = featuredName;
+                li.classList.add('button');
 
                 if (featuredName == 'none') {
                     textSpan.setAttribute('data-i18n', 'featured-none');
@@ -206,6 +207,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 if (featuredName === currentFeatured) {
                     li.classList.add('active-config');
+                    li.classList.add('button-color');
+                    li.classList.remove('button');
                 }
                 li.addEventListener('click', async () => {
                     document.querySelectorAll('.featured-selector-div').forEach(syncContainer => {
@@ -218,8 +221,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         
                         if (syncUl) {
                             syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active-config'));
+                            syncUl.querySelectorAll('li').forEach(el => el.classList.remove('button-color'));
+                            syncUl.querySelectorAll('li').forEach(el => el.classList.add('button'));
                             const matchingLi = Array.from(syncUl.querySelectorAll('li')).find(el => el.dataset.value === featuredName);
                             if (matchingLi) matchingLi.classList.add('active-config');
+                            if (matchingLi) matchingLi.classList.remove('button');
+                            if (matchingLi) matchingLi.classList.add('button-color');
                         }
                     });
                     customUl.classList.remove('active-config');

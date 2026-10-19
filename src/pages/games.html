@@ -20,7 +20,7 @@
                 <div class="playingNow-panel"></div>
             </div>
             <div class="toPlaySection">
-                <div id="toPlaySection-title"><p>
+                <div id="toSection-title"><p>
                     <!-- <i class="fa-solid fa-clipboard-list"></i> -->
                     <span data-i18n="ajogar">À Jogar</span></p></div>
                 <div class="toPlay-panel"></div>
@@ -34,7 +34,7 @@
                 </div>
             </div>
             <div class="toPlatinarSection">
-                <div id="toPlatinarSection-title"><p>
+                <div id="toSection-title"><p>
                     <!-- <i class="fa-solid fa-clipboard-list"></i> -->
                     <span data-i18n="aplatinar">À Platinar</span></p></div>
                 <div class="toPlatinar-panel"></div>
@@ -59,24 +59,15 @@
                     <i id="view-grid" data-i18n-tooltip="change-grid" class="button fa-solid fa-grip"></i>
                     <i id="view-list" data-i18n-tooltip="change-list" class="button fa-solid fa-bars active"></i>
                 </div>
-                <div class="sorting-addGame">
-                <i id="reload-btn" class="button fa-solid fa-rotate" data-i18n-tooltip="reload" data-tooltip="Recarregar"></i>
+                <div class="sorting-reload">
+                    <i id="reload-btn" class="button fa-solid fa-rotate" data-i18n-tooltip="reload" data-tooltip="Recarregar"></i>
                     <div class="sorting-options">
-                        <select id="realSorting-options">
-                            <option value="date-recent" data-i18n="date-recent">Mais recente</option>
-                            <option value="date-old" data-i18n="date-old">Mais antigo</option>
-                            <option value="rating-high" data-i18n="rating-high">Maior nota</option>
-                            <option value="rating-low" data-i18n="rating-low">Menor nota</option>
-                        </select>
-                        <div class="button sortingOptions-trigger">
-                            <span data-i18n="date-recent">Mais recente</span>
-                            <i class="fa-solid fa-angle-down"></i>
-                        </div>
+                        <div class="button sortingOptions-trigger" data-i18n="date-recent"></div>
                         <ul class="sortingOptions-select">
-                            <li data-value="date-recent" class="selected" data-i18n="date-recent">Mais recente</li>
-                            <li data-value="date-old" data-i18n="date-old">Mais antigo</li>
-                            <li data-value="rating-high" data-i18n="rating-high">Maior nota</li>
-                            <li data-value="rating-low" data-i18n="rating-low">Menor nota</li>
+                            <li data-value="date-recent" class="selected button" data-i18n="date-recent">Mais recente</li>
+                            <li data-value="date-old" data-i18n="date-old" class="button">Mais antigo</li>
+                            <li data-value="rating-high" data-i18n="rating-high" class="button">Maior nota</li>
+                            <li data-value="rating-low" data-i18n="rating-low" class="button">Menor nota</li>
                         </ul>
                     </div>
                 </div>

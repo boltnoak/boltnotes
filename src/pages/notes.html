@@ -15,16 +15,16 @@
             <div class="note-list-bar" style="display: flex;">
                 <div>
                     <p data-i18n="notes">Notes</p>
-                    <i id="newNote-add" class="button normal-btn fa-solid fa-plus"></i>
-                    <i id="toggleDeleteBtns" class="button normal-btn fa-solid fa-delete-left"></i>
+                    <i id="newNote-add" class="button fa-solid fa-plus"></i>
+                    <i id="toggleDeleteBtns" class="button fa-solid fa-delete-left"></i>
                 </div>
             </div>
             <div class="open-note-bar">
                 <div>
+                    <i id="exit-note" class="button fa-solid fa-arrow-left" onclick="exitNote()"></i>
                     <p id="title-note" contenteditable="true"></p>
-                    <i id="exit-note" class="button normal-btn fa-solid fa-arrow-left" onclick="exitNote()"></i>
                 </div>
-                <i id="edit-note" class="button normal-btn fa-solid fa-file-pen"></i>
+                <i id="edit-note" class="button fa-solid fa-lock"></i>
             </div>
         </div>
         <div id="note-list">

@@ -64,18 +64,56 @@ function getTextFromEditor() {
     .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&amp;/gi, "&")
     .trim();
 }
+
+function highlightLinks() {
+    if (!window.CSS || !CSS.highlights) return;
+    CSS.highlights.delete('lk-sym');
+    CSS.highlights.delete('lk-title');
+    CSS.highlights.delete('lk-url');
+    if (!editing) return;
+
+    const sym = [], title = [], url = [];
+    const re = /\[([^=\]\n]+)=([^\]\n]+)\]/g;
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+    let node;
+
+    while ((node = walker.nextNode())) {
+        const mk = (a, b) => {
+        const r = new Range();
+        r.setStart(node, a);
+        r.setEnd(node, b);
+        return r;
+        };
+        re.lastIndex = 0;
+        let m;
+        while ((m = re.exec(node.data))) {
+        const s = m.index;
+        const t0 = s + 1, t1 = t0 + m[1].length;
+        const u0 = t1 + 1, u1 = u0 + m[2].length;
+        sym.push(mk(s, t0), mk(t1, u0), mk(u1, u1 + 1));
+        title.push(mk(t0, t1));
+        url.push(mk(u0, u1));
+        }
+    }
+
+    CSS.highlights.set('lk-sym', new Highlight(...sym));
+    CSS.highlights.set('lk-title', new Highlight(...title));
+    CSS.highlights.set('lk-url', new Highlight(...url));
+}
+
 function renderContent() {
-  if (editing) {
-    content.innerHTML = rawContent.replace(/\n/g, "<br>");
-  } else {
-    let html = parseMarkdown(rawContent);
-    html = parseLinks(html);
-    html = parseHidden(html);
-    html = parseIMG(html);
-    html = html.replace(/<\/h([1-3])>\n/g, "</h$1>").replace(/\n/g, "<br>");
-    content.innerHTML = html;
-  }
-  content.contentEditable = editing;
+    if (editing) {
+        content.innerHTML = rawContent.replace(/\n/g, "<br>");
+    } else {
+        let html = parseMarkdown(rawContent);
+        html = parseLinks(html);
+        html = parseHidden(html);
+        html = parseIMG(html);
+        html = html.replace(/<\/h([1-3])>\n/g, "</h$1>").replace(/\n/g, "<br>");
+        content.innerHTML = html;
+    }
+    content.contentEditable = editing;
+    highlightLinks();
 }
 
 /////////////////////////
@@ -320,7 +358,7 @@ async function loadNote(tab, edit = false) {
 
     rawContent = decodeHtml(data);
     editing = edit;
-    editBtn.className = editing ? "button normal-btn fa-solid fa-floppy-disk" : "button normal-btn fa-solid fa-pen-to-square";
+    editBtn.className = editing ? "button fa-solid fa-unlock" : "button fa-solid fa-lock";
 
     renderContent();
     noteTitleElement.textContent = name;
@@ -404,17 +442,18 @@ async function editToggle() {
     rawContent = getTextFromEditor();
     await saveNote();
   }
-  editBtn.className = editing ? "button normal-btn fa-solid fa-floppy-disk" : "button normal-btn fa-solid fa-pen-to-square";
+  editBtn.className = editing ? "button fa-solid fa-unlock" : "button fa-solid fa-lock";
   renderContent();
 }
 
 content.addEventListener("input", async () => {
-  if (!editing) return;
-  rawContent = getTextFromEditor();
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(async () => {
-    await saveNote();
-  }, 500);
+    if (!editing) return;
+    rawContent = getTextFromEditor();
+    highlightLinks();
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(async () => {
+        await saveNote();
+    }, 500);
 });
 
 content.addEventListener("click", (e) => {

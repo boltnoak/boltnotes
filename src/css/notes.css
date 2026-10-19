@@ -395,3 +395,7 @@ h1 {
     color: var(--text-gray);
     font-size: 12vh;
 }
+
+::highlight(lk-sym)   { color: var(--text-dark-gray); }
+::highlight(lk-title) { color: color-mix(in srgb, var(--text) 75%, transparent); }
+::highlight(lk-url)   { color: color-mix(in srgb, var(--text-blue) 75%, transparent); }

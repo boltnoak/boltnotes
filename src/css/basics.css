@@ -268,20 +268,6 @@ body {
     /* background: var(--bg); */
     font-family: 'Montserrat';
 }
-.normal-btn {
-    background-color: var(--btn);
-    color: var(--text);
-    padding: 1vh .5vw;
-    border-radius: .8vh;
-    cursor: pointer;
-    font-weight: 600;
-    scale: 1;
-    transition: background .15s linear, scale .05s linear;
-}
-.normal-btn:hover {
-    background-color: var(--btn-hover);
-    scale: 1.1;
-}
 #content .pageBody {
     margin: 0;
     width: 100vw;
@@ -907,6 +893,7 @@ footer {
     border-top: .455vh solid var(--btn-glow);
     border-radius: 1.5vh;
     transition: --btn .15s ease, --btn-glow .15s ease, border .15s ease, color .15s ease;
+    cursor: pointer;
 }
 .button:hover {
     --btn: var(--btn-hover);
@@ -929,6 +916,7 @@ footer {
     border-radius: 1.5vh;
     color: var(--text-blue);
     transition: --btn-color .15s ease, --btn-glow-color .15s ease, border .15s ease, color .15s ease;
+    cursor: pointer;
 }
 .button-color:hover {
     --btn-color: var(--btn-hover-color);

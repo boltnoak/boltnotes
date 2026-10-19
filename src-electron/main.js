@@ -483,7 +483,7 @@ function makeTray() {
     tray.setContextMenu(
         Menu.buildFromTemplate([
             {
-                label: 'Quit BoltNotes',
+                label: 'Exit BoltNotes',
                 click: () => {
                     isQuitting = true;
                     app.quit();

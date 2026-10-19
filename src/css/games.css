@@ -140,8 +140,8 @@ body {
     text-wrap: nowrap;
     padding: 1vh 0 .6vh 0;
     border-radius: 1vh;
-    border-bottom: .455vh solid var(--blue-light);
-    background-image: linear-gradient(to top, var(--blue), var(--blue-light));
+    border-bottom: .455vh solid var(--blue);
+    background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
 }
 #playingNowSection-title p {
     margin: 0 .5vw 0 0;
@@ -157,7 +157,7 @@ body {
     gap: 1vh;
     height: 53vh;
 }
-#toPlaySection-title {
+#toSection-title {
     display: flex;
     justify-content: center;
     color: var(--text-gray);
@@ -166,13 +166,13 @@ body {
     margin: 0;
     padding: 0;
     width: 100%;
-    padding: 1vh 0;
+    padding: 1vh 0 .65vh 0;
     border-radius: 1vh;
-    border-top: .455vh solid var(--btn-hover-glow);
+    border-bottom: .455vh solid var(--btn-hover);
     background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
     box-sizing: border-box;
 }
-#toPlaySection-title p {
+#toSection-title p {
     margin: 0;
 }
 
@@ -320,8 +320,8 @@ body {
     background-color: var(--orange);
     padding: 1vh 0 .6vh 0;
     border-radius: 1vh;
-    border-bottom: .455vh solid var(--orange-glow);
-    background-image: linear-gradient(to top, var(--orange), var(--orange-glow));
+    border-bottom: .455vh solid var(--orange);
+    background-image: linear-gradient(to bottom, var(--orange), var(--orange-glow));
 }
 #platinandoNowSection-title p {
     margin: 0 .5vw 0 0;
@@ -420,7 +420,7 @@ body {
 #view-grid:hover, #view-list:hover, #addNew-game:hover, .sortingOptions-trigger:hover {
     background-color: var(--btn-hover);
 }
-.sorting-addGame {
+.sorting-reload {
     display: flex;
     flex-direction: row;
     gap: .55vw;
@@ -437,35 +437,48 @@ body {
 }
 .sortingOptions-trigger {
     padding: 0 1vw;
+    padding: 0 .65vw;
     border-radius: 1vh;
     cursor: pointer;
     display: flex;
+    gap: .45vw;
+    z-index: 11;
     justify-content: space-between;
     align-items: center;
     height: 100%;
     color: var(--text);
-    width: 11.5rem;
     box-sizing: border-box;
+    position: relative;
+    width: 12.6rem;
 }
-.sortingOptions-trigger i {
-    color: var(--text);
+.sortingOptions-trigger:after {
+    content: "\f078";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    font-size: 1.05rem;
+    transition: transform .15s ease;
+}
+.sortingOptions-trigger.open:after {
+    transform: rotate(180deg);
 }
 .sortingOptions-select {
     position: absolute;
-    top: 5.925vh;
     left: 0;
     right: 0;
-    background-color: var(--tab);
-    border-top: none;
-    border-radius: 1vh;
+    background-image: linear-gradient(to bottom, var(--tab-hover) 0%, var(--tab-active) 80%);
+    border-radius: 0 0 2vh 2vh;
     margin: 0;
-    padding: 0;
+    padding: 1vh 0 0 0;
     list-style: none;
     z-index: 10;
     opacity: 0;
     visibility: hidden;
+    transform: translateY(-1vh);
     transition: all 0.2s ease;
     overflow: hidden;
+    border: .175rem solid var(--btn-hover);
 }
 .sorting-options.open .sortingOptions-select {
     opacity: 1;
@@ -474,16 +487,18 @@ body {
 }
 .sortingOptions-select li {
     padding: 1vh 1vw;
+    margin: 1vh;
+    border-radius: 1vh;
     color: var(--text);
     cursor: pointer;
     transition: background 0.1s ease;
 }
 .sortingOptions-select li:hover {
-    background-color: var(--tab-hover);
+    background-color: var(--btn);
     color: var(--text);
 }
 .sortingOptions-select li.selected {
-    background-color: var(--tab-active);
+    background-color: var(--btn-hover);
     color: var(--text);
 }
 
@@ -2592,7 +2607,7 @@ body.delete-mode-active .game:hover::after {
 .game.platinado .status-div {
     background-image: linear-gradient(to bottom, var(--yellow), var(--yellow-light));
     border-top: .455vh solid var(--yellow-light);
-    /* box-shadow: 0 0 1vh var(--text-yellow); */
+    padding: .65vh .5vw 1vh .5vw;
     text-align: center;
 }
 .game.platinado .status-text {

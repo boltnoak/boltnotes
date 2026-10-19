@@ -81,7 +81,8 @@ body {
     display: flex;
 }
 .toggle.active {
-    background-color: var(--btn-hover-color);
+    border-top: .35vh solid var(--btn-hover-glow-color);
+    background-image: linear-gradient(to bottom, var(--btn-hover-color), var(--btn-hover-glow-color));
 }
 .sep {
     color: var(--text);
@@ -93,9 +94,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 6.5vh;
-    height: 3.5vh;
-    background-color: var(--tab-hover);
+    width: 6.05vh;
+    padding: .45vh .65vh .65vh .65vh;
+    border-top: .35vh solid var(--btn-hover-glow);
+    background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
     border-radius: 2vh;
     position: relative;
     cursor: pointer;
@@ -107,24 +109,21 @@ body {
     margin: 0;
 }
 .toggle::after {
-    content: '';
-    position: absolute;
-    padding: .5rem 0;
-    width: 38%;
-    left: .225rem;
-    right: auto;
-    border-radius: 2vh;
-    background-color: var(--text-dark-gray);
-    transition: background .15s, border .2s;
-    object-fit: cover;
-    /* border: solid .5vh var(--tab-hover); */
+    content: "\f111";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    display: flex;
+    justify-self: start;
+    align-self: center;
+    font-size: 2.5vh;
+    transition: transform .15s ease, background .15s ease, border .15s ease;
+    transform: translateX(-65%);
+    color: var(--text-dark-gray);
 }
 .toggle.active::after {
     /* transform: translateX(1.65vw); */
-    border-color: var(--btn-hover-color);
-    background-color: var(--btn-text-color);
-    right: .225rem;
-    left: auto;
+    color: var(--text);
+    transform: translateX(65%);
 }
 .mark {
     display: inline-block;
@@ -300,17 +299,20 @@ body {
     margin: 0 .5vw 0 0;
 }
 .featuredSelector-select {
-    margin: 0 1.5vw .25vh 0;
-    padding: 0;
-    left: 0;
     display: flex;
     flex-direction: row;
-    align-items: start;
-    width: 100%;
-    border-radius: 1vh;
-    justify-content: start;
-    height: fit-content;
-    gap: .65vw;
+    margin: 0;
+    padding: 0;
+    height: 5.25vh;
+    user-select: none;
+    border-bottom: none;
+    background-color: var(--tab);
+    padding: 1vh .5vw;
+    gap: .55vw;
+    margin: 0 0 .5vh 0;
+    border-radius: 1.65vh;
+    border: solid .175rem var(--btn-hover);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-hover) 80%);
 }
 
 .sidebar-title {
@@ -326,32 +328,15 @@ body {
     cursor: text;
 }
 
-.featuredSelector-select li:hover {
-    background-color: var(--btn-hover);
-}
-.featuredSelector-select .active-config {
-    color: var(--btn-text-color);
-    background-color: var(--btn-color);
-}
-.featuredSelector-select .active-config:hover {
-    background-color: var(--btn-hover-color);
-}
 .featuredSelector-select li {
-    object-fit: cover;
     display: flex;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
-    background-color: var(--btn);
     padding: .5vh .5vw;
-    border-radius: .75vh;
-    width: fit-content;
-    min-width: 16vw;
-    height: 3.65vh;
+    border-radius: .8vh;
+    width: 100%;
     gap: .5vw;
     font-weight: 650;
-    cursor: pointer;
-    transition: background .1s linear;
 }
 .featured {
     height: fit-content;
@@ -369,14 +354,8 @@ body {
     font-family: 'Montserrat';
     font-family: 2vh;
     font-weight: 625;
-    background-color: var(--btn);
-    color: var(--text);
-    padding: 1.25vh .75vw;
+    padding: 1.5vh 1vw;
     margin: .15vh 0;
-    border-radius: 1vh;
-    cursor: pointer;
-    transition: background .15s linear;
-    width: fit-content;
 }
 .btn:hover {
     background-color: var(--btn-hover);

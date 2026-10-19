@@ -186,7 +186,7 @@ async function loadGames() {
         return combinedGame;
     });
 
-    const sort = document.getElementById("realSorting-options")?.value || "date-recent";
+    const sort = document.querySelector(".sortingOptions-trigger")?.dataset.value || "date-recent";
 
     const playing = [];
     const toPlay = [];
@@ -308,23 +308,10 @@ async function loadGames() {
         }}, index * 40);
     });
     enableWheelScroll('.playingNow-panel');
-
-    // list.classList.remove('noGames');
-    // document.querySelector('.view-options').classList.remove('noGames');
-
-    // const validZerado = list.querySelectorAll(".game:not(.no-campaign)").length;
-    // if (validZerado === 0) {
-    //     const noGames = document.createElement("div");
-    //     noGames.className = "main-gamepanel-no-games";
-    //     list.appendChild(noGames);
-    //     list.classList.add('noGames');
-    //     document.querySelector('.view-options').classList.add('noGames');
-    // }
 }
 async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
     div.className = "game";
-
     const img = document.createElement("img");
     img.className = "game-cover";
 
@@ -341,9 +328,8 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     statusDiv.className = 'status-div';
     const tag = document.createElement("span");
     tag.className = "status";
-    const rating = document.createElement("span");
-    rating.className = "rating";
-
+    const ratingSpan = document.createElement("span");
+    ratingSpan.className = "rating";
     const tagFill = document.createElement("span");
     tagFill.className = "status-fill";
     tagFill.style.width = "100%";
@@ -351,50 +337,32 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     gameInfo.appendChild(title);
 
     const status = (game.status || "").toLowerCase().trim();
-    
-    if (status != "ajogar" && status != "jogando") {
-        gameInfo.appendChild(rating);
-        gameInfo.appendChild(statusDiv);
-    }
+    const rating = game.rating;
 
-    const ratingUnderlineOpacity = '70%,transparent'
-    if (game.rating >= 0) {
-        rating.setAttribute('data-i18n', 'awful');
-        rating.style.color = 'var(--red)';
-        rating.style.textDecorationColor = `color-mix(in srgb, var(--red-light) ${ratingUnderlineOpacity})`;
-    }
-    if (game.rating > 2) {
-        rating.setAttribute('data-i18n', 'bad');
-        rating.style.textDecorationColor = `color-mix(in srgb, var(--red-light) ${ratingUnderlineOpacity})`;
-    }
-    if (game.rating > 4) {
-        rating.setAttribute('data-i18n', 'average');
-        rating.style.color = 'var(--orange)';
-        rating.style.textDecorationColor = `color-mix(in srgb, var(--orange-light) ${ratingUnderlineOpacity})`;
-    }
-    if (game.rating > 6) {
-        rating.setAttribute('data-i18n', 'good');
-        rating.style.color = 'var(--blue)';
-        rating.style.textDecorationColor = `color-mix(in srgb, var(--blue-light) ${ratingUnderlineOpacity})`;
-    }
-    if (game.rating > 7) {
-        rating.setAttribute('data-i18n', 'very-good');
-        rating.style.textDecorationColor = `color-mix(in srgb, var(--blue-light) ${ratingUnderlineOpacity})`;
-    }
-    if (game.rating >= 8) {
-        rating.setAttribute('data-i18n', 'great');
-        rating.style.color = 'var(--green-light)';
-        rating.style.textDecorationColor = `color-mix(in srgb, var(--green-light) ${ratingUnderlineOpacity})`;
-    }
-    if (game.rating == 10) {
-        rating.setAttribute('data-i18n', 'excellent');
-        rating.style.color = 'var(--yellow)';
-        rating.style.textDecorationColor = `color-mix(in srgb, var(--yellow-light) ${ratingUnderlineOpacity})`;
-    }
-    if (game.rating == "null") {
-        rating.setAttribute('data-i18n', 'no-rating')
-        rating.style.color = 'var(--text-dark-gray)';
-        rating.style.textDecoration = 'none';
+    const underlineOpacity = '70%,transparent';
+
+    const ratingLevels = [
+        { test: r => r == 10, i18n: 'excellent', color: 'yellow',      line: 'yellow-light' },
+        { test: r => r >= 8,  i18n: 'great',     color: 'green-light', line: 'green-light'  },
+        { test: r => r > 7,   i18n: 'very-good',  color: 'blue',        line: 'blue-light'   },
+        { test: r => r > 6,   i18n: 'good',       color: 'blue',        line: 'blue-light'   },
+        { test: r => r > 4,   i18n: 'average',    color: 'orange',      line: 'orange-light' },
+        { test: r => r > 2,   i18n: 'bad',        color: 'red',         line: 'red-light'    },
+        { test: r => r >= 0,  i18n: 'awful',      color: 'red',         line: 'red-light'    },
+    ];
+
+    if (rating == "null") {
+        ratingSpan.setAttribute('data-i18n', 'no-rating');
+        ratingSpan.style.color = 'var(--text-dark-gray)';
+        ratingSpan.style.textDecoration = 'none';
+    } else {
+        const level = ratingLevels.find(l => l.test(rating));
+        if (level) {
+            ratingSpan.setAttribute('data-i18n', level.i18n);
+            ratingSpan.style.color = `var(--${level.color})`;
+            ratingSpan.style.textDecorationColor =
+            `color-mix(in srgb, var(--${level.line}) ${underlineOpacity})`;
+        }
     }
 
     tag.classList.add(status);
@@ -403,26 +371,23 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     title.textContent = game.name;
     div.dataset.id = game.name;
 
+    const statusText = document.createElement("span");
+    statusText.className = "status-text";
     if (status === 'zerado') {
         const index = document.createElement("span");
         index.className = "sort-number";
         index.textContent = `#${completedIndex}`;
         title.prepend(index);
+
+        statusText.textContent = await formatDate(game.completeDate, 'default') || "";
+        gameInfo.appendChild(ratingSpan);
+        gameInfo.appendChild(statusDiv);
     }
 
-    const statusText = document.createElement("span");
-    statusText.className = "status-text";
-    if (status === "zerado") {
-        statusText.textContent = await formatDate(game.completeDate, 'default') || "";
-    }
-    // else if (status === "ajogar") {
-    //     statusText.setAttribute('data-i18n', 'ajogar');
-    // }
     if (status != 'ajogar') {
         statusDiv.appendChild(statusText);
         statusDiv.appendChild(tag);
     }
-
     tag.appendChild(tagFill);
     div.appendChild(img);
     div.appendChild(gameInfo);
@@ -544,7 +509,7 @@ async function loadGamesAchie() {
         return combinedGame;
     });
 
-    const sort = document.getElementById("realSorting-options")?.value || "date-recent";
+    const sort = document.querySelector(".sortingOptions-trigger")?.dataset.value || "date-recent";
 
     const platinando = [];
     const toPlatinar = [];
@@ -889,7 +854,7 @@ function switchMode(el) {
 loadGames();
 loadGamesAchie();
 
-document.getElementById("realSorting-options").addEventListener("change", () => {
+document.querySelector(".sortingOptions-trigger").addEventListener("change", () => {
     const campaignBtn = document.querySelector('.mode-btn[data-mode="campaigns"]');
     if (campaignBtn.classList.contains('active')) {
         loadGames();
@@ -900,22 +865,13 @@ document.getElementById("realSorting-options").addEventListener("change", () => 
 
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.sorting-options');
-    const trigger = container.querySelector('.sortingOptions-trigger');
-    const triggerText = trigger.querySelector('span');
-    const triggerIcon = trigger.querySelector('i');
-    const options = container.querySelectorAll('.sortingOptions-select li');
-    const realSelect = document.getElementById('realSorting-options');
+    const trigger = document.querySelector('.sortingOptions-trigger');
+    const options = document.querySelectorAll('.sortingOptions-select li');
 
     trigger.addEventListener('click', (e) => {
         e.stopPropagation();
         container.classList.toggle('open');
-
-        // Jeito mais seguro: verifica só a classe que importa, ignorando as outras
-        if (triggerIcon.classList.contains("fa-angle-down")) {
-            triggerIcon.classList.replace("fa-angle-down", "fa-angle-up");
-        } else {
-            triggerIcon.classList.replace("fa-angle-up", "fa-angle-down");
-        }
+        trigger.classList.toggle('open');
     });
 
     options.forEach(option => {
@@ -925,27 +881,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = this.getAttribute('data-value');
             const text = this.textContent;
 
-            const i18nKey = this.getAttribute('data-i18n'); 
-            triggerText.textContent = text;
+            const i18nKey = this.getAttribute('data-i18n');
+            trigger.textContent = text;
             if (i18nKey) {
-                triggerText.setAttribute('data-i18n', i18nKey);
+                trigger.setAttribute('data-i18n', i18nKey);
             }
 
-            realSelect.value = val;
-            realSelect.dispatchEvent(new Event('change'));
+            trigger.dataset.value = val;
+            trigger.dispatchEvent(new Event('change'));
 
             options.forEach(li => li.classList.remove('selected'));
             this.classList.add('selected');
 
             container.classList.remove('open');
-            triggerIcon.classList.replace("fa-angle-up", "fa-angle-down");
         });
     });
 
     document.addEventListener('click', () => {
         if (container.classList.contains('open')) {
             container.classList.remove('open');
-            triggerIcon.classList.replace("fa-angle-up", "fa-angle-down");
+            trigger.classList.toggle('open');
         }
     });
 });
