@@ -411,11 +411,13 @@ body {
     user-select: text;
     min-height: 11vh;
     max-height: 100vh;
+    position: relative;
 }
 .review-topictext.is-empty::before {
     content: attr(placeholder);
     position: absolute;
-    left: .95rem;
+    left: 0;
+    top: 0;
     color: var(--text-dark-gray);
     pointer-events: none;
 }

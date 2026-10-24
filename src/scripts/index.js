@@ -247,6 +247,7 @@ async function preencherValores() {
             const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
             const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
             levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
+            levelsBar.style.width = `${formatted}%`;
         }
     }
     if (levelMinus) levelMinus.onclick = () => {
@@ -255,6 +256,7 @@ async function preencherValores() {
             const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
             const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
             levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
+            levelsBar.style.width = `${formatted}%`;
         }
     }
     if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);

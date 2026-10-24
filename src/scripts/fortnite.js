@@ -72,6 +72,15 @@ async function initData() {
         window.reviews = (localData && typeof localData === 'object') ? localData : {};
         window.stats = (statsData && typeof statsData === 'object') ? statsData : {};
 
+        let added = false;
+        for (const code of Object.keys(data)) {
+            if (!window.stats[code]) {
+                window.stats[code] = { rating: "N/A", levels: "0", wins: "0", locked: false };
+                added = true;
+            }
+        }
+        if (added) await saveJson(STATS_FILE, window.stats);
+
         const hasChapter = urlParams.has('num');
 
         if (hasChapter) {
@@ -445,15 +454,14 @@ document.querySelector('.chapter-list')?.addEventListener('wheel', e => {
 
 const noteTexts = document.querySelectorAll('.review-topictext');
 function updatePlaceholder(el) {
-    const isEmpty = el.textContent.trim() === "";
-    el.classList.toggle("is-empty", isEmpty);
+  el.classList.toggle('is-empty', el.textContent.trim() === '');
 }
-noteTexts.forEach(el => { 
-    el.addEventListener("input", updatePlaceholder);
+document.addEventListener('input', (e) => {
+  const el = e.target.closest('.review-topictext');
+  if (el) updatePlaceholder(el);
 });
-document.addEventListener("input", (e) => {
-    const el = e.target.closest('.review-topictext');
-    if (el) updatePlaceholder(el);
+noteTexts.forEach(el => {
+  el.addEventListener('input', () => updatePlaceholder(el));
 });
 
 function initReviews(code, isLock) {
@@ -462,6 +470,7 @@ function initReviews(code, isLock) {
     document.querySelectorAll('.season-popup-review .review-topictext').forEach(el => {
         el.textContent = data[el.dataset.field] ?? '';
         el.contentEditable = isLock ? 'false' : 'plaintext-only';
+        updatePlaceholder(el);
     });
 }
 
@@ -580,8 +589,10 @@ async function changeRating(value) {
 }
 
 document.querySelector('.season-popup-rating-div').addEventListener('click', () => {
-    document.querySelector('.rating-options').classList.toggle('active');
-    document.querySelector('.rating-options').scrollTop = -9999;
+    if (document.querySelector('.season-popup-rating-div').classList.contains('button')) {
+        document.querySelector('.rating-options').classList.toggle('active');
+        document.querySelector('.rating-options').scrollTop = -9999;
+    }
 });
 document.querySelectorAll('.rating-option').forEach((e) => {
     e.addEventListener('click', async () => {
