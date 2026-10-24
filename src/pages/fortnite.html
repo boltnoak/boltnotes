@@ -2,29 +2,152 @@
 <html lang="pt-br">
 <head>
     <base href="../">
-    <script src="scripts/fortnite/track.js"></script>
+    <script src="scripts/fortnite-track.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/fortnite/index.css">
+    <link rel="stylesheet" href="css/fortnite.css">
     <script src="scripts/basics.js"></script>
     <script src="scripts/theme-loader.js"></script>
     <script src="scripts/apply-locales.js"></script>
+    <script src="scripts/fn-sidebar.js"></script>
 </head>
 <body>
-    <div class="banner-bg" id="latestSeasonBG" style="background-image: url(assets/placeholder.png);">
-        <div class="logo" alt="Fortnite logo"></div>
+    <template id="season-template">
+        <div class="fn-season" data-code="">
+            <div class="season-title-div">
+                <p class="season-title"></p>
+                <p class="sep-bar"></p>
+            </div>
+            <div class="button season-div">
+                <div class="season-banner"></div>
+                <div class="season-info-map">
+                    <div class="season-info">
+                        <div class="status">
+                            <i class="fa-solid fa-calendar-day"></i>
+                            <span class="releaseDate">~~/~~/~~~~</span>
+                        </div>
+                        <div class="status">
+                            <i class="fa-solid fa-square-caret-up"></i>
+                            <div class="status-div"><span class="status-level">~</span></div>
+                        </div>
+                        <div class="status">
+                            <i class="fa-solid fa-trophy"></i>
+                            <div class="status-div"><span class="status-win">~</span></div>
+                        </div>
+                        <div class="status">
+                            <i class="fa-solid fa-star"></i>
+                            <span class="status-rating">~.~</span>
+                        </div>
+                    </div>
+                    <img class="season-map">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <div class="chapter-list">
+        <a class="top-tab chapter-list-chapters-grid" data-nav="pages/fortnite.html">
+            <i class="fa-solid fa-book"></i>
+            <span data-i18n="fn-chapters">Capítulos</span>
+        </a>
     </div>
     <div class="chapter-section"></div>
+    <div id="seasons-list-container"></div>
     <p class="fortnite-w">Portions of the materials used are trademarks and/or copyrighted works of Epic Games, Inc. All rights reserved by Epic. This material is not official and is not endorsed by Epic</p>
 
-<div id="loading-screen">
-  <div class="progress"><span data-i18n="downloading"></span><div id="fortnite-progress"></div></div>
-  <div class="spinner"></div>
-  <p id="loading-text"></p>
-</div>
+    <div class="season-popup-div" data-season="c4s1">
+        <div class="season-popup">
+            <div class="season-popup-top-bar">
+                <p class="season-popup-close" data-i18n="back"></p>
+                <p class="button season-popup-lock" onclick="lockSeasonToggle()">Bloquear edição</p>
+            </div>
+            <img class="season-popup-banner" src="documents://Fortnite/Assets/c2s3.jpg">
+            <div class="season-popup-info-div">
+                <p class="season-popup-name">C2T3 | Na Onda</p>
+                <div class="season-popup-info">
+                    <div class="season-popup-status season-popup-rating-div">
+                        <span class="season-popup-rating">9.5</span>
+                        <div class="rating-options">
+                            <div class="button rating-option" data-value="0">0</div>
+                            <div class="button rating-option" data-value="0.5">0.5</div>
+                            <div class="button rating-option" data-value="1.0">1.0</div>
+                            <div class="button rating-option" data-value="1.5">1.5</div>
+                            <div class="button rating-option" data-value="2.0">2.0</div>
+                            <div class="button rating-option" data-value="2.5">2.5</div>
+                            <div class="button rating-option" data-value="3.0">3.0</div>
+                            <div class="button rating-option" data-value="3.5">3.5</div>
+                            <div class="button rating-option" data-value="4.0">4.0</div>
+                            <div class="button rating-option" data-value="4.5">4.5</div>
+                            <div class="button rating-option" data-value="5.0">5.0</div>
+                            <div class="button rating-option" data-value="5.5">5.5</div>
+                            <div class="button rating-option" data-value="6.0">6.0</div>
+                            <div class="button rating-option" data-value="6.5">6.5</div>
+                            <div class="button rating-option" data-value="7.0">7.0</div>
+                            <div class="button rating-option" data-value="7.5">7.5</div>
+                            <div class="button rating-option" data-value="8.0">8.0</div>
+                            <div class="button rating-option" data-value="8.5">8.5</div>
+                            <div class="button rating-option" data-value="9.0">9.0</div>
+                            <div class="button rating-option" data-value="9.5">9.5</div>
+                            <div class="button rating-option" data-value="10">10</div>
+                            <div class="button rating-option" data-value="N/A">N/A</div>
+                        </div>
+                    </div>
+                    <div class="season-popup-status">
+                        <span class="season-popup-levels">140</span>
+                        <i class="button status-changer statusLevel-add fa-solid fa-caret-up"></i>
+                        <i class="button status-changer statusLevel-minus fa-solid fa-caret-down"></i>
+                    </div>
+                    <div class="season-popup-status">
+                        <span class="season-popup-wins">20</span>
+                        <i class="button status-changer statusWin-add fa-solid fa-caret-up"></i>
+                        <i class="button status-changer statusWin-minus fa-solid fa-caret-down"></i>
+                    </div>
+                    <div class="season-popup-status">
+                        <span class="season-popup-releaseDate">20/01/2021</span>
+                    </div>
+                </div>
+            </div>
+            <div class="season-popup-review-map-character">
+                <div class="season-popup-review">
+                    <p class="review-topic" data-i18n="gameplay">GAMEPLAY</p>
+                    <div class="review-topic-div">
+                        <p class="review-topictext" data-field="gameplay" data-i18n-placeholder="blank" contenteditable="plaintext-only"></p>
+                    </div>
+                    <p class="review-topic" data-i18n="loot-pool">LOOT POOL</p>
+                    <div class="review-topic-div">
+                        <p class="review-topictext" data-field="loot" data-i18n-placeholder="blank" contenteditable="plaintext-only"></p>
+                    </div>
+                    <p class="review-topic" data-i18n="map">MAPA</p>
+                    <div class="review-topic-div">
+                        <p class="review-topictext" data-field="mapa" data-i18n-placeholder="blank" contenteditable="plaintext-only"></p>
+                    </div>
+                    <p class="review-topic" data-i18n="story">HISTÓRIA</p>
+                    <div class="review-topic-div">
+                        <p class="review-topictext" data-field="story" data-i18n-placeholder="blank" contenteditable="plaintext-only"></p>
+                    </div>
+                    <p class="review-topic" data-i18n="battle-pass">PASSE DE BATALHA</p>
+                    <div class="review-topic-div">
+                        <p class="review-topictext" data-field="passe" data-i18n-placeholder="blank" contenteditable="plaintext-only"></p>
+                    </div>
+                </div>
+                <div class="season-popup-map-character">
+                    <div class="season-popup-character-div"><img class="season-popup-character" src="documents://Fortnite/Assets/c2s3-character.png"></div>
+                    <img class="season-popup-map" src="documents://Fortnite/Assets/c2s3-map.jpg">
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script src="scripts/shell-pageloader.js"></script>
+    <div id="map-popup" style="display:none;">
+        <div class="mapPopup-div">
+            <div class="mapPopup-content">
+                <i id="map-close" class="fa-solid fa-xmark" onclick="closeMap();"></i>
+                <div id="mapPopup-image"></div>
+            </div>
+        </div>
+    </div>
+
 <script src="scripts/global.js"></script>
-<script src="scripts/fortnite/index.js"></script>
+<script src="scripts/fortnite.js"></script>
 </body>
 </html>

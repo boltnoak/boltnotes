@@ -145,5 +145,7 @@
   "app": "App",
   "game-cover": "Cover",
   "game-hero": "Background",
-  "files-json": "JSON Files"
+  "files-json": "JSON Files",
+  "lock-edit": "Lock editing",
+  "locked-edit": "Editing locked"
 }

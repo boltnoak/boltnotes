@@ -145,5 +145,7 @@
   "app": "Aplicativo",
   "game-cover": "Capa",
   "game-hero": "Fundo",
-  "files-json": "Arquivos JSON"
+  "files-json": "Arquivos JSON",
+  "lock-edit": "Bloquear edição",
+  "locked-edit": "Edição bloqueada"
 }

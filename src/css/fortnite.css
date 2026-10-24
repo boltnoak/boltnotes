@@ -1,22 +1,45 @@
-@import url(../basics.css);
-@import url(../videoplayer.css);
-@import url(reviews.css);
+@import url(basics.css);
 
 body {
-    overflow-x: hidden;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 1vh;
 }
 
+.chapter-list {
+    display: flex;
+    flex-direction: row;
+    /* margin: 2vh 1.25vw 0 1.25vw; */
+    padding: 2vh 1.25vw 1.55vh 1.25vw;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-width: 0;
+    flex-shrink: 0;
+    min-height: fit-content;
+    scroll-behavior: smooth;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    background-color: var(--bg);
+}
+
+.chapter-list-chapter span {
+    display: flex;
+    flex-direction: row;
+    gap: .35vw;
+}
+.chapter-list::-webkit-scrollbar {
+    display: none;
+}
 #fnSeason, .fn-season {
-    margin: 0 .3vw 0 1vw;
+    margin: 0 6.7vw 0 8vw;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 1.78vh;
+    gap: 1.5vh;
     position: relative;
+    box-sizing: border-box;
 }
 
 /* Capítulos (proximo e anterior) */
@@ -51,6 +74,69 @@ body {
 }
 
 /* Capítulos */
+.chaptersList #seasons-list-container {
+    display: none;
+}
+.chaptersList .chapter-section {
+    display: grid;
+}
+
+.chapter-section {
+    font-weight: 800;
+    display: none;
+    height: 100%;
+    margin: 0;
+    padding: 2vh 1vw 0 1vw;
+    grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
+    grid-auto-rows: 28vh;
+    gap: 2vh 1vw;
+    will-change: transform;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.chapter-image-div {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 1vh;
+}
+.chapter-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter .15s ease;
+    z-index: 1;
+}
+#chapter {
+    border-radius: 1.5vh;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background: var(--tab-hover); */
+    padding: 1vh;
+    gap: 1vh;
+    animation: popupBGIn .2s ease-in-out;
+    text-decoration: none;
+}
+#chapter:hover .chapter-image {
+    filter: brightness(1.1);
+}
+.title {
+    font-size: 2.8vh;
+    color: var(--text);
+    margin: 0;
+    font-weight: 700;
+    text-decoration: none;
+    object-fit: cover;
+    justify-self: center;
+    backdrop-filter: blur(15px);
+    padding: 0;
+    z-index: 2;
+    position: relative;
+}
 .chapters {
     border-radius: 4vh;
     border: solid .6vh transparent;
@@ -108,72 +194,132 @@ body {
 .seasonTitle-div {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    text-align: center;
-    justify-content: space-between;
-    gap: .3vw;
+    /* justify-content: space-between; */
+    gap: .45vw;
     /* margin: 1vh 0; */
     margin: 0;
-    padding: .3vh .5vw 0 .5vw;
+    width: 100%;
+    padding: 1.5vh .5vw 0 .5vw;
+    box-sizing: border-box;
     background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 80%, transparent) 0%, transparent 100%);
 
 }
 /* Banner */
-.banner {
+.season-banner {
     background-position-x: center;
     background-position-y: 45%;
     background-repeat: no-repeat;
     background-size: cover;
-    background-color: var(--tab);
-    height: 73vh;
-    width: 75%;
+    height: 100%;
+    width: 41%;
     position: relative;
     margin: 0;
     opacity: 100%;
     border-radius: 1.25vh;
-    transition: opacity 0.3s linear;
+    transition: opacity 0.3s linear, filter .15s ease;
     z-index: 1;
     overflow: hidden;
 }
-.banner-div {
+.season-info-map {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+    justify-content: start;
+    pointer-events: none;
+    padding: 0;
+    gap: 1vh;
+}
+.season-info {
     display: flex;
     flex-direction: row;
     width: 100%;
-    gap: .85vw;
-}
-.season-tags {
-    display: flex;
-    flex-direction: column;
-    width: 30%;
-    justify-content: space-around;
-    background-color: var(--fortnite-season-tags);
-    padding: 1.2vh 0 1vh 0;
-    border-radius: 1.25vh;
+    flex: 1;
 }
 /* Status */
-.season {
-    margin: 0;
+.season-div {
     display: flex;
-    flex-direction: column;
-    cursor: default;
-    color: var(--text);
-    position: relative;
+    flex-direction: row;
+    width: 100%;
+    gap: .75vw;
+    padding: 1.25vh;
+    border-radius: 2.25vh;
+    height: 35vh;
+    box-sizing: border-box;
+    animation: popupBGIn .15s ease-in-out;
 }
+.season-div:hover .season-banner,
+.season-div:hover .season-map {
+    filter: brightness(1.1);
+}
+
 .status {
     font-size: 1vh;
     font-family: 'Montserrat';
-    font-weight: 500;
-    font-size: 1.7vw;
-    margin: 0 .5vw;
+    font-weight: 600;
+    font-size: 4vh;
+    margin: 0;
     color: var(--text);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: .2vw;
     align-items: center;
     justify-content: center;
     user-select: none;
     padding: 1vh;
     flex: 1;
+}
+.season-popup-status {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--text);
+    display: flex;
+    flex-direction: row;
+    gap: .45vw;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    box-sizing: border-box;
+    padding: 0;
+    flex: 1;
+}
+.season-popup-status span {
+    display: flex;
+    flex-direction: row;
+    gap: .35vw;
+    font-size: 1.65rem;
+    font-weight: 600;
+    transition: none;
+}
+.season-popup-rating-div.button {
+    border-radius: .75vh;
+    height: 100%;
+    padding: 0 .35vw;
+    box-sizing: border-box;
+    transition: --btn .15s ease, --btn-glow .15s ease, color .15s ease;
+}
+.season-popup-status span::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    display: flex;
+    justify-self: start;
+    align-self: center;
+    font-size: 1.5rem;
+    transition: color .15s ease;
+    color: var(--text);
+}
+.season-popup-rating::before {
+    content: "\f005";
+}
+.season-popup-levels::before {
+    content: "\f151";
+}
+.season-popup-wins::before {
+    content: "\f091";
+}
+.season-popup-releaseDate::before {
+    content: "\f783";
 }
 .status-name-div {
     font-weight: 500;
@@ -188,20 +334,32 @@ body {
     user-select: none;
 }
 .fa-square-caret-up, .fa-trophy, .fa-calendar-day, .fa-star {
-    font-size: 3vh;
+    font-size: 4.25vh;
     color: var(--text);
+    width: fit-content;
+    height: fit-content;
 }
-.statusLevel-add, .statusLevel-minus, .statusWin-add, .statusWin-minus  {
-    font-size: 2vh;
-    color: var(--text);
-    padding: .8vh .5vw;
-    border-radius: .8vh;
-    transition: background .1s linear;
-    display: none;
+/* .season-popup-status-plus-minus {
+    display: flex;
+    flex-direction: row;
+    gap: .45vw;
+    height: 100%;
+    box-sizing: border-box;
+} */
+.season-banner,
+.season-info-map {
+    animation: popupBGIn .25s ease-in-out;
 }
-.statusLevel-add:hover, .statusLevel-minus:hover, .statusWin-add:hover, .statusWin-minus:hover {
-    background: var(--btn);
+.status-changer  {
+    font-size: 1rem;
+    padding: 0 1.35vw;
+    height: 100%;
+    border-radius: .65vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    box-sizing: border-box;
 }
 .status-div {
     display: flex;
@@ -214,32 +372,63 @@ body {
 }
 
 /* Personagem */
-.seasonCharacter-div {
-    position: relative;
-    width: 45vw;
-    min-height: 66.65vh;
-    height: fit-content;
-    overflow: hidden;
-    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
-    mask-image: linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
-}
-.season-character {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    object-fit: contain;
-    object-position: center 15%;
-    z-index: 1;
-    object-position: 50% 0%;
-    transform-origin: top center;
-    transform: translateZ(0);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-}
 
-/*  */
+.review-topic {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3.5vh;
+    font-weight: 750;
+    color: var(--text-gray);
+    margin: 0;
+    width: 100%;
+    padding: 1vh 0 .65vh 0;
+    border-radius: 1vh;
+    border-bottom: .455vh solid var(--btn-hover);
+    background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
+}
+.review-topic-div {
+    padding: 0;
+    margin: 0;
+}
+.review-topictext[contenteditable="plaintext-only"]:empty::before {
+    content: attr(placeholder);
+    color: var(--text-dark-gray);
+    pointer-events: none;
+    display: block;
+}
+.review-topictext:empty::before {
+    content: attr(placeholder);
+    color: var(--text-dark-gray);
+    pointer-events: none;
+}
+.review-topictext {
+    margin: 0 0 0 .5vw;
+    padding: 0;
+    font-size: 2.6vh;
+    font-weight: 500;
+    caret-color: var(--text);
+    user-select: text;
+    min-height: 11vh;
+    max-height: 100vh;
+}
+.review-topictext.is-empty::before {
+    content: attr(placeholder);
+    position: absolute;
+    left: .95rem;
+    color: var(--text-dark-gray);
+    pointer-events: none;
+}
+.review-topictext[contenteditable="false"] {
+    cursor: default;
+}
+.review-topictext[contenteditable="plaintext-only"] {
+    cursor: text;
+    outline: none;
+}
+.review-topictext[contenteditable="plaintext-only"]:empty {
+    cursor: text;
+}
 
 .season-content {
     width: 70%;
@@ -297,11 +486,13 @@ body {
     position: relative;
 }
 .sep-bar-season {
-    margin: 1.5vh 0 0 0;
-    border: solid .43vh var(--sep-bar);
-    /* border: solid 2px var(--tag); */
+    margin: 0;
+    border: solid .45vh var(--tab-hover);
+    display: flex;
+    align-self: center;
     border-radius: 1vh;
-    justify-content: center;
+    width: 100%;
+    flex: 1;
 }
 .sep-bar-status {
     margin: 1vh .6vw 1vh .6vw;
@@ -309,11 +500,10 @@ body {
     border-radius: 1vh;
     justify-content: center;
 }
-#seasons-list-container .fn-season:first-of-type .sep-bar-season {
-    display: none;
-}
 #seasons-list-container {
-    margin: 2vh 0 5vh 0;
+    margin: 0 0 5.5vh 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 .season-status {
     margin: 0;
@@ -323,19 +513,20 @@ body {
     /* transform: translateY(-5.625vh); */
 }
 #lock-unlock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0;
     font-size: 3.5vh;
-    opacity: .5;
-    background: transparent;
-    padding: 0;
-    border-radius: 1.1vh;
-    color: var(--text);
-    cursor: pointer;
-    height: fit-content;
-    transform: translateY(.25vh);
-    transition: all .1s;
+    padding: 1vh 2vw;
+    height: 100%;
+    box-sizing: border-box;
 }
-#lock-unlock:hover {
+#lock-unlock::before {
+    opacity: .5;
+    transition: opacity .15s ease;
+}
+#lock-unlock:hover::before {
     opacity: 1;
 }
 
@@ -357,38 +548,56 @@ body {
 }
 .rating-options {
     position: absolute;
-    justify-content: center;
-    flex-wrap: wrap;
-    bottom: 0;
-    width: 98.65%;
-    background-color: var(--tab-hover);
-    font-family: 'Montserrat';
+    top: 9.65vh;
+    height: 20vh;
+    border: solid .2rem var(--btn);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
     z-index: 10;
     overflow: hidden;
+    overflow-y: auto;
     display: none;
+    flex-direction: column-reverse;
     user-select: none;
-    cursor: pointer;
-    border-radius: 1.1vh;
-    margin: 0 .65vw 1.25vh .65vw;
+    border-radius: 1.75vh;
+    gap: 1vh;
+    width: 7.5vw;
+    margin: 0;
+    padding: 1vh 0 1vh .45vw;
+    box-sizing: border-box;
+    --thumb-color: var(--btn-hover);
+    transition: --thumb-color .15s linear;
 }
-.rating-options::before {
-    display: none;
+.rating-options:hover {
+    --thumb-color: var(--btn-color);
+}
+@property --thumb-color {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+.rating-options::-webkit-scrollbar-thumb {
+    background: var(--thumb-color);
+    background-clip: padding-box;
+    min-height: 6vh;
+}
+.rating-options::-webkit-scrollbar-thumb:hover {
+    cursor: default;
+    background-clip: padding-box;
 }
 .rating-options.active {
     display: flex;
 }
 .rating-option {
-    padding: 1vh 1vw;
+    padding: 1vh .65vw;
+    /* width: 100%; */
     text-align: center;
     color: var(--text);
     font-size: 3vh;
     font-weight: 650;
-    transition: background 0.1s linear;
-    margin: 1vh 0;
+    margin: 0;
+    cursor: pointer;
     border-radius: 1vh;
-}
-.rating-option:hover {
-    background: var(--btn);
 }
 .status-rating {
     width: fit-content;
@@ -402,7 +611,7 @@ body {
 @keyframes popupIn {
     from {
         opacity: 0;
-        transform: scale(0.95);
+        transform: scale(0.8);
     }
     to {
         opacity: 1;
@@ -416,7 +625,27 @@ body {
     }
     to {
         opacity: 0;
-        transform: scale(0.95);
+        transform: scale(0.8);
+    }
+}
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0%);
+    }
+}
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0%);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.8) translateY(100%);
     }
 }
 @keyframes popupBGIn {
@@ -427,31 +656,24 @@ body {
         opacity: 1;
     }
 }
-.seasonMap-div {
-    width: auto;
+#season-map, .season-map {
+    transition: transform 0.2s ease, filter .15s ease;
+    width: 100%;
     border-radius: 1.5vh;
     object-fit: cover;
-    cursor: pointer;
+    pointer-events: none;
     overflow: hidden;
     height: 100%;
-    flex: 1;
 }
-#season-map, .season-map {
-    height: 100%;
-    transform: scale(1.1);
-    transition: transform 0.2s ease;
-    object-fit: cover;
-    width: 100%;
-}
-.seasonMap-div:hover #season-map, .seasonMap-div:hover .season-map {
+/* .seasonMap-div:hover #season-map, .seasonMap-div:hover .season-map {
     transform: scale(1.15);
     cursor: pointer;
-}
-.map-popup {
+} */
+#map-popup {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 99;
+    z-index: 299;
     width: 100vw;
     height: 95.1vh;
     overflow: hidden;
@@ -609,7 +831,8 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: .5vw;
+    gap: .8vw;
+    padding: 1.5vh 0 0 .5vw;
 }
 .event-data {
     padding: 0 .5vw 0 .5vw;
@@ -628,142 +851,6 @@ body {
     background-color: var(--tab-active);
 }
 
-/* Evento final */
-#end-event {
-    display: flex;
-    flex-direction: column;
-    margin: 0 12vw;
-    margin-top: 9vh;
-}
-#endEvent-cover {
-    height: 72.874vh;
-    border-radius: 1vh;
-    overflow: hidden;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: 1;
-    cursor: pointer;
-    position: relative; 
-}
-
-.endEvent-data {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    background: linear-gradient(to top, rgba(0, 0, 0, .7), rgba(0, 0, 0, 0));
-    user-select: none;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-}
-.endEvent-title {
-    margin: 0;
-    font-size: 20vh;
-    font-family: 'Montserrat';
-    font-weight: 900;
-    letter-spacing: .5vh;
-    background: linear-gradient(to bottom, white, #9d9d9d);
-    -webkit-background-clip: text;
-    filter: drop-shadow(0 0 1vh rgba(0, 0, 0, 0.6));
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.endEvent-date {
-    color: white;
-    margin: 0;
-    font-size: 3vh;
-    font-weight: 500;
-    font-family: 'Montserrat';
-    margin-bottom: 3vh;
-}
-.endEvent-watch{
-    height: 100vh;
-    object-fit: cover;
-    inset: 0;
-    display: flex;
-    transform: translateY(-118.5%);
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    z-index: 1;
-    margin: 0;
-    animation: popupBGIn .15s ease forwards;
-}
-#video-player.end-event {
-    visibility: hidden;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-}
-#video-player.end-event #video-wrapper #video{
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    object-fit: cover;
-}
-#endEventVideo-player {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-    transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
-    border-radius: 0;
-}
-#endEventVideo-player.active {
-    opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
-}
-#endEventVideo-player #video-event {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-    object-fit: cover;
-}
-#end-event #player-controls-event {
-    bottom: 9vh;
-}
-
-
-.end-event-novideo {
-    justify-self: center;
-    margin: 0 4vw;
-    justify-content: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    user-select: none;
-}
-.end-event-novideo img {
-    border-radius: 1vh;
-}
-.a {
-    height: 60vh;
-    width: 60vw;
-}
-.b {
-    margin-top: 1vh;
-    height: 60vh;
-    width: 60vw;
-}
-.c {
-    margin-top: 2vh;
-    height: 80vh;
-}
-.end-tag {
-    font-weight: 500;
-    background-color: rgba(20, 20, 20, 0.75);
-    padding: .4rem .7rem;
-    border-radius: .35rem;
-    font-size: 2.3vh;
-    margin: 0;
-    color: white;
-    display: inline-block;
-    align-self: center;
-    text-align: center;
-}
 .event-tag {
     font-weight: 600;
     /* white-space: nowrap; */
@@ -956,4 +1043,225 @@ body {
 }
 .video-popup.full .team-option-text {
     font-size: 3vh;
+}
+
+.season-popup-div {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    animation: slideIn .3s ease forwards;
+    margin: 0;
+    width: 100%;
+    height: 95.075vh;
+    z-index: 199;
+    border-radius: 1vh;
+}
+.season-popup {
+    border-radius: 0;
+    width: 85vw;
+    height: 85vh;
+    height: 100%;
+    width: 100%;
+    flex: 1;
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    padding: 0 1vw;
+}
+.season-popup::-webkit-scrollbar { display: none; }
+.season-popup-banner {
+    width: 100%;
+    height: 70vh;
+    object-fit: cover;
+    object-position: 50% 20%;
+    border-radius: 1.25vh;
+}
+.season-popup-info-div {
+    position: sticky;
+    top: -1.5vh;
+    z-index: 10;
+    height: 9vh;
+    background-color: var(--bg);
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0;
+    gap: .65vw;
+    padding: 1.65vh 0;
+}
+.season-popup-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0;
+    background-color: var(--tab-hover);
+    border-radius: 1.75vh;
+    height: 100%;
+    width: fit-content;
+    padding: 1.25vh .55vw;
+    gap: .75vw;
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border: solid .2rem var(--btn);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
+}
+.season-popup-name {
+    font-size: 5.5vh;
+    font-weight: 800;
+    margin: 0;
+    align-self: center;
+    width: 100%;
+    flex: 1;
+    text-align: center;
+}
+.season-popup-review-map-character {
+    display: flex;
+    flex-direction: row;
+    gap: .75vw;
+    margin: 0;
+}
+.season-popup-review {
+    background-color: var(--bg);
+    display: flex;
+    flex-direction: column;
+    height: 70%;
+    width: 100%;
+    gap: 1.5vh;
+}
+.season-popup-map-character {
+    height: 100%;
+    width: 50%;
+    position: sticky;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    gap: 1vh;
+}
+.season-popup-map {
+    transition: transform 0.2s ease, filter .15s ease;
+    height: 25vh;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 1.5vh;
+    cursor: pointer;
+}
+.season-popup-map:hover {
+    filter: brightness(1.2);
+}
+.season-popup-character-div {
+    position: relative;
+    width: 45vw;
+    min-height: 75vh;
+    height: fit-content;
+    overflow: hidden;
+    -webkit-mask-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(top, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
+}
+.season-popup-character {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    object-fit: contain;
+    object-position: center 15%;
+    z-index: 1;
+    object-position: 50% 0%;
+    transform-origin: top center;
+    transform: translateZ(0);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+}
+.is-closing {
+    animation: slideOut .3s ease backwards;
+}
+.season-popup-top-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.65vh 0;
+    height: 5.35vh;
+    flex-shrink: 0;
+}
+.season-popup-close {
+    display: flex;
+    flex-direction: row;
+    font-size: 3.5vh;
+    font-weight: 550;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border-radius: 1vh;
+    padding: 0 .75vw;
+    height: 100%;
+    gap: .45vw;
+    font-size: 1.35rem;
+    color: var(--text);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s linear;
+    position: relative;
+}
+.season-popup-close:hover {
+    background-color: var(--btn);
+}
+.season-popup-close::before {
+    content: "\f0d9";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    display: flex;
+    justify-self: start;
+    align-self: center;
+    font-size: 1.35rem;
+    transition: transform .15s ease, background .15s ease, border .15s ease;
+    color: var(--text);
+}
+.season-popup-lock {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+    border-radius: 1vh;
+    padding: 0 .65vw;
+    height: 100%;
+    gap: .45vw;
+    animation: color .15s ease;
+    white-space: nowrap;
+    font-size: 1.35rem;
+    color: var(--text);
+    font-weight: 700;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    flex: 0 0 auto;
+}
+.season-popup-lock::before {
+    content: "\f023";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    display: flex;
+    justify-self: start;
+    align-self: center;
+    animation: color .15s ease;
+    font-size: 1.35rem;
+    color: var(--text);
+}
+.season-popup-lock.locked::before {
+    content: "\f09c";
 }

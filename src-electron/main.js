@@ -124,7 +124,7 @@ function createWindow() {
         maximizable: !isWindows,
         titleBarStyle: 'hidden',
         transparent: true,
-        backgroundColor: '#050505',
+        backgroundColor: '#00000000',
         webPreferences: {
             backgroundThrottling: true,
             preload: path.join(__dirname, 'preload.js'),
@@ -139,7 +139,7 @@ function createWindow() {
 }
 
 const preloaded = {};
-const PAGES = ['fortnite', 'fortnite-chapter', 'games'];
+const PAGES = ['fortnite', 'notes', 'games'];
 
 function createHiddenWindow(name) {
     const win = new BrowserWindow({

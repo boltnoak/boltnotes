@@ -258,10 +258,10 @@ body {
     border-radius: 1vh;
 }
 .text-games {
-    font-family: 'Gantari';
+    font-family: 'ArquivoBlack';
     font-weight: 900;
     color: var(--text);
-    font-size: 8.5vh;
+    font-size: 7.75vh;
     text-transform: uppercase;
     margin: 0;
     height: 6.25vh;

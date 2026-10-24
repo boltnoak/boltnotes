@@ -122,7 +122,7 @@ body {
 }
 .toggle.active::after {
     /* transform: translateX(1.65vw); */
-    color: var(--text);
+    color: var(--btn-text-color);
     transform: translateX(65%);
 }
 .mark {

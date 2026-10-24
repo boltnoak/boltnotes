@@ -21,8 +21,9 @@
     src: url(../fonts/ArchivoBlack-Regular.ttf) format('truetype');
     font-display: block;
 }
-i {
-    color: white;
+
+i, p {
+    color: var(--text);
 }
 /* #loading-screen {
     position: absolute;
@@ -666,10 +667,6 @@ html, body {
     font-weight: 800;
     color: white;
 }
-/* * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--btn) transparent;
-} */
 ::-webkit-scrollbar {
     width: 1.5vw;
     cursor: default;
@@ -887,8 +884,6 @@ footer {
 }
 
 .button {
-    /* background: linear-gradient(to bottom, var(--btn), var(--btn-glow)); */
-    /* border-top: .455vh solid var(--btn-glow); */
     background: linear-gradient(to bottom, var(--btn), var(--btn-glow));
     border-top: .455vh solid var(--btn-glow);
     border-radius: 1.5vh;
@@ -898,6 +893,14 @@ footer {
 .button:hover {
     --btn: var(--btn-hover);
     --btn-glow: var(--btn-hover-glow);
+}
+.button.active {
+    --btn: var(--text-light-gray);
+    --btn-glow: var(--text);
+    color: var(--bg);
+}
+.button.active i, .button.active::before {
+    color: var(--bg);
 }
 
 @property --btn-color {
@@ -914,7 +917,7 @@ footer {
     background: linear-gradient(to bottom, var(--btn-color), var(--btn-glow-color));
     border-top: .455vh solid var(--btn-glow-color);
     border-radius: 1.5vh;
-    color: var(--text-blue);
+    color: var(--btn-text-color);
     transition: --btn-color .15s ease, --btn-glow-color .15s ease, border .15s ease, color .15s ease;
     cursor: pointer;
 }
