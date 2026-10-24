@@ -6,6 +6,45 @@ body {
     gap: 1vh;
 }
 
+#loading-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 8vh;
+    justify-content: center;
+    align-items: center;
+    transition: opacity .4s ease;
+    background-color: var(--bg);
+    height: 99.8%;
+    z-index: 999;
+    width: 100%;
+    position: absolute;
+}
+#loading-screen.hide { opacity: 0; pointer-events: none; }
+#loading-text {
+    margin: 0;
+    font-size: 2.35vh;
+    color: var(--text);
+    user-select: none;
+    font-weight: 550;
+}
+.progress span {
+    margin: 0;
+    font-size: 9vh;
+    color: var(--text);
+    user-select: none;
+    font-weight: 900;
+}
+.progress {
+    display: none;
+    width: fit-content;
+    height: fit-content;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: .5vw;
+}
+
+.progress.active { display: flex; }
 .chapter-list {
     display: flex;
     flex-direction: row;

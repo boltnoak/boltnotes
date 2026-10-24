@@ -63,6 +63,48 @@ function debouncedSave(code) {
     }, 200);
 }
 
+async function initFortnitePage() {
+    await initData();
+    await Promise.all([loadChaptersGrid(), loadChapters()]);
+}
+
+async function bootFortnite() {
+    const screen = document.getElementById('loading-screen');
+    const text = document.getElementById('loading-text');
+    const progress = document.querySelector('.progress');
+    const bar = document.getElementById('fortnite-progress');
+
+    let screenShown = false;
+    const showScreen = () => {
+        if (screenShown) return;
+        screenShown = true;
+        screen.style.display = '';
+    };
+
+    try {
+        await syncFortniteAssets(({ done, total }) => {
+            showScreen();
+            progress.classList.add('active');
+            const mb = (n) => (n / 1048576).toFixed(1);
+            text.textContent = `${mb(done)} / ${mb(total)} MB`;
+            bar.style.width = `${total ? (done / total) * 100 : 0}%`;
+        });
+        await initFortnitePage();
+    } catch (err) {
+        showScreen();
+        text.textContent = err.message;
+        return;
+    }
+
+    if (!screenShown) {
+        screen.remove();
+        return;
+    }
+    screen.classList.add('hide');
+    screen.addEventListener('transitionend', () => screen.remove(), { once: true });
+}
+bootFortnite();
+
 async function initData() {
     try {
         const data = await loadCloudSeasonInfo();
@@ -92,8 +134,6 @@ async function initData() {
         console.error("Erro ao inicializar:", err);
     }
 }
-if (document.readyState === "complete" || document.readyState === "interactive") { initData();
-} else { document.addEventListener("DOMContentLoaded", initData); }
 
 document.querySelector('.statusLevel-add').addEventListener('click', async () => {
     await updateStatsJSON('levels', true);
@@ -396,7 +436,7 @@ async function loadChaptersGrid() {
     }).join('');
     applyLocale();
 }
-loadChaptersGrid()
+
 function getFortniteLastUrl() {
     return sessionStorage.getItem('fortniteLastUrl');
 }
@@ -444,7 +484,6 @@ async function loadChapters() {
     }
     await bindSidebarEvents();
 }
-loadChapters();
 
 document.querySelector('.chapter-list')?.addEventListener('wheel', e => {
     if (e.deltaY === 0) return;
