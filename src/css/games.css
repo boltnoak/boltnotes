@@ -143,8 +143,8 @@ body {
     border-bottom: .455vh solid var(--blue);
     background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
 }
-#playingNowSection-title p {
-    margin: 0 .5vw 0 0;
+#playingNowSection-title span {
+    color: var(--text-blue);
 }
 #playingNowSection-title i {
     margin: 0 .5vw 0 0;
@@ -166,14 +166,16 @@ body {
     margin: 0;
     padding: 0;
     width: 100%;
+    height: fit-content;
     padding: 1vh 0 .65vh 0;
     border-radius: 1vh;
+    box-shadow: 0 0 1vh var(--btn-shadow);
     border-bottom: .455vh solid var(--btn-hover);
     background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
     box-sizing: border-box;
 }
-#toSection-title p {
-    margin: 0;
+#toSection-title span {
+    color: var(--text-gray);
 }
 
 .toPlatinarSection {
@@ -323,8 +325,8 @@ body {
     border-bottom: .455vh solid var(--orange);
     background-image: linear-gradient(to bottom, var(--orange), var(--orange-glow));
 }
-#platinandoNowSection-title p {
-    margin: 0 .5vw 0 0;
+#platinandoNowSection-title span {
+    color: var(--text-orange);
 }
 #platinandoNowSection-title i {
     margin: 0 .5vw 0 0;
@@ -1529,6 +1531,7 @@ body {
     background-color: var(--bg);
     padding: 1.25vh .65vw;
     padding-left: .15vw;
+    overflow: hidden;
     flex-direction: row;
     justify-content: space-between;
 }
@@ -1574,7 +1577,7 @@ body {
     margin: 0;
     font-size: 2.5vh;
     font-weight: 800;
-    color: var(--blue);
+    color: var(--btn-color);
 }
 .game-rating-div {
     display: flex;
@@ -1619,19 +1622,26 @@ body {
     display: flex;
     flex: 1;
     height: 1.15vh;
-    background-color: var(--tag);
+    background-color: color-mix(in srgb, var(--btn-text-color) 35%, transparent);
     margin: 0;
-    /* margin: 0 0 .5vh 0; */
     overflow: hidden;
     align-self: center;
     border-radius: 1vh;
 }
 .achie-bar-fill {
-    width: 100%;
-    height: 1.15vh;
-    background-color: var(--blue);
+    background-image: linear-gradient(to left, var(--btn-hover-color), var(--btn-color));
+    box-shadow: 1vw 0 4.5vw var(--btn-hover-color);
+    width: 0%;
+    padding: 0;
+    height: 100%;
+    transition: width .15s linear;
     margin: 0;
-    transition: width .1s linear;
+}
+.achie-percentage.complete {
+    color: var(--yellow);
+}
+.achie-bar.complete .achie-bar-fill {
+    background-image: linear-gradient(to left, var(--yellow-light), var(--yellow), var(--yellow-light));
 }
 .game-popup-status {
     display: flex;
@@ -1641,8 +1651,8 @@ body {
     justify-content: center;
     padding: 1.25vh 0;
     border-radius: 1vh;
-    border: solid .1865rem var(--btn-hover);
-    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-hover) 80%);
+    border: solid .2rem var(--btn);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
 }
 .game-popup-info {
     display: flex;
@@ -1660,8 +1670,7 @@ body {
 }
 .campaign-status-tag {
     font-size: 2.35vh;
-    font-weight: 650;
-    background-color: var(--green);
+    font-weight: 700;
     width: fit-content;
     border-radius: .8vh;
     padding: .5vh .4vw .5vh 1.75vw;
@@ -1678,28 +1687,32 @@ body {
     transform: translateX(-1.25vw);
 }
 .campaign-status-tag.jogando {
-    background-color: var(--blue);
+    background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
+    border-bottom: .455vh solid var(--blue);
     color: var(--text-blue);
 }
 .campaign-status-tag.jogando::before {
     background-color: var(--text-blue);
 }
 .campaign-status-tag.ajogar {
-    background-color: var(--text-dark-gray);
+    background-image: linear-gradient(to bottom, var(--btn-hover-glow), var(--text-dark-gray));
+    border-bottom: .455vh solid var(--btn-hover-glow);
     color: var(--text-gray);
 }
 .campaign-status-tag.ajogar::before {
     background-color: var(--text-gray);
 }
 .achie-status-tag.platinando {
-    background-color: var(--orange);
+    background-image: linear-gradient(to bottom, var(--orange), var(--orange-light));
+    border-bottom: .455vh solid var(--orange);
     color: var(--text-orange);
 }
 .achie-status-tag.platinando::before {
     background-color: var(--text-orange);
 }
 .achie-status-tag.aplatinar {
-    background-color: var(--text-dark-gray);
+    background-image: linear-gradient(to bottom, var(--btn-hover-glow), var(--text-dark-gray));
+    border-bottom: .455vh solid var(--btn-hover-glow);
     color: var(--text-gray);
 }
 .achie-status-tag.aplatinar::before {
@@ -1855,9 +1868,9 @@ body {
     position: relative;
     overflow: hidden;
     gap: .25vh;
-    color: var(--text-dark-gray);
     color: var(--text);
-    background-color: var(--tab);
+    border: solid .2rem var(--btn);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
     border-radius: 1vh;
     padding: 1vh .75vw;
     gap: .75vw;
@@ -1904,7 +1917,8 @@ body {
     color: var(--text-dark-gray);
     text-transform: uppercase;
     color: var(--text);
-    background-color: var(--tab);
+    border: solid .2rem var(--btn);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
     border-radius: .8vh;
     padding: 1vh .7vw;
     height: fit-content;
@@ -1954,16 +1968,25 @@ body {
 }
 .achie-status-tag {
     font-size: 2.35vh;
-    font-weight: 650;
-    background-color: var(--yellow);
+    font-weight: 700;
     width: fit-content;
     border-radius: .8vh;
     padding: .5vh .4vw .5vh 1.75vw;
     color: var(--text-yellow);
     cursor: pointer;
 }
+.campaign-status-tag.zerado {
+    background-image: linear-gradient(to bottom, var(--green), var(--green-light));
+    border-bottom: .455vh solid var(--green);
+    color: var(--text-green);
+}
 .campaign-status-tag.zerado::before {
     background-color: var(--text-green);
+}
+.achie-status-tag.platinado {
+    background-image: linear-gradient(to bottom, var(--yellow), var(--yellow-light));
+    border-bottom: .455vh solid var(--yellow);
+    color: var(--text-yellow);
 }
 .achie-status-tag.platinado::before {
     background-color: var(--text-yellow);
@@ -2021,21 +2044,24 @@ body {
     transform: translateX(-1.08vw);
 }
 .option-ajogar {
-    background-color: var(--text-dark-gray);
+    background-image: linear-gradient(to bottom, var(--btn-hover-glow), var(--text-dark-gray));
+    border-bottom: .455vh solid var(--btn-hover-glow);
     color: var(--text-gray);
 }
 .option-ajogar::before {
     background-color: var(--text-gray);
 }
 .option-jogando {
-    background-color: var(--blue);
+    background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
+    border-bottom: .455vh solid var(--blue);
     color: var(--text-blue);
 }
 .option-jogando::before {
     background-color: var(--text-blue);
 }
 .option-zerado {
-    background-color: var(--green);
+    background-image: linear-gradient(to bottom, var(--green), var(--green-light));
+    border-bottom: .455vh solid var(--green);
     color: var(--text-green);
 }
 .option-zerado::before {
@@ -2084,21 +2110,24 @@ body {
     transform: translateX(-1.08vw);
 }
 .option-aplatinar {
-    background-color: var(--text-dark-gray);
+    background-image: linear-gradient(to bottom, var(--btn-hover-glow), var(--text-dark-gray));
+    border-bottom: .455vh solid var(--btn-hover-glow);
     color: var(--text-gray);
 }
 .option-aplatinar::before {
     background-color: var(--text-gray);
 }
 .option-platinando {
-    background-color: var(--orange);
+    background-image: linear-gradient(to bottom, var(--orange), var(--orange-light));
+    border-bottom: .455vh solid var(--orange);
     color: var(--text-orange);
 }
 .option-platinando::before {
     background-color: var(--text-orange);
 }
 .option-platinado {
-    background-color: var(--yellow);
+    background-image: linear-gradient(to bottom, var(--yellow), var(--yellow-light));
+    border-bottom: .455vh solid var(--yellow);
     color: var(--text-yellow);
 }
 .option-platinado::before {

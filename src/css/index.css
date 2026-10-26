@@ -154,11 +154,12 @@ body {
     scale: 1.02;
 }
 .page-infos {
-    height: 46vh;
-    margin: 0 1vw .3vh 1vw;
+    height: 100%;
+    margin: 0 1vw 2vh 1vw;
     display: flex;
     flex-direction: column;
-    gap: 1.5vh;
+    overflow: hidden;
+    gap: 1.6vh;
 }
 .page-image {
     height: 40vh;
@@ -377,9 +378,11 @@ body {
     flex-direction: column;
     margin: 0;
     user-select: none;
-    height: 100%;
     overflow-x: clip;
     overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    height: auto;
     overscroll-behavior: contain;
     scrollbar-width: none;
     padding: .5vh .25vw;
@@ -568,7 +571,7 @@ body {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 46.25vh;
+    height: 100%;
 }
 .recent-season {
     display: flex;
@@ -728,10 +731,12 @@ body {
     border-radius: 1vh;
     transition: all .1s linear;
 }
-.featured-games {
+.featured-panel {
     display: flex;
     flex-direction: row;
     height: 100%;
+    flex: 1;
+    min-height: 0;
     width: 100%;
     gap: .4vw;
     animation: fadeInUp .35s ease forwards;
@@ -774,13 +779,14 @@ body {
 .playingNow-div {
     display: flex;
     flex-direction: column;
-    gap: 1.5vh;
+    gap: 1.25vh;
     width: 31.5vw;
+    min-height: 0;
 }
 .toPlay-div {
     display: flex;
     flex-direction: column;
-    gap: 1.5vh;
+    gap: 1.25vh;
     width: 100%;
     height: 99%;
     flex: 1;
@@ -1122,8 +1128,8 @@ body {
     justify-content: center;
     padding: 1.25vh 0;
     border-radius: 1vh;
-    border: solid .1865rem var(--btn-hover);
-    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-hover) 80%);
+    border: solid .2rem var(--btn);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
 }
 .game-popup-info {
     display: flex;
@@ -1257,7 +1263,6 @@ body {
 .achie-status-tag {
     font-size: 2vh;
     font-weight: 700;
-    background-color: var(--yellow);
     width: fit-content;
     border-radius: .8vh;
     padding: .3vh .4vw .3vh 1.5vw;
@@ -1282,33 +1287,52 @@ body {
     cursor: pointer;
 }
 .option-ajogar {
-    background-color: var(--text-dark-gray);
+    background-image: linear-gradient(to bottom, var(--btn-hover-glow), var(--text-dark-gray));
+    border-bottom: .455vh solid var(--btn-hover-glow);
     color: var(--text-gray);
 }
 .option-ajogar::before {
     background-color: var(--text-gray);
 }
 .option-jogando {
-    background-color: var(--blue);
+    background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
+    border-bottom: .455vh solid var(--blue);
     color: var(--text-blue);
 }
 .option-jogando::before {
-    background-color: var(--blue-light);
+    background-color: var(--text-blue);
 }
 .option-zerado {
-    background-color: var(--green);
+    background-image: linear-gradient(to bottom, var(--green), var(--green-light));
+    border-bottom: .455vh solid var(--green);
     color: var(--text-green);
 }
 .option-zerado::before {
-    background-color: var(--green-light);
+    background-color: var(--text-green);
 }
 
-.option-aplatinar {
-    background-color: var(--text-dark-gray);
-    color: var(--text-gray);
+.option-platinando {
+    background-color: var(--orange);
+    color: var(--text-orange);
 }
-.option-aplatinar::before {
-    background-color: var(--text-gray);
+.option-platinando::before {
+    background-color: var(--orange-light);
+}
+.option-platinando {
+    background-image: linear-gradient(to bottom, var(--orange), var(--orange-light));
+    border-bottom: .455vh solid var(--orange);
+    color: var(--text-orange);
+}
+.option-platinando::before {
+    background-color: var(--text-orange);
+}
+.option-platinado {
+    background-image: linear-gradient(to bottom, var(--yellow), var(--yellow-light));
+    border-bottom: .455vh solid var(--yellow);
+    color: var(--text-yellow);
+}
+.option-platinado::before {
+    background-color: var(--text-yellow);
 }
 .option-platinando {
     background-color: var(--orange);
@@ -1317,12 +1341,21 @@ body {
 .option-platinando::before {
     background-color: var(--orange-light);
 }
+.option-platinando {
+    background-image: linear-gradient(to bottom, var(--orange), var(--orange-light));
+    border-bottom: .455vh solid var(--orange);
+    color: var(--text-orange);
+}
+.option-platinando::before {
+    background-color: var(--text-orange);
+}
 .option-platinado {
-    background-color: var(--yellow);
+    background-image: linear-gradient(to bottom, var(--yellow), var(--yellow-light));
+    border-bottom: .455vh solid var(--yellow);
     color: var(--text-yellow);
 }
 .option-platinado::before {
-    background-color: var(--yellow-light);
+    background-color: var(--text-yellow);
 }
 
 
@@ -1615,19 +1648,26 @@ body {
     display: flex;
     flex: 1;
     height: 1.15vh;
-    background-color: var(--tag);
+    background-color: color-mix(in srgb, var(--btn-text-color) 35%, transparent);
     margin: 0;
-    /* margin: 0 0 .5vh 0; */
     overflow: hidden;
     align-self: center;
     border-radius: 1vh;
 }
 .achie-bar-fill {
-    width: 100%;
-    height: 1.15vh;
-    background-color: var(--blue);
+    background-image: linear-gradient(to left, var(--btn-hover-color), var(--btn-color));
+    box-shadow: 1vw 0 4.5vw var(--btn-hover-color);
+    width: 0%;
+    padding: 0;
+    height: 100%;
+    transition: width .15s linear;
     margin: 0;
-    transition: width .1s linear;
+}
+.achie-percentage.complete {
+    color: var(--yellow);
+}
+.achie-bar.complete .achie-bar-fill {
+    background-image: linear-gradient(to left, var(--yellow-light), var(--yellow), var(--yellow-light));
 }
 .game-popup-status {
     display: flex;
@@ -1654,10 +1694,10 @@ body {
     align-self: center;
 }
 
+
 .campaign-status-tag {
     font-size: 2.35vh;
-    font-weight: 650;
-    background-color: var(--green);
+    font-weight: 700;
     width: fit-content;
     border-radius: .8vh;
     padding: .5vh .4vw .5vh 1.75vw;
@@ -1674,31 +1714,32 @@ body {
     transform: translateX(-1.25vw);
 }
 .campaign-status-tag.jogando {
-    background-color: var(--blue);
+    background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
+    border-bottom: .455vh solid var(--blue);
     color: var(--text-blue);
-}
-.campaign-status-tag.zerado::before {
-    background-color: var(--text-green);
 }
 .campaign-status-tag.jogando::before {
     background-color: var(--text-blue);
 }
 .campaign-status-tag.ajogar {
-    background-color: var(--text-dark-gray);
+    background-image: linear-gradient(to bottom, var(--btn-hover-glow), var(--text-dark-gray));
+    border-bottom: .455vh solid var(--btn-hover-glow);
     color: var(--text-gray);
 }
 .campaign-status-tag.ajogar::before {
     background-color: var(--text-gray);
 }
 .achie-status-tag.platinando {
-    background-color: var(--orange);
+    background-image: linear-gradient(to bottom, var(--orange), var(--orange-light));
+    border-bottom: .455vh solid var(--orange);
     color: var(--text-orange);
 }
 .achie-status-tag.platinando::before {
     background-color: var(--text-orange);
 }
 .achie-status-tag.aplatinar {
-    background-color: var(--text-dark-gray);
+    background-image: linear-gradient(to bottom, var(--btn-hover-glow), var(--text-dark-gray));
+    border-bottom: .455vh solid var(--btn-hover-glow);
     color: var(--text-gray);
 }
 .achie-status-tag.aplatinar::before {
@@ -1834,9 +1875,9 @@ body {
     position: relative;
     overflow: hidden;
     gap: .25vh;
-    color: var(--text-dark-gray);
     color: var(--text);
-    background-color: var(--tab);
+    border: solid .2rem var(--btn);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
     border-radius: 1vh;
     padding: 1vh .55vw;
     gap: .75vw;
@@ -1871,7 +1912,8 @@ body {
     color: var(--text-dark-gray);
     text-transform: uppercase;
     color: var(--text);
-    background-color: var(--tab);
+    border: solid .2rem var(--btn);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
     border-radius: .8vh;
     padding: 1vh .55vw;
     height: fit-content;
@@ -1921,8 +1963,7 @@ body {
 }
 .achie-status-tag {
     font-size: 2.35vh;
-    font-weight: 650;
-    background-color: var(--yellow);
+    font-weight: 700;
     width: fit-content;
     border-radius: .8vh;
     padding: .5vh .4vw .5vh 1.75vw;
@@ -1939,12 +1980,12 @@ body {
     position: absolute;
     transform: translateY(6.5vh);
     margin: 0;
-    width: 28.7vw;
+    width: 17vw;
     display: flex;
     flex-direction: column;
     list-style-type: none;
     gap: 1vh;
-    left: .65vw;
+    left: 6.45vw;
     border-radius: 1.25vh;
     background-color: var(--tab-hover);
     padding: 1vh .5vw;
@@ -1973,42 +2014,21 @@ body {
     transform: translateX(-1.08vw);
 }
 
-.option-ajogar {
-    background-color: var(--text-dark-gray);
-    color: var(--text-gray);
-}
-.option-ajogar::before {
-    background-color: var(--text-gray);
-}
-.option-jogando {
-    background-color: var(--blue);
-    color: var(--text-blue);
-}
-.option-jogando::before {
-    background-color: var(--text-blue);
-}
-.option-zerado {
-    background-color: var(--green);
-    color: var(--text-green);
-}
-.option-zerado::before {
-    background-color: var(--text-green);
-}
-
 .achie-status-change {
     position: absolute;
     transform: translateY(6.5vh);
     margin: 0;
-    width: 28.7vw;
+    width: 17vw;
     display: flex;
     flex-direction: column;
     list-style-type: none;
     gap: 1vh;
-    left: .65vw;
+    left: 15vw;
     border-radius: 1.25vh;
     background-color: var(--tab-hover);
     padding: 1vh .5vw;
     z-index: 1;
+    /* animation: status-changeUp .25s ease-in-out; */
 }
 .achie-status-change li {
     box-sizing: border-box;
@@ -2032,7 +2052,8 @@ body {
     transform: translateX(-1.08vw);
 }
 .option-aplatinar {
-    background-color: var(--text-dark-gray);
+    background-image: linear-gradient(to bottom, var(--btn-hover-glow), var(--text-dark-gray));
+    border-bottom: .455vh solid var(--btn-hover-glow);
     color: var(--text-gray);
 }
 .option-aplatinar::before {
@@ -2429,21 +2450,20 @@ body.delete-mode-active .game:hover::after {
 .page-infos,
 .playingNow-panel,
 .recentSeason-panel,
-#notes, #games, #fortnite, .app-version {
+#notes, #games, #fortnite {
     opacity: 0;
     transition: opacity 0.25s ease;
 }
 
-body.ui-ready .featured-change-div,
-body.ui-ready #featured-title,
-body.ui-ready .page-infos,
-body.ui-ready .playingNow-panel,
-body.ui-ready .recentSeason-panel,
-body.ui-ready .banner,
-body.ui-ready #notes,
-body.ui-ready #games,
-body.ui-ready #fortnite,
-body.ui-ready .app-version {
+body.ready .featured-change-div,
+body.ready #featured-title,
+body.ready .page-infos,
+body.ready .playingNow-panel,
+body.ready .recentSeason-panel,
+body.ready .banner,
+body.ready #notes,
+body.ready #games,
+body.ready #fortnite {
     opacity: 1;
 }
 .gameinfo-achie-div {

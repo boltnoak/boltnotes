@@ -887,7 +887,8 @@ footer {
     background: linear-gradient(to bottom, var(--btn), var(--btn-glow));
     border-top: .455vh solid var(--btn-glow);
     border-radius: 1.5vh;
-    transition: --btn .15s ease, --btn-glow .15s ease, border .15s ease, color .15s ease;
+    box-shadow: 0 0 1.5vh var(--btn-shadow);
+    transition: --btn .15s ease, --btn-glow .15s ease, color .15s ease;
     cursor: pointer;
 }
 .button:hover {
@@ -918,7 +919,8 @@ footer {
     border-top: .455vh solid var(--btn-glow-color);
     border-radius: 1.5vh;
     color: var(--btn-text-color);
-    transition: --btn-color .15s ease, --btn-glow-color .15s ease, border .15s ease, color .15s ease;
+    box-shadow: 0 0 1.5vh var(--btn-shadow);
+    transition: --btn-color .15s ease, --btn-glow-color .15s ease, color .15s ease;
     cursor: pointer;
 }
 .button-color:hover {

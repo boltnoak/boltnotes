@@ -27,70 +27,17 @@ function setFortniteLastUrl(url) {
     sessionStorage.setItem('fortniteLastUrl', url);
 }
 
-// Auxiliar para pegar tradução síncrona se o dicionário já estiver carregado
 function t(key, fallback) {
-  return (window._t && window._t[key]) ? window._t[key] : fallback;
-}
-
-// 1. Renderiza a estrutura do Header APENAS UMA VEZ na inicialização
-function initHeader() {
-    const header = document.querySelector('header');
-    if (!header) return;
-
-    const savedFortniteUrl = getFortniteLastUrl() || 'pages/fortnite.html';
-
-    header.innerHTML = `
-        <!-- <div class="sidebar-header-logo">
-            <img src="assets/boltnotes-icon.png">
-            <span>BoltNotes</span>
-        </div> -->
-        <a class="sidebar-btn" data-page="games" data-nav="pages/games.html">
-            <i class="fa-solid fa-gamepad"></i>
-            <span data-i18n="games-backlog">${t('games-backlog', 'Voltar')}</span>
-        </a>
-        <a class="sidebar-btn" data-page="notes" data-nav="pages/notes.html">
-            <i class="fa-solid fa-note-sticky"></i>
-            <span data-i18n="notes">${t('notes', 'Notas')}</span>
-        </a>
-        <a id="nav-fortnite-main" class="sidebar-btn" data-page="fortnite" data-nav="${savedFortniteUrl}">
-            <div class="sidebar-fortnite-icon"></div>
-            <span data-i18n="fortnite">${t('fortnite', 'Fortnite')}</span>
-        </a>
-
-        <div class="sidebar-bottom">
-            <a id="update-btn" class="sidebar-btn">
-                <i class="fa-solid fa-arrow-rotate-right"></i>
-                <span data-i18n="update">${t('update', 'Atualizar')}</span>
-            </a>
-            <a class="sidebar-btn" data-page="index" data-nav="pages/index.html">
-                <i class="fa-solid fa-house"></i>
-                <span data-i18n="home">${t('home', 'Início')}</span>
-            </a>
-            <a class="config sidebar-btn" data-page="config" data-nav="pages/config.html">
-                <i id="config" class="fa-solid fa-sliders"></i>
-                <span data-i18n="settings">${t('settings', 'Configurações')}</span>
-            </a>
-        </div>
-    `;
-
-    if (typeof applyLocale === 'function') applyLocale();
-    bindSidebarEvents();
+    return (window._t && window._t[key]) ? window._t[key] : fallback;
 }
 
 function updateHeaderState(activePage) {
-    const isFortnite = activePage.includes('fortnite');
     const savedFortniteUrl = getFortniteLastUrl() || 'pages/fortnite.html';
-
     const fnMainBtn = document.getElementById('nav-fortnite-main');
-    if (fnMainBtn) fnMainBtn.dataset.nav = savedFortniteUrl;
+    fnMainBtn.dataset.nav = savedFortniteUrl;
 
     document.querySelectorAll('header .sidebar-btn[data-page]').forEach(btn => {
-        const pageKey = btn.dataset.page;
-        if (pageKey === 'fortnite') {
-            btn.classList.toggle('active', isFortnite);
-        } else {
-            btn.classList.toggle('active', pageKey === activePage);
-        }
+        btn.classList.toggle('active', btn.dataset.page === activePage);
     });
 }
 
@@ -106,7 +53,7 @@ function navigateShell(page) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    initHeader();
+    bindSidebarEvents();
     updateHeaderState('index');
 });
 

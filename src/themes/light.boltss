@@ -4,12 +4,12 @@
     --sep-bar: rgba(210, 210, 210, 0.4);
 
     --text: rgba(0, 0, 0);
-    --text-dark-gray: rgb(35,35,35);
-    --text-gray: rgba(85,85,85);
-    --text-light-gray: rgba(125,125,125);
+    --text-dark-gray: rgba(80,80,80);
+    --text-gray: rgba(150, 150, 150);
+    --text-light-gray: rgba(210, 210, 210);
     --text-green: rgba(0, 70, 30);
     --text-blue: rgb(0, 90, 150);
-    --text-yellow: rgb(200, 140, 0);
+    --text-yellow: rgb(190, 130, 0);
     --text-orange: rgb(160, 70, 0);
     --text-red: rgb(155, 35, 35);
 
@@ -33,6 +33,7 @@
     --orange-light: rgba(250, 165, 50);
     --red-light: rgba(255, 90, 90);
 
+    --btn-shadow: rgba(30,30,30,.2);
     --btn: rgba(215,215,215);
     --btn-glow: rgba(245, 245, 245);
     --btn-hover: rgba(230,230,230);

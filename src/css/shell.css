@@ -100,6 +100,10 @@ body {
     height: 100%;
     background-color: var(--bg);
 }
+#content html {
+    width: 100%;
+    height: 100%;
+}
 
 body {
     border-radius: 1vh;
@@ -683,13 +687,6 @@ body {
     width: 100%;
     border-radius: 1vh;
     transition: all .1s linear;
-}
-.featured-games {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
-    gap: .4vw;
 }
 .playingNow-div span {
     background-color: var(--blue);
@@ -2469,19 +2466,6 @@ body.delete-mode-active .game:hover::after {
     transition: opacity 0.25s ease;
 }
 
-/* Classe que o JS adiciona no body quando tudo está pronto */
-body.ui-ready .featured-change-div,
-body.ui-ready #featured-title,
-body.ui-ready .page-infos,
-body.ui-ready .playingNow-panel,
-body.ui-ready .recentSeason-panel,
-body.ui-ready .banner,
-body.ui-ready #notes,
-body.ui-ready #games,
-body.ui-ready #fortnite,
-body.ui-ready .app-version {
-    opacity: 1;
-}
 .gameinfo-achie-div {
     display: flex;
     flex-direction: column;

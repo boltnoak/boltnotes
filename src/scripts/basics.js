@@ -42,11 +42,11 @@ async function safeFetch(url, options) {
 }
 
 async function loadJson(filePath) {
-  const res = await safeFetch(docUrl(filePath));
-  if (!res.ok) return {};
-  const text = await res.text();
-  if (!text.trim()) return {};
-  return JSON.parse(text);
+    const res = await safeFetch(docUrl(filePath));
+    if (!res.ok) return {};
+    const text = await res.text();
+    if (!text.trim()) return {};
+    return JSON.parse(text);
 }
 
 let jsonSaveQueue = Promise.resolve();

@@ -1,129 +1,92 @@
-/////////////////
 /// VARIÁVEIS ///
-/////////////////
 let cachedSeasons = null;
 let saveTimeout = null;
+let reviews = {};
+let stats = {};
 
-//////////////
-/// BÁSICO ///
-//////////////
-function changeFeatured(el) {
-    const code = el.dataset.value;
-    const playingNow = document.querySelector('.playingNow-panel');
-    const fnQuickEdit = document.querySelector('.recentSeason-panel');
-    const gamesFeatured = document.querySelector('.featured-games');
+/// JSONS ///
+const FORTNITE_STATS = "Fortnite/stats.json";
+const FILE = "Games/games.json";
+const CAMPAIGNS_FILE = "Games/campaigns.json";
+const ACHIEVEMENTS_FILE = "Games/achievements.json";
+const NOTES_FILE = "Games/notes.json";
 
-    if (code == 'playing-now') {
-        playingNow.style.display = 'flex';
-        fnQuickEdit.style.display = 'none';
-        gamesFeatured.style.display = 'flex';
+async function initFortniteData() {
+    try {
+        const data = await loadCloudSeasonInfo();
+        const statsData = await loadJson(FORTNITE_STATS);
+
+        window.stats = (statsData && typeof statsData === 'object') ? statsData : {};
+
+        let added = false;
+        for (const code of Object.keys(data)) {
+            if (!window.stats[code]) {
+                window.stats[code] = { rating: "N/A", levels: "0", wins: "0", locked: false };
+                added = true;
+            }
+        }
+        if (added) await saveJson(FORTNITE_STATS, window.stats);
+    } catch (err) {
+        console.error("Erro ao inicializar:", err);
     }
-    else if (code == 'fn-quick-edit') {
-        initFeaturedFortnite();
-        playingNow.style.display = 'none';
-        fnQuickEdit.style.display = 'flex';
-        gamesFeatured.style.display = 'none';
-    }
-    changeFeaturedView(code);
 }
 
-function changeFeaturedView(el) {
-    const code = el;
-    const playingNow = document.querySelector('.featured-option[data-value="playing-now"]');
-    const fnQuickEdit = document.querySelector('.featured-option[data-value="fn-quick-edit"]');
+function changeFeatured(el) {
+    const code = el.dataset.value;
+    const featuredPanels = document.querySelectorAll('.featured-panel');
+    const options = document.querySelectorAll('.featured-option');
 
-    if (code === 'playing-now') {
-        playingNow.classList.add('active');
-        fnQuickEdit.classList.remove('active');
-    }
-    else if (code === 'fn-quick-edit') {
-        playingNow.classList.remove('active');
-        fnQuickEdit.classList.add('active');
-    }
+    featuredPanels.forEach(el => {
+        const isActive = el.dataset.value === code;
+        el.style.display = isActive ? 'flex' : 'none';
+    })
+    options.forEach(el => {
+        const isActive = el.dataset.value === code;
+        el.classList.toggle('active', isActive);
+    })
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await getConfig();
     const currentFeatured = config.featured;
+    const currentFeaturedLang = currentFeatured.replace(/_/g, '-');
 
-    if (config.show_featured_changer === false) {
-        if (document.querySelector('.featured-change-div')) document.querySelector('.featured-change-div').style.display = 'none';
-        if (document.getElementById('featured-title')) document.getElementById('featured-title').style.display = 'flex';
-    } else {
-        if (document.querySelector('.featured-change-div')) document.querySelector('.featured-change-div').style.display = 'flex';
-        if (document.getElementById('featured-title')) document.getElementById('featured-title').style.display = 'none';
-    }
+    const multipleFeatured = document.querySelector('.featured-change-div');
+    const featuredDiv = document.querySelector('.page-infos');
+    const featuredActiveOption = document.querySelector(`.featured-option[data-value="${currentFeatured}"]`);
+    const featuredIcon = document.querySelector('#featured-title i');
+    const featuredTitle = document.querySelector('.featured-title-text');
+    const singleFeatured = document.getElementById('featured-title');
 
-    const toggles = {
-        'notes_on_home': document.getElementById('notes'),
-        'backlog_on_home': document.getElementById('games'),
-        'fortnite_on_home': document.getElementById('fortnite'),
-        'show_version': document.querySelector('.app-version')
-    };
-    const featuredPanels = {
-        'none': document.querySelector('.page-infos'),
-        'playing_now': document.querySelector('.playingNow-panel'),
-        'fn_fast_edit': document.querySelector('.recentSeason-panel')
-    };
+    const isMultipleFeatured = config.show_featured_changer;
+    multipleFeatured.style.display = isMultipleFeatured ? 'flex' : 'none';
+    singleFeatured.style.display = !isMultipleFeatured ? 'flex' : 'none';
 
-    if (currentFeatured === 'none') {
-        document.querySelector('.page-infos').style.display = 'none';
-        document.getElementById('featured-title').style.display = 'none';
-        document.querySelector('.featured-change-div').style.display = 'none';
-    }
-    else if (currentFeatured === 'fn_fast_edit') {
-        document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.add('active');
-        document.querySelector('.featured-option[data-value="playing-now"]').classList.remove('active');
-        document.querySelector('#featured-title i').classList.remove('fa-gamepad');
-        document.querySelector('#featured-title i').classList.add('fa-square-poll-horizontal');
-        document.querySelector('.featured-title-text').textContent = `Fortnite BR — ${window._t['fn-quick-edit']}`;
-        document.querySelector('.playingNow-panel').style.display = 'none';
-        document.querySelector('.recentSeason-panel').style.display = 'flex';
-        document.querySelector('.featured-games').style.display = 'none';
-    } else if (currentFeatured === 'playing_now') {
-        document.querySelector('.featured-option[data-value="playing-now"]').classList.add('active');
-        document.querySelector('.featured-option[data-value="fn-quick-edit"]').classList.remove('active');
-        document.querySelector('#featured-title i').classList.remove('fa-square-poll-horizontal');
-        document.querySelector('#featured-title i').classList.add('fa-gamepad');
-        document.querySelector('.featured-title-text').textContent = `${window._t['playing-now']}`;
-        document.querySelector('.recentSeason-panel').style.display = 'none';
-        document.querySelector('.playingNow-panel').style.display = 'flex';
-        document.querySelector('.featured-games').style.display = 'flex';
-    } else {
-        for (const [key, value] of Object.entries(featuredPanels)) {
-            if (key === 'none') continue;
-            const elements = Array.isArray(value) ? value : [value];
+    const isNone = currentFeatured === 'none';
+    const isBacklog = currentFeatured === 'playing_now';
+    const isFNFastEdit = currentFeatured === 'fn_fast_edit';
 
-            elements.forEach(el => {
-                if (el) {
-                    el.style.display = key === currentFeatured ? '' : 'none';
-                }
-            });
-        }
-    }
+    featuredDiv.style.display = isNone ? 'none' : 'flex';
+    featuredIcon.classList.toggle('fa-gamepad', isBacklog);
+    featuredIcon.classList.toggle('fa-square-poll-horizontal', isFNFastEdit);
+    featuredTitle.textContent = `${window._t[currentFeaturedLang]}`;
+    changeFeatured(featuredActiveOption);
 
-    for (const [key, value] of Object.entries(toggles)) {
-        if (!value) continue;
+    const toggles = [
+        ['notes_on_home', document.getElementById('notes')],
+        ['backlog_on_home', document.getElementById('games')],
+        ['fortnite_on_home', document.getElementById('fortnite')]
+    ]
+    for (const [key, value] of toggles) value.style.display = config[key] ? 'flex' : 'none';
 
-        const elements = Array.isArray(value) ? value : [value];
-
-        elements.forEach(el => {
-            if (el) {
-                el.style.display = config[key] === false ? 'none' : '';
-            }
-        });
-    }
     requestAnimationFrame(() => {
-        document.body.classList.add('ui-ready');
+        document.body.classList.add('ready');
     });
-
 });
 
 ////////////////
 /// FORTNITE ///
 ////////////////
-const FORTNITE_STATS = "Fortnite/stats.json";
-
 async function loadCloudSeasonInfo() {
     if (cachedSeasons) return cachedSeasons;
 
@@ -169,128 +132,82 @@ function getLatestSeason(data) {
 }
 
 async function initFeaturedFortnite() {
+    await initFortniteData();
     const seasons = await loadCloudSeasonInfo();
     const latest = getLatestSeason(seasons);
-
     if (!latest) return;
 
     const code = latest.key;
+    const season = seasons[code]; 
 
-    const cloudData = await loadCloudSeasonInfo();
-    const statsData = await loadJson(FORTNITE_STATS);
-    const stats = (statsData && typeof statsData === 'object' && !Array.isArray(statsData)) ? statsData : {};
-
-    const codeTranslated = document.querySelector('.recent-season-name-span').textContent.replace(/^(.).*/, "$1") || 'S';
-    const infoTemporada = cloudData[code] || stats[code] || {};
-    const seasonName = `${code.toUpperCase().replace(/S/, codeTranslated)} | ${infoTemporada.name}` || "Temporada Atual";
+    const seasonLabel = window._t?.['fn-season'];
+    const seasonLetter = seasonLabel ? seasonLabel.trim().charAt(0).toUpperCase() : 'T';
+    const match = /^c(\d+)s(\d+)$/i.exec(code);
+    let prefix = '';
+    prefix = `C${match[1]}${seasonLetter}${match[2]} |`;
 
     document.getElementById('recentSeason-image').style.backgroundImage = `url(documents://Fortnite/Assets/${code}.jpg)`;
     document.querySelector('.shine-effect-v-latest-season').style.display = 'none';
+    document.getElementById('recent-season-name').textContent = `${prefix} ${season.name}`.trim();
+    document.querySelector('.recent-season').dataset.season = code;
 
-    document.getElementById('recent-season-name').textContent = seasonName;
-
-    const level = document.querySelector('.status-level').id = `${code}-levels`;
-    const wins = document.querySelector('.status-win').id = `${code}-wins`;
-    level.id = `${code}-levels`;
-    wins.id = `${code}-wins`;
-    preencherValores();
+    fillValues();
     const status = document.querySelectorAll('.status');
     status.forEach((e) => e.classList.add('ready'));
 }
 
-async function preencherValores() {
-    const seasons = await loadCloudSeasonInfo();
-    const latest = getLatestSeason(seasons);
+async function updateStatsJSON(status, mode, el) {
+    const code = document.querySelector('.recent-season').dataset.season;
+    const season = window.stats?.[code] || {};
 
-    if (!latest) return;
+    const previousStatus = season[status];
+    const seasonStatus = Number(season[status]) || 0;
+    season[status] = String(mode ? seasonStatus + 1 : Math.max(0, seasonStatus - 1));
 
-    const code = latest.key;
+    try { await saveJson(FORTNITE_STATS, window.stats);
+    } catch (error) {
+        console.error(error);
+        season[status] = previousStatus;
+        return;
+    }
 
-    const statsData = await loadJson(FORTNITE_STATS);
-    const stats = (statsData && typeof statsData === 'object' && !Array.isArray(statsData)) ? statsData : {};
-    const data = stats[code] || {};
-
-    const currentStats = stats[code];
-    
-    const levels = document.getElementById(`${code}-levels`);
-    const wins = document.getElementById(`${code}-wins`);
+    el.textContent = season[status];
     const levelsBar = document.querySelector('.level-progress-bar-fill');
     const levelsText = document.querySelector('.level-progress-text');
-    
-    const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
+    const percent = Math.max(0, Math.min((season.levels / 200) * 100, 100));
     const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
+    levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
+    levelsBar.style.width = `${formatted}%`;
+}
 
-    if (levels) levels.textContent = data.levels || "0";
-    if (levelsBar) levelsBar.style.width = `${(data.levels / 200) * 100}%`;
-    if (levelsText) levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
-    if (wins) wins.textContent = data.wins || "0";
-
+async function fillValues() {
+    const code = document.querySelector('.recent-season').dataset.season;
+    const season = window.stats?.[code] || {};
+    
+    const levels = document.querySelector('.status-level');
+    const wins = document.querySelector('.status-win');
+    const levelsBar = document.querySelector('.level-progress-bar-fill');
+    const levelsText = document.querySelector('.level-progress-text');
     const levelAdd = document.querySelector('.statusLevel-add');
     const levelMinus = document.querySelector('.statusLevel-minus');
     const winAdd = document.querySelector('.statusWin-add');
     const winMinus = document.querySelector('.statusWin-minus');
+    
+    const percent = Math.max(0, Math.min((season.levels / 200) * 100, 100));
+    const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
 
-    function updateStat(statKey, increment, displaySpan) {
-        let currentValue = parseInt(currentStats[statKey]) || 0;
-        if (currentValue + increment >= 0) {
-            currentValue += increment;
-            currentStats[statKey] = currentValue.toString(); 
-            if (displaySpan) displaySpan.textContent = currentStats[statKey];
-            if (typeof debouncedSave === "function") debouncedSave(code);
-        }
-    }
-    const levelsSpan = document.querySelector('.status-level');
-    const winsSpan = document.querySelector('.status-win');
-    if (levelAdd) levelAdd.onclick = () => {
-        updateStat('levels', 1, levelsSpan);
-        if (levelsText) {
-            const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
-            const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
-            levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
-            levelsBar.style.width = `${formatted}%`;
-        }
-    }
-    if (levelMinus) levelMinus.onclick = () => {
-        updateStat('levels', -1, levelsSpan);
-        if (levelsText) {
-            const percent = Math.max(0, Math.min((data.levels / 200) * 100, 100));
-            const formatted = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(0);
-            levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
-            levelsBar.style.width = `${formatted}%`;
-        }
-    }
-    if (winAdd) winAdd.onclick = () => updateStat('wins', 1, winsSpan);
-    if (winMinus) winMinus.onclick = () => updateStat('wins', -1, winsSpan);
+    levels.textContent = season.levels || "0";
+    wins.textContent = season.wins || "0";
+    levelsBar.style.width = `${(season.levels / 200) * 100}%`;
+    levelsText.textContent = `${window._t['progress']} - ${formatted}%`;
 
-    function debouncedSave(code) {
-        clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(async () => {
-            const levels = document.getElementById(`${code}-levels`)?.textContent || "0";
-            const wins = document.getElementById(`${code}-wins`)?.textContent || "0";
-
-            stats[code] = {
-                ...stats[code],
-                levels, 
-                wins
-            };
-            try {
-                await saveJson(FORTNITE_STATS, stats);
-                console.log(`Fortnite - Dados da temporada ${code.toUpperCase().replace('S', 'T')} salvos com sucesso!`);
-            } catch (err) {
-                console.error(`Fortnite - Erro ao salvar dados da temporada ${code}:`, err);
-            }
-        }, 200);
-    }
+    levelAdd.onclick = async () => await updateStatsJSON('levels', true, levels);
+    levelMinus.onclick = async () => await updateStatsJSON('levels', false, levels);
+    winAdd.onclick = async () => await updateStatsJSON('wins', true, wins);
+    winMinus.onclick = async () => await updateStatsJSON('wins', false, wins);
 }
 
-/////////////
 /// JOGOS ///
-/////////////
-const FILE = "Games/games.json";
-const CAMPAIGNS_FILE = "Games/campaigns.json";
-const ACHIEVEMENTS_FILE = "Games/achievements.json";
-const NOTES_FILE = "Games/notes.json";
-
 let cachedGamesDB = null;
 let cachedCampaignStatus = null;
 let cachedAchieStatus = null;
@@ -475,7 +392,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
 
     div.addEventListener('mouseenter', () => {
         const hero = game._cachedHero;
-        console.log('Preload - ', game.name, { hero, jaCarregado: game._heroPreloaded });
+        // console.log('Preload - ', game.name, { hero, jaCarregado: game._heroPreloaded });
         if (hero && !game._heroPreloaded) {
             game._heroPreloaded = true;
             new Image().src = hero.replace(/\\/g, '/');
@@ -557,47 +474,46 @@ let renderIdAchie = 0;
 
 const gameCardObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(async (entry) => {
-        if (entry.isIntersecting) {
-            const card = entry.target;
-            const game = card.gameData;
+        if (!entry.isIntersecting) return;
 
+        const card = entry.target;
+        observer.unobserve(card);
+
+        const game = card.gameData;
+
+        try {
             if (!game._cachedCover) {
-                const result = await ensureCover({
+                const { cover, hero, logo } = await ensureCover({
                     appid: game.appid,
                     name: game.name,
                     cover: game.cover,
                     hero: game.hero,
                     logo: game.logo
                 });
-                game._cachedCover = result.cover;
-                game._cachedHero = result.hero;
-                game._cachedLogo = result.logo;
+                game._cachedCover = cover;
+                game._cachedHero = hero;
+                game._cachedLogo = logo;
             }
-
-            const img = card.querySelector('.game-cover'); 
-            
-            if (img && game._cachedCover) {
-                const preloader = new Image();
-                preloader.src = `${game._cachedCover}`;
-
-                preloader.onload = () => {
-                    img.src = preloader.src;
-
-                    img.animate([
-                        { opacity: 0 },
-                        { opacity: 1 }
-                    ], {
-                        duration: 400,
-                        easing: 'ease-in-out'
-                    });
-                };
-            }
-
-            observer.unobserve(card);
+        } catch (e) {
+            console.error("Erro ao carregar capa:", game.name, e);
+            return;
         }
+
+        const img = card.querySelector('.game-cover');
+        if (!card.isConnected || !img || !game._cachedCover) return;
+
+        const preloader = new Image();
+        preloader.onload = () => {
+            img.src = preloader.src;
+            img.animate([{ opacity: 0 }, { opacity: 1 }], {
+                duration: 400,
+                easing: 'ease-in-out'
+            });
+        };
+        preloader.src = game._cachedCover;
     });
 }, {
-    rootMargin: "200px" 
+    rootMargin: "200px"
 });
 
 async function loadGamesDB() {
@@ -867,7 +783,7 @@ async function createGameAchieCard(game, completedIndex = null) {
     div.gameData = game;
     div.addEventListener('mouseenter', () => {
         const hero = game._cachedHero;
-        console.log('Preload - ', game.name, { hero, jaCarregado: game._heroPreloaded });
+        // console.log('Preload - ', game.name, { hero, jaCarregado: game._heroPreloaded });
         if (hero && !game._heroPreloaded) {
             game._heroPreloaded = true;
             new Image().src = hero.replace(/\\/g, '/');
@@ -965,7 +881,8 @@ async function changeAchieProgress(el, isAdd = true) {
     await loadGamesAchie();
 
     if (percentage === 100) {
-        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--yellow)';
+        document.querySelector('.achie-bar').classList.toggle('complete');
+        document.querySelector('.achie-percentage').classList.toggle('complete');
     }
 
     if (jogoEncontrado) {
@@ -1130,13 +1047,8 @@ async function openGamePopup(el) {
         logo: gamesDB.logo
     });
 
-    if (achieGame.unlockedAchievements === achieGame.totalAchievements) {
-        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--yellow)';
-        document.querySelector('.achie-percentage').style.color = 'var(--yellow)';
-    } else {
-        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--blue)';
-        document.querySelector('.achie-percentage').style.color = 'var(--blue)';
-    }
+    document.querySelector('.achie-bar').classList.toggle('complete', achieGame.unlockedAchievements === achieGame.totalAchievements);
+    document.querySelector('.achie-percentage').classList.toggle('complete', achieGame.unlockedAchievements === achieGame.totalAchievements);
 
     const mainBG = document.querySelector('.game-maincontent');
     const normalizedPath = localHeroPath ? localHeroPath.replace(/\\/g, '/') : null;

@@ -101,7 +101,6 @@ body {
     border-radius: 2vh;
     position: relative;
     cursor: pointer;
-    transition: background 0.15s, border .2s;
 }
 .tab-configs-title {
     font-size: 5vh;
@@ -351,8 +350,6 @@ body {
     display: none;
 }
 .btn {
-    font-family: 'Montserrat';
-    font-family: 2vh;
     font-weight: 625;
     padding: 1.5vh 1vw;
     margin: .15vh 0;

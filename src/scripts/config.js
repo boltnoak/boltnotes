@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     applyLocale();
                 }
                 if (featuredName == 'fn_fast_edit') {
-                    textSpan.textContent = `Fortnite BR: ${window._t['fn-quick-edit']}`;
+                    textSpan.textContent = `${window._t['fn--fast-edit']}`;
                     applyLocale();
                 }
                 

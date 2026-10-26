@@ -55,8 +55,19 @@ function enableWheelScroll(selector, distancia = 67) {
     clearTimeout(panel._saveTimeout);
     panel._saveTimeout = setTimeout(saveCurrentGame, 200);
   }, { passive: false });
-
-  restoreScroll();
+    if (!panel._wheelBound) {
+        panel._wheelBound = true;
+        panel.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            panel.scrollBy({
+                top: e.deltaY > 0 ? distancia : -distancia,
+                behavior: 'smooth'
+            });
+            clearTimeout(panel._saveTimeout);
+            panel._saveTimeout = setTimeout(saveCurrentGame, 200);
+        }, { passive: false });
+    }
+    restoreScroll();
 }
 
 function parseBRDate(dateStr) {
@@ -75,239 +86,201 @@ function parseBRDate(dateStr) {
 let renderIdGames = 0;
 let renderIdAchie = 0;
 
+const gameRating = g => Number(g.rating) || 0;
+const GAME_SORTERS = {
+    "date-recent": (a, b) => b._completeMs - a._completeMs,
+    "date-old":    (a, b) => a._completeMs - b._completeMs,
+    "rating-high": (a, b) => gameRating(b) - gameRating(a),
+    "rating-low":  (a, b) => gameRating(a) - gameRating(b),
+};
+
+let gamesView = null;
+let achieView = null;
+
+function reorderView(view, container) {
+    if (!view?.ready || !container) return false;
+
+    const sort = document.querySelector(".sortingOptions-trigger")?.dataset.value || "date-recent";
+    const sorter = GAME_SORTERS[sort];
+
+    const completed = [...view.completed];
+    const backlog = [...view.backlog];
+    if (sorter) completed.sort(sorter);
+    if (sorter && sort.startsWith("rating")) backlog.sort(sorter);
+
+    const frag = document.createDocumentFragment();
+    for (const g of [...backlog, ...completed]) {
+        const card = view.cards.get(g.name);
+        if (card) frag.appendChild(card);
+    }
+    container.appendChild(frag);
+    return true;
+}
+
 const gameCardObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(async (entry) => {
-        if (entry.isIntersecting) {
-            const card = entry.target;
-            const game = card.gameData;
+        if (!entry.isIntersecting) return;
 
+        const card = entry.target;
+        observer.unobserve(card);
+
+        const game = card.gameData;
+
+        try {
             if (!game._cachedCover) {
-                const result = await ensureCover({
+                const { cover, hero, logo } = await ensureCover({
                     appid: game.appid,
                     name: game.name,
                     cover: game.cover,
                     hero: game.hero,
                     logo: game.logo
                 });
-                game._cachedCover = result.cover;
-                game._cachedHero = result.hero;
-                game._cachedLogo = result.logo;
+                game._cachedCover = cover;
+                game._cachedHero = hero;
+                game._cachedLogo = logo;
             }
-
-            const img = card.querySelector('.game-cover'); 
-            
-            if (img && game._cachedCover) {
-                const preloader = new Image();
-                preloader.src = `${game._cachedCover}`;
-
-                preloader.onload = () => {
-                    img.src = preloader.src;
-
-                    img.animate([
-                        { opacity: 0 },
-                        { opacity: 1 }
-                    ], {
-                        duration: 400,
-                        easing: 'ease-in-out'
-                    });
-                };
-            }
-
-            observer.unobserve(card);
+        } catch (e) {
+            console.error("Erro ao carregar capa:", game.name, e);
+            return;
         }
+
+        const img = card.querySelector('.game-cover');
+        if (!card.isConnected || !img || !game._cachedCover) return;
+
+        const preloader = new Image();
+        preloader.onload = () => {
+            img.src = preloader.src;
+            img.animate([{ opacity: 0 }, { opacity: 1 }], {
+                duration: 400,
+                easing: 'ease-in-out'
+            });
+        };
+        preloader.src = game._cachedCover;
     });
 }, {
-    rootMargin: "200px" 
+    rootMargin: "200px"
 });
 
 async function loadGames() {
-    renderIdGames++;
-    const myRenderId = renderIdGames;
+    const myRenderId = ++renderIdGames;
+    gamesView = null;
 
-    const [data, stats] = await Promise.all([
-        loadJson(FILE),
-        loadStatus()
-    ]);
-
+    const [dbGames, stats] = await Promise.all([loadGamesDB(), loadStatus()]);
     if (myRenderId !== renderIdGames) return;
 
     const playingNow = document.querySelector(".playingNow-panel");
-    const toPlayDiv = document.querySelector(".toPlay-panel");
-    const list = document.getElementById("view-campaigns");
-    // const libaryList = document.getElementById("view-campaigns");
+    const toPlayDiv  = document.querySelector(".toPlay-panel");
+    const list       = document.getElementById("view-campaigns");
     if (!playingNow || !toPlayDiv || !list) return;
 
-    playingNow.innerHTML = "";
-    toPlayDiv.innerHTML = "";
-    list.innerHTML = "";
-
+    const sort = document.querySelector(".sortingOptions-trigger")?.dataset.value || "date-recent";
     const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
-    const dbGames = data.games ? data.games : [];
 
     const dbByAppid = new Map();
     const dbByName = new Map();
-
-    for (const g of dbGames) {
+    for (const g of (Array.isArray(dbGames) ? dbGames : [])) {
         if (g.appid != null) dbByAppid.set(String(g.appid), g);
         if (g.name) dbByName.set(g.name.toLowerCase(), g);
     }
 
-    const games = listaStats.map(localGame => {
-        const byAppid = localGame.appid != null ? dbByAppid.get(String(localGame.appid)) : null;
-        const byName = localGame.name ? dbByName.get(localGame.name.toLowerCase()) : null;
-        const gameNoDB = byAppid || byName || {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-        const combinedGame = { ...gameNoDB, ...localGame };
+    const playing = [], toPlay = [], backlog = [], completed = [];
 
-        const status = (combinedGame.status || "").toLowerCase().trim();
-        const hasProgress = (combinedGame.storyProgress || 0) > 0;
+    for (const local of listaStats) {
+        const db = (local.appid != null && dbByAppid.get(String(local.appid)))
+                || (local.name && dbByName.get(local.name.toLowerCase()))
+                || {};
+        const game = { ...db, ...local };
+        const status = (game.status || "").toLowerCase().trim();
 
-        combinedGame.isPreOrder = false;
-        combinedGame._status = status;
-        combinedGame._completeMs = parseBRDate(combinedGame.completeDate)?.getTime?.() ?? NaN;
-        combinedGame._completedIndex = null;
+        game._status = status;
+        game.isPreOrder = false;
 
-        if (status !== "zerado" && status !== "jogando" && status !== "ajogar" && !hasProgress && combinedGame.releaseDate?.includes("/")) {
-            const parts = combinedGame.releaseDate.split("/");
-            if (parts.length === 3) {
-                const d = parseInt(parts[0], 10);
-                const m = parseInt(parts[1], 10) - 1;
-                const y = parseInt(parts[2], 10);
-                const gameDate = new Date(y, m, d);
-                if (!isNaN(gameDate.getTime())) {
-                    const hoje = new Date();
-                    hoje.setHours(0, 0, 0, 0);
-                    gameDate.setHours(0, 0, 0, 0);
-                    combinedGame.isPreOrder = gameDate.getTime() > hoje.getTime();
-                }
-            }
-        }
-
-        return combinedGame;
-    });
-
-    const sort = document.querySelector(".sortingOptions-trigger")?.dataset.value || "date-recent";
-
-    const playing = [];
-    const toPlay = [];
-    const backlog = [];
-    const completed = [];
-
-    for (const g of games) {
-        if (g._status === "jogando") playing.push(g);
-        else if (g._status === "zerado") completed.push(g);
-        else if (g._status === "ajogar") toPlay.push(g);
-        else backlog.push(g);
-    }
-
-    completed.sort((a, b) => {
-        if (sort === "date-recent") {
-            return (b._completeMs || 0) - (a._completeMs || 0);
-        }
-        if (sort === "date-old") {
-            return (a._completeMs || 0) - (b._completeMs || 0);
-        }
-        if (sort === "rating-high") {
-            return (b.rating || 0) - (a.rating || 0);
-        }
-        if (sort === "rating-low") {
-            return (a.rating || 0) - (b.rating || 0);
-        }
-        return 0;
-    });
-
-    const totalCompleted = completed.length;
-
-    completed.forEach((game, idx) => {
-        if (sort === "date-recent") {
-            game._completedIndex = totalCompleted - idx;
+        if (status === "jogando") playing.push(game);
+        else if (status === "ajogar") toPlay.push(game);
+        else if (status === "zerado") {
+            game._completeMs = parseBRDate(game.completeDate)?.getTime() || 0;
+            completed.push(game);
         } else {
-            game._completedIndex = idx + 1;
+            if (!(game.storyProgress > 0)) {
+                const rd = parseBRDate(game.releaseDate);
+                game.isPreOrder = !!rd && rd > today;
+            }
+            backlog.push(game);
         }
-    });
-
-    backlog.sort((a, b) => {
-        if (sort === "rating-high") return (b.rating || 0) - (a.rating || 0);
-        if (sort === "rating-low") return (a.rating || 0) - (b.rating || 0);
-        return 0;
-    });
-
-    const toPlayCards = await Promise.all(toPlay.map(game => createGameCard(game)));
-    const toPlayFragment = document.createDocumentFragment();
-
-    for (const card of toPlayCards) toPlayFragment.appendChild(card);
-    toPlayDiv.appendChild(toPlayFragment);
-
-    const validToPlay = toPlayDiv.querySelectorAll(".game:not(.no-campaign)").length;
-    if (validToPlay === 0) {
-        const noGames = document.createElement("div");
-        noGames.className = "gamepanel-no-games";
-        noGames.textContent = `${window._t['to-play-nogames']}`;
-        toPlayDiv.appendChild(noGames);
     }
 
-    toPlayCards.forEach((card, index) => {
-        setTimeout(() => {
-            if (myRenderId === renderIdGames) {
-            card.classList.add("fade-in");
-        }}, index * 40); 
+    completed.sort((a, b) => a._completeMs - b._completeMs);
+    completed.forEach((g, i) => g._completedIndex = i + 1);
+
+    const backlogBase = [...backlog];
+    const sorter = GAME_SORTERS[sort];
+    if (sorter) completed.sort(sorter);
+    if (sorter && sort.startsWith("rating")) backlog.sort(sorter);
+
+    const makeCards = (items, isPlaying) =>
+        Promise.all(items.map(g => createGameCard(g, isPlaying, g._completedIndex)));
+
+    const fadeIn = cards => requestAnimationFrame(() => {
+        cards.forEach((card, i) => setTimeout(() => {
+            if (myRenderId === renderIdGames) card.classList.add("fade-in");
+        }, Math.min(i, 15) * 40));
     });
+
+    const emptyDiv = (cls, text) => {
+        const d = document.createElement("div");
+        d.className = cls;
+        d.textContent = text;
+        return d;
+    };
+
+    const [playingCards, toPlayCards] = await Promise.all([
+        makeCards(playing, true),
+        makeCards(toPlay, false)
+    ]);
+    if (myRenderId !== renderIdGames) return;
+
+    const t = window._t || {};
+
+    playingNow.replaceChildren(...playingCards);
+    if (!playingCards.length) {
+        playingNow.append(emptyDiv("playingNow-no-games", t["playing-now-nogames"] || "Nenhum jogo em andamento"));
+    }
+
+    toPlayDiv.replaceChildren(...toPlayCards);
+    if (!toPlayCards.some(c => !c.classList.contains("no-campaign"))) {
+        toPlayDiv.append(emptyDiv("gamepanel-no-games", t["to-play-nogames"] || ""));
+    }
+
+    fadeIn(playingCards);
+    fadeIn(toPlayCards);
 
     const others = [...backlog, ...completed];
+    const BATCH = 30;
 
-    async function renderInBatches(items, container, isPlaying) {
-        if (items.length === 0 && isPlaying) {
-            const noGames = document.createElement("div");
-            noGames.className = "playingNow-no-games";
-            noGames.textContent = window._t?.['playing-now-nogames'] || "Nenhum jogo em andamento";
-            container.appendChild(noGames);
-            return;
-        }
+    if (!others.length) list.replaceChildren();
 
-        const BATCH_SIZE = 5;
+    for (let i = 0; i < others.length; i += BATCH) {
+        const cards = await makeCards(others.slice(i, i + BATCH), false);
+        if (myRenderId !== renderIdGames) return;
 
-        for (let i = 0; i < items.length; i += BATCH_SIZE) {
-            if (myRenderId !== renderIdGames) return;
-            const batch = items.slice(i, i + BATCH_SIZE);
-            
-            const cards = await Promise.all(batch.map(game => createGameCard(game, isPlaying, game._completedIndex)));
+        if (i === 0) list.replaceChildren(...cards);
+        else list.append(...cards);
 
-            if (myRenderId !== renderIdGames) return;
-
-            const fragment = document.createDocumentFragment();
-            for (const card of cards) fragment.appendChild(card);
-            
-            container.appendChild(fragment);
-
-            requestAnimationFrame(() => {
-                cards.forEach((card, index) => {
-                    setTimeout(() => {
-                        if (myRenderId === renderIdGames) {
-                            card.classList.add("fade-in");
-                        }
-                    }, index * 40); 
-                });
-            });
-
-            if (i + BATCH_SIZE < items.length) {
-                await new Promise(resolve => setTimeout(resolve, 0));
-            }
-        }
+        fadeIn(cards);
     }
 
-    
-    await renderInBatches(playing, playingNow, true);
+    gamesView = {
+        ready: true,
+        backlog: backlogBase,
+        completed,
+        cards: new Map([...list.children].map(c => [c.dataset.id, c]))
+    };
 
-    if (myRenderId === renderIdGames) {
-        await renderInBatches(others, list, false);
-    }
-    toPlayCards.forEach((card, index) => {
-        setTimeout(() => {
-            if (myRenderId === renderIdAchie) {
-                card.classList.add("fade-in");
-        }}, index * 40);
-    });
-    enableWheelScroll('.playingNow-panel');
+    applyLocale();
+    enableWheelScroll(".playingNow-panel");
 }
 async function createGameCard(game, isPlaying = false, completedIndex = null) {
     const div = document.createElement("div");
@@ -462,12 +435,12 @@ async function loadStatus() {
 
 async function loadGamesAchie() {
     renderIdAchie++;
+    achieView = null;
     const myRenderId = renderIdAchie;
 
-    const [data, stats, cStatus] = await Promise.all([
-        loadJson(FILE),
-        loadStatusAchie(),
-        loadJson(CAMPAIGNS_FILE)
+    const [dbGames, stats] = await Promise.all([
+        loadGamesDB(),
+        loadStatusAchie()
     ]);
 
     if (myRenderId !== renderIdAchie) return;
@@ -483,7 +456,6 @@ async function loadGamesAchie() {
     list.innerHTML = "";
 
     const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
-    const dbGames = data.games ? data.games : [];
 
     const dbByAppid = new Map();
     const dbByName = new Map();
@@ -504,7 +476,7 @@ async function loadGamesAchie() {
 
         combinedGame.isPreOrder = false;
         combinedGame._achieStatus = status;
-        combinedGame._completeMs = parseBRDate(combinedGame.completeDate)?.getTime?.() ?? NaN;
+        combinedGame._completeMs = parseBRDate(combinedGame.completeDate)?.getTime?.() || 0;
 
         return combinedGame;
     });
@@ -523,22 +495,6 @@ async function loadGamesAchie() {
         else backlog.push(g);
     }
 
-    completed.sort((a, b) => {
-        if (sort === "date-recent") {
-            return (b._completeMs || 0) - (a._completeMs || 0);
-        }
-        if (sort === "date-old") {
-            return (a._completeMs || 0) - (b._completeMs || 0);
-        }
-        if (sort === "rating-high") {
-            return (b.rating || 0) - (a.rating || 0);
-        }
-        if (sort === "rating-low") {
-            return (a.rating || 0) - (b.rating || 0);
-        }
-        return 0;
-    });
-
     const achiePercent = (g) => {
         const total = Number(g.totalAchievements) || 0;
         const unlocked = Number(g.unlockedAchievements) || 0;
@@ -547,21 +503,13 @@ async function loadGamesAchie() {
 
     toPlatinar.sort((a, b) => achiePercent(b) - achiePercent(a));
 
-    const totalCompleted = completed.length;
+    const backlogBase = [...backlog];
 
-    completed.forEach((game, idx) => {
-        if (sort === "date-recent") {
-            game._completedIndex = totalCompleted - idx;
-        } else {
-            game._completedIndex = idx + 1;
-        }
-    });
+    completed.sort((a, b) => a._completeMs - b._completeMs);
+    completed.forEach((g, i) => g._completedIndex = i + 1);
 
-    backlog.sort((a, b) => {
-        if (sort === "rating-high") return (b.rating || 0) - (a.rating || 0);
-        if (sort === "rating-low") return (a.rating || 0) - (b.rating || 0);
-        return 0;
-    });
+    const sorter = GAME_SORTERS[sort];
+    if (sorter) completed.sort(sorter);
 
     const toPlatinarCards = await Promise.all(toPlatinar.map(game => createGameAchieCard(game)));
     const toPlatinarFragment = document.createDocumentFragment();
@@ -625,10 +573,17 @@ async function loadGamesAchie() {
     }
     toPlatinarCards.forEach((card, index) => {
         setTimeout(() => {
-            if (myRenderId === renderIdAchie) {
-                card.classList.add("fade-in");
-        }}, index * 40);
+            if (myRenderId === renderIdAchie) card.classList.add("fade-in");
+        }, Math.min(index, 15) * 40);
     });
+
+    achieView = {
+        ready: true,
+        backlog: backlogBase,
+        completed,
+        cards: new Map([...list.children].map(c => [c.dataset.id, c]))
+    };
+
     enableWheelScroll('.platinandoNow-panel');
 }
 async function createGameAchieCard(game, completedIndex = null) {
@@ -855,11 +810,11 @@ loadGames();
 loadGamesAchie();
 
 document.querySelector(".sortingOptions-trigger").addEventListener("change", () => {
-    const campaignBtn = document.querySelector('.mode-btn[data-mode="campaigns"]');
-    if (campaignBtn.classList.contains('active')) {
-        loadGames();
+    const isCampaigns = document.querySelector('.mode-btn[data-mode="campaigns"]').classList.contains('active');
+    if (isCampaigns) {
+        if (!reorderView(gamesView, document.getElementById("view-campaigns"))) loadGames();
     } else {
-        loadGamesAchie();
+        if (!reorderView(achieView, document.getElementById("view-achievements"))) loadGamesAchie();
     }
 });
 
@@ -893,7 +848,8 @@ document.addEventListener('DOMContentLoaded', () => {
             options.forEach(li => li.classList.remove('selected'));
             this.classList.add('selected');
 
-            container.classList.remove('open');
+            container.classList.toggle('open');
+            trigger.classList.toggle('open');
         });
     });
 
@@ -1095,7 +1051,8 @@ async function changeAchieProgress(el, isAdd = true) {
     await loadGamesAchie();
 
     if (percentage === 100) {
-        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--yellow)';
+        document.querySelector('.achie-bar').classList.toggle('complete');
+        document.querySelector('.achie-percentage').classList.toggle('complete');
     }
 
     if (jogoEncontrado) {
@@ -1261,13 +1218,8 @@ async function openGamePopup(el) {
         logo: gamesDB.logo
     });
 
-    if (achieGame.unlockedAchievements === achieGame.totalAchievements) {
-        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--yellow)';
-        document.querySelector('.achie-percentage').style.color = 'var(--yellow)';
-    } else {
-        document.querySelector('.achie-bar-fill').style.backgroundColor = 'var(--blue)';
-        document.querySelector('.achie-percentage').style.color = 'var(--blue)';
-    }
+    document.querySelector('.achie-bar').classList.toggle('complete', achieGame.unlockedAchievements === achieGame.totalAchievements);
+    document.querySelector('.achie-percentage').classList.toggle('complete', achieGame.unlockedAchievements === achieGame.totalAchievements);
 
     if (gameName) gameName.textContent = gamesDB.name;
 
