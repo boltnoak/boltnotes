@@ -171,7 +171,7 @@ async function loadGames() {
     const playingNow = document.querySelector(".playingNow-panel");
     const toPlayDiv  = document.querySelector(".toPlay-panel");
     const list       = document.getElementById("view-campaigns");
-    if (!playingNow || !toPlayDiv || !list) return;
+    if (!playingNow || !toPlayDiv) return;
 
     const sort = document.querySelector(".sortingOptions-trigger")?.dataset.value || "date-recent";
     const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
@@ -260,9 +260,9 @@ async function loadGames() {
     const others = [...backlog, ...completed];
     const BATCH = 30;
 
-    if (!others.length) list.replaceChildren();
+    list?.replaceChildren();
 
-    for (let i = 0; i < others.length; i += BATCH) {
+    if (list) for (let i = 0; i < others.length; i += BATCH) {
         const cards = await makeCards(others.slice(i, i + BATCH), false);
         if (myRenderId !== renderIdGames) return;
 
@@ -276,7 +276,7 @@ async function loadGames() {
         ready: true,
         backlog: backlogBase,
         completed,
-        cards: new Map([...list.children].map(c => [c.dataset.id, c]))
+        cards: new Map(Array.from(list?.children ?? [], c => [c.dataset.id, c]))
     };
 
     applyLocale();
@@ -371,6 +371,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
             return;
         }
         openGamePopup(div);
+        console.log('aaa')
     });
 
     applyLocale();
@@ -581,7 +582,7 @@ async function loadGamesAchie() {
         ready: true,
         backlog: backlogBase,
         completed,
-        cards: new Map([...list.children].map(c => [c.dataset.id, c]))
+        cards: new Map([...(list?.children ?? [])].map(c => [c.dataset.id, c]))
     };
 
     enableWheelScroll('.platinandoNow-panel');
@@ -776,6 +777,7 @@ function toggleViewMode(mode) {
         toPlatinarSection.style.display = 'grid';
     } else if (currentMode === 'charts') {
         document.querySelector('.view-bar').style.display = 'none';
+        renderChart();
     }
 }
 function switchMainView(targetView) {
@@ -797,9 +799,9 @@ function switchMainView(targetView) {
     toggleViewMode(currentViewMode);
 }
 
-viewGridBtn.addEventListener("click", () => toggleViewMode('list'));
-viewListBtn.addEventListener("click", () => toggleViewMode('grid'));
-viewChartsBtn.addEventListener("click", () => toggleViewMode('list'));
+if (viewGridBtn) viewGridBtn.addEventListener("click", () => toggleViewMode('list'));
+if (viewListBtn) viewListBtn.addEventListener("click", () => toggleViewMode('grid'));
+if (viewChartsBtn) viewChartsBtn.addEventListener("click", () => toggleViewMode('list'));
 
 function switchMode(el) {
     const mode = el.dataset.mode;
@@ -809,7 +811,7 @@ function switchMode(el) {
 loadGames();
 loadGamesAchie();
 
-document.querySelector(".sortingOptions-trigger").addEventListener("change", () => {
+if (document.querySelector(".sortingOptions-trigger")) document.querySelector(".sortingOptions-trigger").addEventListener("change", () => {
     const isCampaigns = document.querySelector('.mode-btn[data-mode="campaigns"]').classList.contains('active');
     if (isCampaigns) {
         if (!reorderView(gamesView, document.getElementById("view-campaigns"))) loadGames();
@@ -823,7 +825,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.querySelector('.sortingOptions-trigger');
     const options = document.querySelectorAll('.sortingOptions-select li');
 
-    trigger.addEventListener('click', (e) => {
+    if (trigger) trigger.addEventListener('click', (e) => {
         e.stopPropagation();
         container.classList.toggle('open');
         trigger.classList.toggle('open');
@@ -861,7 +863,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.getElementById('steamdb-btn').addEventListener('click', () => {
+if (document.getElementById('steamdb-btn')) document.getElementById('steamdb-btn').addEventListener('click', () => {
     event.preventDefault(); 
 
     const gameNameInput = document.getElementById('gameName');
@@ -884,7 +886,7 @@ document.getElementById('steamdb-btn').addEventListener('click', () => {
 let addGameHasCampaignTag = true;
 let addGameHasAchieTag = true;
 
-document.getElementById('addGameBtn').addEventListener('click', async () => {
+if (document.getElementById('addGameBtn')) document.getElementById('addGameBtn').addEventListener('click', async () => {
     const nameInput = document.getElementById('gameName').value.trim();
     const appIdInput = document.getElementById('gameAppId').value.trim();
 
@@ -926,7 +928,7 @@ document.getElementById('addGameBtn').addEventListener('click', async () => {
     addBtn.style.opacity = '1';
 });
 
-document.getElementById('addCustomGameBtn').addEventListener('click', async () => {
+if (document.getElementById('addCustomGameBtn')) document.getElementById('addCustomGameBtn').addEventListener('click', async () => {
     const nameInput = document.getElementById('customGameName').value.trim();
     const releaseDateInput = document.getElementById('gameReleaseDate').value;
     const releaseDateInputEl = document.getElementById('gameReleaseDate');
@@ -986,7 +988,7 @@ document.getElementById('addCustomGameBtn').addEventListener('click', async () =
     addBtn.style.opacity = '1';
 });
 
-document.getElementById('reload-btn').addEventListener('click', () => {
+if (document.getElementById('reload-btn')) document.getElementById('reload-btn').addEventListener('click', () => {
     loadGames();
     loadGamesAchie();
 });
@@ -994,7 +996,7 @@ document.getElementById('reload-btn').addEventListener('click', () => {
 const addGamePopup = document.getElementById('addGame-popup');
 const addGameOpenBtn = document.querySelector('.addGameOpen');
 
-addGameOpenBtn.addEventListener('click', () => addGamePopup.style.display = 'flex');
+if (addGameOpenBtn) addGameOpenBtn.addEventListener('click', () => addGamePopup.style.display = 'flex');
 
 function updateStatus(element, statusClass, text) {
     element.textContent = text;
@@ -1015,20 +1017,21 @@ function updateAchie(element, statusClass, text) {
 }
 async function changeAchieProgress(el, isAdd = true) {
     const title = el.dataset.id;
-    const [data, stats] = await Promise.all([
-        loadJson(ACHIEVEMENTS_FILE),
-        loadStatusAchie()
-    ]);
+    const stats = await loadJson(ACHIEVEMENTS_FILE);
 
-    const listaStats = Array.isArray(stats) ? stats : (stats.games || []);
+    const findName = title;
+    const gameFind = stats.find(jogo => jogo.name === findName);
 
-    const nomeDoJogoProcurado = title;
-    const jogoEncontrado = listaStats.find(jogo => jogo.name === nomeDoJogoProcurado);
-
-    const game = jogoEncontrado;
+    const game = gameFind;
+    const gameName = document.querySelector('.game-popup-div').dataset.name;
     const achieCount = document.querySelector('.achie-info-title-numbers-unlocked');
     const achieBarFill = document.querySelector('.achie-bar-fill');
     const achiePercentage = document.querySelector('.achie-percentage');
+    const statusText = document.querySelector('.achie-status-tag span');
+    const gameDivBarFill = document.querySelector(`.game.platinando[data-id="${title}"] .status-fill`);
+    const gameDivText = document.querySelector(`.game.platinando[data-id="${title}"] .platinando-text`);
+    const gameBarFill = document.querySelector(`.game.aplatinar[data-id="${title}"] .status-fill`);
+    const gameText = document.querySelector(`.game.aplatinar[data-id="${title}"] .status-text`);
 
     const total = game.totalAchievements;
 
@@ -1048,15 +1051,17 @@ async function changeAchieProgress(el, isAdd = true) {
     achieCount.textContent = unlocked;
     achieBarFill.style.width = `${percentage}%`;
     achiePercentage.textContent = `${percentage}%`;
-    await loadGamesAchie();
+    if (gameDivText) gameDivText.textContent = `${percentage}%`;
+    if (gameDivBarFill) gameDivBarFill.style.width = `${percentage}%`;
+    if (gameBarFill) gameBarFill.style.width = `${percentage}%`;
+    if (gameText) gameText.textContent = `${unlocked}/${total}`;
 
-    if (percentage === 100) {
-        document.querySelector('.achie-bar').classList.toggle('complete');
-        document.querySelector('.achie-percentage').classList.toggle('complete');
-    }
+    document.querySelector('.achie-bar').classList.toggle('complete', percentage === 100);
+    document.querySelector('.achie-percentage').classList.toggle('complete', percentage === 100);
+    if (percentage === 100) document.querySelector('.option-platinado').click()
 
-    if (jogoEncontrado) {
-        await saveJson(ACHIEVEMENTS_FILE, listaStats);
+    if (gameFind) {
+        await saveJson(ACHIEVEMENTS_FILE, stats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {
@@ -1111,6 +1116,7 @@ function checkTextOverflow() {
 
 const noteText = document.querySelector('.game-note');
 function updatePlaceholder() {
+    const noteText = document.querySelector('.game-note');
     const isEmpty = noteText.textContent.trim() === "";
     noteText.classList.toggle("is-empty", isEmpty);
 }
@@ -1131,8 +1137,8 @@ async function openGamePopup(el) {
     const releaseDateTitle = document.querySelector('.game-releaseDate-title');
     const releaseDateText = document.querySelector('.game-releaseDate-text');
 
-    const statusText = document.querySelector('.campaign-status-tag');
-    const achieStatusText = document.querySelector('.achie-status-tag');
+    const statusText = document.querySelector('.campaign-status-tag span');
+    const achieStatusText = document.querySelector('.achie-status-tag span');
     const achieCountDiv = document.querySelector('.achie-info-title-numbers-div');
     const achieCount = document.querySelector('.achie-info-title-numbers');
     const achieCountU = document.querySelector('.achie-info-title-numbers-unlocked');
@@ -1184,11 +1190,11 @@ async function openGamePopup(el) {
     let gameNoteFound = null;
 
     try {
-        const games = await loadStatusAchie();
+        const games = await loadJson(ACHIEVEMENTS_FILE);
         const notes = await loadNotes() || {};
         const gamesDB = await loadGamesDB();
         const gamesCamp = await loadStatus();
-        // const fullGamesArray = Array.isArray(fullGamesData) ? fullGamesData : (fullGamesData.games || []);
+
         jogoEncontrado = games.find(g => g.name === title) || {};
         fullGame = gamesDB.find(g => g.name === title) || {};
         gameStatusFound = gamesCamp.find(g => g.name === title) || {};
@@ -1217,9 +1223,6 @@ async function openGamePopup(el) {
         hero: gamesDB.hero,
         logo: gamesDB.logo
     });
-
-    document.querySelector('.achie-bar').classList.toggle('complete', achieGame.unlockedAchievements === achieGame.totalAchievements);
-    document.querySelector('.achie-percentage').classList.toggle('complete', achieGame.unlockedAchievements === achieGame.totalAchievements);
 
     if (gameName) gameName.textContent = gamesDB.name;
 
@@ -1261,11 +1264,7 @@ async function openGamePopup(el) {
         }
     }
 
-    if (gameCampaign.hasCampaign === false) {
-        statusText.style.display = 'none';
-    } else {
-        statusText.style.display = 'flex';
-    }
+    statusText.style.display = gameCampaign.hasCampaign ? 'flex' : 'none';
 
     completeDateText.textContent = gameCampaign.completeDate || "";
     achieDateText.textContent = achieGame.completeDate || "";
@@ -1276,14 +1275,13 @@ async function openGamePopup(el) {
         ratingTitle.style.display = 'flex';
         ratingText.removeAttribute('data-i18n', 'no-rating');
         ratingText.textContent = Number(gameCampaign.rating).toFixed(1);
-        ratingText.classList.remove('no-rating');
     }
     if (gameCampaign.rating == "null") {
         ratingTitle.style.display = 'none';
         ratingText.setAttribute('data-i18n', 'no-rating');
-        ratingText.classList.add('no-rating');
         applyLocale();
     }
+    ratingText.classList.toggle('no-rating', gameCampaign.rating == "null");
 
     const ratingTextDiv = document.querySelector('.game-rating-title');
     const ratingUnderlineOpacity = '70%,transparent';
@@ -1333,94 +1331,48 @@ async function openGamePopup(el) {
 
     achieBarFill.style.width = `${percentage}%`;
     achiePercentage.textContent = `${percentage}%`;
+    document.querySelector('.achie-bar').classList.toggle('complete', achieGame.achieStatus === 'platinado');
+    document.querySelector('.achie-percentage').classList.toggle('complete', achieGame.achieStatus === 'platinado');
 
     const hasAchie = achieGame.hasAchievements;
     const hasCampaign = gameCampaign.hasCampaign;
-    if (hasCampaign) {
-        typeCampaignMark.classList.add('active');
-    } else {
-        typeCampaignMark.classList.remove('active');
-    }
+    typeCampaignMark.classList.toggle('active', hasCampaign);
 
     typeCampaignMark.addEventListener('click', async () => {
         const isCurrentlyActive = typeCampaignMark.classList.contains('active');
-
         const newState = !isCurrentlyActive;
-
         try {
             await updateCampaignJSON(gameCampaign.name, newState);
-
             typeCampaignMark.classList.toggle('active', newState);
         } catch (error) {
             console.error("Erro ao atualizar o status da campanha:", error);
         }
     });
 
-    if (hasAchie) {
-        achieTitle.style.display = 'flex';
-        achieInfoDiv.style.display = 'flex';
-        achieStatusText.style.display = 'flex';
-        achieBtns.style.display = 'flex';
-        achieDiv.style.display = 'flex';
-        // achieSep.style.display = 'block';
-        campaignChange.classList.remove('noAchie');
-        typeAchieMark.classList.add('active');
-    } else {
-        achieTitle.style.display = 'none';
-        achieInfoDiv.style.display = 'none';
-        achieStatusText.style.display = 'none';
-        achieBtns.style.display = 'none';
-        achieDiv.style.display = 'none';
-        // achieSep.style.display = 'none';
-        campaignChange.classList.add('noAchie');
-        typeAchieMark.classList.remove('active');
-    }
+    achieTitle.style.display = hasAchie ? 'flex' : 'none';
+    achieInfoDiv.style.display = hasAchie ? 'flex' : 'none';
+    achieStatusText.style.display = hasAchie ? 'flex' : 'none';
+    achieBtns.style.display = hasAchie ? 'flex' : 'none';
+    achieDiv.style.display = hasAchie ? 'flex' : 'none';
+    campaignChange.classList.toggle('noAchie', !hasAchie);
+    typeAchieMark.classList.toggle('active', hasAchie);
 
-    if (gameCampaign.status.toLowerCase() == 'ajogar') {
-        updateStatus(statusText, 'ajogar', 'À Jogar');
-        campaignDiv.style.display = 'none';
-        ratingDiv.style.display = 'none';
-    }
-    if (gameCampaign.status.toLowerCase() == 'jogando') {
-        updateStatus(statusText, 'jogando', 'Jogando');
-        campaignDiv.style.display = 'none';
-        ratingDiv.style.display = 'none';
-    }
-    if (gameCampaign.status.toLowerCase() == 'zerado') {
-        updateStatus(statusText, 'zerado', 'Zerado');
-        campaignText.setAttribute('data-i18n', 'zerado');
-        campaignDiv.style.display = 'flex';
-        ratingDiv.style.display = 'flex';
-        applyLocale();
-    }
+    updateStatus(statusText, gameCampaign.status, gameCampaign.status);
+    campaignText.setAttribute('data-i18n', gameCampaign.status);
+    campaignDiv.style.display = gameCampaign.status == 'zerado' ? 'flex' : 'none';
+    ratingDiv.style.display = gameCampaign.status == 'zerado' ? 'flex' : 'none';
+    applyLocale();
 
-    if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'aplatinar') {
-        updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
-        achieStatusDiv.style.display = 'none';
-    }
-    if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'platinando') {
-        updateAchie(achieStatusText, 'platinando', 'Platinando');
-        achieStatusDiv.style.display = 'none';
-    }
-    if (achieGame.achieStatus && achieGame.achieStatus.toLowerCase() == 'platinado') {
-        updateAchie(achieStatusText, 'platinado', 'Platinado');
-        achieStatusDiv.style.display = 'flex';
-    }
+    updateAchie(achieStatusText, achieGame.achieStatus, 'À Platinar');
+    achieStatusDiv.style.display = achieGame.achieStatus == 'platinado' ? 'flex' : 'none';
 
     if (jogoEncontrado && jogoEncontrado.achieStatus) {
-
-        if (achieStatus === 'platinado')  updateAchie(achieStatusText, 'platinado', 'Platinado');
-        if (achieStatus === 'platinando') updateAchie(achieStatusText, 'platinando', 'Platinando');
-        if (achieStatus === 'aplatinar')  updateAchie(achieStatusText, 'aplatinar', 'À Platinar');
+        updateAchie(achieStatusText, achieStatus, achieStatus);
     } else {
         achieStatusText.style.display = 'none';
     }
 
-    if (achieStatus != 'platinado') {
-        achieBtns.style.display = 'flex';
-    } else {
-        achieBtns.style.display = 'none';
-    }
+    achieBtns.style.display = achieStatus != 'platinado' ? 'flex' : 'none';
 
     popup.style.display = 'flex';
     checkTextOverflow();
@@ -1532,7 +1484,7 @@ gamePopupDiv.addEventListener('click', (e) => {
 });
 
 const statusBtn = document.querySelector('.campaign-status-tag');
-const achieBtn = document.querySelector('.achie-status-tag');
+const achieBtn = document.querySelector('.achie-status-tag span');
 
 async function updateStatusJSON(game, statusClass) {
     const [data, stats] = await Promise.all([
@@ -1602,6 +1554,10 @@ async function updateAchieJSON(game, statusClass) {
             gameFoundAchie.completeDate = dateNow.toLocaleDateString('pt-BR');
             gameFoundAchie.unlockedAchievements = gameFoundAchie.totalAchievements;
         }
+        else if (statusClass != "platinado" && document.querySelector('.achie-percentage').textContent === "100%") {
+            document.querySelector('.achie-bar').classList.remove('complete');
+            document.querySelector('.achie-percentage').classList.remove('complete');
+        }
         
         await saveJson(ACHIEVEMENTS_FILE, listStats);
         console.log(`Status de ${game} atualizado com sucesso!`);
@@ -1635,7 +1591,7 @@ document.addEventListener('click', (event) => {
 
 optionAjogar.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
-    const statusText = document.querySelector('.campaign-status-tag');
+    const statusText = document.querySelector('.campaign-status-tag span');
     const campaignText = document.querySelector('.campaign-info-title-text');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
@@ -1646,14 +1602,17 @@ optionAjogar.addEventListener('click', async () => {
     campaignText.classList.remove('zerado');
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
-    
+
+    document.querySelector('.achie-bar').classList.remove('complete');
+    document.querySelector('.achie-percentage').classList.remove('complete');
+
     await updateStatusJSON(game, "ajogar");
     updateStatus(statusText, "ajogar", "À Jogar");
     await loadGames();
 })
 optionJogando.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
-    const statusText = document.querySelector('.campaign-status-tag');
+    const statusText = document.querySelector('.campaign-status-tag span');
     const campaignText = document.querySelector('.campaign-info-title-text');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
@@ -1664,6 +1623,9 @@ optionJogando.addEventListener('click', async () => {
     campaignText.classList.remove('zerado');
     campaignDiv.style.display = 'none';
     ratingDiv.style.display = 'none';
+
+    document.querySelector('.achie-bar').classList.remove('complete');
+    document.querySelector('.achie-percentage').classList.remove('complete');
     
     await updateStatusJSON(game, "jogando")
     updateStatus(statusText, "jogando", "Jogando")
@@ -1671,7 +1633,7 @@ optionJogando.addEventListener('click', async () => {
 })
 optionZerado.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
-    const statusText = document.querySelector('.campaign-status-tag');
+    const statusText = document.querySelector('.campaign-status-tag span');
     const campaignText = document.querySelector('.campaign-info-title-text');
     const campaignDiv = document.querySelector('.game-campaign-div');
     const ratingDiv = document.querySelector('.game-rating-div');
@@ -1716,18 +1678,20 @@ document.addEventListener('click', (event) => {
 
 optionAplatinar.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
-    const statusText = document.querySelector('.achie-status-tag');
+    const statusText = document.querySelector('.achie-status-tag span');
     const achieBtns = document.querySelector('.achie-add-minus');
     const numberU = document.querySelector('.achie-info-title-numbers-unlocked');
     const fillBar = document.querySelector('.achie-bar-fill');
+    const achieBar = document.querySelector('.achie-bar-fill');
     const percentage = document.querySelector('.achie-percentage');
     const achieStatusDiv = document.querySelector('.gameinfo-achie-div');
 
     optionsAchie.style.display = 'none';
     achieBtns.style.display = 'flex';
     numberU.contentEditable = 'true';
-    fillBar.style.backgroundColor = 'var(--blue)';
-    percentage.style.color = 'var(--blue)';
+
+    achieBar.classList.remove('complete');
+    fillBar.classList.remove('complete');
 
     achieStatusDiv.style.display = 'none';
     
@@ -1738,18 +1702,20 @@ optionAplatinar.addEventListener('click', async () => {
 })
 optionPlatinando.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
-    const statusText = document.querySelector('.achie-status-tag');
+    const statusText = document.querySelector('.achie-status-tag span');
     const achieBtns = document.querySelector('.achie-add-minus');
     const numberU = document.querySelector('.achie-info-title-numbers-unlocked');
     const fillBar = document.querySelector('.achie-bar-fill');
+    const achieBar = document.querySelector('.achie-bar-fill');
     const percentage = document.querySelector('.achie-percentage');
     const achieStatusDiv = document.querySelector('.gameinfo-achie-div');
 
     optionsAchie.style.display = 'none';
     achieBtns.style.display = 'flex';
     numberU.contentEditable = 'true';
-    fillBar.style.backgroundColor = 'var(--blue)';
-    percentage.style.color = 'var(--blue)';
+    
+    achieBar.classList.remove('complete');
+    fillBar.classList.remove('complete');
 
     achieStatusDiv.style.display = 'none';
     
@@ -1760,10 +1726,11 @@ optionPlatinando.addEventListener('click', async () => {
 })
 optionPlatinado.addEventListener('click', async () => {
     const game = document.querySelector('.game-popup-div').dataset.name;
-    const statusText = document.querySelector('.achie-status-tag');
+    const statusText = document.querySelector('.achie-status-tag span');
     const achieBtns = document.querySelector('.achie-add-minus');
     const achieStatusDiv = document.querySelector('.gameinfo-achie-div');
     const fillBar = document.querySelector('.achie-bar-fill');
+    const achieBar = document.querySelector('.achie-bar-fill');
     const percentage = document.querySelector('.achie-percentage');
     const number = document.querySelector('.achie-info-title-numbers');
     const numberU = document.querySelector('.achie-info-title-numbers-unlocked');
@@ -1773,9 +1740,9 @@ optionPlatinado.addEventListener('click', async () => {
     achieBtns.style.display = 'none';
 
     fillBar.style.width = '100%';
-    fillBar.style.backgroundColor = 'var(--yellow)';
     percentage.textContent = '100%';
-    percentage.style.color = 'var(--yellow)';
+    achieBar.classList.add('complete');
+    fillBar.classList.add('complete');
     numberU.textContent = numberText;
     numberU.contentEditable = 'false';
     achieStatusDiv.style.display = 'flex';
@@ -1792,7 +1759,7 @@ optionPlatinado.addEventListener('click', async () => {
 })
 
 const addGamePopupDiv = document.querySelector('.add-game-form');
-addGamePopup.addEventListener('click', (e) => {
+if (addGamePopup) addGamePopup.addEventListener('click', (e) => {
     if (e.target === addGamePopup) {
         addGamePopupDiv.classList.add('is-closing');
         
@@ -2080,12 +2047,10 @@ async function renderChart() {
     });
 }
 
-renderChart();
-
 const deleteModeBtn = document.getElementById('delete-games');
 const gamesGrid = document.getElementById('view-campaigns');
 
-deleteModeBtn.addEventListener('click', () => {
+if (deleteModeBtn) deleteModeBtn.addEventListener('click', () => {
     deleteMode = !deleteMode;
     deleteModeBtn.classList.toggle('active', deleteMode);
     document.body.classList.toggle('delete-mode-active', deleteMode);
@@ -2129,7 +2094,7 @@ async function deleteGame(gameName) {
     return { success: false, error: error.message };
   }
 }
-document.getElementById('delete-confirm-yes').addEventListener('click', async () => {
+if (document.getElementById('delete-confirm-yes')) document.getElementById('delete-confirm-yes').addEventListener('click', async () => {
     if (!gameToDelete) return;
     
     await deleteGame(gameToDelete.name);
@@ -2147,7 +2112,7 @@ document.getElementById('delete-confirm-yes').addEventListener('click', async ()
     await loadGamesAchie();
 });
 
-document.getElementById('delete-confirm-cancel').addEventListener('click', () => {
+if (document.getElementById('delete-confirm-cancel')) document.getElementById('delete-confirm-cancel').addEventListener('click', () => {
     const deletePopupDiv = document.getElementById('delete-confirm-popup');
     const deletePopup = document.querySelector('.confirm-popup-content');
     gameToDelete = null;

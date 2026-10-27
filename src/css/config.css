@@ -420,22 +420,14 @@ body {
     display: flex;
     flex-direction: column;
     position: absolute;
-    gap: 0;
-    /* transform: translateY(5.75vh); */
+    gap: 1vh;
     transform: translateY(-1.45vh);
-    background-color: var(--tab);
-    width: 19vw;
+    border: solid .2rem var(--btn-hover);
+    background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-active) 80%);
+    width: 20vw;
+    padding: 1vh .5vw;
+    border-radius: 1.75vh;
     margin: 0;
-    padding: 0;
-    border-radius: 1vh;
-    overflow: hidden;
-}
-.change-lang-drop-select li.active {
-    background-color: var(--btn-color);
-    color: var(--btn-text-color);
-}
-.change-lang-drop-select li.active:hover {
-    background-color: var(--btn-hover-color);
 }
 .config-item p {
     margin: 0;
@@ -448,35 +440,16 @@ body {
     justify-content: start;
     align-items: start;
     gap: 0;
-    background-color: var(--btn);
     width: fit-content;
-    border-radius: 1vh;
-    overflow: hidden;
-}
-.custom-select li:hover {
-    background-color: var(--btn-hover);
-}
-.custom-select .active-config {
-    color: var(--btn-text-color);
-    background-color: var(--btn-color);
-    border-radius: 1vh;
-}
-.custom-select .active-config:hover {
-    background-color: var(--btn-hover-color);
     border-radius: 1vh;
 }
 .custom-select li {
     display: flex;
     align-items: start;
     padding: 1vh .65vw;
-    object-fit: cover;
-    cursor: pointer;
-    transition: border 0.2s;
     font-weight: 600;
-    background-color: var(--btn);
+    border-radius: 1vh;
     flex-direction: column;
-    transition: background .1s linear, border-radius .1s linear;
-    border-radius: 0;
 }
 .sep-space {
     height: 1vh;
