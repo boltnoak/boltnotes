@@ -71,14 +71,13 @@ body {
 .featured-change-div {
     width: 98%;
     display: flex;
+    height: 5.35vh;
     justify-content: center;
-    /* background-color: var(--tab); */
     margin: 0 1vw;
     border-radius: 1vh;
-    /* padding: 1vh 0; */
 }
 .featured-change {
-    display: flex;
+    display: none;
     flex-direction: row;
     justify-content: center;
     padding: 0;
@@ -154,6 +153,37 @@ body {
 .page:hover {
     scale: 1.02;
 }
+.page-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-pattern {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.icon-pattern-grid {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    grid-template-columns: repeat(var(--n), var(--cell));
+    grid-auto-rows: var(--cell);
+    transform: translate(-50%, -50%) rotate(-20deg);
+}
+.icon-pattern-grid i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(var(--cell) * .75);
+    color: var(--btn);
+}
+
+.page-image .text,
+.page-image .fortnite-text { position: relative; z-index: 1; }
 .page-infos {
     height: 100%;
     margin: 0 1vw 2vh 1vw;
@@ -356,7 +386,7 @@ body {
     font-weight: 700;
     margin: 0;
     gap: .6vw;
-    display: flex;
+    display: none;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -477,9 +507,8 @@ body {
     z-index: 10;
 }
 .playingNow-panel .game.jogando .game-cover, .game-cover {
-    height: 25vh;
+    height: 27.5vh;
     object-fit: cover;
-    /* margin: .9vh .5vw 0 .5vw; */
     border-radius: .8vh .8vh 0 0;
     pointer-events: none;
     display: block;
@@ -744,7 +773,7 @@ body {
     flex: 1;
     min-height: 0;
     width: 100%;
-    gap: .4vw;
+    gap: .8vw;
     animation: fadeInUp .35s ease forwards;
 }
 .playingNow-div span {
@@ -756,7 +785,7 @@ body {
     gap: .5vw;
     font-weight: 665;
     font-size: 2.8vh;
-    margin: 0 .25vw;
+    /* margin: 0 .25vw; */
     border-bottom: .455vh solid var(--blue);
     background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
 }
@@ -785,14 +814,14 @@ body {
 .playingNow-div {
     display: flex;
     flex-direction: column;
-    gap: 1.25vh;
-    width: 31.5vw;
+    gap: 1.475vh;
+    width: 33.75vw;
     min-height: 0;
 }
 .toPlay-div {
     display: flex;
     flex-direction: column;
-    gap: 1.25vh;
+    gap: 1.475vh;
     width: 100%;
     height: 99%;
     flex: 1;
@@ -806,13 +835,13 @@ body {
     flex-direction: row;
     gap: .5vw;
     font-size: 2.8vh;
-    margin: 0 .25vw;
+    /* margin: 0 .25vw; */
     border-bottom: .455vh solid var(--btn-hover);
     background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
 }
 .toPlay-panel {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(15vw, 1fr));
     grid-auto-rows: 28.75vh;
     padding: .25vh .25vw .25vh .25vw;
     width: 100%;

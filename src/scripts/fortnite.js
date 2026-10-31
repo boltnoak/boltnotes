@@ -20,7 +20,7 @@ async function loadCloudSeasonInfo() {
     if (cachedSeasons) return cachedSeasons;
 
     const config = await getConfig();
-    const language = config.language || "pt-BR";
+    const language = config.language || "en";
 
     const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`;
 
@@ -74,6 +74,18 @@ async function bootFortnite() {
     const progress = document.querySelector('.progress');
     const bar = document.getElementById('fortnite-progress');
 
+    // 1) Já tem assets locais: abre na hora, atualiza em segundo plano
+    if (await readLocalManifest()) {
+        screen.remove();
+        await initFortnitePage();
+
+        syncFortniteAssets()
+            .then((r) => { if (r?.updated) refreshAfterAssetUpdate(); })
+            .catch((err) => console.warn('Assets - atualização em segundo plano:', err.message));
+        return;
+    }
+
+    // 2) Primeira vez: precisa baixar, então bloqueia com progresso (como antes)
     let screenShown = false;
     const showScreen = () => {
         if (screenShown) return;
@@ -96,12 +108,15 @@ async function bootFortnite() {
         return;
     }
 
-    if (!screenShown) {
-        screen.remove();
-        return;
-    }
+    if (!screenShown) { screen.remove(); return; }
     screen.classList.add('hide');
     screen.addEventListener('transitionend', () => screen.remove(), { once: true });
+}
+
+async function refreshAfterAssetUpdate() {
+    const data = await loadCloudSeasonInfo();
+    if (urlParams.has('num')) await renderChapter(data, currentChapter);
+    await loadChaptersGrid();
 }
 bootFortnite();
 
@@ -109,7 +124,13 @@ async function initData() {
     try {
         const data = await loadCloudSeasonInfo();
         const localData = await loadJson(REVIEWS_FILE);
-        const statsData = await loadJson(STATS_FILE);
+        let statsData;
+        try {
+            statsData = await loadJson(STATS_FILE);
+        } catch (e) {
+            console.error("Falha ao ler stats, abortando para não sobrescrever", e);
+            return;
+        }
 
         window.reviews = (localData && typeof localData === 'object') ? localData : {};
         window.stats = (statsData && typeof statsData === 'object') ? statsData : {};

@@ -22,10 +22,10 @@ async function updateConfig(config, value) {
 }
 
 async function getSteamData(appid) {
-    await window.electronAPI.getSteamData(appid);
+    return await window.electronAPI.getSteamData(appid);
 }
 async function findCachedImage(folder, name) {
-    await window.electronAPI.findCachedImage(folder, name)
+    return await window.electronAPI.findCachedImage(folder, name)
 }
 
 const DOCS = 'documents://';

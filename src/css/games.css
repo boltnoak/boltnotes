@@ -1402,7 +1402,7 @@ body {
 }
 .game-popup {
     background: var(--bg);
-    border-radius: 1.3vh;
+    border-radius: 2vh;
     width: 85vw;
     height: 85vh;
     z-index: 99;
@@ -2023,9 +2023,7 @@ body {
     z-index: 1;
     animation: status-changeUp .15s ease;
 }
-.campaign-status-change.noAchie {
-    transform: translateY(4.1vh) translateX(7.68vw);
-}
+
 .campaign-status-change li {
     padding: .65vh .5vw .45vh 1.6vw;
     font-size: 2.25vh;
@@ -2482,9 +2480,6 @@ body.delete-mode-active .game:hover::after {
     display: flex;
     flex-direction: row;
     gap: .5vw;
-    /* padding: 1vh;
-    background-color: var(--btn);
-    border-radius: 1vh .8vw; */
     font-weight: 600;
     align-items: center;
     font-size: 2.6vh;
@@ -2504,6 +2499,10 @@ body.delete-mode-active .game:hover::after {
 .type-mark-campaign {
     cursor: pointer;
 }
+.custom .type-mark-achie {
+    cursor: pointer;
+}
+
 #delete-games.tooltip[data-tooltip]:hover::after {
     transform: translate(-52.5%, -200%);
 }
@@ -2556,9 +2555,6 @@ body.delete-mode-active .game:hover::after {
     align-items: center;
     margin: 0;
     padding: .75vh .5vw;
-}
-.game.zerado .status-text {
-    /* color: var(--text-light-gray); */
 }
 .game.jogando {
     gap: 0;

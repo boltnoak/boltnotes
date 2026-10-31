@@ -1,6 +1,7 @@
 @import url(basics.css);
 @import url(shell.css);
 @import url(config.css);
+@import url(index.css);
 
 .config-item-lang {
     justify-content: center;
@@ -9,7 +10,6 @@
 }
 .change-lang-drop-select {
     transform: translateY(-10.5vh);
-    /* position: relative; */
     z-index: 99;
 }
 .body-page {

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const langSelect = document.getElementById('lang-select');
     const langSpan = langBtn.querySelector('span');
 
-    const currentLang = config.language || 'pt-BR';
+    const currentLang = config.language || 'en';
     const langNames = { 'pt-BR': 'Português Brasil', 'en': 'English' };
     langSpan.textContent = langNames[currentLang] || 'Português Brasil';
 

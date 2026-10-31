@@ -6,10 +6,43 @@ let stats = {};
 
 const FORTNITE_STATS = "Fortnite/stats.json";
 
+function buildIconPattern(el, cell = 64) {
+    const icons = (el.dataset.icons || '').split(',').map(s => s.trim()).filter(Boolean);
+    if (!icons.length) return;
+
+    const { width, height } = el.getBoundingClientRect();
+    if (!width || !height) return;
+
+    const n = Math.ceil(Math.hypot(width, height) / cell) + 1;
+
+    const grid = document.createElement('div');
+    grid.className = 'icon-pattern-grid';
+    grid.style.setProperty('--n', n);
+    grid.style.setProperty('--cell', `${cell}px`);
+
+    const frag = document.createDocumentFragment();
+    for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+            const i = document.createElement('i');
+            i.className = `fa-solid ${icons[(r + c) % icons.length]}`;
+            frag.appendChild(i);
+        }
+    }
+    grid.appendChild(frag);
+    el.replaceChildren(grid);
+}
+document.querySelectorAll('.icon-pattern').forEach(el => buildIconPattern(el));
+
 async function initFortniteData() {
     try {
         const data = await loadCloudSeasonInfo();
-        const statsData = await loadJson(FORTNITE_STATS);
+        let statsData;
+        try {
+            statsData = await loadJson(FORTNITE_STATS);
+        } catch (e) {
+            console.error("Falha ao ler stats, abortando para não sobrescrever", e);
+            return;
+        }
 
         window.stats = (statsData && typeof statsData === 'object') ? statsData : {};
 
@@ -44,18 +77,21 @@ function changeFeatured(el) {
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await getConfig();
     const currentFeatured = config.featured;
-    const currentFeaturedLang = currentFeatured.replace(/_/g, '-');
+    const currentFeaturedLang = currentFeatured.replace(/_/g, '-') || 'playing-now';
 
     const multipleFeatured = document.querySelector('.featured-change-div');
+    const featuredToggles = document.querySelector('.featured-change');
+    const singleFeatured = document.getElementById('featured-title');
+    const isMultipleFeatured = config.show_featured_changer;
+
+    multipleFeatured.style.display = isMultipleFeatured ? 'flex' : 'none';
+    singleFeatured.style.display = !isMultipleFeatured ? 'flex' : 'none';
+    featuredToggles.style.display = isMultipleFeatured ? 'flex' : 'none';
+
     const featuredDiv = document.querySelector('.page-infos');
     const featuredActiveOption = document.querySelector(`.featured-option[data-value="${currentFeatured}"]`);
     const featuredIcon = document.querySelector('#featured-title i');
     const featuredTitle = document.querySelector('.featured-title-text');
-    const singleFeatured = document.getElementById('featured-title');
-
-    const isMultipleFeatured = config.show_featured_changer;
-    multipleFeatured.style.display = isMultipleFeatured ? 'flex' : 'none';
-    singleFeatured.style.display = !isMultipleFeatured ? 'flex' : 'none';
 
     const isNone = currentFeatured === 'none';
     const isBacklog = currentFeatured === 'playing_now';
@@ -86,7 +122,7 @@ async function loadCloudSeasonInfo() {
     if (cachedSeasons) return cachedSeasons;
 
     const config = await getConfig();
-    const language = config.language || "pt-BR";
+    const language = config.language || "en";
 
     const url = `https://gist.githubusercontent.com/boltnoak/a836e64254fca6d8263c6d66347e021d/raw/fn-seasons-${language}.json`;
 

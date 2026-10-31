@@ -6,68 +6,62 @@ const NOTES_FILE = "Games/notes.json";
 let deleteMode = false;
 let gameToDelete = null;
 
-function enableWheelScroll(selector, distancia = 67) {
-  const panel = document.querySelector(selector);
-  if (!panel) return;
+function enableWheelScroll(selector) {
+    const panel = document.querySelector(selector);
+    if (!panel) return;
 
-  const storageKey = `scrollPos:${selector}`;
+    const storageKey = `scrollPos:${selector}`;
+    const cards = () => [...panel.querySelectorAll('.game')];
+    const padTop = () => parseFloat(getComputedStyle(panel).paddingTop) || 0;
 
-  function getCurrentGame() {
-    const games = panel.querySelectorAll('.game');
-    let closest = null;
-    let closestDist = Infinity;
+    const posOf = (card) =>
+        card.getBoundingClientRect().top - panel.getBoundingClientRect().top
+        + panel.scrollTop - panel.clientTop - padTop();
 
-    games.forEach(game => {
-      const dist = Math.abs(game.offsetTop - panel.scrollTop);
-      if (dist < closestDist) {
-        closestDist = dist;
-        closest = game;
-      }
-    });
+    const closestIndex = (list) => {
+        let best = 0, bestDist = Infinity;
+        list.forEach((c, i) => {
+            const d = Math.abs(posOf(c) - panel.scrollTop);
+            if (d < bestDist) { bestDist = d; best = i; }
+        });
+        return best;
+    };
 
-    return closest;
-  }
+    const saveCurrent = () => {
+        const list = cards();
+        if (list.length) localStorage.setItem(storageKey, list[closestIndex(list)].dataset.id);
+    };
 
-  function saveCurrentGame() {
-    const current = getCurrentGame();
-    if (current) {
-      localStorage.setItem(storageKey, current.dataset.id);
-    }
-  }
-
-  function restoreScroll() {
-    const savedId = localStorage.getItem(storageKey);
-    if (!savedId) return;
-
-    const target = panel.querySelector(`.game[data-id="${CSS.escape(savedId)}"]`);
-    if (target) {
-      panel.scrollTop = target.offsetTop;
-    }
-  }
-
-  panel.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    panel.scrollBy({
-      top: e.deltaY > 0 ? distancia : -distancia,
-      behavior: 'smooth'
-    });
-
-    clearTimeout(panel._saveTimeout);
-    panel._saveTimeout = setTimeout(saveCurrentGame, 200);
-  }, { passive: false });
     if (!panel._wheelBound) {
         panel._wheelBound = true;
+        let locked = false;
+
         panel.addEventListener('wheel', (e) => {
             e.preventDefault();
-            panel.scrollBy({
-                top: e.deltaY > 0 ? distancia : -distancia,
-                behavior: 'smooth'
-            });
+            if (locked) return;
+
+            const list = cards();
+            if (!list.length) return;
+
+            const next = Math.min(list.length - 1,
+                         Math.max(0, closestIndex(list) + (e.deltaY > 0 ? 1 : -1)));
+
+            panel.scrollTo({ top: posOf(list[next]), behavior: 'smooth' });
+
+            locked = true;
+            setTimeout(() => { locked = false; }, 250);
+
             clearTimeout(panel._saveTimeout);
-            panel._saveTimeout = setTimeout(saveCurrentGame, 200);
+            panel._saveTimeout = setTimeout(saveCurrent, 400);
         }, { passive: false });
     }
-    restoreScroll();
+
+    requestAnimationFrame(() => {
+        if (!panel.offsetParent) return;
+        const savedId = localStorage.getItem(storageKey);
+        const target = savedId && panel.querySelector(`.game[data-id="${CSS.escape(savedId)}"]`);
+        panel.scrollTo({ top: target ? posOf(target) : 0, behavior: 'instant' });
+    });
 }
 
 function parseBRDate(dateStr) {
@@ -371,7 +365,6 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
             return;
         }
         openGamePopup(div);
-        console.log('aaa')
     });
 
     applyLocale();
@@ -379,7 +372,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     div.gameData = game;
     div.addEventListener('mouseenter', () => {
         const hero = game._cachedHero;
-        console.log('Preload - ', game.name, { hero, jaCarregado: game._heroPreloaded });
+        console.log('Preload - ', game.name, { hero, loaded: game._heroPreloaded });
         if (hero && !game._heroPreloaded) {
             game._heroPreloaded = true;
             new Image().src = hero.replace(/\\/g, '/');
@@ -704,7 +697,7 @@ async function loadStatusAchie() {
     }
     try {
         const content = await loadJson(ACHIEVEMENTS_FILE);
-        cachedAchieStatus = Array.isArray(content) ? content : [];
+        cachedAchieStatus = (typeof content === 'object' && content !== null) ? content : {};
         return cachedAchieStatus;
     } catch (e) {
         console.error("Erro ao ler achievements.json:", e);
@@ -825,7 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.querySelector('.sortingOptions-trigger');
     const options = document.querySelectorAll('.sortingOptions-select li');
 
-    if (trigger) trigger.addEventListener('click', (e) => {
+    if (trigger && container) trigger.addEventListener('click', (e) => {
         e.stopPropagation();
         container.classList.toggle('open');
         trigger.classList.toggle('open');
@@ -850,13 +843,13 @@ document.addEventListener('DOMContentLoaded', () => {
             options.forEach(li => li.classList.remove('selected'));
             this.classList.add('selected');
 
-            container.classList.toggle('open');
+            container?.classList.toggle('open');
             trigger.classList.toggle('open');
         });
     });
 
     document.addEventListener('click', () => {
-        if (container.classList.contains('open')) {
+        if (container && container.classList.contains('open')) {
             container.classList.remove('open');
             trigger.classList.toggle('open');
         }
@@ -1017,7 +1010,7 @@ function updateAchie(element, statusClass, text) {
 }
 async function changeAchieProgress(el, isAdd = true) {
     const title = el.dataset.id;
-    const stats = await loadJson(ACHIEVEMENTS_FILE);
+    const stats = await loadStatusAchie();
 
     const findName = title;
     const gameFind = stats.find(jogo => jogo.name === findName);
@@ -1122,6 +1115,41 @@ function updatePlaceholder() {
 }
 
 noteText.addEventListener("input", updatePlaceholder);
+
+const typeCampaignMark = document.querySelector('.type-mark-campaign');
+typeCampaignMark.addEventListener('click', async () => {
+    const popup = document.querySelector('.game-popup-div');
+    const name = popup.dataset.name;
+    const isCurrentlyActive = typeCampaignMark.classList.contains('active');
+    const newState = !isCurrentlyActive;
+
+    try {
+        await updateCampaignJSON(name, newState);
+        typeCampaignMark.classList.toggle('active', newState);
+    } catch (error) {
+        console.error("Erro ao atualizar o status da campanha:", error);
+    }
+});
+const typeAchieMark = document.querySelector('.type-mark-achie');
+typeAchieMark.addEventListener('click', async () => {
+    const popup = document.querySelector('.game-popup-div');
+    if (!popup.classList.contains('custom')) return;
+
+    const name = popup.dataset.name;
+    const isCurrentlyActive = typeAchieMark.classList.contains('active');
+    const newState = !isCurrentlyActive;
+    const statusDiv = document.querySelector('.game-status-div');
+
+    try {
+        await updateHasAchieJSON(name, newState);
+        typeAchieMark.classList.toggle('active', newState);
+    } catch (error) {
+        console.error("Erro ao atualizar o status da campanha:", error);
+        return;
+    }
+    statusDiv.style.display = statusDiv.style.display === 'none' ? 'flex' : 'none';
+});
+
 async function openGamePopup(el) {
     const title = el.dataset.id;
     const name = el.dataset.id.replace(/[^a-z0-9]/gi, "_").toLowerCase();
@@ -1157,11 +1185,6 @@ async function openGamePopup(el) {
     const noteTittleDiv = document.querySelector('.game-note-title-div');
     const note = document.querySelector('.game-note');
 
-    // const achieSep = document.querySelector('.achie-sep');
-    // const campaignSep = document.querySelector('.campaign-sep');
-    const typeCampaignMark = document.querySelector('.type-mark-campaign');
-    const typeAchieMark = document.querySelector('.type-mark-achie');
-
     const campaignDiv = document.querySelector('.game-campaign-div');
     const achieStatusDiv = document.querySelector('.gameinfo-achie-div');
     const campaignChange = document.querySelector('.campaign-status-change');
@@ -1173,6 +1196,7 @@ async function openGamePopup(el) {
     const noteDiv = document.querySelector('.game-note-div');
     const noteText = document.querySelector('.game-note');
     const noteEditBtn = document.getElementById('editNote');
+    const mainBG = document.querySelector('.game-maincontent');
     
     noteEditBtn.setAttribute('data-id', title);
     achieAddBtn.setAttribute('data-id', title);
@@ -1190,7 +1214,7 @@ async function openGamePopup(el) {
     let gameNoteFound = null;
 
     try {
-        const games = await loadJson(ACHIEVEMENTS_FILE);
+        const games = await loadStatusAchie();
         const notes = await loadNotes() || {};
         const gamesDB = await loadGamesDB();
         const gamesCamp = await loadStatus();
@@ -1212,29 +1236,9 @@ async function openGamePopup(el) {
     const gamesDB = fullGame;
     const gameNote = gameNoteFound;
 
-    const {
-        cover: localCoverPath,
-        hero: localHeroPath,
-        logo: localLogoPath
-    } = await ensureCover({
-        appid: gamesDB.appid,
-        name: gamesDB.name,
-        cover: gamesDB.cover,
-        hero: gamesDB.hero,
-        logo: gamesDB.logo
-    });
+    popup.classList.toggle('custom', gamesDB.custom || false);
 
     if (gameName) gameName.textContent = gamesDB.name;
-
-    const mainBG = document.querySelector('.game-maincontent');
-    const normalizedPath = localHeroPath ? localHeroPath.replace(/\\/g, '/') : null;
-    const bgValue = normalizedPath 
-        ? `url("${normalizedPath}")` 
-        : 'url("assets/placeholder.png")';
-
-    mainBG.style.setProperty('--bg-image', bgValue);
-    banner.src = localCoverPath ? `${localCoverPath}` : 'assets/placeholder.png';
-    // logo.src = localLogoPath ? `file://${localLogoPath}` : '';
 
     logo.alt = el.dataset.id;
     devText.textContent = gamesDB.developer || "Not Found";
@@ -1338,17 +1342,6 @@ async function openGamePopup(el) {
     const hasCampaign = gameCampaign.hasCampaign;
     typeCampaignMark.classList.toggle('active', hasCampaign);
 
-    typeCampaignMark.addEventListener('click', async () => {
-        const isCurrentlyActive = typeCampaignMark.classList.contains('active');
-        const newState = !isCurrentlyActive;
-        try {
-            await updateCampaignJSON(gameCampaign.name, newState);
-            typeCampaignMark.classList.toggle('active', newState);
-        } catch (error) {
-            console.error("Erro ao atualizar o status da campanha:", error);
-        }
-    });
-
     achieTitle.style.display = hasAchie ? 'flex' : 'none';
     achieInfoDiv.style.display = hasAchie ? 'flex' : 'none';
     achieStatusText.style.display = hasAchie ? 'flex' : 'none';
@@ -1374,8 +1367,15 @@ async function openGamePopup(el) {
 
     achieBtns.style.display = achieStatus != 'platinado' ? 'flex' : 'none';
 
+    banner.src = "assets/placeholder.png";
+    mainBG.style.setProperty('--bg-image', `url("assets/placeholder.png")`);
+
     popup.style.display = 'flex';
     checkTextOverflow();
+
+    const g = el.gameData;
+    if (g?._cachedCover) banner.src = g._cachedCover;
+    if (g?._cachedHero)  mainBG.style.setProperty('--bg-image', `url("${g._cachedHero.replace(/\\/g,'/')}")`);
 }
 
 const UNLOCKED_SEL = '.achie-info-title-numbers-unlocked';
@@ -1531,6 +1531,23 @@ async function updateCampaignJSON(game, statusClass) {
         gameFound.hasCampaign = statusClass;
         
         await saveJson(CAMPAIGNS_FILE, listStats);
+        console.log(`Status de ${game} atualizado com sucesso!`);
+        return true;
+    } else {
+        console.warn("Jogo não encontrado na lista.");
+        return false;
+    }
+}
+async function updateHasAchieJSON(game, statusClass) {
+    const stats = await loadStatusAchie();
+
+    const gameName = game;
+    const gameFound = stats.find(g => g.name === gameName);
+
+    if (gameFound) {
+        gameFound.hasAchievements = statusClass;
+        
+        await saveJson(ACHIEVEMENTS_FILE, stats);
         console.log(`Status de ${game} atualizado com sucesso!`);
         return true;
     } else {

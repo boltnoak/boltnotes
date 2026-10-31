@@ -126,9 +126,10 @@ body {
     position: relative;
     flex-direction: row;
     min-height: 0;
-    height: 10vh;
+    height: 100%;
     flex: 1;
     object-fit: cover;
+    background-color: var(--bg);
 }
 .boltnotes-logo {
     height: 11.5vh;
@@ -2462,7 +2463,7 @@ body.delete-mode-active .game:hover::after {
 .playingNow-panel,
 .recentSeason-panel,
 #notes, #games, #fortnite, .app-version {
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.25s ease;
 }
 

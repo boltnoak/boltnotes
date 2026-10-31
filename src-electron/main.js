@@ -60,7 +60,6 @@ let updateReady = false;
 function getConfig() {
     const configPath = path.join(app.getPath('userData'),'settings.json');
     const defaults = {
-        welcomed: false,
         maximize_on_start: false,
         open_on_startup: false,
         minimize_to_tray: false,
@@ -254,8 +253,7 @@ if (!gotTheLock && app.isPackaged) {
 
             if (app.isPackaged && !isFlatpak) { autoUpdater.checkForUpdates() }
 
-            if (!configs.welcomed) { win.loadFile(path.join(BUNDLE, 'pages', 'welcome.html'));
-            } else { win.loadFile(path.join(BUNDLE, 'pages', 'shell.html')) }
+            win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
         });
 
         win.on('maximize', () => { win.webContents.send('window-state-change', 'maximized') });

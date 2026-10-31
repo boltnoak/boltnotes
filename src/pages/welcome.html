@@ -10,7 +10,7 @@
     <script src="scripts/theme-loader.js"></script>
     <script src="scripts/apply-locales.js"></script>
 </head>
-<body class="ui-ready">
+<body class="ready">
     <div id="menu" class="drag">
         <p id="menuTitle">BOLTNOTES</p>
         <div class="menuButtons">
@@ -58,30 +58,25 @@
             <div class="step1-box1">
 
             <div class="pages-section">
-                <a class="page" id="games">
+                <a class="page" id="games" href="pages/games.html">
                     <div class="page-image">
-                        <img src="assets/games-backlog-characters.png">
+                        <div class="icon-pattern" data-icons="fa-trophy,fa-gamepad"></div>
                         <div class="text">
-                            <i class="games-backlog-icon fa-solid fa-gamepad"></i>
                             <p class="text-backlog" data-i18n="backlogof">BACKLOG DE</p>
-                            <p class="text-games" data-i18n="games">JOGOS</p>
+                            <p class="text-games" data-i18n="ofgames">JOGOS</p>
                         </div>
                     </div>
                 </a>
-                <a class="page" id="notes">
+                <a class="page" id="notes" href="pages/notes.html">
+                    <div class="icon-pattern" data-icons="fa-pen,fa-note-sticky"></div>
                     <div class="page-image">
-                        <div class="page-image-sidebar">
-                            <div></div>
-                            <div></div>
-                        </div>
                         <p class="text-notes" data-i18n="notes">NOTAS</p>
                     </div>
                 </a>
-                <a class="page" id="fortnite">
+                <a class="page" id="fortnite" href="pages/fortnite.html">
                     <div class="page-image">
-                        <img src="assets/fortnite-page-image.png">
+                        <div class="icon-pattern" data-icons="fa-crown,fa-gun"></div>
                         <div class="fortnite-text">
-                            <div class="fortnite-icon"></div>
                             <div class="page-image-text"></div>
                             <p class="text-br">BATTLE ROYALE</p>
                         </div>
@@ -90,51 +85,70 @@
             </div>
             
             <div class="page-infos">
-
-                    <div id="featured-title">Destaque</div>
-                    <div class="featured-games" style="display: flex;">
-                        <div class="playingNow-div">
+                <div class="featured-change-div">
+                    <div class="featured-change">
+                        <div class="featured-option top-tab" data-value="playing_now" onclick="changeFeatured(this)">
+                            <i class="fa-solid fa-gamepad"></i>
                             <span data-i18n="playing-now">Jogando no momento</span>
-                            <div class="playingNow-panel" style="display: flex;"><div class="game jogando" data-id="Prey"><img class="game-cover" src="assets/prey.jpg"><div class="game-info"><p class="game-title">Prey</p></div></div></div>
                         </div>
-                        <div class="toPlay-div">
-                            <span data-i18n="ajogar">À Jogar</span>
-                            <div class="toPlay-panel"><div class="game ajogar" data-id="Hollow Knight"><img class="game-cover" src="assets/halo_3.jpg"><div class="game-info"><p class="game-title">Halo 3</p></div></div><div class="game ajogar" data-id="Fallout: New Vegas"><img class="game-cover" src="assets/red_dead_redemption_2.jpg"><div class="game-info"><p class="game-title">Red Dead Redemption 2</p></div></div><div class="game ajogar" data-id="Grand Theft Auto V"><img class="game-cover" src="assets/half_life_2.jpg"><div class="game-info"><p class="game-title">Half-Life 2</p></div></div></div>
+                        <div class="featured-option top-tab" data-value="fn_fast_edit" onclick="changeFeatured(this)">
+                            <i class="fa-solid fa-square-poll-horizontal"></i>
+                            <span data-i18n="fn-fast-edit"></span>
                         </div>
                     </div>
-                    
-                    <div class="recentSeason-panel" style="display: none;">
-                        <div class="recent-season">
-                            <div class="recentSeason-image-div">
-                                <div class="recentSeason-image" id="recentSeason-image" style="background-image: url(assets/welcome_fortnite-keyart.png)"></div>
-                                <p class="fortnite-w">Portions of the materials used are trademarks and/or copyrighted works of Epic Games, Inc. All rights reserved by Epic. This material is not official and is not endorsed by Epic</p>
+                </div>
+                <div id="featured-title">
+                    <i class="fa-solid fa-eye"></i>
+                    <span class="featured-title-text">Destaque</span>
+                </div>
+
+                <div class="featured-panel" data-value="playing_now">
+                    <div class="playingNow-div">
+                        <span data-i18n="playing-now"></span>
+                        <div class="playingNow-panel"><div class="game jogando" data-id="Prey"><img class="game-cover" src="assets/prey.jpg"><div class="game-info"><p class="game-title">Prey</p></div></div></div>
+                    </div>
+                    <div class="toPlay-div">
+                        <span data-i18n="ajogar"></span>
+                        <div class="toPlay-panel"><div class="game ajogar" data-id="Hollow Knight"><img class="game-cover" src="assets/halo_3.jpg"><div class="game-info"><p class="game-title">Halo 3</p></div></div><div class="game ajogar" data-id="Fallout: New Vegas"><img class="game-cover" src="assets/red_dead_redemption_2.jpg"><div class="game-info"><p class="game-title">Red Dead Redemption 2</p></div></div><div class="game ajogar" data-id="Grand Theft Auto V"><img class="game-cover" src="assets/half_life_2.jpg"><div class="game-info"><p class="game-title">Half-Life 2</p></div></div></div>
+                    </div>
+                </div> 
+                <div class="featured-panel" data-value="fn_fast_edit">
+                    <div class="recent-season">
+                        <div class="recentSeason-image-div">
+                            <div class="recentSeason-image" id="recentSeason-image">
+                                <div class="shine-effect-v-latest-season"></div>
                             </div>
-                            <div class="season-status">
-                                <p id="recent-season-name" data-i18n="fn-season">Temporada</p>
-                                <div class="season-status-div">
-                                    <p class="status">
-                                        <i class="fa-solid fa-square-caret-up"></i>
-                                        <span data-i18n="levels">Níveis:</span>
-                                        <i class="statusLevel-add fa-solid fa-plus"></i> <span class="status-level">160</span>
-                                        <i class="statusLevel-minus fa-solid fa-minus"></i>
-                                    </p>
-                                    <p class="status">
-                                        <i class="fa-solid fa-trophy"></i>
-                                        <span data-i18n="wins">Vitórias:</span>
-                                        <i class="statusWin-add fa-solid fa-plus"></i> <span class="status-win">20</span>
-                                        <i class="statusWin-minus fa-solid fa-minus"></i>
-                                    </p>
-                                </div>
-                                <div class="level-progress">
-                                    <p class="level-progress-text"><span data-i18n="progress">Progresso</span> - 80%</p>
-                                    <div class="level-progress-bar">
-                                        <p class="level-progress-bar-fill" style="width: 80%;"></p>
-                                    </div>
+                            <p class="fortnite-w">Portions of the materials used are trademarks and/or copyrighted works of Epic Games, Inc. All rights reserved by Epic. This material is not official and is not endorsed by Epic</p>
+                        </div>
+                        <div class="season-status">
+                            <p id="recent-season-name"></p>
+                            <span class="recent-season-name-span" data-i18n="fn-season">Temporada</span>
+                            <div class="season-status-div">
+                                <p class="status-info">
+                                    <i class="fa-solid fa-square-caret-up"></i>
+                                    <span data-i18n="levels-">Níveis:</span>
+                                    <i class="statusLevel-minus button fa-solid fa-minus"></i>
+                                    <span class="status-level">~</span>
+                                    <i class="statusLevel-add button fa-solid fa-plus"></i>
+                                </p>
+                                <p class="status-info">
+                                    <i class="fa-solid fa-trophy"></i>
+                                    <span data-i18n="wins-">Vitórias:</span>
+                                    <i class="statusWin-minus button fa-solid fa-minus"></i>
+                                    <span class="status-win">~</span>
+                                    <i class="statusWin-add button fa-solid fa-plus"></i>
+                                </p>
+                            </div>
+                            <div class="level-progress">
+                                <p class="level-progress-text">Progresso</p>
+                                <div class="level-progress-bar">
+                                    <p class="level-progress-bar-fill"></p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
             <div class="step1-box2">
                 <div class="pages-change">
