@@ -132,34 +132,9 @@ async function loadCloudSeasonInfo() {
 }
 
 function getLatestSeason(data) {
-    const parsed = Object.entries(data)
-        .map(([key, value]) => {
-
-            const match = key.match(
-                /^c(\d+)(ms|s|og|remix)?(\d+)?$/i
-            );
-
-            if (!match) return null;
-
-            return {
-                key,
-                data: value,
-                chapter: Number(match[1]),
-                type: match[2] || '',
-                season: Number(match[3] || 0)
-            };
-        })
-        .filter(Boolean);
-
-    parsed.sort((a, b) => {
-
-        if (a.chapter !== b.chapter) {
-            return b.chapter - a.chapter;
-        }
-
-        return b.season - a.season;
-    });
-    return parsed[0] || null;
+    const latest = Object.entries(data)[0];
+    const [code, season] = latest;
+    return { code, season } || null;
 }
 
 async function initFeaturedFortnite() {
@@ -168,14 +143,12 @@ async function initFeaturedFortnite() {
     const latest = getLatestSeason(seasons);
     if (!latest) return;
 
-    const code = latest.key;
-    const season = seasons[code]; 
+    const { code, season } = latest;
 
     const seasonLabel = window._t?.['fn-season'];
     const seasonLetter = seasonLabel ? seasonLabel.trim().charAt(0).toUpperCase() : 'T';
     const match = /^c(\d+)s(\d+)$/i.exec(code);
-    let prefix = '';
-    prefix = `C${match[1]}${seasonLetter}${match[2]} |`;
+    const prefix = match ? `C${match[1]}${seasonLetter}${match[2]} |` : '';
 
     document.getElementById('recentSeason-image').style.backgroundImage = `url(documents://Fortnite/Assets/${code}.jpg)`;
     document.querySelector('.shine-effect-v-latest-season').style.display = 'none';
