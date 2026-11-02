@@ -1,6 +1,7 @@
 /// VARIÁVEIS ///
 let cachedSeasons = null;
 let saveTimeout = null;
+let statsReady = false;
 let reviews = {};
 let stats = {};
 
@@ -33,29 +34,25 @@ function buildIconPattern(el, cell = 64) {
 }
 document.querySelectorAll('.icon-pattern').forEach(el => buildIconPattern(el));
 
+function getSeasonStats(code) {
+    return (window.stats[code] ??= { rating: "N/A", levels: "0", wins: "0", locked: false });
+}
+let saveQueue = Promise.resolve();
+function saveStats() {
+    const run = saveQueue.then(() => saveJson(FORTNITE_STATS, window.stats));
+    saveQueue = run.catch(() => {});
+    return run;
+}
 async function initFortniteData() {
     try {
-        const data = await loadCloudSeasonInfo();
-        let statsData;
-        try {
-            statsData = await loadJson(FORTNITE_STATS);
-        } catch (e) {
-            console.error("Falha ao ler stats, abortando para não sobrescrever", e);
-            return;
+        const statsData = await loadJson(FORTNITE_STATS);
+        if (statsData !== null && (typeof statsData !== 'object' || Array.isArray(statsData))) {
+            throw new Error("stats.json inválido");
         }
-
-        window.stats = (statsData && typeof statsData === 'object') ? statsData : {};
-
-        let added = false;
-        for (const code of Object.keys(data)) {
-            if (!window.stats[code]) {
-                window.stats[code] = { rating: "N/A", levels: "0", wins: "0", locked: false };
-                added = true;
-            }
-        }
-        if (added) await saveJson(FORTNITE_STATS, window.stats);
+        window.stats = statsData ?? {};
+        statsReady = true;
     } catch (err) {
-        console.error("Erro ao inicializar:", err);
+        console.error("Falha ao ler stats, nada será salvo", err);
     }
 }
 
@@ -161,17 +158,19 @@ async function initFeaturedFortnite() {
 }
 
 async function updateStatsJSON(status, mode, el) {
+    if (!statsReady) return;
+
     const code = document.querySelector('.recent-season').dataset.season;
-    const season = window.stats?.[code] || {};
+    const season = getSeasonStats(code);
+    const previous = season[status];
+    const current = Number(previous) || 0;
+    season[status] = String(mode ? current + 1 : Math.max(0, current - 1));
 
-    const previousStatus = season[status];
-    const seasonStatus = Number(season[status]) || 0;
-    season[status] = String(mode ? seasonStatus + 1 : Math.max(0, seasonStatus - 1));
-
-    try { await saveJson(FORTNITE_STATS, window.stats);
+    try {
+        await saveStats();
     } catch (error) {
         console.error(error);
-        season[status] = previousStatus;
+        season[status] = previous;
         return;
     }
 
