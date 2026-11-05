@@ -1,16 +1,12 @@
-const {contextBridge,ipcRenderer} = require('electron');
+const {contextBridge, ipcRenderer} = require('electron');
 
-window.addEventListener('DOMContentLoaded', () => {
-    let isMaximized = false;
-    try { isMaximized = ipcRenderer.sendSync('menu:is-maximized-sync');
-    } catch {}
-    document.documentElement.classList.toggle('window-maximized', !!isMaximized);
+contextBridge.exposeInMainWorld('windowControls', {
+    isMaximized: () => ipcRenderer.sendSync('menu:is-maximized-sync'),
+    onMaximizedChange: (callback) => ipcRenderer.on('window:maximized-changed', (_e, isMax) => callback(isMax)),
 });
 
 const isDev = process.argv.includes('--development');
-
 contextBridge.exposeInMainWorld('electronAPI', {
-    onWindowStateChange: (callback) => ipcRenderer.on('window-state-change', (event, state) => callback(state)),
     devTools: () => ipcRenderer.send('devTools'),
     isFlatpak: () => ipcRenderer.invoke('app:is-flatpak'),
     isDev: isDev,

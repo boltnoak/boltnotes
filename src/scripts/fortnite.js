@@ -11,7 +11,7 @@ let reviews = {};
 let stats = {};
 let cachedSeasons = null;
 let seasonTemplateHTML = null;
-let chapterNum = parseInt(urlParams.get('num'), 10) || 3;
+let chapterNum = urlParams.get('num');
 let currentChapter = `c${chapterNum}`;
 let chaptersMax = null;
 let chaptersMin = null;
@@ -199,7 +199,7 @@ async function renderChapter(seasonsData, chapter) {
 
     document.querySelectorAll('.chapter-list-chapter').forEach(btn => btn.classList.remove('active'));
     const activeChapterBtn = document.querySelector(`.chapter-list-chapter[data-chapter="${chapter.replace('c','')}"]`);
-    if (activeChapterBtn) { activeChapterBtn.classList.add('active'); }
+    if (activeChapterBtn) { activeChapterBtn.classList.add('active'); };
 
     const template = document.getElementById('season-template');
     const keys = Object.keys(seasonsData).filter(code => code.startsWith(chapter)).reverse();
@@ -407,7 +407,7 @@ async function bindSidebarEvents() {
             e.preventDefault();
             document.body.classList.remove('chaptersList');
             document.querySelector('.chapter-list-chapters-grid').classList.remove('active');
-            await navigateShell(btn.dataset.nav, btn.dataset.chapter);
+            await navigateChapter(btn.dataset.chapter);
         };
     });
     document.querySelectorAll('#chapter[data-nav]').forEach(btn => {
@@ -415,7 +415,7 @@ async function bindSidebarEvents() {
             e.preventDefault();
             document.body.classList.remove('chaptersList');
             document.querySelector('.chapter-list-chapters-grid').classList.remove('active');
-            await navigateShell(btn.dataset.nav, btn.dataset.chapter);
+            await navigateChapter(btn.dataset.chapter);
         };
     });
 }
@@ -426,10 +426,6 @@ chaptersGridBtn.addEventListener('click', async (e) => {
     await toggleChapterGrid(chaptersGridBtn.dataset.nav);
 })
 async function toggleChapterGrid() {
-    const page = 'pages/fortnite.html';
-    const filename = page.split('/').pop().split('.')[0].split('?')[0];
-    if (filename.includes('fortnite')) { setFortniteLastUrl(page); }
-
     document.body.classList.add('chaptersList');
     document.querySelectorAll('.chapter-list-chapter').forEach((e) => {
         e.classList.remove('active');
@@ -458,19 +454,11 @@ async function loadChaptersGrid() {
     applyLocale();
 }
 
-function getFortniteLastUrl() {
-    return sessionStorage.getItem('fortniteLastUrl');
-}
-function setFortniteLastUrl(url) {
-    sessionStorage.setItem('fortniteLastUrl', url);
-}
-async function navigateShell(page, chpater) {
-    const filename = page.split('/').pop().split('.')[0].split('?')[0];
-
-    if (filename.includes('fortnite')) {
-        setFortniteLastUrl(page);
-    }
+async function navigateChapter(chpater) {
     const data = await loadCloudSeasonInfo();
+
+    window.parent.document.querySelector('#nav-fortnite-main').dataset.nav = 'pages/fortnite.html?num=' + chpater || 'pages/fortnite.html';
+    sessionStorage.setItem('fortniteLastUrl', chpater);
 
     await renderChapter(data, 'c' + chpater);
 }

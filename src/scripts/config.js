@@ -109,11 +109,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     li.appendChild(colorCircle);
                     li.appendChild(textSpan);
+                    li.classList.add('button');
                     textSpan.classList.add('theme-name')
                     li.dataset.value = themeName;
                     
                     if (themeName === currentTheme) {
-                        li.classList.add('active-config');
+                        li.classList.add('active');
                     }
                     
                     li.addEventListener('click', async () => {
@@ -126,9 +127,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                             if (syncSpan) syncSpan.textContent = formattedName;
                             
                             if (syncUl) {
-                                syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active-config'));
+                                syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active'));
                                 const matchingLi = Array.from(syncUl.querySelectorAll('li')).find(el => el.dataset.value === themeName);
-                                if (matchingLi) matchingLi.classList.add('active-config');
+                                if (matchingLi) matchingLi.classList.add('active');
                             }
                         });
 
@@ -206,7 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 
                 if (featuredName === currentFeatured) {
-                    li.classList.add('active-config');
+                    li.classList.add('active');
                     li.classList.add('button-color');
                     li.classList.remove('button');
                 }
@@ -220,16 +221,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (syncSpan) syncSpan.textContent = formattedName;
                         
                         if (syncUl) {
-                            syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active-config'));
+                            syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active'));
                             syncUl.querySelectorAll('li').forEach(el => el.classList.remove('button-color'));
                             syncUl.querySelectorAll('li').forEach(el => el.classList.add('button'));
                             const matchingLi = Array.from(syncUl.querySelectorAll('li')).find(el => el.dataset.value === featuredName);
-                            if (matchingLi) matchingLi.classList.add('active-config');
+                            if (matchingLi) matchingLi.classList.add('active');
                             if (matchingLi) matchingLi.classList.remove('button');
                             if (matchingLi) matchingLi.classList.add('button-color');
                         }
                     });
-                    customUl.classList.remove('active-config');
+                    customUl.classList.remove('active');
                     
                     await changeFeatured(featuredSelector); 
                 });
@@ -244,9 +245,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const code = button.dataset.code;
         
         if (config[code] === true) {
-            button.classList.add('active-config');
+            button.classList.add('active');
         } else {
-            button.classList.remove('active-config');
+            button.classList.remove('active');
         }
     });
 });

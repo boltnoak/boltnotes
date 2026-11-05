@@ -7,10 +7,9 @@
     <link rel="stylesheet" href="css/shell.css">
     <title>BoltNotes</title>
     <script src="scripts/basics.js"></script>
-    <script src="scripts/shell.js"></script>
+    <script src="scripts/shell.js" defer></script>
     <script src="scripts/theme-loader.js"></script>
     <script src="scripts/apply-locales.js"></script>
-    <script src="scripts/fn-sidebar.js"></script>
 </head>
 <body>
     <div id="menu" class="drag">
@@ -40,31 +39,25 @@
 
     <div class="shell-page">
         <header>
-            <a class="sidebar-btn" data-page="games" data-nav="pages/games.html">
+            <a class="sidebar-btn button" data-page="games" data-nav="pages/games.html">
                 <i class="fa-solid fa-gamepad"></i>
-                <span data-i18n="games-backlog">Backlog de Jogos</span>
             </a>
-            <a class="sidebar-btn" data-page="notes" data-nav="pages/notes.html">
+            <a class="sidebar-btn button" data-page="notes" data-nav="pages/notes.html">
                 <i class="fa-solid fa-note-sticky"></i>
-                <span data-i18n="notes">Notas</span>
             </a>
-            <a id="nav-fortnite-main" class="sidebar-btn" data-page="fortnite" data-nav="${savedFortniteUrl}">
+            <a id="nav-fortnite-main" class="sidebar-btn button" data-page="fortnite" data-nav="pages/fortnite.html">
                 <div class="sidebar-fortnite-icon"></div>
-                <span data-i18n="fortnite">Fortnite</span>
             </a>
 
             <div class="sidebar-bottom">
-                <a id="update-btn" class="sidebar-btn">
-                    <i class="fa-solid fa-arrow-rotate-right"></i>
-                    <span data-i18n="update">Atualizar</span>
+                <a id="update-btn" data-i18n-tooltip="update" class="sidebar-btn button-color">
+                    <i class="fa-solid fa-circle-up"></i>
                 </a>
-                <a class="sidebar-btn" data-page="index" data-nav="pages/index.html">
+                <a class="sidebar-btn button active" data-page="index" data-nav="pages/index.html">
                     <i class="fa-solid fa-house"></i>
-                    <span data-i18n="home">Início</span>
                 </a>
-                <a class="config sidebar-btn" data-page="config" data-nav="pages/config.html">
+                <a class="sidebar-btn button" data-page="config" data-nav="pages/config.html">
                     <i id="config" class="fa-solid fa-sliders"></i>
-                    <span data-i18n="settings">Configurações</span>
                 </a>
             </div>
         </header>

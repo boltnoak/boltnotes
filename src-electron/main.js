@@ -110,31 +110,24 @@ function createWindow() {
     const width = Math.round(screenWidth * 0.86);
     const height = Math.round(screenHeight * 0.85);
 
-    const isWindows = process.platform === 'win32';
-
     win = new BrowserWindow({
         width: width,
         height: height,
+        minWidth: width,
+        minHeight: height,
         show: false,
-        frame: isWindows,
-        hasShadow: isWindows,
-        autoHideMenuBar: isWindows,
-        resizable: !isWindows,
-        maximizable: !isWindows,
         titleBarStyle: 'hidden',
-        transparent: true,
-        backgroundColor: '#00000000',
         webPreferences: {
-            backgroundThrottling: true,
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
             nodeIntegrationInSubFrames: true,
-            autoplayPolicy: 'no-user-gesture-required',
             additionalArguments: [app.isPackaged ? '--production' : '--development']
         }
     });
     win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
+    win.on('maximize',   () => win.webContents.send('window:maximized-changed', true));
+    win.on('unmaximize', () => win.webContents.send('window:maximized-changed', false));
 }
 
 const preloaded = {};
@@ -144,7 +137,6 @@ function createHiddenWindow(name) {
     const win = new BrowserWindow({
         show: false,
         webPreferences: {
-            backgroundThrottling: false,
             preload: path.join(__dirname, 'preload.js')
         }
     });
@@ -256,8 +248,6 @@ if (!gotTheLock && app.isPackaged) {
             win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
         });
 
-        win.on('maximize', () => { win.webContents.send('window-state-change', 'maximized') });
-        win.on('unmaximize', () => { win.webContents.send('window-state-change', 'normal') });
         win.on('close', (event) => {
             const config = getConfig();
             if (!isQuitting && config.minimize_to_tray && win !== null) {

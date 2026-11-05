@@ -372,7 +372,7 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     div.gameData = game;
     div.addEventListener('mouseenter', () => {
         const hero = game._cachedHero;
-        console.log('Preload - ', game.name, { hero, loaded: game._heroPreloaded });
+        // console.log('Preload - ', game.name, { hero, loaded: game._heroPreloaded });
         if (hero && !game._heroPreloaded) {
             game._heroPreloaded = true;
             new Image().src = hero.replace(/\\/g, '/');
