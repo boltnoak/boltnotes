@@ -358,3 +358,40 @@ function showMessage(element, msg, color) {
         }, 3500);
     });
 }
+
+async function createBackup() {
+    const buttons = document.querySelectorAll('.backup-btn');
+    buttons.forEach(b => b.disabled = true);
+
+    try {
+        const res = await window.electronAPI.backup.create();
+
+        if (res.status === 'ok') {
+            showToast(`Backup saved ${res.path}`);
+        } else if (res.status === 'error') {
+            console.error(res.message);
+            showToast(`Failed to create backup: ${res.message}`);
+        }
+        // 'canceled': o usuário fechou o diálogo, não mostra nada
+    } finally {
+        buttons.forEach(b => b.disabled = false);
+    }
+}
+
+async function restoreBackup() {
+    const buttons = document.querySelectorAll('.backup-btn');
+    buttons.forEach(b => b.disabled = true);
+
+    try {
+        const res = await window.electronAPI.backup.restore();
+
+        if (res.status === 'invalid') {
+            showToast('Invalid file.');
+        } else if (res.status === 'error') {
+            console.error(res.message);
+            showToast(`Failed to restore backup: ${res.message}`);
+        }
+    } finally {
+        buttons.forEach(b => b.disabled = false);
+    }
+}

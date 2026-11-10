@@ -5,6 +5,7 @@ const path = require('path');
 const os = require('os');
 const log = require('electron-log');
 const { URL, pathToFileURL } = require('url');
+const AdmZip = require('adm-zip');
 
 const isSilent = process.argv.includes('--silent');
 if (isSilent) console.log('Iniciando silenciosamente...');
@@ -575,4 +576,107 @@ ipcMain.handle('find-cached-image', (_e, { folder, baseName }) => {
         if (fs.existsSync(p)) return p;
     }
     return null;
+});
+
+// BACKUP //
+////////////
+const BACKUP_FOLDERS = ['Notes', 'Fortnite', 'Games', 'Themes'];
+const BACKUP_EXCLUDE = ['Fortnite/Assets', 'Games/Cover', 'Games/Backgrounds'];
+
+function isBackupExcluded(rel) {
+    return BACKUP_EXCLUDE.some(ex => rel === ex || rel.startsWith(ex + '/'));
+}
+
+function addFolderToZip(zip, dir, rel) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const entryRel = `${rel}/${entry.name}`;
+        if (isBackupExcluded(entryRel)) continue;
+
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            addFolderToZip(zip, full, entryRel);
+        } else if (entry.isFile() && !entry.name.endsWith('.part')) {
+            zip.addLocalFile(full, rel);
+        }
+    }
+}
+
+ipcMain.handle('backup:create', async () => {
+    const stamp = new Date().toISOString().slice(0, 10);
+    const { canceled, filePath } = await dialog.showSaveDialog(win, {
+        title: 'Save Backup',
+        defaultPath: path.join(app.getPath('documents'), `BoltNotes-Backup-${stamp}.zip`),
+        filters: [{ name: 'BoltNotes Backup', extensions: ['zip'] }]
+    });
+    if (canceled || !filePath) return { status: 'canceled' };
+
+    try {
+        const zip = new AdmZip();
+        for (const folder of BACKUP_FOLDERS) {
+            const dir = path.join(DOCUMENTS, folder);
+            if (fs.existsSync(dir)) addFolderToZip(zip, dir, folder);
+        }
+
+        await zip.writeZipPromise(filePath);
+
+        const { Notification, shell } = require('electron');
+        const notification = new Notification({
+            title: 'Backup finished',
+            body: path.basename(filePath),
+            icon: path.join(__dirname, 'tray-icon.png')
+        });
+        notification.on('click', () => shell.showItemInFolder(filePath));
+        notification.show();
+
+        return { status: 'ok', path: filePath };
+    } catch (e) {
+        console.error('backup:create error:', e);
+        return { status: 'error', message: e.message };
+    }
+});
+
+ipcMain.handle('backup:restore', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+        title: 'Restore Backup',
+        properties: ['openFile'],
+        filters: [{ name: 'BoltNotes Backup', extensions: ['zip'] }]
+    });
+    if (canceled || !filePaths[0]) return { status: 'canceled' };
+
+    const { response } = await dialog.showMessageBox(win, {
+        type: 'warning',
+        buttons: ['Cancel', 'Restore'],
+        defaultId: 0,
+        cancelId: 0,
+        message: 'Restore backup?',
+        detail: 'Files with the same names will be overwriten. The app will restart.'
+    });
+    if (response !== 1) return { status: 'canceled' };
+
+    try {
+        const zip = new AdmZip(filePaths[0]);
+
+        const valid = zip.getEntries().filter(e => {
+            if (e.isDirectory) return false;
+            const name = e.entryName.replace(/\\/g, '/');
+            if (!BACKUP_FOLDERS.includes(name.split('/')[0])) return false;
+            if (isBackupExcluded(name)) return false;
+            return path.join(DOCUMENTS, name).startsWith(DOCUMENTS + path.sep); // evita zip slip
+        });
+        if (!valid.length) return { status: 'invalid' };
+
+        for (const e of valid) {
+            const dest = path.join(DOCUMENTS, e.entryName.replace(/\\/g, '/'));
+            fs.mkdirSync(path.dirname(dest), { recursive: true });
+            fs.writeFileSync(dest, e.getData());
+        }
+
+        isQuitting = true;
+        app.relaunch();
+        app.exit(0);
+        return { status: 'ok' };
+    } catch (e) {
+        console.error('backup:restore error:', e);
+        return { status: 'error', message: e.message };
+    }
 });

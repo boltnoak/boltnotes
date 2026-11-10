@@ -37,5 +37,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
         onUpdateReady: (callback) => ipcRenderer.on('update-ready-to-install', callback),
         restartAndInstall: () => ipcRenderer.send('update:restart'),
         checkUpdateStatus: () => ipcRenderer.invoke('update:check-status')
+    },
+    backup: {
+        create:  () => ipcRenderer.invoke('backup:create'),
+        restore: () => ipcRenderer.invoke('backup:restore')
     }
 });
