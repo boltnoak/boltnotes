@@ -581,7 +581,7 @@ ipcMain.handle('find-cached-image', (_e, { folder, baseName }) => {
 // BACKUP //
 ////////////
 const BACKUP_FOLDERS = ['Notes', 'Fortnite', 'Games', 'Themes'];
-const BACKUP_EXCLUDE = ['Fortnite/Assets', 'Games/Cover', 'Games/Backgrounds'];
+const BACKUP_EXCLUDE = ['Fortnite/Assets', 'Games/Covers', 'Games/Backgrounds'];
 
 function isBackupExcluded(rel) {
     return BACKUP_EXCLUDE.some(ex => rel === ex || rel.startsWith(ex + '/'));
