@@ -143,17 +143,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-
-    const buttonsConfig = document.querySelectorAll('a[data-code]');
-    buttonsConfig.forEach(button => {
-        const code = button.dataset.code;
-        
-        if (config[code] === true) {
-            button.classList.add('active');
-        } else {
-            button.classList.remove('active');
-        }
-    });
 });
 
 
@@ -161,94 +150,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     const config = await getConfig();
     const currentFeatured = config.featured;
 
-    const selectorsContainers = document.querySelectorAll('.featured-selector-div');
-
-    selectorsContainers.forEach(container => {
-        const featuredSelector = container.querySelector('select'); 
-        const customBtn = container.querySelector('.featuredSelector-btn');
-        const customSpan = container.querySelector('#featuredSelector-btn-name');
-        const customUl = container.querySelector('.featuredSelector-select');
-
-        if (featuredSelector && customUl && customSpan) {
-            customUl.innerHTML = '';
-            
-            featuredSelector.value = currentFeatured;
-            
-            const activeOption = Array.from(featuredSelector.options).find(opt => opt.value === currentFeatured);
-            if (activeOption) {
-                customSpan.textContent = activeOption.textContent;
-            } else {
-                customSpan.textContent = currentFeatured.charAt(0).toUpperCase() + currentFeatured.slice(1);
-            }
-
-            Array.from(featuredSelector.options).forEach(option => {
-                const featuredName = option.value;
-                const formattedName = option.textContent;
-
-                const li = document.createElement('li');
-                const textSpan = document.createElement('span');
-                textSpan.textContent = formattedName;
-
-                li.appendChild(textSpan);
-                li.dataset.value = featuredName;
-                li.classList.add('button');
-
-                if (featuredName == 'none') {
-                    textSpan.setAttribute('data-i18n', 'featured-none');
-                    applyLocale();
-                }
-                if (featuredName == 'playing_now') {
-                    textSpan.setAttribute('data-i18n', 'playing-now');
-                    applyLocale();
-                }
-                if (featuredName == 'fn_fast_edit') {
-                    textSpan.textContent = `${window._t['fn--fast-edit']}`;
-                    applyLocale();
-                }
-                
-                if (featuredName === currentFeatured) {
-                    li.classList.add('active');
-                    li.classList.add('button-color');
-                    li.classList.remove('button');
-                }
-                li.addEventListener('click', async () => {
-                    document.querySelectorAll('.featured-selector-div').forEach(syncContainer => {
-                        const syncSelect = syncContainer.querySelector('select');
-                        const syncSpan = syncContainer.querySelector('#featuredSelector-btn-name');
-                        const syncUl = syncContainer.querySelector('.featuredSelector-select');
-
-                        if (syncSelect) syncSelect.value = featuredName;
-                        if (syncSpan) syncSpan.textContent = formattedName;
-                        
-                        if (syncUl) {
-                            syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active'));
-                            syncUl.querySelectorAll('li').forEach(el => el.classList.remove('button-color'));
-                            syncUl.querySelectorAll('li').forEach(el => el.classList.add('button'));
-                            const matchingLi = Array.from(syncUl.querySelectorAll('li')).find(el => el.dataset.value === featuredName);
-                            if (matchingLi) matchingLi.classList.add('active');
-                            if (matchingLi) matchingLi.classList.remove('button');
-                            if (matchingLi) matchingLi.classList.add('button-color');
-                        }
-                    });
-                    customUl.classList.remove('active');
-                    
-                    await changeFeatured(featuredSelector); 
-                });
-
-                customUl.appendChild(li);
-            });
-        }
-    });
-
+    const selectorsContainers = document.querySelectorAll('.featured-selector-div a');
     const buttonsConfig = document.querySelectorAll('a[data-code]');
+
+    selectorsContainers.forEach(async (e) => {
+        const isActive = currentFeatured === e.dataset.value;
+
+        e.classList.toggle('button-color', isActive);
+
+        e.addEventListener('click', async () => {
+            await changeFeatured(e.dataset.value);
+        })
+    });
     buttonsConfig.forEach(button => {
         const code = button.dataset.code;
-        
-        if (config[code] === true) {
-            button.classList.add('active');
-        } else {
-            button.classList.remove('active');
-        }
+        const isActive = config[code] === true;
+
+        button.classList.toggle('active', isActive);
     });
 });
 
@@ -295,12 +213,16 @@ async function changeTheme(selectEl) {
 
     await selectNewTheme(selectedTheme);
 }
-async function changeFeatured(selectEl) {
-    const selectedFeatured = selectEl.value;
-
+async function changeFeatured(el) {
+    const selectedFeatured = el;
     updateConfig('featured', selectedFeatured);
-}
 
+    const selectorsContainers = document.querySelectorAll('.featured-selector-div a');
+    selectorsContainers.forEach(e => {
+        const isActive = el === e.dataset.value;
+        e.classList.toggle('button-color', isActive);
+    });
+}
 
 async function checkUpdates() {
     const text = document.querySelectorAll('#checkUpdates-text');

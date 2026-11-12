@@ -9,9 +9,9 @@ body {
 .config-item {
     display: flex;
     align-items: center;
-    height: 3.5vh;
+    height: fit-content;
     gap: 1.25vh;
-    margin: .35vh 0;
+    margin: 0;
     font-family: 'Montserrat';
     color: var(--text);
     border-radius: 1.6vh;
@@ -74,8 +74,9 @@ body {
     margin: 0 0 0 .25vw;
     width: 100%;
     display: none;
-    gap: .25vh;
+    gap: 1vh;
     flex: 1;
+    box-sizing: border-box;
 }
 .tab-configs.active {
     display: flex;
@@ -84,18 +85,19 @@ body {
     border-top: .35vh solid var(--btn-hover-glow-color);
     background-image: linear-gradient(to bottom, var(--btn-hover-color), var(--btn-hover-glow-color));
 }
-.sep {
+.config-section-title {
     color: var(--text);
     font-weight: 700;
     font-size: 3.5vh;
     margin: 0;
+    width: fit-content;
 }
 .toggle {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 6.05vh;
-    padding: .45vh .65vh .65vh .65vh;
+    padding: .30vh .65vh .65vh .65vh;
     border-top: .35vh solid var(--btn-hover-glow);
     background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
     border-radius: 2vh;
@@ -165,9 +167,15 @@ body {
 .tab-configs-div {
     display: flex;
     flex-direction: column;
-    gap: .65vh;
+    gap: .75vh;
     width: 75%;
-    margin: 1.55vh .75vw 0 0;
+    margin: 1.55vh .8vw 0 0;
+    box-sizing: border-box;
+}
+.tab-configs-title-div {
+    display: flex;
+    flex-direction: column;
+    gap: .75vh;
 }
 .version {
     margin: 0;
@@ -197,7 +205,7 @@ body {
     width: 100%;
 }
 .themeSelector-select {
-    margin: .35vh 0 0 0;
+    margin: 0;
     display: grid;
     padding: 0;
     gap: 1vh .8vw;
@@ -282,23 +290,29 @@ body {
 }
 .featured-selector-div {
     width: 100%;
-    margin: 0 .5vw 0 0;
-}
-.featuredSelector-select {
     display: flex;
     flex-direction: row;
-    margin: 0;
-    padding: 0;
-    height: 5.25vh;
     user-select: none;
     border-bottom: none;
     background-color: var(--tab);
     padding: 1vh .5vw;
     gap: .55vw;
-    margin: 0 0 .5vh 0;
+    height: 8vh;
+    margin: 0;
     border-radius: 1.65vh;
     border: solid .175rem var(--btn-hover);
     background-image: linear-gradient(to top, var(--btn) 0%, var(--tab-hover) 80%);
+    box-sizing: border-box;
+}
+.featured-selector-div a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .5vh .5vw;
+    border-radius: .8vh;
+    width: 100%;
+    gap: .5vw;
+    font-weight: 650;
 }
 
 .sidebar-title {
@@ -314,21 +328,18 @@ body {
     cursor: text;
 }
 
-.featuredSelector-select li {
+.config-section {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: .5vh .5vw;
-    border-radius: .8vh;
-    width: 100%;
-    gap: .5vw;
-    font-weight: 650;
+    flex-direction: column;
+    gap: .75vh;
+    box-sizing: border-box;
 }
 .featured {
     height: fit-content;
     display: flex;
     flex-direction: column;
     justify-content: start;
+    margin: 0;
 }
 #featured-selector {
     display: none;
@@ -438,13 +449,10 @@ body {
     border-radius: 1vh;
     flex-direction: column;
 }
-.sep-space {
-    height: 1vh;
-}
 
 .backup-btn {
     padding: 1vh 1vw 1.25vh 1vw;
     font-weight: 650;
     width: fit-content;
-    margin: .75vh 0 0 0;
+    margin: 0;
 }

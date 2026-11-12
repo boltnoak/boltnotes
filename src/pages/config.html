@@ -22,87 +22,75 @@
             <!-- <div data-code="about" class="tab" onclick="tabSwitch(this)"><i class="fa-solid fa-circle-info"></i><span data-i18n="settings-tab-locations">Locais</span></div> -->
         </div>
         <div class="tab-configs-div">
-            <p class="tab-configs-title" data-i18n="settings-tab-quick">Configurações rápidas</p>
-            <div class="sep-bar"></div>
+            <div class="tab-configs-title-div">
+                <p class="tab-configs-title" data-i18n="settings-tab-quick">Configurações rápidas</p>
+                <div class="sep-bar"></div>
+            </div>
             <div id="settings-tab-quick" class="tab-configs active">
-                <p class="sep" data-i18n="featured">Destaque</p>
-                <div class="config-item featured">
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="featured">Destaque</p>
                     <div class="featured-selector-div">
-                        <select id="featured-selector">
-                            <option value="none" data-i18n="featured-none">Nada</option>
-                            <option value="playing_now" data-i18n="playing-now">Jogando no momento</option>
-                            <option value="fn_fast_edit" data-i18n="fn-fast-edit">Fortnite BR — Edição rápida</option>
-                        </select>
-                        <div class="featuredSelector-btn">
-                            <span id="featuredSelector-btn-name"></span>
-                        </div>
-                        <ul class="featuredSelector-select"></ul>
+                        <a class="button" data-value="none">Nada</a>
+                        <a class="button" data-value="playing_now">Jogando no momento</a>
+                        <a class="button" data-value="fn_fast_edit" data-i18n="fn-fast-edit">Fortnite BR — Edição rápida</a>
                     </div>
                 </div>
-                <div class="sep-space"></div>
-                <div class="config-item themes">
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="themes">Temas</p>
                     <div class="theme-selector-div">
                         <select id="theme-selector"></select>
-                        <div class="themeSelector-btn">
-                            <span></span><p class="sep" data-i18n="themes">Temas</p>
-                        </div>
+                        <div class="themeSelector-btn"><span></span></div>
                         <ul class="themeSelector-select"></ul>
                     </div>
                 </div>
             </div>
             <div id="app" class="tab-configs">
-                <p class="sep" data-i18n="on-startup">Inicialização</p>
-                <div class="config-item">
-                    <p data-i18n="launch-on-startup">Iniciar junto com o sistema operacional</p>
-                    <a class="toggle" data-code="open_on_startup" onclick="toggleConfig(this)"></a>
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="on-startup">Inicialização</p>
+                    <div class="config-item">
+                        <p data-i18n="launch-on-startup">Iniciar junto com o sistema operacional</p>
+                        <a class="toggle" data-code="open_on_startup" onclick="toggleConfig(this)"></a>
+                    </div>
+                    <div class="config-item">
+                        <p data-i18n="maximize-app-startup">Maximizar ao iniciar</p>
+                        <a class="toggle" data-code="maximize_on_start" onclick="toggleConfig(this)"></a>
+                    </div>
                 </div>
-                <div class="config-item">
-                    <p data-i18n="maximize-app-startup">Maximizar ao iniciar</p>
-                    <a class="toggle" data-code="maximize_on_start" onclick="toggleConfig(this)"></a>
-                </div>
-                <div class="sep-space"></div>
-                <p class="sep" data-i18n="when-closing">Ao fechar</p>
-                <div class="config-item">
-                    <p data-i18n="minimize-to-tray">Minimizar para a bandeja do sistema</p>
-                    <a class="toggle" data-code="minimize_to_tray" onclick="toggleConfig(this)"></a>
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="when-closing">Ao fechar</p>
+                    <div class="config-item">
+                        <p data-i18n="minimize-to-tray">Minimizar para a bandeja do sistema</p>
+                        <a class="toggle" data-code="minimize_to_tray" onclick="toggleConfig(this)"></a>
+                    </div>
                 </div>
             </div>
             <div id="settings-tab-home" class="tab-configs">
-                <!-- <div class="config-item">
-                    <p data-i18n="show-version-home">Mostrar versão do app na página inicial</p>
-                    <a class="toggle" data-code="show_version" onclick="toggleConfig(this)"></a>
-                </div> -->
-                <p class="sep" data-i18n="show-hide-pages">Mostrar/ocultar páginas</p>
-                <div class="config-item">
-                    <p><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span></p>
-                    <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
-                </div>
-                <div class="config-item">
-                    <p data-i18n="notes">Notas</p>
-                    <a class="toggle" data-code="notes_on_home" onclick="toggleConfig(this)"></a>
-                </div>
-                <div class="config-item">
-                    <p>Fortnite</p>
-                    <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
-                </div>
-                <div class="sep-space"></div>
-                <p class="sep" data-i18n="featured">Destaque</p>
-                <div class="config-item featured">
-                    <div class="featured-selector-div">
-                        <select id="featured-selector">
-                            <option value="none">Nada</option>
-                            <option value="playing_now">Jogando no momento</option>
-                            <option value="fn_fast_edit" data-i18n="fn-fast-edit">Fortnite BR — Edição rápida</option>
-                        </select>
-                        <div class="featuredSelector-btn">
-                            <span id="featuredSelector-btn-name"></span>
-                        </div>
-                        <ul class="featuredSelector-select"></ul>
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="show-hide-pages">Mostrar/ocultar páginas</p>
+                    <div class="config-item">
+                        <p><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span></p>
+                        <a class="toggle" data-code="backlog_on_home" onclick="toggleConfig(this)"></a>
+                    </div>
+                    <div class="config-item">
+                        <p data-i18n="notes">Notas</p>
+                        <a class="toggle" data-code="notes_on_home" onclick="toggleConfig(this)"></a>
+                    </div>
+                    <div class="config-item">
+                        <p>Fortnite</p>
+                        <a class="toggle" data-code="fortnite_on_home" onclick="toggleConfig(this)"></a>
                     </div>
                 </div>
-                <div class="config-item">
-                    <p data-i18n="show-featured-changer">Mais de um destaque</p>
-                    <a class="toggle" data-code="show_featured_changer" onclick="toggleConfig(this)"></a>
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="featured">Destaque</p>
+                    <div class="featured-selector-div">
+                        <a class="button" data-value="none">Nada</a>
+                        <a class="button" data-value="playing_now">Jogando no momento</a>
+                        <a class="button" data-value="fn_fast_edit" data-i18n="fn-fast-edit">Fortnite BR — Edição rápida</a>
+                    </div>
+                    <div class="config-item">
+                        <p data-i18n="show-featured-changer">Mais de um destaque</p>
+                        <a class="toggle" data-code="show_featured_changer" onclick="toggleConfig(this)"></a>
+                    </div>
                 </div>
             </div>
             <div id="settings-tab-appearance" class="tab-configs">
@@ -110,14 +98,14 @@
                     <div class="theme-selector-div">
                         <select id="theme-selector"></select>
                         <div class="themeSelector-btn">
-                            <span></span><p class="sep" data-i18n="themes">Temas</p>
+                            <span></span><p class="config-section-title" data-i18n="themes">Temas</p>
                         </div>
                         <ul class="themeSelector-select"></ul>
                     </div> 
                 </div>
             </div>
             <div id="settings-tab-updates" class="tab-configs">
-                <p class="sep" data-i18n="current-version">Versão atual</p>
+                <p class="config-section-title" data-i18n="current-version">Versão atual</p>
                 <div class="config-item version">
                     <span id="app-version"></span>
                 </div>
@@ -127,7 +115,7 @@
                 </div>
             </div>
             <div id="fortnite" class="tab-configs">
-                <p class="sep">Banner</p>
+                <p class="config-section-title">Banner</p>
             </div>
             <div id="language" class="tab-configs">
                 <div class="config-item">
@@ -144,26 +132,31 @@
                 </div>
             </div>
             <div id="about" class="tab-configs">
-                <p class="sep"><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span>, <span data-i18n="notes">Notas</span>, Fortnite <span data-i18n="and">e</span> <span data-i18n="themes">Temas</span></p>
+                <p class="config-section-title"><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span>, <span data-i18n="notes">Notas</span>, Fortnite <span data-i18n="and">e</span> <span data-i18n="themes">Temas</span></p>
                 <p class="path" id="documents"></p>
                 <!-- <p class="sep">Arquivo de configurações</p>
                 <p class="path" id="user-config"></p> -->
             </div>
             <div id="settings-tab-advanced" class="tab-configs">
-                <p class="sep" data-i18n="files-json">Arquivos JSON</p>
-                <p class="list-toggle"><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span></p>
-                <div class="list-toggle-list">
-                    <a class="file-link" onclick="openFile(this)" data-url="Games/games.json" data-i18n="games">Games</a>
-                    <a class="file-link" onclick="openFile(this)" data-url="Games/campaigns.json" data-i18n="campaigns">Campaigns</a>
-                    <a class="file-link" onclick="openFile(this)" data-url="Games/achievements.json" data-i18n="achievements">Achievements</a>
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="files-json">Arquivos JSON</p>
+                    <p class="list-toggle"><span data-i18n="backlogof">Backlog de</span> <span data-i18n="ofgames">Jogos</span></p>
+                    <div class="list-toggle-list">
+                        <a class="file-link" onclick="openFile(this)" data-url="Games/games.json" data-i18n="games">Games</a>
+                        <a class="file-link" onclick="openFile(this)" data-url="Games/campaigns.json" data-i18n="campaigns">Campaigns</a>
+                        <a class="file-link" onclick="openFile(this)" data-url="Games/achievements.json" data-i18n="achievements">Achievements</a>
+                    </div>
+                    <p class="list-toggle">Fortnite</p>
+                    <div class="list-toggle-list">
+                        <a class="file-link" onclick="openFile(this)" data-url="Fortnite/reviews.json" data-i18n="">Reviews</a>
+                        <a class="file-link" onclick="openFile(this)" data-url="Fortnite/stats.json" data-i18n=""><span data-i18n="levels">Níveis</span>, <span data-i18n="wins">Vitórias</span> <span data-i18n="and">e</span> <span data-i18n="rating"></span>s</a>
+                    </div>
                 </div>
-                <p class="list-toggle">Fortnite</p>
-                <div class="list-toggle-list">
-                    <a class="file-link" onclick="openFile(this)" data-url="Fortnite/reviews.json" data-i18n="">Reviews</a>
-                    <a class="file-link" onclick="openFile(this)" data-url="Fortnite/stats.json" data-i18n=""><span data-i18n="levels">Níveis</span>, <span data-i18n="wins">Vitórias</span> <span data-i18n="and">e</span> <span data-i18n="rating"></span>s</a>
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="">Backups</p>
+                    <p class="backup-btn button" onclick="createBackup()" data-i18n="create-backup">Backup</p>
+                    <p class="backup-btn button" onclick="restoreBackup()" data-i18n="restore-backup">Restore Backup</p>
                 </div>
-                <p class="backup-btn button" onclick="createBackup()" data-i18n="create-backup">Backup</p>
-                <p class="backup-btn button" onclick="restoreBackup()" data-i18n="restore-backup">Restore Backup</p>
             </div>
         </div>
 
