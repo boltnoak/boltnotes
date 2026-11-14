@@ -240,7 +240,7 @@ async function loadGames() {
 
     playingNow.replaceChildren(...playingCards);
     if (!playingCards.length) {
-        playingNow.append(emptyDiv("playingNow-no-games", t["playing-now-nogames"] || "Nenhum jogo em andamento"));
+        playingNow.append(emptyDiv("gamepanel-no-games", t["playing-now-nogames"] || "Nenhum jogo em andamento"));
     }
 
     toPlayDiv.replaceChildren(...toPlayCards);
@@ -285,8 +285,6 @@ async function createGameCard(game, isPlaying = false, completedIndex = null) {
     if (game.isPreOrder === true) div.classList.add("pre-order");
     if (game.hasCampaign === false) div.classList.add("no-campaign");
 
-    img.loading = 'lazy';
-    img.src = 'assets/placeholder.png';
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
     const title = document.createElement("p");
@@ -523,7 +521,7 @@ async function loadGamesAchie() {
     async function renderInBatches(items, container, isPlatinando) {
         if (items.length === 0 && isPlatinando) {
             const noGames = document.createElement("div");
-            noGames.className = "platinandoNow-no-games";
+            noGames.className = "gamepanel-no-games";
             noGames.textContent = window._t?.['platinum-now-nogames'] || "Nenhum jogo em andamento";
             container.appendChild(noGames);
             return;
@@ -594,9 +592,6 @@ async function createGameAchieCard(game, completedIndex = null) {
     if (game.hasAchievements === false) {
         div.classList.add("no-achie");
     }
-
-    img.loading = 'lazy';
-    img.src = 'assets/placeholder.png';
     
     const gameInfo = document.createElement("div");
     gameInfo.className = "game-info";
@@ -1366,9 +1361,6 @@ async function openGamePopup(el) {
     }
 
     achieBtns.style.display = achieStatus != 'platinado' ? 'flex' : 'none';
-
-    banner.src = "assets/placeholder.png";
-    mainBG.style.setProperty('--bg-image', `url("assets/placeholder.png")`);
 
     popup.style.display = 'flex';
     checkTextOverflow();

@@ -8,151 +8,80 @@ function toggleConfig(el) {
     updateConfig(option, isActive);
 }
 
-const changeLangBtn = document.querySelector('.change-lang-btn');
-const changeLangSelect = document.querySelector('.change-lang-drop-select');
-// changeLangBtn.addEventListener('click', () => {
-//     if (changeLangSelect.style.display === 'none' || changeLangSelect.style.display === '') {
-//         changeLangSelect.style.display = 'flex';
-//     } else {
-//         changeLangSelect.style.display = 'none';
-//     }
-// })
-
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await getConfig();
-
-    const langBtn = document.getElementById('lang-btn');
-    const langSelect = document.getElementById('lang-select');
-    const langSpan = langBtn.querySelector('span');
-
+    const currentFeatured = config.featured;
     const currentLang = config.language || 'en';
-    const langNames = { 'pt-BR': 'Português Brasil', 'en': 'English' };
-    langSpan.textContent = langNames[currentLang] || 'Português Brasil';
 
-    langSelect.querySelectorAll('li').forEach(li => {
-        li.classList.toggle('active', li.dataset.value === currentLang);
-    });
+    const langOptions = document.querySelectorAll('.lang-option');
+    langOptions.forEach(e => {
+        const value = e.dataset.value;
+        const isActive = value === currentLang;
 
-    langSelect.querySelectorAll('li').forEach(li => {
-        li.addEventListener('click', async () => {
-            const lang = li.dataset.value;
-            langSpan.textContent = li.querySelector('span').textContent;
-            langSelect.classList.add('active');
-
-            langSelect.querySelectorAll('li').forEach(item => item.classList.remove('active'));
-            li.classList.add('active');
-
-            await updateConfig('language', lang);
+        e.classList.toggle('active', isActive);
+        e.addEventListener('click', async () => {
+            langOptions.forEach(e => e.classList.remove('active'));
+            document.querySelector(`.lang-option[data-value="${value}"]`).classList.add('active')
+            await updateConfig('language', value);
 
             if (typeof applyLocale === 'function') applyLocale();
             if (window.parent && typeof window.parent.applyLocale === 'function') {
                 if (typeof window.parent.loadLanguage === 'function') await window.parent.loadLanguage(lang);
                 window.parent.applyLocale();
             }
-
-            // changeLangSelect.style.display = 'none';
         });
     });
     
     const themeContainers = document.querySelectorAll('.theme-selector-div');
-
     if (themeContainers.length > 0) {
         const config = await getConfig();
         const themesList = await listThemes();
         const currentTheme = config.theme;
 
         themeContainers.forEach(container => {
-            const themeSelector = container.querySelector('select');
-            const customBtn = container.querySelector('.themeSelector-btn');
-            const customSpan = customBtn ? customBtn.querySelector('span') : null;
-            const customUl = container.querySelector('.themeSelector-select');
+            const formattedCurrentName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
 
-            if (themeSelector && customUl && customSpan) {
-                themeSelector.innerHTML = '';
-                customUl.innerHTML = '';
+            themesList.forEach(themeObj => {
+                const themeName = themeObj.name;
+                const themeBg = themeObj.bg; 
+                const formattedName = themeName.charAt(0).toUpperCase() + themeName.slice(1);
 
-                const formattedCurrentName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
-                customSpan.textContent = formattedCurrentName;
-
-                themesList.forEach(themeObj => {
-                    const themeName = themeObj.name;
-                    const themeBg = themeObj.bg; 
-                    const formattedName = themeName.charAt(0).toUpperCase() + themeName.slice(1);
-
-                    const option = document.createElement('option');
-                    option.value = themeName;
-                    option.textContent = formattedName;
-                    if (themeName === currentTheme) option.selected = true;
-                    themeSelector.appendChild(option);
-
-                    const li = document.createElement('li');
+                const option = document.createElement('a');
+                option.dataset.value = themeName;
+                option.classList.toggle('active', themeName === currentTheme);
                     
-                    const colorCircle = document.createElement('span');
-                    colorCircle.className = 'theme-color-preview';
-                    colorCircle.style.backgroundColor = themeBg;
+                const colorCircle = document.createElement('span');
+                colorCircle.className = 'theme-color-preview';
+                colorCircle.style.backgroundColor = themeBg;
 
-                    const textSpan = document.createElement('span');
-                    textSpan.textContent = formattedName;
+                const textSpan = document.createElement('span');
+                textSpan.textContent = formattedName;
                     
-                    if (themeName == 'dark') {
-                        textSpan.setAttribute('data-i18n', 'theme-dark');
-                        applyLocale();
-                    }
-                    if (themeName == 'light') {
-                        textSpan.setAttribute('data-i18n', 'theme-light');
-                        applyLocale();
-                    }
-                    if (themeName == 'example') {
-                        textSpan.setAttribute('data-i18n', 'theme-example');
-                        applyLocale();
-                    }
+                if (themeName == 'dark') textSpan.setAttribute('data-i18n', 'theme-dark');
+                if (themeName == 'light') textSpan.setAttribute('data-i18n', 'theme-light');
+                if (themeName == 'example') textSpan.setAttribute('data-i18n', 'theme-example');
+                applyLocale();
 
-                    li.appendChild(colorCircle);
-                    li.appendChild(textSpan);
-                    li.classList.add('button');
-                    textSpan.classList.add('theme-name')
-                    li.dataset.value = themeName;
+                option.appendChild(colorCircle);
+                option.appendChild(textSpan);
+                option.classList.add('button');
+                textSpan.classList.add('theme-name');
+                option.classList.add('theme-option');
+                container.appendChild(option);
                     
-                    if (themeName === currentTheme) {
-                        li.classList.add('active');
-                    }
-                    
-                    li.addEventListener('click', async () => {
-                        document.querySelectorAll('.theme-selector-div').forEach(syncContainer => {
-                            const syncSelect = syncContainer.querySelector('select');
-                            const syncSpan = syncContainer.querySelector('.themeSelector-btn span');
-                            const syncUl = syncContainer.querySelector('.themeSelector-select');
+                option.addEventListener('click', async () => {
+                    const options = document.querySelectorAll('.theme-option');
+                    const optionActive = document.querySelector(`.theme-option[data-value="${themeName}"]`);
 
-                            if (syncSelect) syncSelect.value = themeName;
-                            if (syncSpan) syncSpan.textContent = formattedName;
-                            
-                            if (syncUl) {
-                                syncUl.querySelectorAll('li').forEach(el => el.classList.remove('active'));
-                                const matchingLi = Array.from(syncUl.querySelectorAll('li')).find(el => el.dataset.value === themeName);
-                                if (matchingLi) matchingLi.classList.add('active');
-                            }
-                        });
-
-                        customUl.classList.remove('active');
-                        
-                        await changeTheme(themeSelector); 
-                    });
-
-                    customUl.appendChild(li);
+                    options.forEach(el => el.classList.toggle('active', el.dataset.value === optionActive.dataset.value));
+                    await changeTheme(optionActive); 
                 });
-            }
+            });
         });
     }
-});
-
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const config = await getConfig();
-    const currentFeatured = config.featured;
 
     const selectorsContainers = document.querySelectorAll('.featured-selector-div a');
     const buttonsConfig = document.querySelectorAll('a[data-code]');
-
     selectorsContainers.forEach(async (e) => {
         const isActive = currentFeatured === e.dataset.value;
 
@@ -169,7 +98,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         button.classList.toggle('active', isActive);
     });
 });
-
 
 function tabSwitch(el) {
     const code = el.dataset.code;
@@ -191,13 +119,10 @@ function tabSwitch(el) {
     }
 }
 
-async function selectNewTheme(themeName) {
+async function applySelectedTheme() {
     localStorage.removeItem('cached-theme-css');
     localStorage.removeItem('cached-theme-name');
-
-    if (typeof applyTheme === 'function') {
-        await applyTheme();
-    }
+    await applyTheme();
 
     if (window.parent && typeof window.parent.applyTheme === 'function') {
         window.parent.localStorage.removeItem('cached-theme-css');
@@ -207,11 +132,11 @@ async function selectNewTheme(themeName) {
 }
 
 async function changeTheme(selectEl) {
-    const selectedTheme = selectEl.value;
+    const selectedTheme = selectEl.dataset.value;
 
     updateConfig('theme', selectedTheme);
 
-    await selectNewTheme(selectedTheme);
+    await applySelectedTheme();
 }
 async function changeFeatured(el) {
     const selectedFeatured = el;
@@ -294,7 +219,6 @@ async function createBackup() {
             console.error(res.message);
             showToast(`Failed to create backup: ${res.message}`);
         }
-        // 'canceled': o usuário fechou o diálogo, não mostra nada
     } finally {
         buttons.forEach(b => b.disabled = false);
     }

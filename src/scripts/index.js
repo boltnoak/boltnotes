@@ -147,8 +147,7 @@ async function initFeaturedFortnite() {
     const match = /^c(\d+)s(\d+)$/i.exec(code);
     const prefix = match ? `C${match[1]}${seasonLetter}${match[2]} |` : '';
 
-    document.getElementById('recentSeason-image').style.backgroundImage = `url(documents://Fortnite/Assets/${code}.jpg)`;
-    document.querySelector('.shine-effect-v-latest-season').style.display = 'none';
+    document.getElementById('recentSeason-image').src = `documents://Fortnite/Assets/${code}.jpg`;
     document.getElementById('recent-season-name').textContent = `${prefix} ${season.name}`.trim();
     document.querySelector('.recent-season').dataset.season = code;
 

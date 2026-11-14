@@ -752,3 +752,27 @@ input:hover {
 .list-toggle-list.open {
     display: flex;
 }
+
+
+
+img:not(.loaded) {
+    background: var(--btn);
+}
+img[src]:not([src=""]):not(.loaded):not(.no-cover) {
+    animation: pulse .75s ease-in-out infinite;
+}
+@keyframes pulse {
+    50% { opacity: .1; }
+}
+
+img {
+    border: 0;
+    outline: 0;
+}
+img.failed {
+    visibility: hidden;
+}
+img:not([src]),
+img[src=""] {
+    content: url("data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==");
+}

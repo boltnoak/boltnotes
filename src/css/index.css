@@ -485,15 +485,14 @@ body {
     gap: 1.2vh;
     background-image: linear-gradient(to top, var(--btn), var(--tab), var(--btn));
 }
-.game.ajogar .game-cover,
+/* .game.ajogar .game-cover,
 .game.ajogar .game-info {
     margin: 0;
     background-color: transparent;
 }
 .game.ajogar .game-cover {
     border-radius: .8vh;
-    height: 18vh;
-}
+} */
 .game:hover {
     scale: 1.015;
     cursor: pointer;
@@ -516,20 +515,6 @@ body {
     width: 100%;
     display: block;
     object-fit: cover;
-    flex: 1;
-}
-.game-info {
-    display: flex;
-    flex-direction: column;
-    /* margin: 0 .5vw .9vh .5vw; */
-    height: 100%;
-    margin: 0;
-    background-color: var(--tab-hover);
-    border-radius: 0 0 .8vh .8vh;
-}
-.game.jogando .game-info {
-    background-color: var(--tab-hover);
-    margin: 0;
 }
 .game.jogando .game-title {
     color: var(--text);
@@ -673,10 +658,8 @@ body {
     height: 100%;
     width: 100%;
     overflow: hidden;
-    background-size: cover;
-    background-position: 0 -6vh;
-    transform: translateY(0);
-    background-color: rgba(30,30,30,.1);
+    object-position: 0 -6.5vh;
+    object-fit: cover;
 }
 .recentSeason-image-div {
     display: flex;
@@ -767,7 +750,7 @@ body {
     transition: all .1s linear;
 }
 .featured-panel {
-    display: flex;
+    display: none;
     flex-direction: row;
     height: 100%;
     flex: 1;
@@ -840,23 +823,20 @@ body {
     background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));
 }
 .toPlay-panel {
-    display: grid;
     grid-template-columns: repeat(auto-fill, minmax(15vw, 1fr));
     grid-auto-rows: 28.75vh;
     padding: .25vh .25vw .25vh .25vw;
-    width: 100%;
-    border-radius: 1.3vh;
-    height: 100%;
     gap: 1.8vh .8vw;
-    flex: 1;
-    overflow: hidden;
-    overflow-y: auto;
 }
 .toPlay-panel .game {
-    width: 100%;
-    height: 100%;
     border-radius: 1.3vh;
 }
+.toPlay-panel .game-cover {
+    height: 17vh !important;
+    border-radius: .8vh;
+}
+
+
 .level-progress-bar {
     background-color: var(--tab);
     height: 1.4vh;
@@ -954,18 +934,6 @@ body {
     width: max-content;
     align-items: center;
     white-space: nowrap;
-}
-.game-popup-sep-bar {
-    margin: .5vh 1vw;
-    border: solid .4vh rgba(25,25,25,.4);
-    border-radius: 1vh;
-    justify-content: center;
-}
-.game-popup-sep-bar2 {
-    margin: .5vh .6vw .5vh 1vw;
-    border: solid .4vh rgba(25,25,25,.4);
-    border-radius: 1vh;
-    justify-content: center;
 }
 .changelog-category {
     display: flex;

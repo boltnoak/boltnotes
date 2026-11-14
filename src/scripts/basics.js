@@ -340,3 +340,12 @@ document.addEventListener('click', (e) => {
         elList.classList.toggle('open');
     }
 });
+
+const markLoaded = e => {
+  if (e.target.tagName === 'IMG') e.target.classList.add('loaded');
+};
+document.addEventListener('load', markLoaded, true);
+document.addEventListener('error', markLoaded, true);
+document.querySelectorAll('img').forEach(img => {
+  if (img.complete) img.classList.add('loaded');
+});

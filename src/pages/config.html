@@ -37,11 +37,7 @@
                 </div>
                 <div class="config-section">
                     <p class="config-section-title" data-i18n="themes">Temas</p>
-                    <div class="theme-selector-div">
-                        <select id="theme-selector"></select>
-                        <div class="themeSelector-btn"><span></span></div>
-                        <ul class="themeSelector-select"></ul>
-                    </div>
+                    <div class="theme-selector-div"></div>
                 </div>
             </div>
             <div id="app" class="tab-configs">
@@ -94,40 +90,28 @@
                 </div>
             </div>
             <div id="settings-tab-appearance" class="tab-configs">
-                <div class="config-item themes">
-                    <div class="theme-selector-div">
-                        <select id="theme-selector"></select>
-                        <div class="themeSelector-btn">
-                            <span></span><p class="config-section-title" data-i18n="themes">Temas</p>
-                        </div>
-                        <ul class="themeSelector-select"></ul>
-                    </div> 
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="themes">Temas</p>
+                    <div class="theme-selector-div"></div>
                 </div>
             </div>
             <div id="settings-tab-updates" class="tab-configs">
-                <p class="config-section-title" data-i18n="current-version">Versão atual</p>
-                <div class="config-item version">
-                    <span id="app-version"></span>
+                <div class="config-section">
+                    <p class="config-section-title" data-i18n="current-version">Versão atual</p>
+                    <div class="config-item version">
+                        <span id="app-version"></span>
+                    </div>
+                    <div class="checkUpdates">
+                        <div id="checkUpdates-btn" class="btn button" onclick="checkUpdates()" data-i18n="check-updates">Verificar atualizações</div>
+                        <p id="checkUpdates-text"></p>
+                    </div>
                 </div>
-                <div class="checkUpdates">
-                    <div id="checkUpdates-btn" class="btn button" onclick="checkUpdates()" data-i18n="check-updates">Verificar atualizações</div>
-                    <p id="checkUpdates-text"></p>
-                </div>
-            </div>
-            <div id="fortnite" class="tab-configs">
-                <p class="config-section-title">Banner</p>
             </div>
             <div id="language" class="tab-configs">
                 <div class="config-item">
-                    <p data-i18n="language_select"></p>
-                    <div class="custom-select">
-                        <div class="change-lang-btn" id="lang-btn">
-                            <span>Português</span>
-                        </div>
-                        <ul class="change-lang-drop-select" id="lang-select">
-                            <li class="button" data-value="pt-BR"><span>Português Brasil</span></li>
-                            <li class="button" data-value="en"><span>English</span></li>
-                        </ul>
+                    <div class="lang-select-div">
+                        <a class="lang-option button" data-value="pt-BR">Português Brasil</a>
+                        <a class="lang-option button" data-value="en">English</a>
                     </div>
                 </div>
             </div>

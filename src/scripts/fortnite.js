@@ -235,7 +235,7 @@ async function renderChapter(seasonsData, chapter) {
         }
 
         if (releaseDateSpan) releaseDateSpan.id = `${code}-releaseDate`;
-        if (bg) bg.style.backgroundImage = `url('documents://Fortnite/Assets/${code}.jpg')`;
+        if (bg) bg.src = `documents://Fortnite/Assets/${code}.jpg`;
         if (seasonMap) seasonMap.src = `documents://Fortnite/Assets/${code}-map.jpg`;
 
         if (ratingSpan) ratingSpan.id = `${code}-rating`;

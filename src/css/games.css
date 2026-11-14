@@ -263,25 +263,11 @@ body {
     display: flex;
     flex-direction: column;
 }
-.playingNow-no-games {
-    color: var(--text-dark-gray);
-    font-family: 'Montserrat';
-    font-weight: 600;
-    font-size: 2.25vh;
-    margin: 0;
-    width: 100%;
-    height: 95%;
-    display: flex;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    opacity: .5;
-}
 .gamepanel-no-games {
     color: var(--text-dark-gray);
     font-family: 'Montserrat';
-    font-weight: 600;
-    font-size: 2.25vh;
+    font-weight: 650;
+    font-size: 2.75vh;
     margin: 0;
     width: 100%;
     height: 95%;
@@ -359,20 +345,6 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(15vw, 1fr));
     display: flex;
     flex-direction: column;
-}
-.platinandoNow-no-games {
-    color: var(--text-dark-gray);
-    font-family: 'Montserrat';
-    font-weight: 600;
-    font-size: 2.25vh;
-    margin: 0;
-    width: 100%;
-    height: 95%;
-    display: flex;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    opacity: .5;
 }
 
 /* Barra de visualização */
@@ -783,8 +755,13 @@ body {
     flex: none;
 }
 .status.aplatinar .status-fill {
-    border-radius: .5vh;
-    min-width: .5vw;
+    background-image: linear-gradient(to right, #050505, #151515);
+    box-shadow: 1vw 0 1.5vw rgb(100,100,100);
+    width: 0%;
+    padding: 0;
+    height: 100%;
+    transition: width .15s linear;
+    margin: 0;
 }
 .status.jogando {
     position: relative;
@@ -830,7 +807,7 @@ body {
     overflow: hidden;
     padding: 0;
     height: 1vh;
-    background-color: var(--tab);
+    background-color: color-mix(in srgb, #050505 75%, transparent);
     margin: 0;
 }
 .playingNow-panel .game {
@@ -920,9 +897,6 @@ body {
     font-size: 2.5vh;
     padding: 0;
     margin: .5vh 0 0 0;
-}
-.game.aplatinar .status-text {
-    color: var(--text-dark-gray);
 }
 .game.aplatinar {
     height: 100%;
@@ -2554,7 +2528,10 @@ body.delete-mode-active .game:hover::after {
     justify-content: center;
     align-items: center;
     margin: 0;
-    padding: .75vh .5vw;
+    padding: .75vh .5vw .30vh .5vw;
+    background: linear-gradient(to bottom, var(--btn-color), var(--btn-glow-color));
+    border-bottom: .45vh solid var(--btn-color);
+    border-top: none;
 }
 .game.jogando {
     gap: 0;
@@ -2570,8 +2547,8 @@ body.delete-mode-active .game:hover::after {
 }
 .game.jogando .game-title {
     background-color: transparent;
-    color: var(--text-blue);
-    text-shadow: 0 0 8vh var(--blue-light);
+    color: var(--btn-text-color);
+    text-align: center;
     margin: 0;
 }
 .game.platinando .game-info {
@@ -2624,15 +2601,16 @@ body.delete-mode-active .game:hover::after {
     font-weight: 650;
 }
 .game.aplatinar .status-text {
-    font-weight: 700;
+    font-weight: 800;
     font-size: 2vh;
+    color: #050505;
 }
 
 
 .toPlatinar-panel {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10vw, 1fr));
-    grid-auto-rows: 22.5vh;
+    grid-auto-rows: 22.25vh;
     padding: .5vh .25vw;
     width: 100%;
     height: 45vh;
@@ -2644,12 +2622,12 @@ body.delete-mode-active .game:hover::after {
 }
 .toPlatinar-panel .game-title,
 .toPlay-panel .game-title {
-    max-height: 6.225vh;
+    max-height: 6vh;
 }
 .toPlay-panel {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10vw, 1fr));
-    grid-auto-rows: 18.05vh;
+    grid-auto-rows: 17.65vh;
     padding: .5vh .25vw;
     /* border: solid .425vh var(--btn); */
     /* border-radius: 2.25vh; */
