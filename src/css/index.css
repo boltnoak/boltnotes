@@ -185,11 +185,10 @@ body {
 .page-image .text,
 .page-image .fortnite-text { position: relative; z-index: 1; }
 .page-infos {
-    height: 100%;
+    height: 54.5vh;
     margin: 0 1vw 2vh 1vw;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     gap: 1.6vh;
 }
 .page-image {
@@ -485,12 +484,12 @@ body {
     gap: 1.2vh;
     background-image: linear-gradient(to top, var(--btn), var(--tab), var(--btn));
 }
-/* .game.ajogar .game-cover,
-.game.ajogar .game-info {
+.game.jogando .game-info {
     margin: 0;
-    background-color: transparent;
+    background-color: var(--tab-hover);
+    border-radius: 0 0 .8vh .8vh;
 }
-.game.ajogar .game-cover {
+/* .game.ajogar .game-cover {
     border-radius: .8vh;
 } */
 .game:hover {
@@ -531,7 +530,7 @@ body {
     margin: 0 .6vw;
     height: 0;
     height: 100%;
-    width: 96%;
+    width: 100%;
     display: flex;
     justify-content: center;
     overflow: hidden;
@@ -773,6 +772,7 @@ body {
     gap: .5vw;
     font-weight: 665;
     font-size: 2.8vh;
+    box-shadow: 0 0 1vh var(--btn-shadow);
     /* margin: 0 .25vw; */
     border-bottom: .455vh solid var(--blue);
     background-image: linear-gradient(to bottom, var(--blue), var(--blue-light));
@@ -823,6 +823,7 @@ body {
     flex-direction: row;
     gap: .5vw;
     font-size: 2.8vh;
+    box-shadow: 0 0 .75vh var(--btn-shadow);
     /* margin: 0 .25vw; */
     border-bottom: .455vh solid var(--btn-hover);
     background-image: linear-gradient(to bottom, var(--btn-hover), var(--btn-hover-glow));

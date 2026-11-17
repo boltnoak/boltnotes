@@ -121,6 +121,7 @@ function createWindow() {
         minWidth: width,
         minHeight: height,
         show: false,
+        backgroundColor: '#050505',
         titleBarStyle: 'hidden',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -480,7 +481,11 @@ function makeTray() {
                 win.focus();
             }
         } else {
+            const configs = getConfig();
             createWindow();
+            if (configs.maximize_on_start) {
+                win.maximize();
+            }
             win.show();
             win.focus();
         }
