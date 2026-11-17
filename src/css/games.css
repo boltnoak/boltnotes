@@ -2528,7 +2528,7 @@ body.delete-mode-active .game:hover::after {
     justify-content: center;
     align-items: center;
     margin: 0;
-    padding: .75vh .5vw .30vh .5vw;
+    padding: .5vh .5vw .3vh .5vw;
     background: linear-gradient(to bottom, var(--btn-color), var(--btn-glow-color));
     border-bottom: .45vh solid var(--btn-color);
     border-top: none;
@@ -2627,18 +2627,15 @@ body.delete-mode-active .game:hover::after {
 .toPlay-panel {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10vw, 1fr));
-    grid-auto-rows: 17.65vh;
+    grid-auto-rows: 17.75vh;
     padding: .5vh .25vw;
-    /* border: solid .425vh var(--btn); */
-    /* border-radius: 2.25vh; */
     width: 100%;
-    height: 45.4vh;
+    height: 45vh;
     gap: 1.5vh .75vw;
     flex: 1;
     overflow: hidden;
     overflow-y: auto;
     position: relative;
-    box-sizing: border-box;
 }
 .gameinfo-achie-div {
     display: flex;

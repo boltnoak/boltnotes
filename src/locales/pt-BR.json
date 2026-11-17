@@ -112,6 +112,7 @@
     "theme-example": "Exemplo",
     "launch-on-startup": "Iniciar junto com o sistema operacional",
     "maximize-app-startup": "Maximizar ao iniciar",
+    "app-start-minimized": "Iniciar minimizado",
     "when-closing": "Ao fechar",
     "minimize-to-tray": "Minimizar para a bandeja do sistema",
     "on-startup": "Inicialização",

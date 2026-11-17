@@ -7,9 +7,6 @@ const log = require('electron-log');
 const { URL, pathToFileURL } = require('url');
 const AdmZip = require('adm-zip');
 
-const isSilent = process.argv.includes('--silent');
-if (isSilent) console.log('Iniciando silenciosamente...');
-
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 autoUpdater.autoInstallOnAppQuit = false;
@@ -58,13 +55,20 @@ let isQuitting = false;
 let updateReady = false;
 // let trayNameIcon;
 
+function getSystemLanguage() {
+    const base = (app.getLocale() || 'en').toLowerCase().split('-')[0];
+    const supported = { en: 'en', pt: 'pt-BR' };
+    return supported[base] ?? 'en';
+}
+
 function getConfig() {
     const configPath = path.join(app.getPath('userData'),'settings.json');
     const defaults = {
+        start_hidden: false,
         maximize_on_start: false,
         open_on_startup: false,
         minimize_to_tray: false,
-        language: 'en',
+        language: getSystemLanguage(),
         theme: 'dark',
         featured: 'playing_now',
         backlog_on_home: true,
@@ -167,20 +171,19 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock && app.isPackaged) {
     app.quit();
 } else {
-    app.on('second-instance', (event, commandLine) => {
+    app.on('second-instance', () => {
+        const configs = getConfig();
         if (!win) return;
-
-        const isSilentSecond = commandLine.includes('--silent');
-
         if (win.isMinimized()) win.restore();
-        
-        if (!isSilentSecond) {
-            win.show();
-        } else {
+
+        if (configs.start_hidden) {
             win.hide();
+        } else {
+            win.show();
         }
     });
     app.whenReady().then(async () => {
+        const configs = getConfig();
         app.whenReady().then(() => {
             protocol.handle('documents', async (req) => {
                 try {
@@ -227,26 +230,22 @@ if (!gotTheLock && app.isPackaged) {
                 }
             });
         });
-
+        
         startFolders();
         preloadAll();
-        createWindow();
+        makeTray();
 
-        const configs = getConfig();
+        if (!configs.start_hidden) {
+            createWindow();
+        }
         manageStartup(configs.open_on_startup);
 
         if (configs.maximize_on_start) {
             win.maximize();
         }
         win.once('ready-to-show', async () => {
-            makeTray();
-            if (!isSilent) {
-                win.show();
-            } else {win.hide()}
-
-            if (app.isPackaged && !isFlatpak) { autoUpdater.checkForUpdates() }
-
-            win.loadFile(path.join(BUNDLE, 'pages', 'shell.html'));
+            if (app.isPackaged && !isFlatpak) { autoUpdater.checkForUpdates() };
+            if (win) win.show();
         });
 
         win.on('close', (event) => {
@@ -259,9 +258,7 @@ if (!gotTheLock && app.isPackaged) {
     });
 }
 
-/////////////
 // UPDATES //
-/////////////
 autoUpdater.on('checking-for-update', () => { win?.webContents.send('update-status', 'Verificando atualizações...') });
 autoUpdater.on('update-available', (info) => { win?.webContents.send('update-status', 'Atualização disponível!') });
 autoUpdater.on('download-progress', (progressObj) => { win?.webContents.send('update-progress', progressObj.percent) });
@@ -316,9 +313,7 @@ ipcMain.handle('updates:check-update', async () => {
     }
 });
 
-////////////////////
 // MENU FUNCTIONS //
-////////////////////
 ipcMain.on('menu:maximize-app', () => {
     if (!win) return;
 
@@ -344,9 +339,7 @@ ipcMain.on('menu:is-maximized-sync', (event) => {
     event.returnValue = win ? win.isMaximized() : false;
 });
 
-/////////////////////
 // BASIC FUNCTIONS //
-/////////////////////
 ipcMain.on('devTools', () => {
     if (!app.isPackaged && win && !win.isDestroyed()) { win.webContents.toggleDevTools() }
 });
@@ -369,9 +362,7 @@ ipcMain.handle('open-file', async (event, url) => {
 });
 ipcMain.handle('app-version', () => { return app.getVersion() });
 
-//////////////////////
 // CONFIG FUNCTIONS //
-//////////////////////
 ipcMain.handle('config:get', () => { return getConfig() });
 ipcMain.on('config:update', (event, { key, value }) => {
     const configFile = path.join(app.getPath('userData'),'settings.json');
@@ -482,15 +473,21 @@ function makeTray() {
     );
     tray.on('click', () => {
         if (win) {
+            if (win.isVisible()) {
+                win.hide();
+            } else {
+                win.show();
+                win.focus();
+            }
+        } else {
+            createWindow();
             win.show();
             win.focus();
         }
     });
 }
 
-////////////
 // THEMES //
-////////////
 const THEMES_DIR = path.join(BUNDLE, 'themes');
 const USER_THEMES_DIR = path.join(DOCUMENTS, 'Themes');
 function ensureThemesFolder() {
@@ -510,9 +507,7 @@ function ensureThemesFolder() {
 }
 ensureThemesFolder();
 
-///////////
 // GAMES //
-///////////
 ipcMain.handle('games:get-steam-data', async (_, appid) => {
     const id = String(appid ?? '').trim();
     if (!id) return null;
@@ -579,7 +574,6 @@ ipcMain.handle('find-cached-image', (_e, { folder, baseName }) => {
 });
 
 // BACKUP //
-////////////
 const BACKUP_FOLDERS = ['Notes', 'Fortnite', 'Games', 'Themes'];
 const BACKUP_EXCLUDE = ['Fortnite/Assets', 'Games/Covers', 'Games/Backgrounds'];
 

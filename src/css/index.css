@@ -670,12 +670,17 @@ body {
     border-radius: 1.25vh;
     background-color: var(--btn);
     overflow: hidden;
+    position: relative;
 }
-.recentSeason-image-div p {
-    margin: 0 .55vw 1.325vh .55vw;
+.fortnite-w {
+    padding: .85vh .5vw;
+    position: absolute;
     font-size: 2vh;
     font-weight: 550;
     color: var(--text-light-gray);
+    border-radius: 0;
+    background-color: rgba(0,0,0,.75);
+    bottom: 0;
 }
 .level-progress-text {
     font-family: 'Montserrat';

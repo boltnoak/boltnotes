@@ -314,7 +314,7 @@ body {
 .config-section {
     display: flex;
     flex-direction: column;
-    gap: .75vh;
+    gap: .825vh;
     box-sizing: border-box;
 }
 .featured {

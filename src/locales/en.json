@@ -112,6 +112,7 @@
     "theme-example": "Example",
     "launch-on-startup": "Launch on system startup",
     "maximize-app-startup": "Maximize on launch",
+    "app-start-minimized": "Start minimized",
     "when-closing": "When Closing",
     "minimize-to-tray": "Minimize to system tray",
     "on-startup": "Startup",
