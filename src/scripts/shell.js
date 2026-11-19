@@ -12,13 +12,22 @@ bindSidebarEvents()
 
 function navigateShell(page) {
     const filename = page.split('/').pop().split('.')[0].split('?')[0];
+    const content = document.getElementById('content');
 
-    document.getElementById('content').src = page;
-    
     document.querySelectorAll('.sidebar-btn[data-page]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.page === filename);
     });
+
+    content.classList.add('fade-out');
+
+    setTimeout(() => {
+        content.onload = () => {
+            content.classList.remove('fade-out');
+        };
+        content.src = page;
+    }, 250);
 }
+
 
 const menuMax = document.getElementById('menuMax');
 function updateMaxIcon(isMax) {

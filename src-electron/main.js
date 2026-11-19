@@ -165,7 +165,7 @@ const MIME = {
     '.txt': 'text/plain; charset=utf-8',
     '.json': 'application/json',
 };
-const ROOT_FOLDERS = ['Notes', 'Fortnite', 'Games', 'Themes'];
+const ROOT_FOLDERS = ['Notes', 'Fortnite', 'Games'];
 const ROOT_MAP = Object.fromEntries(ROOT_FOLDERS.map(f => [f.toLowerCase(), f]));
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -492,26 +492,6 @@ function makeTray() {
     });
 }
 
-// THEMES //
-const THEMES_DIR = path.join(BUNDLE, 'themes');
-const USER_THEMES_DIR = path.join(DOCUMENTS, 'Themes');
-function ensureThemesFolder() {
-    fs.mkdirSync(USER_THEMES_DIR, { recursive: true });
-
-    fs.readdirSync(THEMES_DIR)
-        .filter(f => f.endsWith('.boltss'))
-        .forEach(file =>
-            fs.copyFileSync(path.join(THEMES_DIR, file), path.join(USER_THEMES_DIR, file))
-        );
-
-    const names = fs.readdirSync(USER_THEMES_DIR)
-        .filter(f => f.endsWith('.boltss'))
-        .map(f => f.slice(0, -'.boltss'.length));
-
-    fs.writeFileSync(path.join(USER_THEMES_DIR, '.ThemeList'), names.join('\n'));
-}
-ensureThemesFolder();
-
 // GAMES //
 ipcMain.handle('games:get-steam-data', async (_, appid) => {
     const id = String(appid ?? '').trim();
@@ -579,7 +559,7 @@ ipcMain.handle('find-cached-image', (_e, { folder, baseName }) => {
 });
 
 // BACKUP //
-const BACKUP_FOLDERS = ['Notes', 'Fortnite', 'Games', 'Themes'];
+const BACKUP_FOLDERS = ['Notes', 'Fortnite', 'Games'];
 const BACKUP_EXCLUDE = ['Fortnite/Assets', 'Games/Covers', 'Games/Backgrounds'];
 
 function isBackupExcluded(rel) {

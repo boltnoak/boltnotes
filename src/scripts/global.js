@@ -1,6 +1,4 @@
-/////////////////
-/// DEV TOOLS ///
-/////////////////
+// DEV TOOLS //
 window.addEventListener('keydown', (e) => {
     if (!window.electronAPI || !window.electronAPI.isDev) {
         if (e.code === "F5" || e.code === "F12") {
@@ -34,9 +32,7 @@ document.addEventListener('paste', (e) => {
     document.execCommand('insertText', false, text);
 });
 
-/////////////////////////////////////
-/// BARRA DE TÍTULO/BOTÕES DO APP ///
-/////////////////////////////////////
+// BARRA DE TÍTULO/BOTÕES DO APP //
 function minimizeApp() { window.electronAPI.menu.minimizeApp() }
 function maximizeApp() { window.electronAPI.menu.maximizeApp() }
 function closeApp() { window.electronAPI.menu.closeApp() }
@@ -174,7 +170,6 @@ async function fetchWithCache(url, cacheKeyName) {
         try {
             const parsedCache = JSON.parse(cached);
 
-            // Atualiza em segundo plano, sem bloquear o retorno
             updateCacheInBackground(url, cacheKey).catch(() => {});
 
             return parsedCache;
@@ -193,43 +188,4 @@ async function fetchWithCache(url, cacheKeyName) {
         console.warn(`Falha ao buscar online e sem cache disponível: ${cacheKeyName}`);
         return null;
     }
-}
-
-const THEMES_URL = 'documents://Themes';
-
-async function getTheme(themeName) {
-  const name = String(themeName ?? '').replace(/[\\/]/g, '').trim();
-  if (!name) return null;
-
-  try {
-    const res = await fetch(`${THEMES_URL}/${encodeURIComponent(name)}.boltss`);
-    if (!res.ok) return null;
-    return await res.text();
-  } catch {
-    return null;
-  }
-}
-async function listThemes() {
-  let names;
-  try {
-    const res = await fetch(`${THEMES_URL}/.ThemeList`);
-    if (!res.ok) return [];
-    names = (await res.text()).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  } catch {
-    return [];
-  }
-
-  return Promise.all(
-    names.map(async (name) => {
-      try {
-        const res = await fetch(`${THEMES_URL}/${encodeURIComponent(name)}.boltss`);
-        if (!res.ok) throw new Error();
-        const css = await res.text();
-        const bg = css.match(/--bg\s*:\s*([^;}\n]+)/)?.[1].trim() ?? '#050505';
-        return { name, bg };
-      } catch {
-        return { name, bg: '#000000' };
-      }
-    })
-  );
 }

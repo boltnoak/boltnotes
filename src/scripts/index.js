@@ -5,6 +5,21 @@ let statsReady = false;
 let reviews = {};
 let stats = {};
 
+document.addEventListener('DOMContentLoaded', () => {
+    const fortniteHomeBtn = document.getElementById('fortnite');
+    const savedUrl = sessionStorage.getItem('fortniteLastUrl') || "";
+
+    if (fortniteHomeBtn && savedUrl) {
+        fortniteHomeBtn.href = `pages/fortnite.html?num=${savedUrl}`;
+    }
+});
+document.querySelectorAll('.page[href]').forEach(a => {
+    a.addEventListener('click', e => {
+        e.preventDefault();
+        window.parent.navigateShell(a.href);
+    });
+});
+
 const FORTNITE_STATS = "Fortnite/stats.json";
 
 function buildIconPattern(el, cell = 64) {
@@ -142,18 +157,20 @@ async function initFeaturedFortnite() {
 
     const { code, season } = latest;
 
+    await ensureSeasonPackage(code);
+
     const seasonLabel = window._t?.['fn-season'];
     const seasonLetter = seasonLabel ? seasonLabel.trim().charAt(0).toUpperCase() : 'T';
     const match = /^c(\d+)s(\d+)$/i.exec(code);
     const prefix = match ? `C${match[1]}${seasonLetter}${match[2]} |` : '';
 
-    document.getElementById('recentSeason-image').src = `documents://Fortnite/Assets/${code}.jpg`;
     document.getElementById('recent-season-name').textContent = `${prefix} ${season.name}`.trim();
     document.querySelector('.recent-season').dataset.season = code;
 
     await fillValues();
     const status = document.querySelectorAll('.status-info');
     status.forEach((e) => e.classList.add('ready'));
+    document.getElementById('recentSeason-image').src = `documents://Fortnite/Assets/${code}.jpg`;
 }
 
 async function updateStatsJSON(status, mode, el) {

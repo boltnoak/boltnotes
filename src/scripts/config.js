@@ -31,54 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     });
-    
-    const themeContainers = document.querySelectorAll('.theme-selector-div');
-    if (themeContainers.length > 0) {
-        const config = await getConfig();
-        const themesList = await listThemes();
-        const currentTheme = config.theme;
 
-        themeContainers.forEach(container => {
-            const formattedCurrentName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
-
-            themesList.forEach(themeObj => {
-                const themeName = themeObj.name;
-                const themeBg = themeObj.bg; 
-                const formattedName = themeName.charAt(0).toUpperCase() + themeName.slice(1);
-
-                const option = document.createElement('a');
-                option.dataset.value = themeName;
-                option.classList.toggle('active', themeName === currentTheme);
-                    
-                const colorCircle = document.createElement('span');
-                colorCircle.className = 'theme-color-preview';
-                colorCircle.style.backgroundColor = themeBg;
-
-                const textSpan = document.createElement('span');
-                textSpan.textContent = formattedName;
-                    
-                if (themeName == 'dark') textSpan.setAttribute('data-i18n', 'theme-dark');
-                if (themeName == 'light') textSpan.setAttribute('data-i18n', 'theme-light');
-                if (themeName == 'example') textSpan.setAttribute('data-i18n', 'theme-example');
-                applyLocale();
-
-                option.appendChild(colorCircle);
-                option.appendChild(textSpan);
-                option.classList.add('button');
-                textSpan.classList.add('theme-name');
-                option.classList.add('theme-option');
-                container.appendChild(option);
-                    
-                option.addEventListener('click', async () => {
-                    const options = document.querySelectorAll('.theme-option');
-                    const optionActive = document.querySelector(`.theme-option[data-value="${themeName}"]`);
-
-                    options.forEach(el => el.classList.toggle('active', el.dataset.value === optionActive.dataset.value));
-                    await changeTheme(optionActive); 
-                });
-            });
-        });
-    }
+    document.querySelectorAll('.theme-option').forEach(e => {
+        e.classList.toggle('active', e.dataset.value === config.theme)
+    });
 
     const selectorsContainers = document.querySelectorAll('.featured-selector-div a');
     const buttonsConfig = document.querySelectorAll('a[data-code]');
@@ -240,4 +196,15 @@ async function restoreBackup() {
     } finally {
         buttons.forEach(b => b.disabled = false);
     }
+}
+
+async function changeTheme(e) {
+    const theme = e.dataset.value;
+    document.querySelectorAll('.theme-option').forEach(e => {
+        e.classList.toggle('active', e.dataset.value === theme)
+    });
+
+    await updateConfig('theme', theme);
+    window.parent.applyTheme()
+    applyTheme()
 }

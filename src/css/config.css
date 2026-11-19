@@ -233,14 +233,14 @@ body {
     position: relative;
     user-select: none;
     font-weight: 600;
-    width: 100%;
+    width: 45%;
     margin: 0;
     display: grid;
     padding: 0;
     gap: 1vh .8vw;
     position: relative;
-    grid-template-columns: repeat(auto-fill, minmax(12.5vw, 1fr));
-    grid-template-rows: 17.5vh;
+    grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
+    grid-template-rows: 20vh;
 }
 .theme-selector-div a {
     display: flex;
@@ -259,6 +259,8 @@ body {
 .theme-name {
     width: 100%;
     margin: 0;
+    font-size: 2.8vh;
+    font-weight: 650;
     display: flex;
     justify-content: center;
 }

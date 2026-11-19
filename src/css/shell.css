@@ -75,6 +75,11 @@ html, body {
     min-width: 0;
     height: 100%;
     flex: 1;
+    opacity: 1;
+    transition: opacity .1s ease;
+}
+#content.fade-out {
+    opacity: 0;
 }
 
 header, .sidebar-space {
@@ -95,7 +100,7 @@ header, .sidebar-space {
     text-align: center;
     background-color: var(--tab);
     transition: width .1s ease;
-    box-shadow: 0 0 1vw rgba(0, 0, 0, .1);
+    /* box-shadow: 0 0 1vw rgba(0, 0, 0, .1); */
 }
 .sidebar-space {
     position: relative;

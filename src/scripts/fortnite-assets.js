@@ -54,15 +54,15 @@ async function inflateRaw(raw) {
 }
 
 async function installPackage(pkg) {
-  const res = await fetch(`${REMOTE_BASE}/${pkg.name}`);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const buf = await res.arrayBuffer();
-  if ((await sha256(buf)) !== pkg.hash) throw new Error('hash dont match');
+    const res = await fetch(`${REMOTE_BASE}/${pkg.name}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const buf = await res.arrayBuffer();
+    if ((await sha256(buf)) !== pkg.hash) throw new Error('hash dont match');
 
-  for (const f of readZipEntries(buf)) {
-    const data = f.method === 0 ? f.raw : await inflateRaw(f.raw);
-    await writeDoc(f.name, data);
-  }
+    for (const f of readZipEntries(buf)) {
+        const data = f.method === 0 ? f.raw : await inflateRaw(f.raw);
+        await writeDoc(f.name, data);
+    }
 }
 
 async function fetchWithTimeout(url, options = {}, ms = 2000) {
@@ -76,58 +76,85 @@ async function fetchWithTimeout(url, options = {}, ms = 2000) {
 }
 
 async function syncFortniteAssets(onProgress) {
-  const localManifest = await readLocalManifest();
+    const localManifest = await readLocalManifest();
 
-  if (!navigator.onLine) {
-    if (localManifest) return { offline: true };
-    throw new Error('Sem conexão e sem assets locais do Fortnite.');
-  }
-
-  let remote;
-  try {
-    const res = await fetchWithTimeout(`${REMOTE_BASE}/manifest.json`, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    remote = await res.json();
-    if (!Array.isArray(remote?.packages)) throw new Error('Manifest remoto inválido.');
-  } catch (err) {
-    console.warn('Assets - manifest remoto indisponível:', err.message);
-    if (await readLocalManifest()) return { offline: true };
-    throw new Error('Sem conexão e sem assets locais do Fortnite.');
-  }
-
-  const local = (await readLocalManifest()) || { version: 0, packages: [] };
-  const localHash = new Map(local.packages.map((p) => [p.name, p.hash]));
-  const pending = remote.packages.filter((p) => localHash.get(p.name) !== p.hash);
-  if (!pending.length) return { updated: false };
-
-  const totalBytes = pending.reduce((n, p) => n + p.size, 0);
-  let doneBytes = 0;
-  onProgress?.({ done: 0, total: totalBytes, count: pending.length });
-
-  const installed = new Map(localHash);
-  const failed = [];
-
-  for (const pkg of pending) {
-    try {
-      await installPackage(pkg);
-      installed.set(pkg.name, pkg.hash);
-      await writeDoc('manifest.json', JSON.stringify({
-        version: local.version,
-        packages: [...installed].map(([name, hash]) => ({ name, hash })),
-      }));
-    } catch (err) {
-      console.error(`Assets - ${pkg.name}:`, err.message);
-      failed.push(pkg.name);
+    if (!navigator.onLine) {
+        if (localManifest) return { offline: true };
+        throw new Error('Sem conexão e sem assets locais do Fortnite.');
     }
-    doneBytes += pkg.size;
-    onProgress?.({ done: doneBytes, total: totalBytes, count: pending.length });
-  }
 
-  if (failed.length) throw new Error(`Falha ao baixar: ${failed.join(', ')}`);
+    let remote;
+    try {
+        const res = await fetchWithTimeout(`${REMOTE_BASE}/manifest.json`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        remote = await res.json();
+        if (!Array.isArray(remote?.packages)) throw new Error('Manifest remoto inválido.');
+    } catch (err) {
+        console.warn('Assets - manifest remoto indisponível:', err.message);
+        if (await readLocalManifest()) return { offline: true };
+        throw new Error('Sem conexão e sem assets locais do Fortnite.');
+    }
 
-  await writeDoc('manifest.json', JSON.stringify({
-    version: remote.version,
-    packages: remote.packages.map(({ name, hash }) => ({ name, hash })),
-  }));
-  return { updated: true };
+    const local = (await readLocalManifest()) || { version: 0, packages: [] };
+    const localHash = new Map(local.packages.map((p) => [p.name, p.hash]));
+    const pending = remote.packages.filter((p) => localHash.get(p.name) !== p.hash);
+    if (!pending.length) return { updated: false };
+
+    const totalBytes = pending.reduce((n, p) => n + p.size, 0);
+    let doneBytes = 0;
+    onProgress?.({ done: 0, total: totalBytes, count: pending.length });
+
+    const installed = new Map(localHash);
+    const failed = [];
+
+    for (const pkg of pending) {
+        try {
+            await installPackage(pkg);
+            installed.set(pkg.name, pkg.hash);
+            await writeDoc('manifest.json', JSON.stringify({
+                version: local.version,
+                packages: [...installed].map(([name, hash]) => ({ name, hash })),
+            }));
+        } catch (err) {
+            console.error(`Assets - ${pkg.name}:`, err.message);
+            failed.push(pkg.name);
+        }
+        doneBytes += pkg.size;
+        onProgress?.({ done: doneBytes, total: totalBytes, count: pending.length });
+    }
+
+    if (failed.length) throw new Error(`Falha ao baixar: ${failed.join(', ')}`);
+
+    await writeDoc('manifest.json', JSON.stringify({
+        version: remote.version,
+        packages: remote.packages.map(({ name, hash }) => ({ name, hash })),
+    }));
+    return { updated: true };
+}
+async function ensureSeasonPackage(code) {
+    const name = `fortnite-${code}-assets.zip`;
+    const local = (await readLocalManifest()) || { version: 0, packages: [] };
+
+    if (local.packages.some((p) => p.name === name)) return true;
+    if (!navigator.onLine) return false;
+
+    try {
+        const res = await fetchWithTimeout(`${REMOTE_BASE}/manifest.json`, { cache: 'no-store' }, 5000);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const remote = await res.json();
+
+        const pkg = remote.packages?.find((p) => p.name === name);
+        if (!pkg) throw new Error(`Pacote ${name} não existe no manifest remoto`);
+
+        await installPackage(pkg);
+
+        const fresh = (await readLocalManifest()) || { version: 0, packages: [] };
+        const packages = fresh.packages.filter((p) => p.name !== name);
+        packages.push({ name: pkg.name, hash: pkg.hash });
+        await writeDoc('manifest.json', JSON.stringify({ version: fresh.version, packages }));
+        return true;
+    } catch (err) {
+        console.error('Assets - temporada:', err.message);
+        return false;
+    }
 }
